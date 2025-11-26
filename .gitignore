@@ -12,6 +12,7 @@ coverage/
 
 # Spring Boot static resources (frontend build output)
 doctorat-gouv-backend/src/main/resources/static/
+/static/
 
 
 # Eclipse / STS
