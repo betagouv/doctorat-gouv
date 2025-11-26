@@ -10,6 +10,10 @@ dist/
 .angular/
 coverage/
 
+# Spring Boot static resources (frontend build output)
+doctorat-gouv-backend/src/main/resources/static/
+
+
 # Eclipse / STS
 .classpath
 .project
