@@ -1,6 +1,6 @@
 --------------------------------------------------
 -- Author: Mohamed Laarbi ELHANI
--- Date: 2024-06-10
+-- Date: 2025-12-02
 -- Description: Script géneral SQL de création du schéma de la base de données pour les propositions de thèses.
 -- --------------------------------------------------
 
