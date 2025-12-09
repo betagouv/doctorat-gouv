@@ -29,9 +29,13 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+			"styles": [
+				"node_modules/@gouvfr/dsfr/dist/dsfr.min.css",
+				"src/styles.scss"
+			],
+			"scripts": [
+				"node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js"
+			],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {
@@ -43,8 +47,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "3MB",
+                  "maximumError": "3MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -91,9 +95,6 @@
                 "glob": "**/*",
                 "input": "public"
               }
-            ],
-            "styles": [
-              "src/styles.scss"
             ]
           }
         }
