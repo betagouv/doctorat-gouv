@@ -31,7 +31,7 @@ public class AdumScheduler {
 	@Scheduled(cron = "${adum.scheduler.cron}")
 	public void runImport() {
 		log.info("Début récupération des sujets de thèse depuis ADUM");
-		String result = adumApiService.importPropositions();
+		String result = adumApiService.importAndSavePropositionsFromAdum();
 		log.info("Fin de récupération des sujets de thèse depuis ADUM");
 		log.debug("Résultat de l’export : " + result);
 	}
