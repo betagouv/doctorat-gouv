@@ -1,0 +1,92 @@
+.fr-header .fr-container,
+.search-main.fr-container {
+	max-width: 95% !important; // supprime la limite DSFR
+	width: 85%;
+	// max-width: 1800px; // limite sur grands écrans
+	margin: 0 auto; // centre horizontalement
+	padding-left: 0; // optionnel : supprime les marges internes
+	padding-right: 0; // optionnel
+}
+
+
+.search-form {
+	background-color: #E3E3FD;
+	border-radius: 0.5rem;
+	padding: 2rem; // espace intérieur
+	color: white; // texte en blanc pour contraste
+	width: 95%;
+	// max-width: 1800px; // limite sur grands écrans
+	margin: 0 auto;
+
+	.form-content {
+		
+		width: 60%;
+		margin: 0 auto;
+
+		// barre de recherche
+		.fr-search-bar {
+			border-radius: 0.5rem; // arrondi optionnel
+			padding: 1rem; // espace intérieur
+			width: 80%; // ajuste selon besoin (50%, 60%, 70%)
+			margin: 0 auto; // centre horizontalement
+
+			.fr-input {
+				background-color: #fff;
+				flex: 1;
+			}
+
+			.fr-btn {
+				margin-left: 0.5rem;
+			}
+		}
+
+		.pill-select {
+			//border-radius: 2rem;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			background-color: white;
+			color: #000;
+		}
+
+		// liens et actions
+		.actions-row {
+			align-items: center;
+
+			// lien "Plus/Moins de filtres"
+			.toggle-filters {
+				font-weight: 500;
+				margin-top: 0.5rem;
+				color: #000; // bleu DSFR géré par .fr-link, mais on force contraste si besoin
+			}
+
+			// lien "Comprendre les filtres"
+			.help-filters {
+				font-weight: 500;
+				margin-right: 1rem;
+				color: #000;
+			}
+
+			// alignements
+			.fr-text--left {
+				text-align: left;
+			}
+
+			.fr-text--right {
+				text-align: right;
+			}
+
+			// bouton principal
+			.fr-btn--primary {
+				background-color: #fff;
+				color: #6f42c1;
+				border: 1px solid #fff;
+			}
+
+			.fr-btn--primary:hover {
+				background-color: #6f42c1;
+				color: #fff;
+				border: 1px solid #fff;
+			}
+		}
+	}
+}

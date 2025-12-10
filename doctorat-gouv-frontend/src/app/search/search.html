@@ -1,0 +1,163 @@
+<header class="fr-header" role="banner">
+	<div class="fr-container">
+		<div class="fr-header__body">
+			<!-- Brand -->
+			<div class="fr-header__brand">
+				<dsfr-header brand="République Française" serviceTitle="Doctorat.gouv.fr"
+					service-tagline="Plateforme nationale des thèses">
+				</dsfr-header>
+			</div>
+
+			<!-- Outils à droite -->
+			<div class="fr-header__tools">
+				<!-- Bouton Se connecter -->
+				<div class="fr-header__tools-links">
+					<ul class="fr-btns-group">
+						<li>
+							<a class="fr-btn" href="/connexion">
+								<!--                <span class="fr-icon-login-line" aria-hidden="false"></span>-->
+								<span aria-hidden="false"></span>
+								Se connecter
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<!-- Barre de recherche -->
+				<div class="fr-header__search">
+					<form class="fr-search-bar" role="search" (submit)="onSearchForHeader($event)">
+						<input class="fr-input" type="search" id="search" name="search" placeholder="Rechercher">
+						<button class="fr-btn" title="Rechercher" type="submit">
+							<span class="fr-icon-search-line" aria-hidden="true"></span>
+							<span class="fr-btn--text">Rechercher</span>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Menu de navigation -->
+		<div class="fr-header__menu fr-modal" id="header-menu">
+			<nav class="fr-nav" role="navigation" aria-label="Menu principal">
+				<ul class="fr-nav__list">
+					<li class="fr-nav__item"><a class="fr-nav__link" href="/">Je m'informe</a></li>
+					<li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">Candidat</a></li>
+					<li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Entreprise</a></li>
+					<li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Partenaire</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>
+
+<form class="search-form" (ngSubmit)="onSearch()">
+
+	<div class="form-content">
+
+		<h1 class="fr-h1 fr-text--center">Trouver une offre de thèse ou d’accompagnement</h1>
+
+		<!-- Barre de recherche principale -->
+		<div class="fr-search-bar">
+			<label class="fr-label" for="query">Recherche</label>
+			<input class="fr-input" type="search" id="query" name="query" placeholder="Rechercher par titre ou mot clés"
+				[(ngModel)]="query">
+			<button class="fr-btn" title="Rechercher" type="submit">
+				<span class="fr-icon-search-line" aria-hidden="true"></span>
+				<span class="fr-btn--text">Rechercher</span>
+			</button>
+		</div>
+
+		<!-- Filtres ligne 1 -->
+		<div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
+			<div class="fr-col-12 fr-col-md-4" *ngFor="let field of keys.slice(0, 3)">
+				<!-- <label class="fr-label visually-hidden" [for]="field">{{ labels[field] }}</label> -->
+				<select class="fr-select pill-select" [id]="field" [(ngModel)]="filters[field]" [name]="field">
+					<option value="">{{ labels[field] }}</option>
+					<option *ngFor="let opt of ['Option 1','Option 2','Option 3']">{{ opt }}</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Filtres ligne 2 (affichés si showMoreFilters = true) -->
+		<div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w" *ngIf="showMoreFilters">
+			<div class="fr-col-12 fr-col-md-4" *ngFor="let field of keys.slice(3, 6)">
+				<!-- <label class="fr-label visually-hidden" [for]="field">{{ labels[field] }}</label> -->
+				<select class="fr-select pill-select" [id]="field" [(ngModel)]="filters[field]" [name]="field">
+					<option value="">{{ labels[field] }}</option>
+					<option *ngFor="let opt of ['Option 1','Option 2','Option 3']">{{ opt }}</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Actions -->
+		<div class="fr-grid-row fr-mt-2w actions-row">
+			<!-- Lien Plus/Moins de filtres aligné à gauche -->
+			<div class="fr-col-12 fr-col-md-6 fr-text--left">
+				<a href="javascript:void(0)" class="fr-link toggle-filters" (click)="toggleFilters()">
+					{{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
+				</a>
+			</div>
+
+			<!-- Lien Comprendre les filtres + Bouton Rechercher alignés à droite -->
+			<div class="fr-col-12 fr-col-md-6 fr-text--right">
+				<!--				<a class="fr-link help-filters" href="/a-propos-des-filtres">Comprendre les filtres</a>-->
+				<button class="fr-btn fr-btn--lg fr-btn--primary fr-ml-2w" type="submit">
+					Rechercher
+				</button>
+			</div>
+		</div>
+
+	</div>
+
+</form>
+
+<main class="fr-container fr-py-4w search-main">
+
+	<!-- Tags actifs -->
+	<section class="fr-tags-group fr-mt-4w" *ngIf="hasActiveFilters()">
+		<p class="fr-text--bold">Filtres actifs :</p>
+		<ul class="fr-tags-group__list">
+			<ng-container *ngFor="let key of keys">
+				<li *ngIf="filters[key]">
+					<span class="fr-tag">
+						{{ labels[key] }} : {{ filters[key] }}
+						<button class="fr-tag__btn" (click)="removeFilter(key)" title="Supprimer">×</button>
+					</span>
+				</li>
+			</ng-container>
+		</ul>
+	</section>
+
+	<section class="fr-mt-4w" *ngIf="results.length">
+	  <p class="fr-text--bold fr-text--blue-france">{{ results.length }} résultats</p>
+	  <div class="fr-btns-group fr-btns-group--inline">
+	    <button class="fr-btn fr-btn--sm" [class.fr-btn--secondary]="view === 'liste'" (click)="view = 'liste'">Vue liste</button>
+	    <button class="fr-btn fr-btn--sm" [class.fr-btn--secondary]="view === 'carte'" (click)="view = 'carte'">Vue carte</button>
+	  </div>
+
+	  <!-- Vue liste avec cards -->
+	  <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+	    <div class="fr-col-12 fr-col-md-6 fr-col-lg-4" *ngFor="let thesis of results">
+	      <div class="fr-card fr-card--shadow fr-card--sm">
+	        <div class="fr-card__body">
+	          <h3 class="fr-card__title">{{ thesis.theseTitre }}</h3>
+	          <p class="fr-card__desc">
+	            Discipline : {{ thesis.specialite }}<br>
+	            Ville : {{ thesis.uniteRechercheVille }}<br>
+	            Financement : {{ thesis.financementEtat }}
+	          </p>
+	        </div>
+	        <div class="fr-card__footer">
+	          <a class="fr-btn fr-btn--sm" [routerLink]="['/proposition', thesis.id]">Voir détail</a>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+
+	  <!-- Vue carte -->
+	  <div *ngIf="view === 'carte'" class="fr-mt-2w">
+	    <p>Vue carte (à implémenter)</p>
+	  </div>
+	</section>
+
+</main>
