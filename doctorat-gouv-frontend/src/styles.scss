@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+/* Styles globaux de ton application */
+body {
+  font-family: "Marianne", Arial, sans-serif;
+  margin: 0;
+  background-color: var(--background-default-grey);
+  color: var(--text-default-grey);
+}
+
+main {
+  padding: 2rem;
+  max-width: 960px;
+  margin: auto;
+}

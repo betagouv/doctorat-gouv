@@ -1,11 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr" class="fr">
 <head>
   <meta charset="utf-8">
-  <title>DoctoratGouvFrontend</title>
+  <title>Plateforme nationale doctorat.gouv.fr</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Favicon officiel République Française -->
+  <link rel="icon" href="https://www.gouv.fr/favicon.ico" type="image/x-icon">
+
+  <!-- Styles DSFR -->
+  <link rel="stylesheet" href="node_modules/@gouvfr/dsfr/dist/dsfr.min.css">
+
+  <!-- Module JS DSFR (nécessaire pour certains composants interactifs comme accordéons, menus) -->
+  <script src="node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js" type="module"></script>
 </head>
 <body>
   <app-root></app-root>
