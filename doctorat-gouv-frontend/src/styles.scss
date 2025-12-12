@@ -11,3 +11,19 @@ main {
   max-width: 960px;
   margin: auto;
 }
+
+.custom-blue {
+  color: rgb(0, 0, 174) !important;
+  font-size: 1.5rem;
+}
+
+.custom-bold-blue {
+  color: rgb(0, 0, 174) !important;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.custom-bold {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
