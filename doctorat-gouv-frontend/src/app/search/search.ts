@@ -96,4 +96,48 @@ export class Search {
   toggleFilters() {
     this.showMoreFilters = !this.showMoreFilters;
   }
+  
+  getEntries(motsCles: Record<string, string> | null): [string, string][] {
+		return motsCles ? Object.entries(motsCles) : [];
+  }
+  
+  getResumeOrFallback(thesis: any, maxWords: number = 30): string {
+    let text: string | null = null;
+
+    if (thesis.resume) {
+      text = `${thesis.resume}`;
+    } else if (thesis.objectif) {
+      text = `${thesis.objectif}`;
+    } else if (thesis.context) {
+      text = `${thesis.context}`;
+    } else {
+      return "Résumé non disponible";
+    }
+
+    // Limiter le nombre de mots
+    const words = text.split(/\s+/);
+    if (words.length > maxWords) {
+      return words.slice(0, maxWords).join(" ") + " ...";
+    }
+    return text;
+  }
+  
+  getImageForThesis(thesis: any): string {
+    const mapping: { [key: string]: string } = {
+      "Santé": "DS-1-Sante.jpg",
+      "Culture, créativité, société": "DI-2-culture-creativite-societe.jpg",
+      "Sécurité civile pour la société": "DS-3-Securité_civile.jpg",
+      "Numérique, industrie, espace": "DI-4-numerique-industrie-espace.jpg",
+      "Climat, énergie, mobilité": "DI-5-climat-energie-mobilite.jpg",
+      "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement": "DI-6-alimentation-bioeconomie.jpg"
+    };
+
+    // Vérifie que la liste existe et contient au moins un élément
+    const domaine = thesis.domainesImpactListe?.[0];
+    if (domaine && mapping[domaine]) {
+      return `assets/images/${mapping[domaine]}`;
+    }
+    return "assets/images/default.jpg";
+  }
+
 }

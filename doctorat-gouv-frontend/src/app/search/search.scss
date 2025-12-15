@@ -6,7 +6,27 @@
 	margin: 0 auto; // centre horizontalement
 	padding-left: 0; // optionnel : supprime les marges internes
 	padding-right: 0; // optionnel
+
 }
+
+.fr-tag.violet {
+  color: rgb(0, 50, 100) !important; /* bleu DSFR plus clair */
+  background-color: rgb(209, 206, 238);   /* violet */
+  color: #fff;                 /* texte en blanc pour contraste */
+}
+
+.fr-card__img {
+  width: 100%;
+  aspect-ratio: 4 / 3; /* force un ratio 16:9 */
+  overflow: hidden;
+}
+
+.fr-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* recadre l’image sans déformation */
+}
+
 
 
 .search-form {
