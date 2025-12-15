@@ -139,5 +139,21 @@ export class Search {
     }
     return "assets/images/default.jpg";
   }
+  
+  getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
+    return thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0
+      ? thesis.domainesImpactListe[0]
+      : null;
+  }
+  
+  getFirstDomaineWithMaxLength(thesis: { domainesImpactListe: string[] | null }, maxLength: number = 10): string | null {
+    if (thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0) {
+      const domaine = thesis.domainesImpactListe[0];
+      return domaine.length > maxLength ? domaine.slice(0, maxLength) + "…" : domaine;
+    }
+    return null;
+  }
+
+
 
 }

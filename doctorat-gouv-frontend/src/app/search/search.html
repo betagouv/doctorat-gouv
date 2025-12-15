@@ -139,8 +139,16 @@
 			<div class="fr-card fr-card--shadow fr-card--sm">
 				<!-- En-tête avec image -->
 				<div class="fr-card__img">
-					<!--				  <img src="assets/images/DS-2-physique.jpg" alt="Illustration de la thèse" />-->
 					<img [src]="getImageForThesis(thesis)" alt="Illustration de la thèse" />
+					<!-- Badge vert fluorescent pour le domaine -->
+					<span class="fr-tag badge badge-green" *ngIf="getFirstDomaine(thesis)">
+						{{ getFirstDomaineWithMaxLength(thesis, 60) }}
+					</span>
+					<!-- Badge rose fluorescent pour la spécialité -->
+					<span class="fr-tag badge badge-pink" *ngIf="thesis?.specialite">
+						{{ thesis.specialite }}
+					</span>
+				
 				</div>
 				<div class="fr-card__body">
 					<h3 class="fr-card__title custom-blue">{{ thesis.theseTitre }}</h3><br>

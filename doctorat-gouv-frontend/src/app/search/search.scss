@@ -19,6 +19,7 @@
   width: 100%;
   aspect-ratio: 4 / 3; /* force un ratio 16:9 */
   overflow: hidden;
+  position: relative;
 }
 
 .fr-card__img img {
@@ -27,6 +28,29 @@
   object-fit: cover; /* recadre l’image sans déformation */
 }
 
+.fr-card__img .badge {
+  position: absolute;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Premier badge (vert fluorescent, texte noir) */
+.fr-card__img .badge-green {
+  bottom: 2.5rem; /* placé plus haut */
+  background-color: rgb(152, 255, 134);
+  color: #000;
+  margin-bottom: 1.5 rem;
+  bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
+}
+
+/* Second badge (rose fluorescent, texte noir) */
+.fr-card__img .badge-pink {
+margin-top: 1.5 rem;
+  bottom: 0.5rem; /* placé en bas */
+  background-color: rgb(255, 119, 193); /* rose flashy */
+  color: #000;
+}
 
 
 .search-form {
