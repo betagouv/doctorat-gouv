@@ -129,58 +129,61 @@
 	</section>
 
 	<section class="fr-mt-4w" *ngIf="results.length">
-	  <p class="fr-text--l custom-blue">
-	    <span class="fr-text--bold custom-bold">{{ results.length }} résultats</span> de recherche
-	  </p>
-
-	  <!-- Vue liste avec cards -->
-	  <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-		<div class="fr-col-12 fr-col-md-6 fr-col-lg-4" *ngFor="let thesis of results">
-			<div class="fr-card fr-card--shadow fr-card--sm">
-				<!-- En-tête avec image -->
-				<div class="fr-card__img">
-					<img [src]="getImageForThesis(thesis)" alt="Illustration de la thèse" />
-					<!-- Badge vert fluorescent pour le domaine -->
-					<span class="fr-tag badge badge-green" *ngIf="getFirstDomaine(thesis)">
-						{{ getFirstDomaineWithMaxLength(thesis, 60) }}
-					</span>
-					<!-- Badge rose fluorescent pour la spécialité -->
-					<span class="fr-tag badge badge-pink" *ngIf="thesis?.specialite">
-						{{ thesis.specialite }}
-					</span>
-				
-				</div>
-				<div class="fr-card__body">
-					<h3 class="fr-card__title custom-blue">{{ thesis.theseTitre }}</h3><br>
-					<p class="fr-card__desc">
-						Spécialité : {{ thesis.specialite }}<br>
-						Domaine domainesImpact : {{ thesis.specialite }}<br>
-						Domaine domainesImpact list : {{ thesis.domainesImpactListe?.[0] }}<br><br>
-						{{ getResumeOrFallback(thesis, 40) }}<br><br>
-				
-						<!-- Affichage des mots clés -->
-						<ng-container *ngIf="thesis.motsCles">
-							Mots clés :
-							<div class="fr-tags-group fr-tags-group--column">
-								<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
-									{{ entry[1] }}
-								</span>
-							</div>
-						</ng-container>
-					</p>
-				</div>
-				<div class="fr-card__footer">
-					<a class="fr-btn fr-btn--sm" [routerLink]="['/proposition', thesis.id]">Voir détail</a>
+		<p class="fr-text--l custom-blue">
+			<span class="fr-text--bold custom-bold">{{ results.length }} résultats</span> de recherche
+		</p>
+	
+		<!-- Vue liste avec cards -->
+		<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+			<div class="fr-col-12 fr-col-md-6 fr-col-lg-4" *ngFor="let thesis of results">
+				<div class="fr-card fr-card--shadow fr-card--sm">
+					<!-- En-tête avec image -->
+					<div class="fr-card__img">
+						<img [src]="getImageForThesis(thesis)" alt="Illustration de la thèse" />
+						<!-- Badge vert fluorescent pour le domaine -->
+						<span class="fr-tag badge badge-green" *ngIf="getFirstDomaine(thesis)">
+							{{ getFirstDomaineWithMaxLength(thesis, 60) }}
+						</span>
+						<!-- Badge rose fluorescent pour la spécialité -->
+						<span class="fr-tag badge badge-pink" *ngIf="thesis?.specialite">
+							{{ thesis.specialite }}
+						</span>
+	
+					</div>
+					<div class="fr-card__body">
+						<h3 class="fr-card__title custom-blue">{{ thesis.theseTitre }}</h3><br>
+						<p class="fr-card__desc">
+							Spécialité : {{ thesis.specialite }}<br>
+							Domaine domainesImpact : {{ thesis.specialite }}<br>
+							Domaine domainesImpact list : {{ thesis.domainesImpactListe?.[0] }}<br><br>
+							{{ getResumeOrFallback(thesis, 30) }}<br><br>
+	
+							<!-- Affichage des mots clés -->
+							<ng-container *ngIf="thesis.motsCles">
+								Mots clés :
+								<div class="fr-tags-group fr-tags-group--column">
+									<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
+										{{ entry[1] }}
+									</span>
+								</div>
+							</ng-container>
+						</p>
+					</div>
+					
+					<!-- Footer avec flèche -->
+					<div class="fr-card__footer">
+					  <a [routerLink]="['/proposition', thesis.id]" class="arrow-link">Voir détail</a>
+					</div>
+	
 				</div>
 			</div>
+	
 		</div>
-
-	  </div>
-
-	  <!-- Vue carte -->
-	  <div *ngIf="view === 'carte'" class="fr-mt-2w">
-	    <p>Vue carte (à implémenter)</p>
-	  </div>
+	
+		<!-- Vue carte -->
+		<div *ngIf="view === 'carte'" class="fr-mt-2w">
+			<p>Vue carte (à implémenter)</p>
+		</div>
 	</section>
 
 </main>

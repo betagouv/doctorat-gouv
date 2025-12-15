@@ -9,6 +9,39 @@
 
 }
 
+.fr-card {
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/*.fr-card__body {
+  padding: 1rem;
+}*/
+
+/*.fr-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1a2a6c;  bleu institutionnel 
+}*/
+
+.fr-card__desc {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .fr-tag.violet {
   color: rgb(0, 50, 100) !important; /* bleu DSFR plus clair */
   background-color: rgb(209, 206, 238);   /* violet */
@@ -38,19 +71,47 @@
 /* Premier badge (vert fluorescent, texte noir) */
 .fr-card__img .badge-green {
   bottom: 2.5rem; /* placé plus haut */
-  background-color: rgb(152, 255, 134);
+  background-color: rgb(196, 255, 185);
   color: #000;
-  margin-bottom: 1.5 rem;
   bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
 }
 
 /* Second badge (rose fluorescent, texte noir) */
 .fr-card__img .badge-pink {
-margin-top: 1.5 rem;
+  margin-top: 1.5rem;
   bottom: 0.5rem; /* placé en bas */
-  background-color: rgb(255, 119, 193); /* rose flashy */
+  background-color: rgb(254, 242, 163); /* rose flashy */
   color: #000;
 }
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Flèche custom sans DSFR icons */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #0063cb; /* bleu DSFR */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.arrow-link::after {
+  content: "→"; /* flèche unicode */
+  margin-left: 0.25rem;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.arrow-link:hover::after {
+  transform: translateX(4px); /* petit effet de glissement */
+}
+
 
 
 .search-form {
