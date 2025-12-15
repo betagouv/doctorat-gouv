@@ -112,6 +112,18 @@
   transform: translateX(4px); /* petit effet de glissement */
 }
 
+.pagination-fixed {
+  //position: fixed;
+  bottom: 0;          // toujours collé en bas
+  left: 0;
+  width: 100%;        // occupe toute la largeur
+  display: flex;
+  justify-content: center; // centré horizontalement
+  background: #fff;   // fond blanc pour lisibilité
+  padding: 1rem 0;    // espace autour
+  //box-shadow: 0 -2px 5px rgba(0,0,0,0.1); // petite ombre pour la démarquer
+  z-index: 1000;      // reste au-dessus du contenu
+}
 
 
 .search-form {

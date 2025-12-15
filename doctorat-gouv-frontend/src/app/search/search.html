@@ -129,7 +129,7 @@
 	</section>
 
 	<section class="fr-mt-4w" *ngIf="results.length">
-		<p class="fr-text--l custom-blue">
+		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
 			<span class="fr-text--bold custom-bold">{{ results.length }} résultats</span> de recherche
 		</p>
 	
@@ -148,16 +148,16 @@
 						<span class="fr-tag badge badge-pink" *ngIf="thesis?.specialite">
 							{{ thesis.specialite }}
 						</span>
-	
+		
 					</div>
 					<div class="fr-card__body">
 						<h3 class="fr-card__title custom-blue">{{ thesis.theseTitre }}</h3><br>
 						<p class="fr-card__desc">
-							Spécialité : {{ thesis.specialite }}<br>
-							Domaine domainesImpact : {{ thesis.specialite }}<br>
-							Domaine domainesImpact list : {{ thesis.domainesImpactListe?.[0] }}<br><br>
+							<!--							Spécialité : {{ thesis.specialite }}<br>-->
+							<!--							Domaine domainesImpact : {{ thesis.specialite }}<br>-->
+							<!--							Domaine domainesImpact list : {{ thesis.domainesImpactListe?.[0] }}<br><br>-->
 							{{ getResumeOrFallback(thesis, 30) }}<br><br>
-	
+		
 							<!-- Affichage des mots clés -->
 							<ng-container *ngIf="thesis.motsCles">
 								Mots clés :
@@ -169,15 +169,75 @@
 							</ng-container>
 						</p>
 					</div>
-					
+		
 					<!-- Footer avec flèche -->
 					<div class="fr-card__footer">
-					  <a [routerLink]="['/proposition', thesis.id]" class="arrow-link">Voir détail</a>
+						<a [routerLink]="['/proposition', thesis.id]" class="arrow-link">Voir détail</a>
 					</div>
-	
+		
 				</div>
 			</div>
-	
+		
+			<div class="fr-container fr-my-4w pagination-fixed" >
+			<nav class="fr-pagination" role="navigation" aria-label="Pagination" *ngIf="totalPages > 1">
+				<ul class="fr-pagination__list">
+					<!-- Bouton précédent -->
+					<li>
+					  <button class="fr-pagination__link"
+					          (click)="goToPage(currentPage - 1)"
+					          [disabled]="currentPage === 0"
+					          aria-label="Page précédente">
+					    <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+					    <span class="fr-mx-1w">Précédent</span>
+					  </button>
+					</li>
+		
+					<!-- Première page -->
+					<li>
+						<button class="fr-pagination__link" (click)="goToPage(0)"
+							[class.fr-pagination__link--current]="currentPage === 0"
+							[attr.aria-current]="currentPage === 0 ? 'page' : null">
+							1
+						</button>
+					</li>
+		
+					<!-- Ellipse avant -->
+					<li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+		
+					<!-- Pages autour de la courante -->
+					<li *ngFor="let i of getPagesAround()">
+						<button class="fr-pagination__link" (click)="goToPage(i)"
+							[class.fr-pagination__link--current]="currentPage === i"
+							[attr.aria-current]="currentPage === i ? 'page' : null">
+							{{ i + 1 }}
+						</button>
+					</li>
+		
+					<!-- Ellipse après -->
+					<li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+		
+					<!-- Dernière page -->
+					<li>
+						<button class="fr-pagination__link" (click)="goToPage(totalPages - 1)"
+							[class.fr-pagination__link--current]="currentPage === totalPages - 1"
+							[attr.aria-current]="currentPage === totalPages - 1 ? 'page' : null">
+							{{ totalPages }}
+						</button>
+					</li>
+		
+					<!-- Bouton suivant -->
+					<li>
+					  <button class="fr-pagination__link"
+					          (click)="goToPage(currentPage + 1)"
+					          [disabled]="currentPage === totalPages - 1"
+					          aria-label="Page suivante">
+					    <span class="fr-mx-1w">Suivant</span>
+					    <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+					  </button>
+					</li>
+				</ul>
+			</nav>
+			</div>
 		</div>
 	
 		<!-- Vue carte -->

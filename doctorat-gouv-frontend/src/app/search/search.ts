@@ -28,6 +28,11 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
   styleUrls: ['./search.scss']
 })
 export class Search {
+	
+  pageSize: number = 27;
+  currentPage: number = 0;
+  totalPages: number = 0;
+	
   filters = {
     discipline: '',
     thematique: '',
@@ -56,24 +61,58 @@ export class Search {
     private propositionService: PropositionTheseService
   ) {}
 
-  onSearch() {
+  onSearch(page: number = 0) {
     const activeFilters: Record<string, string> = { ...this.filters };
     if (this.query) {
       activeFilters['query'] = this.query;
     }
 
-    console.log('🔍 Filtres actifs envoyés au service :', activeFilters);
-
-    this.propositionService.search(activeFilters).subscribe({
+    this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: (data) => {
-        console.log('📦 Résultats reçus du backend :', data);
-        this.results = data;
+        this.results = data.content;
+        this.currentPage = data.number;
+        this.totalPages = data.totalPages;
+		// 🔹 Scroll jusqu’au compteur de résultats
+		document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
       error: (err) => {
         console.error('❌ Erreur lors de la recherche :', err);
       }
     });
   }
+  
+  goToNextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.onSearch(this.currentPage + 1);
+    }
+  }
+
+  goToPreviousPage() {
+    if (this.currentPage > 0) {
+      this.onSearch(this.currentPage - 1);
+    }
+  }
+
+  getPagesAround(): number[] {
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(this.totalPages - 2, this.currentPage + 2);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
+
+  goToPage(page: number) {
+    if (page >= 0 && page < this.totalPages) {
+      this.onSearch(page);
+
+      // 🔹 Scroll jusqu’au compteur de résultats
+      const el = document.getElementById('results-count');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.focus(); // accessibilité : annonce "X résultats de recherche"
+      }
+    }
+  }
+
 
   onSearchForHeader(event: Event) {
     event.preventDefault();
@@ -153,7 +192,5 @@ export class Search {
     }
     return null;
   }
-
-
 
 }

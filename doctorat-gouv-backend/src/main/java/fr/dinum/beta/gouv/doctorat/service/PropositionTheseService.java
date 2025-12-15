@@ -1,8 +1,10 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,15 @@ public class PropositionTheseService {
 		this.propositionTheseRepository = propositionTheseRepository;
 	}
 
-	public List<PropositionTheseDto> search(Map<String, String> filters) {
-		List<PropositionThese> entities = propositionTheseRepository.findAll(buildSpecification(filters));
-		return entities.stream().map(PropositionTheseMapper::toDto) // appel statique
-				.toList();
+	public Page<PropositionTheseDto> search(Map<String, String> filters, int page, int size) {
+	    Specification<PropositionThese> criteria = buildSpecification(filters);
+	    Pageable pageable = PageRequest.of(page, size);
+
+	    Page<PropositionThese> entities = propositionTheseRepository.findAll(criteria, pageable);
+
+	    return entities.map(PropositionTheseMapper::toDto); 
 	}
+
 
 	private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
 		return (root, query, cb) -> {
