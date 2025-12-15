@@ -37,6 +37,7 @@
 			],
 			"styles": [
 				"node_modules/@gouvfr/dsfr/dist/dsfr.min.css",
+				"node_modules/@gouvfr/dsfr/dist/utility/icons/icons.min.css",
 				"src/styles.scss"
 			],
 			"scripts": [
