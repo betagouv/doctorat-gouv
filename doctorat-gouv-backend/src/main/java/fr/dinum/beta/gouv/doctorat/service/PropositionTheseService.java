@@ -4,7 +4,7 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,56 +25,73 @@ public class PropositionTheseService {
                                             int page,
                                             int size) {
         Specification<PropositionThese> spec = buildSpecification(filters);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateCreation"));
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "dateCreation")); // tri par date de création
 
         Page<PropositionThese> entities = propositionTheseRepository.findAll(spec, pageable);
         return entities.map(PropositionTheseMapper::toDto);
     }
 
-    /** Construit la Specification à partir des paramètres reçus */
+    /** Construction de la Specification à partir des paramètres */
     private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
         return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
+            query.distinct(true);                         // éviter les doublons dûs aux JOIN
+            List<Predicate> andPredicates = new ArrayList<>(); // chaque token → un AND
 
+            // ---------- JOINTURES SUR LES MAPS ----------
+            MapJoin<PropositionThese, String, String> joinMotsCles =
+                    root.joinMap("motsCles", JoinType.LEFT);
+            MapJoin<PropositionThese, String, String> joinMotsClesAnglais =
+                    root.joinMap("motsClesAnglais", JoinType.LEFT);
+
+            // ---------- TRAITEMENT DES AUTRES FILTERS ----------
             filters.forEach((key, value) -> {
-                if (value == null || value.isBlank()) return; // ignore vide
+                if (value == null || value.isBlank()) return;
+
+                String lowered = value.toLowerCase();
+                String pattern = "%" + lowered + "%";
 
                 switch (key) {
-                    case "discipline" -> // domaine scientifique (ex. « Sciences », « Médecine », …)
-                            predicates.add(cb.equal(root.get("specialite"), value));
-
-                    case "thematique" -> // thématique de recherche
-                            predicates.add(cb.equal(root.get("domaine"), value)); // thematiqueRecherche
-
-                    case "localisation" -> // ville du laboratoire / unité de recherche
-                            predicates.add(cb.equal(root.get("uniteRechercheVille"), value));
-
-                    case "laboratoire" -> // libellé du laboratoire (recherche partielle, insensible à la casse)
-                            predicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")),
-                                           "%" + value.toLowerCase() + "%"));
-
-                    case "ecole" -> // numéro de l’école doctorale (ou libellé si tu préfères)
-                            predicates.add(cb.equal(root.get("etablissementLibelle"), value));
-
+                    case "discipline" -> andPredicates.add(cb.equal(root.get("specialite"), value));
+                    case "thematique" -> andPredicates.add(cb.equal(root.get("domaine"), value));
+                    case "localisation" -> andPredicates.add(cb.equal(root.get("uniteRechercheVille"), value));
+                    case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
+                    case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
                     case "query" -> {
-                        // Recherche texte libre sur le titre et le résumé (case‑insensitive)
-                        String pattern = "%" + value.toLowerCase() + "%";
-                        Predicate title   = cb.like(cb.lower(root.get("theseTitre")), pattern);
-                        Predicate resume  = cb.like(cb.lower(root.get("resume")), pattern);
-                        Predicate keywords = cb.like(cb.lower(root.get("resumeAnglais")), pattern);
-                        predicates.add(cb.or(title, resume, keywords));
-                    }
+                        // ----------- TOKENISATION -------------
+                        String[] tokens = value.trim().toLowerCase().split("\\s+");
+                        List<Predicate> tokenPredicates = new ArrayList<>();
 
-                    // Si tu ajoutes d’autres filtres (financement, contrat, …) les gérer ici
-                    default -> {
-                        // ignore les clés inconnues
+                        for (String token : tokens) {
+                            if (token.isBlank()) continue;
+                            String tokenPattern = "%" + token + "%";
+
+                            // OR entre les champs pour le même token
+                            Predicate tokenInAnyField = cb.or(
+                                    cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
+                                    cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
+                                    cb.like(cb.lower(root.get("resume")), tokenPattern),
+                                    cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern),
+                                    cb.like(cb.lower(joinMotsCles.value()), tokenPattern),
+                                    cb.like(cb.lower(joinMotsClesAnglais.value()), tokenPattern)
+                            );
+
+                            tokenPredicates.add(tokenInAnyField); // chaque token → un predicate
+                        }
+
+                        // AND entre les tokens (tous les tokens doivent être trouvés)
+                        if (!tokenPredicates.isEmpty()) {
+                            andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
+                        }
                     }
+                    default -> { /* ignore unknown keys */ }
                 }
             });
 
-            // Combine tous les prédicats avec AND
-            return predicates.isEmpty() ? cb.conjunction()
-                                        : cb.and(predicates.toArray(Predicate[]::new));
+            // Si aucun filtre n’est fourni → renvoie tout
+            return andPredicates.isEmpty()
+                    ? cb.conjunction()
+                    : cb.and(andPredicates.toArray(Predicate[]::new));
         };
     }
 }
