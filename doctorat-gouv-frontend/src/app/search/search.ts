@@ -12,13 +12,16 @@
  *  
  *****************************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
+import { PageResponse } from '../models/page-response.model';
 
 import { DsfrHeaderModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
@@ -71,6 +74,10 @@ export class Search implements OnInit {
   showMoreFilters = false;        // affichage de la deuxième rangée de filtres
   results: PropositionTheseDto[] = [];
   view: 'liste' | 'carte' = 'liste';
+  
+  /* ------------------- Reactive trigger ------------------- */
+  private filterChanges$ = new Subject<void>();
+  private filterSub!: Subscription;
 
   /* ------------------- Injection de dépendances ------------------- */
   constructor(
@@ -81,7 +88,34 @@ export class Search implements OnInit {
 
   /* ------------------- Cycle de vie ------------------- */
   ngOnInit(): void {
-    this.loadFilterOptions();
+	this.loadFilterOptions();
+
+	// 1️ - Souscrire au Subject avec debounce
+	this.filterSub = this.filterChanges$
+	  .pipe(
+	    debounceTime(300),          // attendre 300 ms d’inactivité
+	    // distinctUntilChanged()      // ne pas relancer si la valeur n’a pas changé
+	  )
+	  .subscribe(() => {
+	    // Chaque fois que le debounce se déclenche, on lance la recherche
+	    this.onSearch(0);          // on repart toujours à la première page
+	  });
+  }
+  
+  ngOnDestroy(): void {
+    // Nettoyer l’abonnement pour éviter les fuites mémoire
+    if (this.filterSub) {
+      this.filterSub.unsubscribe();
+    }
+  }
+  
+  /* -----------------------------------------------------------------
+     Méthode appelée à chaque changement de champ
+     ----------------------------------------------------------------- */
+  onFilterChange(): void {
+    // On pousse simplement un signal dans le Subject.
+    // Le debounce gérera le timing réel.
+    this.filterChanges$.next();
   }
 
   /** Charge toutes les listes d’options depuis le back‑end */
@@ -261,7 +295,12 @@ export class Search implements OnInit {
     return null;
   }
   
-  removeFilter(filterName: string): void {
-    (this as any)[filterName] = '';   // réinitialise la propriété dynamique
+  /** Réinitialise le filtre indiqué et relance la recherche */
+  removeFilter(filterName: keyof Search): void {
+    // 1️ - Remettre la propriété à la valeur vide
+    (this as any)[filterName] = '';
+
+    // 2️ - Notifier le système de changement de filtre
+    this.onFilterChange();   // <-- déclenche le Subject → debounce → onSearch()
   }
 }

@@ -57,7 +57,10 @@
 </header>
 
 <!-- ==================== FORMULAIRE DE RECHERCHE ==================== -->
-<form class="search-form" (ngSubmit)="onSearch()">
+<!-- ====================== FORMULAIRE ====================== -->
+<!-- On ne garde plus le (ngSubmit) car on ne soumet plus le formulaire -->
+<div class="search-form">
+
   <div class="form-content">
 
     <!-- Titre -->
@@ -65,47 +68,64 @@
       Trouver une offre de thèse ou d’accompagnement
     </h1>
 
-    <!-- Barre de recherche principale -->
-	<div class="fr-search-bar">
-		<label class="fr-label" for="query">Recherche</label>
-		<input class="fr-input" type="search" id="query" name="query" placeholder="Rechercher par titre ou mot clés"
-			[(ngModel)]="query">
-		<!--      <button class="fr-btn" title="Rechercher" type="submit">-->
-		<!--        <span class="fr-icon-search-line" aria-hidden="true"></span>-->
-		<!--        <span class="fr-btn--text">Rechercher</span>-->
-		<!--      </button>-->
-	</div>
+    <!-- ------------------------------------------------ -->
+    <!-- Barre de recherche principale (texte libre) -->
+    <!-- ------------------------------------------------ -->
+    <div class="fr-search-bar">
+      <label class="fr-label" for="query">Recherche</label>
+
+      <!-- ngModelChange déclenche la recherche à chaque saisie -->
+      <input class="fr-input"
+             type="search"
+             id="query"
+             name="query"
+             placeholder="Rechercher par titre ou mot clés"
+             [(ngModel)]="query"
+             (ngModelChange)="onFilterChange()">
+    </div>
 
     <!-- ------------------------------------------------ -->
-    <!-- Ligne 1 : Discipline, Thématique, Localisation -->
+    <!-- Ligne 1 : Discipline – Défis de société – Localisation -->
     <!-- ------------------------------------------------ -->
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
 
       <!-- Discipline -->
-	<div class="fr-col-12 fr-col-md-4">
-		<select class="fr-select pill-select" id="discipline" name="discipline" [(ngModel)]="discipline">
-			<option value="">Discipline</option>
-			<option *ngFor="let opt of disciplineOpts" [value]="opt">
-				{{ opt }}
-			</option>
-		</select>
-	</div>
-	
-	<!-- Défis de société -->
-	<div class="fr-col-12 fr-col-md-4">
-		<select class="fr-select pill-select" id="defisSociete" name="defisSociete" [(ngModel)]="defisSociete">
-			<option value="">Défis de société</option>
-			<option *ngFor="let opt of defisSocieteOpts" [value]="opt">
-				{{ opt }}
-			</option>
-		</select>
-	</div>
-	
-	<!-- Localisation -->
-	<div class="fr-col-12 fr-col-md-4">
-		<select class="fr-select pill-select" id="localisation" name="localisation" [(ngModel)]="localisation">
-			<option value="">Localisation géographique</option>
-			<option *ngFor="let opt of localisationOpts" [value]="opt">
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="discipline"
+                name="discipline"
+                [(ngModel)]="discipline"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Discipline</option>
+          <option *ngFor="let opt of disciplineOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Défis de société -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="defisSociete"
+                name="defisSociete"
+                [(ngModel)]="defisSociete"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Défis de société</option>
+          <option *ngFor="let opt of defisSocieteOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Localisation -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="localisation"
+                name="localisation"
+                [(ngModel)]="localisation"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Localisation géographique</option>
+          <option *ngFor="let opt of localisationOpts" [value]="opt">
             {{ opt }}
           </option>
         </select>
@@ -113,7 +133,7 @@
     </div>
 
     <!-- ------------------------------------------------ -->
-    <!-- Ligne 2 : Laboratoire, École (affichée si showMoreFilters) -->
+    <!-- Ligne 2 : Laboratoire – École (affichée si showMoreFilters) -->
     <!-- ------------------------------------------------ -->
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w"
          *ngIf="showMoreFilters">
@@ -123,7 +143,8 @@
         <select class="fr-select pill-select"
                 id="laboratoire"
                 name="laboratoire"
-                [(ngModel)]="laboratoire">
+                [(ngModel)]="laboratoire"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
           <option value="">Laboratoire de recherche</option>
           <option *ngFor="let opt of laboratoireOpts" [value]="opt">
             {{ opt }}
@@ -136,19 +157,18 @@
         <select class="fr-select pill-select"
                 id="ecole"
                 name="ecole"
-                [(ngModel)]="ecole">
+                [(ngModel)]="ecole"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
           <option value="">Établissement diplômant</option>
           <option *ngFor="let opt of ecoleOpts" [value]="opt">
             {{ opt }}
           </option>
         </select>
       </div>
-
-      <!-- Vous pouvez ajouter d’autres filtres ici sans toucher à la logique -->
     </div>
 
     <!-- ------------------------------------------------ -->
-    <!-- Actions (plus/moins de filtres, bouton rechercher) -->
+    <!-- Actions (plus/moins de filtres) -->
     <!-- ------------------------------------------------ -->
     <div class="fr-grid-row fr-mt-2w actions-row">
       <div class="fr-col-12 fr-col-md-6 fr-text--left">
@@ -159,17 +179,11 @@
         </a>
       </div>
 
-      <div class="fr-col-12 fr-col-md-6 fr-text--right">
-        <!-- <a class="fr-link help-filters" href="/a-propos-des-filtres">Comprendre les filtres</a> -->
-        <button class="fr-btn fr-btn--lg fr-btn--primary fr-ml-2w"
-                type="submit">
-          Rechercher
-        </button>
-      </div>
+      <!-- Le bouton « Rechercher » est supprimé – plus besoin de type="submit" -->
     </div>
 
   </div>
-</form>
+</div>
 
 <!-- ==================== SECTION DES RESULTATS ==================== -->
 <main class="fr-container fr-py-4w search-main">
