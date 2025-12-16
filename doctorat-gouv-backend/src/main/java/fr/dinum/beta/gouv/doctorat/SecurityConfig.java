@@ -15,6 +15,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(auth -> auth
 	            // Autorise librement l'accès à ton endpoint
 	            .requestMatchers("/api/propositions-these/**").permitAll()
+	            .requestMatchers("/api/filters/**").permitAll()
 	            // Les autres endpoints peuvent être protégés
 	            .anyRequest().authenticated()
 	        )

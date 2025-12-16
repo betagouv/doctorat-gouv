@@ -1,8 +1,21 @@
-import { Component } from '@angular/core';
+/*****************************************************************************************
+ *  SEARCH COMPONENT – version « filtre par filtre » (standalone)
+ *
+ *  Ce composant :
+ *   • charge les options de chaque filtre via FilterService
+ *   • expose un champ model distinct pour chaque filtre
+ *   • construit l’objet de recherche à la volée
+ *
+ *  Remarque : Il faut disposer d’un endpoint API qui renvoie
+ *  toutes les listes d’options (ex. GET /api/filters/all) ou, à défaut,
+ *  plusieurs endpoints séparés.
+ *  
+ *****************************************************************************************/
+
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
@@ -12,12 +25,16 @@ import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrFooterModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
+/* ---------- SERVICE QUI FOURNIT LES OPTIONS DE FILTRE ---------- */
+import { FilterService, AllFilterOptions } from '../services/filter.service';
+/* -------------------------------------------------------------- */
+
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [
     CommonModule,
-	RouterModule,
+    RouterModule,
     FormsModule,
     DsfrHeaderModule,
     DsfrTagModule,
@@ -27,172 +44,219 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
   templateUrl: './search.html',
   styleUrls: ['./search.scss']
 })
-export class Search {
-	
-  pageSize: number = 27;
-  currentPage: number = 0;
-  totalPages: number = 0;
-  totalResults: number = 0; // 🔹 nombre total de résultats
-	
-  filters = {
-    discipline: '',
-    thematique: '',
-    localisation: '',
-    laboratoire: '',
-    ecole: ''
-  };
+export class Search implements OnInit {
+  /* ------------------- Pagination ------------------- */
+  pageSize = 27;
+  currentPage = 0;
+  totalPages = 0;
+  totalResults = 0;               // nombre total de résultats (global)
 
-  keys = Object.keys(this.filters) as (keyof typeof this.filters)[];
+  /* ------------------- Modèle de recherche ------------------- */
+  query = '';
 
-  labels: Record<keyof typeof this.filters, string> = {
-    discipline: 'Discipline',
-    thematique: 'Thématique',
-    localisation: 'Localisation géographique',
-    laboratoire: 'Laboratoire de recherche',
-    ecole: 'Établissement diplômant',
-  };
+  discipline = '';
+  thematique = '';
+  localisation = '';
+  laboratoire = '';
+  ecole = '';
 
-  showMoreFilters = false;
-  query: string = '';
+  /* ------------------- Options affichées dans chaque <select> ------------------- */
+  disciplineOpts: string[] = [];
+  thematiqueOpts: string[] = [];
+  localisationOpts: string[] = [];
+  laboratoireOpts: string[] = [];
+  ecoleOpts: string[] = [];
+
+  /* ------------------- UI ------------------- */
+  showMoreFilters = false;        // affichage de la deuxième rangée de filtres
   results: PropositionTheseDto[] = [];
   view: 'liste' | 'carte' = 'liste';
 
+  /* ------------------- Injection de dépendances ------------------- */
   constructor(
     private router: Router,
-    private propositionService: PropositionTheseService
+    private propositionService: PropositionTheseService,
+    private filterService: FilterService          // ← nouveau service
   ) {}
 
-  onSearch(page: number = 0) {
-    const activeFilters: Record<string, string> = { ...this.filters };
-    if (this.query) {
-      activeFilters['query'] = this.query;
-    }
+  /* ------------------- Cycle de vie ------------------- */
+  ngOnInit(): void {
+    this.loadFilterOptions();
+  }
 
-    this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
-      next: (data) => {
-        this.results = data.content;
-        this.currentPage = data.number;
-        this.totalPages = data.totalPages;
-		this.totalResults = data.totalElements // 🔹 nombre total de résultats (global)
-		// 🔹 Scroll jusqu’au compteur de résultats
-		document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
+  /** Charge toutes les listes d’options depuis le back‑end */
+  private loadFilterOptions(): void {
+    this.filterService.getAllOptions().subscribe({
+      next: (data: AllFilterOptions) => {
+        this.disciplineOpts   = data.discipline;
+        this.thematiqueOpts   = data.thematique;
+        this.localisationOpts = data.localisation;
+        this.laboratoireOpts  = data.laboratoire;
+        this.ecoleOpts        = data.ecole;
       },
-      error: (err) => {
-        console.error('❌ Erreur lors de la recherche :', err);
+      error: err => {
+        console.error('Erreur lors du chargement des filtres', err);
+        // Vous pouvez afficher un toast ou un message d’erreur à l’utilisateur ici.
       }
     });
   }
-  
-  goToNextPage() {
+
+  /* ------------------- Recherche ------------------- */
+  /** Construit l’objet de recherche à partir des champs remplis */
+  private buildActiveFilters(): Record<string, string> {
+    const active: Record<string, string> = {};
+
+    if (this.discipline)   active['discipline']   = this.discipline;
+    if (this.thematique)   active['thematique']   = this.thematique;
+    if (this.localisation) active['localisation'] = this.localisation;
+    if (this.laboratoire)  active['laboratoire']  = this.laboratoire;
+    if (this.ecole)        active['ecole']        = this.ecole;
+    if (this.query)        active['query']        = this.query;
+
+    return active;
+  }
+
+  /** Lance la recherche (page = 0 par défaut) */
+  onSearch(page: number = 0): void {
+    const activeFilters = this.buildActiveFilters();
+
+    this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
+      next: data => {
+        this.results      = data.content;
+        this.currentPage  = data.number;
+        this.totalPages   = data.totalPages;
+        this.totalResults = data.totalElements;   // nombre total de résultats (global)
+
+        // Scroll jusqu’au compteur de résultats
+        document.getElementById('results-count')
+                ?.scrollIntoView({ behavior: 'smooth' });
+      },
+      error: err => console.error('❌ Erreur lors de la recherche :', err)
+    });
+  }
+
+  /* ------------------- Pagination (next / previous / specific) ------------------- */
+  goToNextPage(): void {
     if (this.currentPage < this.totalPages - 1) {
       this.onSearch(this.currentPage + 1);
     }
   }
 
-  goToPreviousPage() {
+  goToPreviousPage(): void {
     if (this.currentPage > 0) {
       this.onSearch(this.currentPage - 1);
     }
   }
 
+  /** Retourne un tableau d’indice de pages autour de la page courante (pour l’affichage) */
   getPagesAround(): number[] {
     const start = Math.max(1, this.currentPage - 2);
-    const end = Math.min(this.totalPages - 2, this.currentPage + 2);
+    const end   = Math.min(this.totalPages - 2, this.currentPage + 2);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-
-  goToPage(page: number) {
+  goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages) {
       this.onSearch(page);
 
-      // 🔹 Scroll jusqu’au compteur de résultats
+      // Scroll jusqu’au compteur de résultats + focus (accessibilité)
       const el = document.getElementById('results-count');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
-        el.focus(); // accessibilité : annonce "X résultats de recherche"
+        el.focus();
       }
     }
   }
 
-
-  onSearchForHeader(event: Event) {
+  /* ------------------- Recherche depuis l’en‑tête du site ------------------- */
+  onSearchForHeader(event: Event): void {
     event.preventDefault();
-    const input = (event.target as HTMLFormElement).querySelector<HTMLInputElement>('#search');
+    const input = (event.target as HTMLFormElement)
+                    .querySelector<HTMLInputElement>('#search');
     const query = input?.value.trim();
+
     if (query) {
       this.router.navigate(['/recherche'], { queryParams: { q: query } });
     }
   }
 
-  removeFilter(key: keyof typeof this.filters) {
-    this.filters[key] = '';
-    this.onSearch();
-  }
-
-  hasActiveFilters(): boolean {
-    return this.keys.some(k => !!this.filters[k]);
-  }
-
-  toggleFilters() {
+  /* ------------------- UI helpers ------------------- */
+  toggleFilters(): void {
     this.showMoreFilters = !this.showMoreFilters;
   }
-  
-  getEntries(motsCles: Record<string, string> | null): [string, string][] {
-		return motsCles ? Object.entries(motsCles) : [];
-  }
-  
-  getResumeOrFallback(thesis: any, maxWords: number = 30): string {
-    let text: string | null = null;
 
-    if (thesis.resume) {
-      text = `${thesis.resume}`;
-    } else if (thesis.objectif) {
-      text = `${thesis.objectif}`;
-    } else if (thesis.context) {
-      text = `${thesis.context}`;
+  /** Transforme un dictionnaire de mots‑clés en tableau d’entrée */
+  getEntries(motsCles: Record<string, string> | null): [string, string][] {
+    return motsCles ? Object.entries(motsCles) : [];
+  }
+
+  /**
+   * Retourne le résumé (ou un fallback) tronqué à `maxWords` mots.
+   * Si aucune des propriétés attendues n’est renseignée, on renvoie
+   * « Résumé non disponible ».
+   */
+  getResumeOrFallback(thesis: any, maxWords = 30): string {
+    // 1️ - On commence avec une chaîne vide – jamais null.
+    let text = '';
+
+    // 2️ - On remplit `text` dès qu’on trouve une valeur.
+    if (thesis?.resume) {
+      text = thesis.resume;
+    } else if (thesis?.objectif) {
+      text = thesis.objectif;
+    } else if (thesis?.context) {
+      text = thesis.context;
     } else {
-      return "Résumé non disponible";
+      // Aucun champ trouvé → on sort immédiatement.
+      return 'Résumé non disponible';
     }
 
-    // Limiter le nombre de mots
+    // 3️ - On découpe la chaîne en mots et on limite le nombre de mots.
     const words = text.split(/\s+/);
     if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(" ") + " ...";
+      return words.slice(0, maxWords).join(' ') + ' …';
     }
+
+    // 4️ - Retour du texte complet
     return text;
   }
-  
+
+  /** Retourne le chemin d’image correspondant au domaine d’impact */
   getImageForThesis(thesis: any): string {
     const mapping: { [key: string]: string } = {
-      "Santé": "DS-1-Sante.jpg",
-      "Culture, créativité, société": "DI-2-culture-creativite-societe.jpg",
-      "Sécurité civile pour la société": "DS-3-Securité_civile.jpg",
-      "Numérique, industrie, espace": "DI-4-numerique-industrie-espace.jpg",
-      "Climat, énergie, mobilité": "DI-5-climat-energie-mobilite.jpg",
-      "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement": "DI-6-alimentation-bioeconomie.jpg"
+      'Santé':                                   'DS-1-Sante.jpg',
+      'Culture, créativité, société':            'DI-2-culture-creativite-societe.jpg',
+      'Sécurité civile pour la société':        'DS-3-Securité_civile.jpg',
+      'Numérique, industrie, espace':            'DI-4-numerique-industrie-espace.jpg',
+      'Climat, énergie, mobilité':              'DI-5-climat-energie-mobilite.jpg',
+      'Alimentation, bioéconomie, ressources naturelles, agriculture et environnement':
+                                                'DI-6-alimentation-bioeconomie.jpg'
     };
 
-    // Vérifie que la liste existe et contient au moins un élément
     const domaine = thesis.domainesImpactListe?.[0];
-    if (domaine && mapping[domaine]) {
-      return `assets/images/${mapping[domaine]}`;
-    }
-    return "assets/images/default.jpg";
+    return domaine && mapping[domaine]
+      ? `assets/images/${mapping[domaine]}`
+      : 'assets/images/default.jpg';
   }
-  
+
   getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
     return thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0
       ? thesis.domainesImpactListe[0]
       : null;
   }
-  
-  getFirstDomaineWithMaxLength(thesis: { domainesImpactListe: string[] | null }, maxLength: number = 10): string | null {
+
+  getFirstDomaineWithMaxLength(
+    thesis: { domainesImpactListe: string[] | null },
+    maxLength = 10
+  ): string | null {
     if (thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0) {
       const domaine = thesis.domainesImpactListe[0];
-      return domaine.length > maxLength ? domaine.slice(0, maxLength) + "…" : domaine;
+      return domaine.length > maxLength ? domaine.slice(0, maxLength) + '…' : domaine;
     }
     return null;
   }
-
+  
+  removeFilter(filterName: string): void {
+    (this as any)[filterName] = '';   // réinitialise la propriété dynamique
+  }
 }

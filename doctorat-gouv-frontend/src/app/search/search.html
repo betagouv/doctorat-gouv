@@ -1,249 +1,389 @@
 <header class="fr-header" role="banner">
-	<div class="fr-container">
-		<div class="fr-header__body">
-			<!-- Brand -->
-			<div class="fr-header__brand">
-				<dsfr-header brand="République Française" serviceTitle="Doctorat.gouv.fr"
-					service-tagline="Plateforme nationale des thèses">
-				</dsfr-header>
-			</div>
+  <div class="fr-container">
+    <div class="fr-header__body">
 
-			<!-- Outils à droite -->
-			<div class="fr-header__tools">
-				<!-- Bouton Se connecter -->
-				<div class="fr-header__tools-links">
-					<ul class="fr-btns-group">
-						<li>
-							<a class="fr-btn" href="/connexion">
-								<!--                <span class="fr-icon-login-line" aria-hidden="false"></span>-->
-								<span aria-hidden="false"></span>
-								Se connecter
-							</a>
-						</li>
-					</ul>
-				</div>
+      <!-- Brand -->
+      <div class="fr-header__brand">
+        <dsfr-header brand="République Française"
+                     serviceTitle="Doctorat.gouv.fr"
+                     service-tagline="Plateforme nationale des thèses">
+        </dsfr-header>
+      </div>
 
-				<!-- Barre de recherche -->
-				<div class="fr-header__search">
-					<form class="fr-search-bar" role="search" (submit)="onSearchForHeader($event)">
-						<input class="fr-input" type="search" id="search" name="search" placeholder="Rechercher">
-						<button class="fr-btn" title="Rechercher" type="submit">
-							<span class="fr-icon-search-line" aria-hidden="true"></span>
-							<span class="fr-btn--text">Rechercher</span>
-						</button>
-					</form>
-				</div>
-			</div>
-		</div>
+      <!-- Outils à droite -->
+      <div class="fr-header__tools">
+        <!-- Bouton Se connecter -->
+        <div class="fr-header__tools-links">
+          <ul class="fr-btns-group">
+            <li>
+              <a class="fr-btn" href="/connexion">
+                <span aria-hidden="false"></span>
+                Se connecter
+              </a>
+            </li>
+          </ul>
+        </div>
 
-		<!-- Menu de navigation -->
-		<div class="fr-header__menu fr-modal" id="header-menu">
-			<nav class="fr-nav" role="navigation" aria-label="Menu principal">
-				<ul class="fr-nav__list">
-					<li class="fr-nav__item"><a class="fr-nav__link" href="/">Je m'informe</a></li>
-					<li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">Candidat</a></li>
-					<li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Entreprise</a></li>
-					<li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Partenaire</a></li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+        <!-- Barre de recherche -->
+        <div class="fr-header__search">
+          <form class="fr-search-bar" role="search"
+                (submit)="onSearchForHeader($event)">
+            <input class="fr-input"
+                   type="search"
+                   id="search"
+                   name="search"
+                   placeholder="Rechercher">
+            <button class="fr-btn" title="Rechercher" type="submit">
+              <span class="fr-icon-search-line" aria-hidden="true"></span>
+              <span class="fr-btn--text">Rechercher</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu de navigation -->
+    <div class="fr-header__menu fr-modal" id="header-menu">
+      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+        <ul class="fr-nav__list">
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/">Je m'informe</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">Candidat</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Entreprise</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Partenaire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </header>
 
+<!-- ==================== FORMULAIRE DE RECHERCHE ==================== -->
 <form class="search-form" (ngSubmit)="onSearch()">
+  <div class="form-content">
 
-	<div class="form-content">
+    <!-- Titre -->
+    <h1 class="fr-h1 fr-text--center">
+      Trouver une offre de thèse ou d’accompagnement
+    </h1>
 
-		<h1 class="fr-h1 fr-text--center">Trouver une offre de thèse ou d’accompagnement</h1>
+    <!-- Barre de recherche principale -->
+    <div class="fr-search-bar">
+      <label class="fr-label" for="query">Recherche</label>
+      <input class="fr-input"
+             type="search"
+             id="query"
+             name="query"
+             placeholder="Rechercher par titre ou mot clés"
+             [(ngModel)]="query">
+      <button class="fr-btn" title="Rechercher" type="submit">
+        <span class="fr-icon-search-line" aria-hidden="true"></span>
+        <span class="fr-btn--text">Rechercher</span>
+      </button>
+    </div>
 
-		<!-- Barre de recherche principale -->
-		<div class="fr-search-bar">
-			<label class="fr-label" for="query">Recherche</label>
-			<input class="fr-input" type="search" id="query" name="query" placeholder="Rechercher par titre ou mot clés"
-				[(ngModel)]="query">
-			<button class="fr-btn" title="Rechercher" type="submit">
-				<span class="fr-icon-search-line" aria-hidden="true"></span>
-				<span class="fr-btn--text">Rechercher</span>
-			</button>
-		</div>
+    <!-- ------------------------------------------------ -->
+    <!-- Ligne 1 : Discipline, Thématique, Localisation -->
+    <!-- ------------------------------------------------ -->
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
 
-		<!-- Filtres ligne 1 -->
-		<div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
-			<div class="fr-col-12 fr-col-md-4" *ngFor="let field of keys.slice(0, 3)">
-				<!-- <label class="fr-label visually-hidden" [for]="field">{{ labels[field] }}</label> -->
-				<select class="fr-select pill-select" [id]="field" [(ngModel)]="filters[field]" [name]="field">
-					<option value="">{{ labels[field] }}</option>
-					<option *ngFor="let opt of ['Option 1','Option 2','Option 3']">{{ opt }}</option>
-				</select>
-			</div>
-		</div>
+      <!-- Discipline -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="discipline"
+                name="discipline"
+                [(ngModel)]="discipline">
+          <option value="">Discipline</option>
+          <option *ngFor="let opt of disciplineOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
 
-		<!-- Filtres ligne 2 (affichés si showMoreFilters = true) -->
-		<div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w" *ngIf="showMoreFilters">
-			<div class="fr-col-12 fr-col-md-4" *ngFor="let field of keys.slice(3, 6)">
-				<!-- <label class="fr-label visually-hidden" [for]="field">{{ labels[field] }}</label> -->
-				<select class="fr-select pill-select" [id]="field" [(ngModel)]="filters[field]" [name]="field">
-					<option value="">{{ labels[field] }}</option>
-					<option *ngFor="let opt of ['Option 1','Option 2','Option 3']">{{ opt }}</option>
-				</select>
-			</div>
-		</div>
+      <!-- Thématique -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="thematique"
+                name="thematique"
+                [(ngModel)]="thematique">
+          <option value="">Thématique</option>
+          <option *ngFor="let opt of thematiqueOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
 
-		<!-- Actions -->
-		<div class="fr-grid-row fr-mt-2w actions-row">
-			<!-- Lien Plus/Moins de filtres aligné à gauche -->
-			<div class="fr-col-12 fr-col-md-6 fr-text--left">
-				<a href="javascript:void(0)" class="fr-link toggle-filters" (click)="toggleFilters()">
-					{{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
-				</a>
-			</div>
+      <!-- Localisation -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="localisation"
+                name="localisation"
+                [(ngModel)]="localisation">
+          <option value="">Localisation géographique</option>
+          <option *ngFor="let opt of localisationOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+    </div>
 
-			<!-- Lien Comprendre les filtres + Bouton Rechercher alignés à droite -->
-			<div class="fr-col-12 fr-col-md-6 fr-text--right">
-				<!--				<a class="fr-link help-filters" href="/a-propos-des-filtres">Comprendre les filtres</a>-->
-				<button class="fr-btn fr-btn--lg fr-btn--primary fr-ml-2w" type="submit">
-					Rechercher
-				</button>
-			</div>
-		</div>
+    <!-- ------------------------------------------------ -->
+    <!-- Ligne 2 : Laboratoire, École (affichée si showMoreFilters) -->
+    <!-- ------------------------------------------------ -->
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w"
+         *ngIf="showMoreFilters">
 
-	</div>
+      <!-- Laboratoire -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="laboratoire"
+                name="laboratoire"
+                [(ngModel)]="laboratoire">
+          <option value="">Laboratoire de recherche</option>
+          <option *ngFor="let opt of laboratoireOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
 
+      <!-- École -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="ecole"
+                name="ecole"
+                [(ngModel)]="ecole">
+          <option value="">Établissement diplômant</option>
+          <option *ngFor="let opt of ecoleOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Vous pouvez ajouter d’autres filtres ici sans toucher à la logique -->
+    </div>
+
+    <!-- ------------------------------------------------ -->
+    <!-- Actions (plus/moins de filtres, bouton rechercher) -->
+    <!-- ------------------------------------------------ -->
+    <div class="fr-grid-row fr-mt-2w actions-row">
+      <div class="fr-col-12 fr-col-md-6 fr-text--left">
+        <a href="javascript:void(0)"
+           class="fr-link toggle-filters"
+           (click)="toggleFilters()">
+          {{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
+        </a>
+      </div>
+
+      <div class="fr-col-12 fr-col-md-6 fr-text--right">
+        <!-- <a class="fr-link help-filters" href="/a-propos-des-filtres">Comprendre les filtres</a> -->
+        <button class="fr-btn fr-btn--lg fr-btn--primary fr-ml-2w"
+                type="submit">
+          Rechercher
+        </button>
+      </div>
+    </div>
+
+  </div>
 </form>
 
+<!-- ==================== SECTION DES RESULTATS ==================== -->
 <main class="fr-container fr-py-4w search-main">
 
-	<!-- Tags actifs -->
-	<section class="fr-tags-group fr-mt-4w" *ngIf="hasActiveFilters()">
-		<p class="fr-text--bold">Filtres actifs :</p>
-		<ul class="fr-tags-group__list">
-			<ng-container *ngFor="let key of keys">
-				<li *ngIf="filters[key]">
-					<span class="fr-tag">
-						{{ labels[key] }} : {{ filters[key] }}
-						<button class="fr-tag__btn" (click)="removeFilter(key)" title="Supprimer">×</button>
-					</span>
-				</li>
-			</ng-container>
-		</ul>
-	</section>
+  <!-- ==== TAGS ACTIFS ==== -->
+  <section class="fr-tags-group fr-mt-4w"
+           *ngIf="discipline || thematique || localisation || laboratoire || ecole">
+    <p class="fr-text--bold">Filtres actifs :</p>
+    <ul class="fr-tags-group__list">
 
-	<section class="fr-mt-4w" *ngIf="results.length">
-		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-			<span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span> de recherche
-		</p>
-	
-		<!-- Vue liste avec cards -->
-		<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-			<div class="fr-col-12 fr-col-md-6 fr-col-lg-4" *ngFor="let thesis of results">
-				<div class="fr-card fr-card--shadow fr-card--sm">
-					<!-- En-tête avec image -->
-					<div class="fr-card__img">
-						<img [src]="getImageForThesis(thesis)" alt="Illustration de la thèse" />
-						<!-- Badge vert fluorescent pour le domaine -->
-						<span class="fr-tag badge badge-green" *ngIf="getFirstDomaine(thesis)">
-							{{ getFirstDomaineWithMaxLength(thesis, 60) }}
-						</span>
-						<!-- Badge rose fluorescent pour la spécialité -->
-						<span class="fr-tag badge badge-pink" *ngIf="thesis?.specialite">
-							{{ thesis.specialite }}
-						</span>
-		
-					</div>
-					<div class="fr-card__body">
-						<h3 class="fr-card__title custom-blue">{{ thesis.theseTitre }}</h3><br>
-						<p class="fr-card__desc">
-							<!--							Spécialité : {{ thesis.specialite }}<br>-->
-							<!--							Domaine domainesImpact : {{ thesis.specialite }}<br>-->
-							<!--							Domaine domainesImpact list : {{ thesis.domainesImpactListe?.[0] }}<br><br>-->
-							{{ getResumeOrFallback(thesis, 30) }}<br><br>
-		
-							<!-- Affichage des mots clés -->
-							<ng-container *ngIf="thesis.motsCles">
-								<strong>Mots clés :</strong>
-								<div class="fr-tags-group fr-tags-group--column">
-									<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
-										{{ entry[1] }}
-									</span>
-								</div>
-							</ng-container>
-						</p>
-					</div>
-		
-					<!-- Footer avec flèche -->
-					<div class="fr-card__footer">
-						<a [routerLink]="['/proposition', thesis.id]" class="arrow-link">Voir détail</a>
-					</div>
-		
-				</div>
-			</div>
-		
-			<div class="fr-container fr-my-4w pagination-fixed" >
-			<nav class="fr-pagination" role="navigation" aria-label="Pagination" *ngIf="totalPages > 1">
-				<ul class="fr-pagination__list">
-					<!-- Bouton précédent -->
-					<li>
-					  <button class="fr-pagination__link"
-					          (click)="goToPage(currentPage - 1)"
-					          [disabled]="currentPage === 0"
-					          aria-label="Page précédente">
-					    <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
-					    <span class="fr-mx-1w">Précédent</span>
-					  </button>
-					</li>
-		
-					<!-- Première page -->
-					<li>
-						<button class="fr-pagination__link" (click)="goToPage(0)"
-							[class.fr-pagination__link--current]="currentPage === 0"
-							[attr.aria-current]="currentPage === 0 ? 'page' : null">
-							1
-						</button>
-					</li>
-		
-					<!-- Ellipse avant -->
-					<li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
-		
-					<!-- Pages autour de la courante -->
-					<li *ngFor="let i of getPagesAround()">
-						<button class="fr-pagination__link" (click)="goToPage(i)"
-							[class.fr-pagination__link--current]="currentPage === i"
-							[attr.aria-current]="currentPage === i ? 'page' : null">
-							{{ i + 1 }}
-						</button>
-					</li>
-		
-					<!-- Ellipse après -->
-					<li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
-		
-					<!-- Dernière page -->
-					<li>
-						<button class="fr-pagination__link" (click)="goToPage(totalPages - 1)"
-							[class.fr-pagination__link--current]="currentPage === totalPages - 1"
-							[attr.aria-current]="currentPage === totalPages - 1 ? 'page' : null">
-							{{ totalPages }}
-						</button>
-					</li>
-		
-					<!-- Bouton suivant -->
-					<li>
-					  <button class="fr-pagination__link"
-					          (click)="goToPage(currentPage + 1)"
-					          [disabled]="currentPage === totalPages - 1"
-					          aria-label="Page suivante">
-					    <span class="fr-mx-1w">Suivant</span>
-					    <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
-					  </button>
-					</li>
-				</ul>
-			</nav>
-			</div>
-		</div>
-	
-		<!-- Vue carte -->
-		<div *ngIf="view === 'carte'" class="fr-mt-2w">
-			<p>Vue carte (à implémenter)</p>
-		</div>
-	</section>
+      <li *ngIf="discipline">
+        <span class="fr-tag">
+          Discipline : {{ discipline }}
+          <button class="fr-tag__btn"
+                  (click)="removeFilter('discipline')"
+                  title="Supprimer">×</button>
+        </span>
+      </li>
 
+      <li *ngIf="thematique">
+        <span class="fr-tag">
+          Thématique : {{ thematique }}
+          <button class="fr-tag__btn"
+                  (click)="removeFilter('thematique')"
+                  title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="localisation">
+        <span class="fr-tag">
+          Localisation : {{ localisation }}
+          <button class="fr-tag__btn"
+                  (click)="removeFilter('localisation')"
+                  title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="laboratoire">
+        <span class="fr-tag">
+          Laboratoire : {{ laboratoire }}
+          <button class="fr-tag__btn"
+                  (click)="removeFilter('laboratoire')"
+                  title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="ecole">
+        <span class="fr-tag">
+          Établissement : {{ ecole }}
+          <button class="fr-tag__btn"
+                  (click)="removeFilter('ecole')"
+                  title="Supprimer">×</button>
+        </span>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- ==== LISTE DES THÈSES ==== -->
+  <section class="fr-mt-4w" *ngIf="results.length">
+
+    <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+      <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
+      de recherche
+    </p>
+
+    <!-- ------- VUE LISTE (cards) ------- -->
+    <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+
+      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+           *ngFor="let thesis of results">
+
+        <div class="fr-card fr-card--shadow fr-card--sm">
+
+          <!-- Image + badges -->
+          <div class="fr-card__img">
+            <img [src]="getImageForThesis(thesis)"
+                 alt="Illustration de la thèse" />
+
+            <!-- Domaine (badge vert) -->
+            <span class="fr-tag badge badge-green"
+                  *ngIf="getFirstDomaine(thesis)">
+              {{ getFirstDomaineWithMaxLength(thesis, 60) }}
+            </span>
+
+            <!-- Spécialité (badge rose) -->
+            <span class="fr-tag badge badge-pink"
+                  *ngIf="thesis?.specialite">
+              {{ thesis.specialite }}
+            </span>
+          </div>
+
+          <!-- Corps de la card -->
+          <div class="fr-card__body">
+            <h3 class="fr-card__title custom-blue">
+              {{ thesis.theseTitre }}
+            </h3><br/>
+
+            <p class="fr-card__desc">
+              {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
+
+              <!-- Mots‑clés -->
+              <ng-container *ngIf="thesis.motsCles">
+                <strong>Mots clés :</strong>
+                <div class="fr-tags-group fr-tags-group--column">
+                  <span class="fr-tag violet"
+                        *ngFor="let entry of getEntries(thesis.motsCles)">
+                    {{ entry[1] }}
+                  </span>
+                </div>
+              </ng-container>
+            </p>
+          </div>
+
+          <!-- Footer avec lien détaillé -->
+          <div class="fr-card__footer">
+            <a [routerLink]="['/proposition', thesis.id]" class="arrow-link">
+              Voir détail
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ===== PAGINATION ===== -->
+      <div class="fr-container fr-my-4w pagination-fixed">
+        <nav class="fr-pagination"
+             role="navigation"
+             aria-label="Pagination"
+             *ngIf="totalPages > 1">
+
+          <ul class="fr-pagination__list">
+
+            <!-- Précédent -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(currentPage - 1)"
+                      [disabled]="currentPage === 0"
+                      aria-label="Page précédente">
+                <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+                <span class="fr-mx-1w">Précédent</span>
+              </button>
+            </li>
+
+            <!-- Première page -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(0)"
+                      [class.fr-pagination__link--current]="currentPage === 0"
+                      [attr.aria-current]="currentPage === 0 ? 'page' : null">
+                1
+              </button>
+            </li>
+
+            <!-- Ellipse avant -->
+            <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+
+            <!-- Pages autour de la courante -->
+            <li *ngFor="let i of getPagesAround()">
+              <button class="fr-pagination__link"
+                      (click)="goToPage(i)"
+                      [class.fr-pagination__link--current]="currentPage === i"
+                      [attr.aria-current]="currentPage === i ? 'page' : null">
+                {{ i + 1 }}
+              </button>
+            </li>
+
+            <!-- Ellipse après -->
+            <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+
+            <!-- Dernière page -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(totalPages - 1)"
+                      [class.fr-pagination__link--current]="currentPage === totalPages - 1"
+                      [attr.aria-current]="currentPage === totalPages - 1 ? 'page' : null">
+                {{ totalPages }}
+              </button>
+            </li>
+
+            <!-- Suivant -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(currentPage + 1)"
+                      [disabled]="currentPage === totalPages - 1"
+                      aria-label="Page suivante">
+                <span class="fr-mx-1w">Suivant</span>
+                <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+              </button>
+            </li>
+
+          </ul>
+        </nav>
+      </div>
+
+    </div>
+
+    <!-- ------- VUE CARTE (placeholder) ------- -->
+    <div *ngIf="view === 'carte'" class="fr-mt-2w">
+      <p>Vue carte (à implémenter)</p>
+    </div>
+
+  </section>
 </main>
