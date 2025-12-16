@@ -130,7 +130,7 @@
 
 	<section class="fr-mt-4w" *ngIf="results.length">
 		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-			<span class="fr-text--bold custom-bold">{{ results.length }} résultats</span> de recherche
+			<span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span> de recherche
 		</p>
 	
 		<!-- Vue liste avec cards -->
@@ -160,7 +160,7 @@
 		
 							<!-- Affichage des mots clés -->
 							<ng-container *ngIf="thesis.motsCles">
-								Mots clés :
+								<strong>Mots clés :</strong>
 								<div class="fr-tags-group fr-tags-group--column">
 									<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
 										{{ entry[1] }}

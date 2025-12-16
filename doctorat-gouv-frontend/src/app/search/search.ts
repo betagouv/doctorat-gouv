@@ -32,6 +32,7 @@ export class Search {
   pageSize: number = 27;
   currentPage: number = 0;
   totalPages: number = 0;
+  totalResults: number = 0; // 🔹 nombre total de résultats
 	
   filters = {
     discipline: '',
@@ -72,6 +73,7 @@ export class Search {
         this.results = data.content;
         this.currentPage = data.number;
         this.totalPages = data.totalPages;
+		this.totalResults = data.totalElements // 🔹 nombre total de résultats (global)
 		// 🔹 Scroll jusqu’au compteur de résultats
 		document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
