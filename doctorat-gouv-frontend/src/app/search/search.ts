@@ -55,17 +55,17 @@ export class Search implements OnInit {
   query = '';
 
   discipline = '';
-  thematique = '';
   localisation = '';
   laboratoire = '';
   ecole = '';
+  defisSociete = '';
 
   /* ------------------- Options affichées dans chaque <select> ------------------- */
   disciplineOpts: string[] = [];
-  thematiqueOpts: string[] = [];
   localisationOpts: string[] = [];
   laboratoireOpts: string[] = [];
   ecoleOpts: string[] = [];
+  defisSocieteOpts: string[] = [];
 
   /* ------------------- UI ------------------- */
   showMoreFilters = false;        // affichage de la deuxième rangée de filtres
@@ -89,10 +89,10 @@ export class Search implements OnInit {
     this.filterService.getAllOptions().subscribe({
       next: (data: AllFilterOptions) => {
         this.disciplineOpts   = data.discipline;
-        this.thematiqueOpts   = data.thematique;
         this.localisationOpts = data.localisation;
         this.laboratoireOpts  = data.laboratoire;
         this.ecoleOpts        = data.ecole;
+		this.defisSocieteOpts = data.defisSociete;
       },
       error: err => {
         console.error('Erreur lors du chargement des filtres', err);
@@ -108,10 +108,10 @@ export class Search implements OnInit {
 
     // Chaque champ n’est ajouté que s’il possède une valeur non vide
     if (this.discipline)   active['discipline']   = this.discipline;
-    if (this.thematique)   active['thematique']   = this.thematique;
     if (this.localisation) active['localisation'] = this.localisation;
     if (this.laboratoire)  active['laboratoire']  = this.laboratoire;
     if (this.ecole)        active['ecole']        = this.ecole;
+	if (this.defisSociete) active['defisSociete'] = this.defisSociete;
 
     // Le champ de recherche libre (titre / mots‑clés)
     if (this.query?.trim()) {
@@ -190,7 +190,7 @@ export class Search implements OnInit {
     this.showMoreFilters = !this.showMoreFilters;
   }
 
-  /** Transforme un dictionnaire de mots‑clés en tableau d’entrée */
+  /** Transforme un dictionnaire de mots clés en tableau d’entrée */
   getEntries(motsCles: Record<string, string> | null): [string, string][] {
     return motsCles ? Object.entries(motsCles) : [];
   }

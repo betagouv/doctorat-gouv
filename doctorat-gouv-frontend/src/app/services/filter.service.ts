@@ -9,10 +9,10 @@ import { environment } from '../../environments/environment';
    ------------------------------------------------------------------ */
 export interface AllFilterOptions {
   discipline:   string[];
-  thematique:   string[];
   localisation: string[];
   laboratoire:  string[];
   ecole:        string[];
+  defisSociete: string[];
 }
 
 /* ------------------------------------------------------------------
@@ -33,17 +33,4 @@ export class FilterService {
     return this.http.get<AllFilterOptions>(`${this.apiBase}/all`);
   }
 
-  /* --------------------------------------------------------------
-     Variante 2 – plusieurs appels séparés (décommenter si besoin)
-     --------------------------------------------------------------
-  getAllOptions(): Observable<AllFilterOptions> {
-    return forkJoin({
-      discipline:   this.http.get<string[]>(`${this.apiBase}/discipline`),
-      thematique:   this.http.get<string[]>(`${this.apiBase}/thematique`),
-      localisation: this.http.get<string[]>(`${this.apiBase}/localisation`),
-      laboratoire:  this.http.get<string[]>(`${this.apiBase}/laboratoire`),
-      ecole:        this.http.get<string[]>(`${this.apiBase}/ecole`)
-    });
-  }
-  */
 }

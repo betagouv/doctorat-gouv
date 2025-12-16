@@ -24,10 +24,6 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
     @Query("SELECT DISTINCT p.specialite FROM PropositionThese p WHERE p.specialite IS NOT NULL")
     List<String> findDistinctDisciplines();
 
-    // @Query("SELECT DISTINCT p.thematiqueRecherche FROM PropositionThese p WHERE p.thematiqueRecherche IS NOT NULL")
-    @Query("SELECT DISTINCT p.domaine FROM PropositionThese p WHERE p.domaine IS NOT NULL")
-    List<String> findDistinctThematics();
-
     @Query("SELECT DISTINCT p.uniteRechercheVille FROM PropositionThese p WHERE p.uniteRechercheVille IS NOT NULL")
     List<String> findDistinctLocalisations();
 
@@ -36,5 +32,13 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 
     @Query("SELECT DISTINCT p.etablissementLibelle FROM PropositionThese p WHERE p.etablissementLibelle IS NOT NULL")
     List<String> findDistinctEcoles();
+    
+    /** Valeurs distinctes de domainesImpactListe */
+    @Query("SELECT DISTINCT d FROM PropositionThese p JOIN p.domainesImpactListe d")
+    List<String> findDistinctDomainesImpact();
+
+    /** Valeurs distinctes de objectifsDeveloppementDurableListe */
+    @Query("SELECT DISTINCT o FROM PropositionThese p JOIN p.objectifsDeveloppementDurableListe o")
+    List<String> findDistinctObjectifsDurables();
 
 }

@@ -8,8 +8,8 @@ import java.util.List;
  */
 public record AllFilterOptions(
         List<String> discipline,
-        List<String> thematique,
         List<String> localisation,
         List<String> laboratoire,
-        List<String> ecole
+        List<String> ecole,
+        List<String> defisSociete
 ) {}

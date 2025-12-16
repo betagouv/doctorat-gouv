@@ -86,39 +86,30 @@
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
 
       <!-- Discipline -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="discipline"
-                name="discipline"
-                [(ngModel)]="discipline">
-          <option value="">Discipline</option>
-          <option *ngFor="let opt of disciplineOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Thématique -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="thematique"
-                name="thematique"
-                [(ngModel)]="thematique">
-          <option value="">Thématique</option>
-          <option *ngFor="let opt of thematiqueOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Localisation -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="localisation"
-                name="localisation"
-                [(ngModel)]="localisation">
-          <option value="">Localisation géographique</option>
-          <option *ngFor="let opt of localisationOpts" [value]="opt">
+	<div class="fr-col-12 fr-col-md-4">
+		<select class="fr-select pill-select" id="discipline" name="discipline" [(ngModel)]="discipline">
+			<option value="">Discipline</option>
+			<option *ngFor="let opt of disciplineOpts" [value]="opt">
+				{{ opt }}
+			</option>
+		</select>
+	</div>
+	
+	<!-- Défis de société -->
+	<div class="fr-col-12 fr-col-md-4">
+		<select class="fr-select pill-select" id="defisSociete" name="defisSociete" [(ngModel)]="defisSociete">
+			<option value="">Défis de société</option>
+			<option *ngFor="let opt of defisSocieteOpts" [value]="opt">
+				{{ opt }}
+			</option>
+		</select>
+	</div>
+	
+	<!-- Localisation -->
+	<div class="fr-col-12 fr-col-md-4">
+		<select class="fr-select pill-select" id="localisation" name="localisation" [(ngModel)]="localisation">
+			<option value="">Localisation géographique</option>
+			<option *ngFor="let opt of localisationOpts" [value]="opt">
             {{ opt }}
           </option>
         </select>
@@ -189,56 +180,46 @@
 
   <!-- ==== TAGS ACTIFS ==== -->
   <section class="fr-tags-group fr-mt-4w"
-           *ngIf="discipline || thematique || localisation || laboratoire || ecole">
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole">
     <p class="fr-text--bold">Filtres actifs :</p>
-    <ul class="fr-tags-group__list">
-
-      <li *ngIf="discipline">
-        <span class="fr-tag">
-          Discipline : {{ discipline }}
-          <button class="fr-tag__btn"
-                  (click)="removeFilter('discipline')"
-                  title="Supprimer">×</button>
-        </span>
-      </li>
-
-      <li *ngIf="thematique">
-        <span class="fr-tag">
-          Thématique : {{ thematique }}
-          <button class="fr-tag__btn"
-                  (click)="removeFilter('thematique')"
-                  title="Supprimer">×</button>
-        </span>
-      </li>
-
-      <li *ngIf="localisation">
-        <span class="fr-tag">
-          Localisation : {{ localisation }}
-          <button class="fr-tag__btn"
-                  (click)="removeFilter('localisation')"
-                  title="Supprimer">×</button>
-        </span>
-      </li>
-
-      <li *ngIf="laboratoire">
-        <span class="fr-tag">
-          Laboratoire : {{ laboratoire }}
-          <button class="fr-tag__btn"
-                  (click)="removeFilter('laboratoire')"
-                  title="Supprimer">×</button>
-        </span>
-      </li>
-
-      <li *ngIf="ecole">
-        <span class="fr-tag">
-          Établissement : {{ ecole }}
-          <button class="fr-tag__btn"
-                  (click)="removeFilter('ecole')"
-                  title="Supprimer">×</button>
-        </span>
-      </li>
-
-    </ul>
+	<ul class="fr-tags-group__list">
+	
+		<li *ngIf="discipline">
+			<span class="fr-tag">
+				Discipline : {{ discipline }}
+				<button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="defisSociete">
+			<span class="fr-tag">
+				Défis société : {{ defisSociete }}
+				<button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="localisation">
+			<span class="fr-tag">
+				Localisation : {{ localisation }}
+				<button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="laboratoire">
+			<span class="fr-tag">
+				Laboratoire : {{ laboratoire }}
+				<button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="ecole">
+			<span class="fr-tag">
+				Établissement : {{ ecole }}
+				<button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+	</ul>
   </section>
 
   <!-- ==== LISTE DES THÈSES ==== -->
