@@ -1,62 +1,80 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.util.Map;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class PropositionTheseService {
 
-	private final PropositionTheseRepository propositionTheseRepository;
+    private final PropositionTheseRepository propositionTheseRepository;
 
-	public PropositionTheseService(PropositionTheseRepository propositionTheseRepository) {
-		this.propositionTheseRepository = propositionTheseRepository;
-	}
+    public PropositionTheseService(PropositionTheseRepository propositionTheseRepository) {
+        this.propositionTheseRepository = propositionTheseRepository;
+    }
 
-	public Page<PropositionTheseDto> search(Map<String, String> filters, int page, int size) {
-	    Specification<PropositionThese> criteria = buildSpecification(filters);
-	    Pageable pageable = PageRequest.of(page, size);
+    /** Recherche paginée avec filtres dynamiques */
+    public Page<PropositionTheseDto> search(Map<String, String> filters,
+                                            int page,
+                                            int size) {
+        Specification<PropositionThese> spec = buildSpecification(filters);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateCreation"));
 
-	    Page<PropositionThese> entities = propositionTheseRepository.findAll(criteria, pageable);
+        Page<PropositionThese> entities = propositionTheseRepository.findAll(spec, pageable);
+        return entities.map(PropositionTheseMapper::toDto);
+    }
 
-	    return entities.map(PropositionTheseMapper::toDto); 
-	}
+    /** Construit la Specification à partir des paramètres reçus */
+    private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
+            filters.forEach((key, value) -> {
+                if (value == null || value.isBlank()) return; // ignore vide
 
-	private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
-		return (root, query, cb) -> {
-			Predicate predicate = cb.conjunction();
+                switch (key) {
+                    case "discipline" -> // domaine scientifique (ex. « Sciences », « Médecine », …)
+                            predicates.add(cb.equal(root.get("specialite"), value));
 
-			filters.forEach((key, value) -> {
-				if (value != null && !value.isBlank()) {
-					switch (key) {
-					case "discipline" -> predicate.getExpressions().add(cb.equal(root.get("specialite"), value));
-					case "localisation" ->
-						predicate.getExpressions().add(cb.equal(root.get("uniteRechercheVille"), value));
-					case "laboratoire" -> predicate.getExpressions()
-							.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), "%" + value.toLowerCase() + "%"));
-					case "ecole" -> predicate.getExpressions().add(cb.equal(root.get("ecoleDoctoralNumero"), value));
-					case "financement" -> predicate.getExpressions().add(cb.equal(root.get("financementEtat"), value));
-					case "contrat" ->
-						predicate.getExpressions().add(cb.equal(root.get("candidatureEnLignePossible"), value));
-					default -> {
-						// ignore unknown filters
-					}
-					}
-				}
-			});
+                    case "thematique" -> // thématique de recherche
+                            predicates.add(cb.equal(root.get("domaine"), value)); // thematiqueRecherche
 
-			return predicate;
-		};
-	}
+                    case "localisation" -> // ville du laboratoire / unité de recherche
+                            predicates.add(cb.equal(root.get("uniteRechercheVille"), value));
+
+                    case "laboratoire" -> // libellé du laboratoire (recherche partielle, insensible à la casse)
+                            predicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")),
+                                           "%" + value.toLowerCase() + "%"));
+
+                    case "ecole" -> // numéro de l’école doctorale (ou libellé si tu préfères)
+                            predicates.add(cb.equal(root.get("etablissementLibelle"), value));
+
+                    case "query" -> {
+                        // Recherche texte libre sur le titre et le résumé (case‑insensitive)
+                        String pattern = "%" + value.toLowerCase() + "%";
+                        Predicate title   = cb.like(cb.lower(root.get("theseTitre")), pattern);
+                        Predicate resume  = cb.like(cb.lower(root.get("resume")), pattern);
+                        Predicate keywords = cb.like(cb.lower(root.get("resumeAnglais")), pattern);
+                        predicates.add(cb.or(title, resume, keywords));
+                    }
+
+                    // Si tu ajoutes d’autres filtres (financement, contrat, …) les gérer ici
+                    default -> {
+                        // ignore les clés inconnues
+                    }
+                }
+            });
+
+            // Combine tous les prédicats avec AND
+            return predicates.isEmpty() ? cb.conjunction()
+                                        : cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
 }

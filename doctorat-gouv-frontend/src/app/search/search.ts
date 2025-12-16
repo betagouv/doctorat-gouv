@@ -102,16 +102,21 @@ export class Search implements OnInit {
   }
 
   /* ------------------- Recherche ------------------- */
-  /** Construit l’objet de recherche à partir des champs remplis */
+  /** Construit l’objet de filtres à partir des champs remplis */
   private buildActiveFilters(): Record<string, string> {
     const active: Record<string, string> = {};
 
+    // Chaque champ n’est ajouté que s’il possède une valeur non vide
     if (this.discipline)   active['discipline']   = this.discipline;
     if (this.thematique)   active['thematique']   = this.thematique;
     if (this.localisation) active['localisation'] = this.localisation;
     if (this.laboratoire)  active['laboratoire']  = this.laboratoire;
     if (this.ecole)        active['ecole']        = this.ecole;
-    if (this.query)        active['query']        = this.query;
+
+    // Le champ de recherche libre (titre / mots‑clés)
+    if (this.query?.trim()) {
+      active['query'] = this.query.trim();
+    }
 
     return active;
   }
