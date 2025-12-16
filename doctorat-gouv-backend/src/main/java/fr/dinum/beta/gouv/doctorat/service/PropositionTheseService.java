@@ -82,11 +82,10 @@ public class PropositionTheseService {
                 String pattern = "%" + lowered + "%";
 
                 switch (key) {
-                    case "discipline" -> andPredicates.add(cb.equal(root.get("domaineScientifique"), value));
-                    case "thematique" -> andPredicates.add(cb.equal(root.get("thematiqu​eRecherche"), value));
+                    case "discipline" -> andPredicates.add(cb.equal(root.get("specialite"), value));
                     case "localisation" -> andPredicates.add(cb.equal(root.get("uniteRechercheVille"), value));
                     case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
-                    case "ecole" -> andPredicates.add(cb.equal(root.get("ecoleDoctoralNumero"), value));
+                    case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
 
                     // -------------------------------------------------
                     // Nouveau filtre « Défis de société »
