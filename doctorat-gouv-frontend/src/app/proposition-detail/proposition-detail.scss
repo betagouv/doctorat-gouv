@@ -1,0 +1,77 @@
+.page-background {
+/*  background-color: #0053b3; // bleu DSFR
+  min-height: 100vh;
+  padding: 2rem 0;*/
+  background-image: url('/assets/images/default.jpg');
+  // background-image: url('/assets/images/DS-1-Sante.jpg');
+  background-size: cover;       // l’image couvre toute la zone
+  background-position: center;  // centrée
+  background-repeat: no-repeat; // pas de répétition
+  min-height: 100vh;            // occupe toute la hauteur de la fenêtre
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  //border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  
+  &:hover {
+     transform: translateY(-5px); // léger décalage vers le haut
+     box-shadow: 0 10px 20px rgb(255, 255, 255); // ombre plus marquée
+   }
+   
+}
+
+.shadow {
+  box-shadow: 0 50px 46px rgba(0,0,0,0.15);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: rgb(0, 0, 128);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  color: #0053b3;
+}
+
+.badge {
+  display: inline-block;
+  background: #0053b3;
+  color: #fff;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.separator {
+  border: none;
+  border-top: 2px solid #eee;
+  margin: 1.5rem 0;
+}
+
+.icon {
+  margin-right: 0.5rem;
+}
+
+.paragraph {
+  text-align: justify;     // ajuste le texte comme un vrai paragraphe
+  line-height: 1.6;        // espace entre les lignes pour la lisibilité
+  margin-bottom: 1rem;     // espace entre les paragraphes
+  font-size: 1rem;         // taille standard
+  color: #333;             // couleur sobre
+}
+

@@ -31,5 +31,13 @@ export class PropositionTheseService {
 
 	  return this.http.get<PageResponse<PropositionTheseDto>>(this.baseUrl, { params });
 	}
+	
+	/** ------------------------------------------------------------------
+	 *  Récupérer une thèse par son ID
+	 * ------------------------------------------------------------------ */
+	getThesisById(id: number): Observable<PropositionTheseDto> {
+	  const url = `${this.baseUrl}/proposition?id=${id}`;
+	  return this.http.get<PropositionTheseDto>(url);
+	}
 
 }

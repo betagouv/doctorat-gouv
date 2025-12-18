@@ -3,6 +3,7 @@ package fr.dinum.beta.gouv.doctorat.service;
 import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import jakarta.persistence.criteria.*;
@@ -134,5 +135,19 @@ public class PropositionTheseService {
                     ? cb.conjunction()
                     : cb.and(andPredicates.toArray(Predicate[]::new));
         };
+    }
+    
+    /**
+     * Retourne la proposition de thèse correspondant à l’identifiant fourni.
+     *
+     * @param id identifiant numérique de la thèse
+     * @return DTO de la thèse
+     * @throws ResourceNotFoundException si aucune thèse n’est trouvée
+     */
+    public PropositionTheseDto findById(Long id) {
+        Optional<PropositionThese> opt = repo.findById(id);
+        return opt.map(PropositionTheseMapper::toDto)               // mapper entité → DTO
+                  .orElseThrow(() -> new ResourceNotFoundException(
+                          "Proposition de thèse avec l’id " + id + " introuvable"));
     }
 }

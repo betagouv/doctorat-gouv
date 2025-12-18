@@ -71,18 +71,30 @@
     <!-- ------------------------------------------------ -->
     <!-- Barre de recherche principale (texte libre) -->
     <!-- ------------------------------------------------ -->
-    <div class="fr-search-bar">
-      <label class="fr-label" for="query">Recherche</label>
+	<div class="custom-search-bar">
+	  <div class="custom-input-wrapper">
+<!--	    <span class="custom-icon">🔍</span>-->
+		<span class="custom-icon">
+		  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+		    <circle cx="11" cy="11" r="8"></circle>
+		    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+		  </svg>
+		</span>
 
-      <!-- ngModelChange déclenche la recherche à chaque saisie -->
-      <input class="fr-input"
-             type="search"
-             id="query"
-             name="query"
-             placeholder="Rechercher par titre ou mot clés"
-             [(ngModel)]="query"
-             (ngModelChange)="onFilterChange()">
-    </div>
+	    <input type="search"
+	           id="query"
+	           name="query"
+	           class="custom-input"
+	           placeholder="Rechercher par titre ou mot clés"
+	           [(ngModel)]="query"
+	           (ngModelChange)="onFilterChange()"
+	           aria-label="Champ de recherche">
+	  </div>
+	</div>
+
+
+
+
 
     <!-- ------------------------------------------------ -->
     <!-- Ligne 1 : Discipline – Défis de société – Localisation -->
@@ -275,7 +287,7 @@
             <p class="fr-card__desc">
               {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
 
-              <!-- Mots‑clés -->
+              <!-- Mots clés -->
               <ng-container *ngIf="thesis.motsCles">
                 <strong>Mots clés :</strong>
                 <div class="fr-tags-group fr-tags-group--column">
@@ -289,11 +301,12 @@
           </div>
 
           <!-- Footer avec lien détaillé -->
-          <div class="fr-card__footer">
-            <a [routerLink]="['/proposition', thesis.id]" class="arrow-link">
-              Voir détail
-            </a>
-          </div>
+		  <div class="fr-card__footer">
+		    <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+		      Voir détail
+		    </a>
+		  </div>
+
 
         </div>
       </div>

@@ -1,0 +1,76 @@
+<div class="page-background" *ngIf="thesis">
+  <div class="container">
+
+    <!-- Première card -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h2 class="card-title">
+          📘{{ thesis?.theseTitre }}
+        </h2>
+
+        <p><span class="icon">🏛️</span> Etablissement : {{ thesis?.etablissementLibelle }}</p>
+        <p><span class="icon">🎓</span> École doctorale : {{ thesis?.ecoleDoctoralNumero }}</p>
+        <p><span class="icon">🔬</span> Laboratoire de recherche : {{ thesis?.uniteRechercheLibelle }}</p>
+        <p><span class="icon">👤</span> Direction de la thèse : {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}</p>
+        <p><span class="icon">💶</span> Financement : {{ thesis?.financementEtat || 'Non précisé' }}</p>
+        <p><span class="icon">📅</span> Début de la thèse : {{ thesis?.dateDebutThese | date:'d MMMM y' }}</p>
+        <p><span class="icon">⏳</span> Date limite de candidature : {{ thesis?.dateLimiteCandidature | date:'d MMMM y à HH:mm' }}</p>
+
+        <div class="mt-3">
+          <strong>🔑 Mots clés :</strong><br>
+          <span *ngFor="let mot of thesis?.motsCles | keyvalue" class="badge">
+            {{ mot.value }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deuxième card -->
+    <div class="card shadow">
+      <div class="card-body">
+        <h2 class="card-title">📝 Résumé</h2>
+        <p class="paragraph">{{ thesis?.resume }}</p>
+
+        <h3 class="section-title">🎯 Objectif et Contexte</h3>
+        <p class="paragraph">{{ thesis?.objectif }}</p>
+        <p class="paragraph">{{ thesis?.contexte }}</p>
+		
+		<h3 class="section-title">🧑‍🏫 Précision sur l'encadrement</h3>
+		<p class="paragraph">{{ thesis?.modalitesEncadrement }}</p>
+
+		<hr class="separator">
+
+		<h3 class="section-title">👥 Profil recherché</h3>
+		<p class="paragraph">{{ thesis?.profilRecherche }}</p>
+
+		<hr class="separator">
+
+		<h3 class="section-title">⚙️ Méthode de travail</h3>
+		<p class="paragraph">{{ thesis?.methodeDeTravail }}</p>
+
+		<h3 class="section-title">📈 Résultat attendu</h3>
+		<p class="paragraph">{{ thesis?.resultatsAttendus }}</p>
+
+		<h3 class="section-title">🖥️ Conditions matérielles</h3>
+		<p class="paragraph">{{ thesis?.conditionsMaterielles }}</p>
+
+		<h3 class="section-title">💡 Valorisation des travaux</h3>
+		<p class="paragraph">{{ thesis?.valorisationTravaux }}</p>
+
+		<h3 class="section-title">💶 Financement</h3>
+		<p class="paragraph">{{ thesis?.financementDetails }}</p>
+
+		
+		<hr class="separator">
+
+<!--        <h3 class="section-title">📩 Candidature</h3>-->
+<!--        <p class="paragraph"></p>-->
+		
+		<h3 class="section-title">📩 Référances bibliographiques</h3>
+		<p class="paragraph">{{ thesis?.referencesBibliographiques }}</p>
+				
+      </div>
+    </div>
+
+  </div>
+</div>

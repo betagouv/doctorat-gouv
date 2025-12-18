@@ -1,0 +1,43 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { PropositionTheseService } from '../services/proposition-these-service';
+import { PropositionTheseDto } from '../models/proposition-these-dto.model';
+import { DatePipe } from '@angular/common';
+
+@Component({
+	selector: 'app-proposition-detail',
+	standalone: true,
+	imports: [CommonModule, DatePipe],
+	templateUrl: './proposition-detail.html',
+	styleUrl: './proposition-detail.scss',
+})
+export class PropositionDetail {
+
+	thesisId!: number;
+	thesis: PropositionTheseDto | null = null;
+
+	constructor(
+		private route: ActivatedRoute,
+		private propositionTheseService: PropositionTheseService
+	) { }
+
+
+	ngOnInit(): void {
+		 // 1️ - Lecture du paramètre d'URL (toujours une chaîne)
+		 const idParam = this.route.snapshot.queryParamMap.get('id');
+		 // 2️ - Conversion en nombre – si la conversion échoue, on obtient NaN
+		 this.thesisId = idParam ? Number(idParam) : NaN;
+
+		 // 3️ - Appel du service
+		 this.propositionTheseService
+		   .getThesisById(this.thesisId)               // le service attend un number
+		   .subscribe((data: PropositionTheseDto) => {
+		     this.thesis = data;
+			 console.log('thèse55 : ', this.thesis);
+
+			
+		   });
+	}
+
+}
