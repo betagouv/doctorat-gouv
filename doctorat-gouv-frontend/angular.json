@@ -23,14 +23,21 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
+			"assets": [
+			  {
+			    "glob": "**/*",
+			    "input": "public",
+			    "output": "/"
+			  },
+			  {
+			    "glob": "**/*",
+			    "input": "src/assets",
+			    "output": "assets"
+			  }
+			],
 			"styles": [
 				"node_modules/@gouvfr/dsfr/dist/dsfr.min.css",
+				"node_modules/@gouvfr/dsfr/dist/utility/icons/icons.min.css",
 				"src/styles.scss"
 			],
 			"scripts": [

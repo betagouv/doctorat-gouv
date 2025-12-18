@@ -1,0 +1,380 @@
+<header class="fr-header" role="banner">
+  <div class="fr-container">
+    <div class="fr-header__body">
+
+      <!-- Brand -->
+      <div class="fr-header__brand">
+        <dsfr-header brand="République Française"
+                     serviceTitle="Doctorat.gouv.fr"
+                     service-tagline="Plateforme nationale des thèses">
+        </dsfr-header>
+      </div>
+
+      <!-- Outils à droite -->
+      <div class="fr-header__tools">
+        <!-- Bouton Se connecter -->
+        <div class="fr-header__tools-links">
+          <ul class="fr-btns-group">
+            <li>
+              <a class="fr-btn" href="/connexion">
+                <span aria-hidden="false"></span>
+                Se connecter
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="fr-header__search">
+          <form class="fr-search-bar" role="search"
+                (submit)="onSearchForHeader($event)">
+            <input class="fr-input"
+                   type="search"
+                   id="search"
+                   name="search"
+                   placeholder="Rechercher">
+            <button class="fr-btn" title="Rechercher" type="submit">
+              <span class="fr-icon-search-line" aria-hidden="true"></span>
+              <span class="fr-btn--text">Rechercher</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu de navigation -->
+    <div class="fr-header__menu fr-modal" id="header-menu">
+      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+        <ul class="fr-nav__list">
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/">Je m'informe</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">Candidat</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Entreprise</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Partenaire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== FORMULAIRE DE RECHERCHE ==================== -->
+<!-- ====================== FORMULAIRE ====================== -->
+<!-- On ne garde plus le (ngSubmit) car on ne soumet plus le formulaire -->
+<div class="search-form">
+
+  <div class="form-content">
+
+    <!-- Titre -->
+    <h1 class="fr-h1 fr-text--center">
+      Trouver une offre de thèse ou d’accompagnement
+    </h1>
+
+    <!-- ------------------------------------------------ -->
+    <!-- Barre de recherche principale (texte libre) -->
+    <!-- ------------------------------------------------ -->
+    <div class="fr-search-bar">
+      <label class="fr-label" for="query">Recherche</label>
+
+      <!-- ngModelChange déclenche la recherche à chaque saisie -->
+      <input class="fr-input"
+             type="search"
+             id="query"
+             name="query"
+             placeholder="Rechercher par titre ou mot clés"
+             [(ngModel)]="query"
+             (ngModelChange)="onFilterChange()">
+    </div>
+
+    <!-- ------------------------------------------------ -->
+    <!-- Ligne 1 : Discipline – Défis de société – Localisation -->
+    <!-- ------------------------------------------------ -->
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
+
+      <!-- Discipline -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="discipline"
+                name="discipline"
+                [(ngModel)]="discipline"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Discipline</option>
+          <option *ngFor="let opt of disciplineOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Défis de société -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="defisSociete"
+                name="defisSociete"
+                [(ngModel)]="defisSociete"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Défis de société</option>
+          <option *ngFor="let opt of defisSocieteOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Localisation -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="localisation"
+                name="localisation"
+                [(ngModel)]="localisation"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Localisation géographique</option>
+          <option *ngFor="let opt of localisationOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------ -->
+    <!-- Ligne 2 : Laboratoire – École (affichée si showMoreFilters) -->
+    <!-- ------------------------------------------------ -->
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w"
+         *ngIf="showMoreFilters">
+
+      <!-- Laboratoire -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="laboratoire"
+                name="laboratoire"
+                [(ngModel)]="laboratoire"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Laboratoire de recherche</option>
+          <option *ngFor="let opt of laboratoireOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+
+      <!-- École -->
+      <div class="fr-col-12 fr-col-md-4">
+        <select class="fr-select pill-select"
+                id="ecole"
+                name="ecole"
+                [(ngModel)]="ecole"
+                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
+          <option value="">Établissement diplômant</option>
+          <option *ngFor="let opt of ecoleOpts" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------ -->
+    <!-- Actions (plus/moins de filtres) -->
+    <!-- ------------------------------------------------ -->
+    <div class="fr-grid-row fr-mt-2w actions-row">
+      <div class="fr-col-12 fr-col-md-6 fr-text--left">
+        <a href="javascript:void(0)"
+           class="fr-link toggle-filters"
+           (click)="toggleFilters()">
+          {{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
+        </a>
+      </div>
+
+      <!-- Le bouton « Rechercher » est supprimé – plus besoin de type="submit" -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== SECTION DES RESULTATS ==================== -->
+<main class="fr-container fr-py-4w search-main">
+
+  <!-- ==== TAGS ACTIFS ==== -->
+  <section class="fr-tags-group fr-mt-4w"
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole">
+    <p class="fr-text--bold">Filtres actifs :</p>
+	<ul class="fr-tags-group__list">
+	
+		<li *ngIf="discipline">
+			<span class="fr-tag">
+				Discipline : {{ discipline }}
+				<button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="defisSociete">
+			<span class="fr-tag">
+				Défis société : {{ defisSociete }}
+				<button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="localisation">
+			<span class="fr-tag">
+				Localisation : {{ localisation }}
+				<button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="laboratoire">
+			<span class="fr-tag">
+				Laboratoire : {{ laboratoire }}
+				<button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+		<li *ngIf="ecole">
+			<span class="fr-tag">
+				Établissement : {{ ecole }}
+				<button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
+			</span>
+		</li>
+	
+	</ul>
+  </section>
+
+  <!-- ==== LISTE DES THÈSES ==== -->
+  <section class="fr-mt-4w" *ngIf="results.length">
+
+    <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+      <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
+      de recherche
+    </p>
+
+    <!-- ------- VUE LISTE (cards) ------- -->
+    <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+
+      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+           *ngFor="let thesis of results">
+
+        <div class="fr-card fr-card--shadow fr-card--sm">
+
+          <!-- Image + badges -->
+          <div class="fr-card__img">
+            <img [src]="getImageForThesis(thesis)"
+                 alt="Illustration de la thèse" />
+
+            <!-- Domaine (badge vert) -->
+            <span class="fr-tag badge badge-green"
+                  *ngIf="getFirstDomaine(thesis)">
+              {{ getFirstDomaineWithMaxLength(thesis, 60) }}
+            </span>
+
+            <!-- Spécialité (badge rose) -->
+            <span class="fr-tag badge badge-pink"
+                  *ngIf="thesis?.specialite">
+              {{ thesis.specialite }}
+            </span>
+          </div>
+
+          <!-- Corps de la card -->
+          <div class="fr-card__body">
+            <h3 class="fr-card__title custom-blue">
+              {{ thesis.theseTitre }}
+            </h3><br/>
+
+            <p class="fr-card__desc">
+              {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
+
+              <!-- Mots‑clés -->
+              <ng-container *ngIf="thesis.motsCles">
+                <strong>Mots clés :</strong>
+                <div class="fr-tags-group fr-tags-group--column">
+                  <span class="fr-tag violet"
+                        *ngFor="let entry of getEntries(thesis.motsCles)">
+                    {{ entry[1] }}
+                  </span>
+                </div>
+              </ng-container>
+            </p>
+          </div>
+
+          <!-- Footer avec lien détaillé -->
+          <div class="fr-card__footer">
+            <a [routerLink]="['/proposition', thesis.id]" class="arrow-link">
+              Voir détail
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ===== PAGINATION ===== -->
+      <div class="fr-container fr-my-4w pagination-fixed">
+        <nav class="fr-pagination"
+             role="navigation"
+             aria-label="Pagination"
+             *ngIf="totalPages > 1">
+
+          <ul class="fr-pagination__list">
+
+            <!-- Précédent -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(currentPage - 1)"
+                      [disabled]="currentPage === 0"
+                      aria-label="Page précédente">
+                <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+                <span class="fr-mx-1w">Précédent</span>
+              </button>
+            </li>
+
+            <!-- Première page -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(0)"
+                      [class.fr-pagination__link--current]="currentPage === 0"
+                      [attr.aria-current]="currentPage === 0 ? 'page' : null">
+                1
+              </button>
+            </li>
+
+            <!-- Ellipse avant -->
+            <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+
+            <!-- Pages autour de la courante -->
+            <li *ngFor="let i of getPagesAround()">
+              <button class="fr-pagination__link"
+                      (click)="goToPage(i)"
+                      [class.fr-pagination__link--current]="currentPage === i"
+                      [attr.aria-current]="currentPage === i ? 'page' : null">
+                {{ i + 1 }}
+              </button>
+            </li>
+
+            <!-- Ellipse après -->
+            <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+
+            <!-- Dernière page -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(totalPages - 1)"
+                      [class.fr-pagination__link--current]="currentPage === totalPages - 1"
+                      [attr.aria-current]="currentPage === totalPages - 1 ? 'page' : null">
+                {{ totalPages }}
+              </button>
+            </li>
+
+            <!-- Suivant -->
+            <li>
+              <button class="fr-pagination__link"
+                      (click)="goToPage(currentPage + 1)"
+                      [disabled]="currentPage === totalPages - 1"
+                      aria-label="Page suivante">
+                <span class="fr-mx-1w">Suivant</span>
+                <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+              </button>
+            </li>
+
+          </ul>
+        </nav>
+      </div>
+
+    </div>
+
+    <!-- ------- VUE CARTE (placeholder) ------- -->
+    <div *ngIf="view === 'carte'" class="fr-mt-2w">
+      <p>Vue carte (à implémenter)</p>
+    </div>
+
+  </section>
+</main>
