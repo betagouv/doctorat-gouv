@@ -69,6 +69,12 @@
   }
 }
 
+.custom-btn {
+  font-size: 1.4rem;        // augmente la taille du texte
+  padding: 1rem 1.5rem;     // augmente la hauteur du bouton
+  text-align: center;       // centre le texte
+  justify-content: center;  // centre le contenu
+}
 
 .badge {
   display: inline-block;
