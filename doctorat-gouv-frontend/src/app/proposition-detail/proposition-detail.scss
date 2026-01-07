@@ -21,12 +21,6 @@
   //border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  
-  &:hover {
-     transform: translateY(-5px); // léger décalage vers le haut
-     box-shadow: 0 10px 20px rgb(255, 255, 255); // ombre plus marquée
-   }
-   
 }
 
 .shadow {
@@ -105,3 +99,9 @@
   color: #333;             // couleur sobre
 }
 
+.icon-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 0.5rem;
+  vertical-align: -10px; // ajuste la position verticale
+}

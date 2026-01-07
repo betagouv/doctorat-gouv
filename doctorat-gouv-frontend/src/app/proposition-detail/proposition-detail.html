@@ -8,18 +8,43 @@
           {{ thesis?.theseTitre }}
         </h2>
 
-		<p><span class="icon">🏛️</span> <strong>Etablissement :</strong> {{ thesis?.etablissementLibelle }}</p>
-		<p><span class="icon">🎓</span> <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle }}</p>
-		<p><span class="icon">🔬</span> <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle }}</p>
-		<p><span class="icon">👤</span> <strong>Direction de la thèse :</strong> {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}</p>
-		<p><span class="icon">💶</span> <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}</p>
-		<p><span class="icon">📅</span> <strong>Début de la thèse :</strong> {{ thesis?.dateDebutThese | date:'d MMMM y' }}</p>
+		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
+		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
+		  <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
+		  <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/direction.png" class="icon-img" alt="">
+		  <strong>Direction de la thèse :</strong>
+		  {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
+		</p>
+
+<!--		<p>-->
+<!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
+<!--		  <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}-->
+<!--		</p>-->
+
+		<p>
+		  <img src="/assets/icons/date_debut.png" class="icon-img" alt="">
+		  <strong>Début de la thèse :</strong>
+		  {{ thesis?.dateDebutThese | date:'d MMMM y' }}
+		</p>
 
 		<p class="fr-mb-9v">
-		  <span class="icon">⏳</span>
+		  <img src="/assets/icons/date_fin.png" class="icon-img" alt="">
 		  <strong>Date limite de candidature :</strong>
 		  {{ thesis?.dateLimiteCandidature ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm') : 'Non renseigné' }}
 		</p>
+
 
 		<div class="keywords-title">
 		  MOTS CLÉS
