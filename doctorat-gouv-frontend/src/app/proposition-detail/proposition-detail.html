@@ -8,13 +8,18 @@
           {{ thesis?.theseTitre }}
         </h2>
 
-        <p><span class="icon">🏛️</span> Etablissement : {{ thesis?.etablissementLibelle }}</p>
-        <p><span class="icon">🎓</span> École doctorale : {{ thesis?.ecoleDoctoraleLibelle }}</p>
-        <p><span class="icon">🔬</span> Laboratoire de recherche : {{ thesis?.uniteRechercheLibelle }}</p>
-        <p><span class="icon">👤</span> Direction de la thèse : {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}</p>
-        <p><span class="icon">💶</span> Financement : {{ thesis?.financementEtat || 'Non précisé' }}</p>
-        <p><span class="icon">📅</span> Début de la thèse : {{ thesis?.dateDebutThese | date:'d MMMM y':'':'fr-FR' }}</p>
-        <p class="fr-mb-9v"><span class="icon">⏳</span> Date limite de candidature : {{ thesis?.dateLimiteCandidature ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm':'':'fr-FR') : 'Non renseigné' }}</p>
+		<p><span class="icon">🏛️</span> <strong>Etablissement :</strong> {{ thesis?.etablissementLibelle }}</p>
+		<p><span class="icon">🎓</span> <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle }}</p>
+		<p><span class="icon">🔬</span> <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle }}</p>
+		<p><span class="icon">👤</span> <strong>Direction de la thèse :</strong> {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}</p>
+		<p><span class="icon">💶</span> <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}</p>
+		<p><span class="icon">📅</span> <strong>Début de la thèse :</strong> {{ thesis?.dateDebutThese | date:'d MMMM y' }}</p>
+
+		<p class="fr-mb-9v">
+		  <span class="icon">⏳</span>
+		  <strong>Date limite de candidature :</strong>
+		  {{ thesis?.dateLimiteCandidature ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm') : 'Non renseigné' }}
+		</p>
 
 		<div class="keywords-title">
 		  MOTS CLÉS
@@ -68,7 +73,7 @@
 		<h3 class="section-title">Méthode de travail</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail }}</p>
 
-		<h3 class="section-title">Référances bibliographiques</h3>
+		<h3 class="section-title">Références bibliographiques</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques }}</p>
 		
 		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
