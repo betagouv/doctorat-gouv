@@ -19,7 +19,8 @@ export interface PropositionTheseDto{
   deposantEmail: string | null;
 
   anneeUniversitaire: string | null;
-  ecoleDoctoralNumero: string | null;
+  ecoleDoctoraleNumero: string | null;
+  ecoleDoctoraleLibelle: string | null;
 
   uniteRechercheRor: string | null;
   uniteRechercheLibelle: string | null;

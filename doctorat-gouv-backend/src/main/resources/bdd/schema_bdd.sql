@@ -25,7 +25,8 @@ CREATE TABLE proposition_these (
     deposant_email VARCHAR(100),
 
     annee_universitaire VARCHAR(4),
-    ecole_doctoral_numero VARCHAR(3),
+    ecole_doctorale_numero VARCHAR(3),
+    ecole_doctorale_libelle VARCHAR(250),
 
     unite_recherche_ror VARCHAR(9),
     unite_recherche_libelle VARCHAR(300),

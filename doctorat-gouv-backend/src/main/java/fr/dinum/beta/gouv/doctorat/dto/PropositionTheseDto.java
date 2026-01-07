@@ -124,12 +124,16 @@ public class PropositionTheseDto {
 		this.anneeUniversitaire = anneeUniversitaire;
 	}
 
-	public String getEcoleDoctoralNumero() {
-		return ecoleDoctoralNumero;
+	public void setEcoleDoctoraleLibelle(String ecoleDoctoraleLibelle) {
+		this.ecoleDoctoraleLibelle = ecoleDoctoraleLibelle;
 	}
 
-	public void setEcoleDoctoralNumero(String ecoleDoctoralNumero) {
-		this.ecoleDoctoralNumero = ecoleDoctoralNumero;
+	public String getEcoleDoctoraleNumero() {
+		return ecoleDoctoraleNumero;
+	}
+
+	public void setEcoleDoctoraleNumero(String ecoleDoctoraleNumero) {
+		this.ecoleDoctoraleNumero = ecoleDoctoraleNumero;
 	}
 
 	public String getUniteRechercheRor() {
@@ -605,7 +609,8 @@ public class PropositionTheseDto {
 	private String deposantEmail;
 
 	private String anneeUniversitaire;
-	private String ecoleDoctoralNumero;
+	private String ecoleDoctoraleNumero;
+	private String ecoleDoctoraleLibelle;
 
 	private String uniteRechercheRor;
 	private String uniteRechercheLibelle;
@@ -676,4 +681,8 @@ public class PropositionTheseDto {
 	private String niveauAnglaisRequis;
 	private String niveauFrancaisRequis;
 	private String candidatureEnLignePossible;
+	public String getEcoleDoctoraleLibelle() {
+		return ecoleDoctoraleLibelle;
+	}
+
 }

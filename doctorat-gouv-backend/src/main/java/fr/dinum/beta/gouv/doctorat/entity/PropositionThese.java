@@ -65,7 +65,10 @@ public class PropositionThese {
 	private String anneeUniversitaire;
 
 	@Column(length = 3)
-	private String ecoleDoctoralNumero;
+	private String ecoleDoctoraleNumero;
+	
+	@Column(length = 250)
+	private String ecoleDoctoraleLibelle;
 
 	@Column(length = 9)
 	private String uniteRechercheRor;
@@ -348,12 +351,20 @@ public class PropositionThese {
 		this.anneeUniversitaire = anneeUniversitaire;
 	}
 
-	public String getEcoleDoctoralNumero() {
-		return ecoleDoctoralNumero;
+	public String getEcoleDoctoraleLibelle() {
+		return ecoleDoctoraleLibelle;
 	}
 
-	public void setEcoleDoctoralNumero(String ecoleDoctoralNumero) {
-		this.ecoleDoctoralNumero = ecoleDoctoralNumero;
+	public void setEcoleDoctoraleLibelle(String ecoleDoctoraleLibelle) {
+		this.ecoleDoctoraleLibelle = ecoleDoctoraleLibelle;
+	}
+
+	public String getEcoleDoctoraleNumero() {
+		return ecoleDoctoraleNumero;
+	}
+
+	public void setEcoleDoctoraleNumero(String ecoleDoctoraleNumero) {
+		this.ecoleDoctoraleNumero = ecoleDoctoraleNumero;
 	}
 
 	public String getUniteRechercheRor() {

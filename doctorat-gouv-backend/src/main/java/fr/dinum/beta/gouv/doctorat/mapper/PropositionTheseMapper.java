@@ -28,7 +28,8 @@ public class PropositionTheseMapper {
         dto.setDeposantEmail(entity.getDeposantEmail());
 
         dto.setAnneeUniversitaire(entity.getAnneeUniversitaire());
-        dto.setEcoleDoctoralNumero(entity.getEcoleDoctoralNumero());
+        dto.setEcoleDoctoraleNumero(entity.getEcoleDoctoraleNumero());
+        dto.setEcoleDoctoraleLibelle(entity.getEcoleDoctoraleLibelle());
 
         dto.setUniteRechercheRor(entity.getUniteRechercheRor());
         dto.setUniteRechercheLibelle(entity.getUniteRechercheLibelle());
@@ -126,7 +127,8 @@ public class PropositionTheseMapper {
         entity.setDeposantEmail(dto.getDeposantEmail());
 
         entity.setAnneeUniversitaire(dto.getAnneeUniversitaire());
-        entity.setEcoleDoctoralNumero(dto.getEcoleDoctoralNumero());
+        entity.setEcoleDoctoraleNumero(dto.getEcoleDoctoraleNumero());
+        entity.setEcoleDoctoraleLibelle(dto.getEcoleDoctoraleLibelle());
 
         entity.setUniteRechercheRor(dto.getUniteRechercheRor());
         entity.setUniteRechercheLibelle(dto.getUniteRechercheLibelle());
