@@ -1,0 +1,114 @@
+.page-background {
+/*  background-color: #0053b3; // bleu DSFR
+  min-height: 100vh;
+  padding: 2rem 0;*/
+  background-image: url('/assets/images/default.jpg');
+  // background-image: url('/assets/images/DS-1-Sante.jpg');
+  background-size: cover;       // l’image couvre toute la zone
+  background-position: center;  // centrée
+  background-repeat: no-repeat; // pas de répétition
+  min-height: 100vh;            // occupe toute la hauteur de la fenêtre
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  //border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.shadow {
+  box-shadow: 0 50px 46px rgba(0,0,0,0.15);
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: rgb(0, 0, 128);
+}
+
+.section-title {
+  font-size: 2.2rem;        // Taille police plus grand
+  font-weight: 800;         // très gras
+  color: #000;           // couleur noire
+  letter-spacing: 0.5px;    // léger espacement
+  margin: 2rem 0 1rem;      // respiration au-dessus
+  text-transform: none;     // garder les accents et la casse
+}
+
+.keywords-title {
+  display: flex; // utilise flexbox
+  align-items: center; // aligne verticalement
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: rgb(54, 54, 54);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+
+  .line {
+    flex: 1;
+    height: 2px;
+    background-color:  rgb(54, 54, 54);
+    margin-left: 1rem;
+    opacity: 0.8;
+  }
+}
+
+.custom-btn {
+  font-size: 1.4rem;        // augmente la taille du texte
+  padding: 1rem 1.5rem;     // augmente la hauteur du bouton
+  text-align: center;       // centre le texte
+  justify-content: center;  // centre le contenu
+  margin-bottom: 1.1rem;    // espace en bas
+}
+
+.badge {
+  display: inline-block;
+  background: rgb(200, 200, 255);
+  color: rgb(0, 0, 210);
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem;
+  font-size: 0.85rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.badge:hover {
+  background: rgb(170, 170, 255);
+  color: rgb(0, 0, 150);
+  cursor: pointer;
+}
+
+
+.separator {
+  border: none;
+  border-top: 2px solid #eee;
+  margin: 1.5rem 0;
+}
+
+.icon {
+  margin-right: 0.5rem;
+}
+
+.paragraph {
+  text-align: justify;     // ajuste le texte comme un vrai paragraphe
+  line-height: 1.6;        // espace entre les lignes pour la lisibilité
+  margin-bottom: 1rem;     // espace entre les paragraphes
+  font-size: 1rem;         // taille standard
+  color: #333;             // couleur sobre
+}
+
+.icon-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 0.5rem;
+  vertical-align: -10px; // ajuste la position verticale
+}

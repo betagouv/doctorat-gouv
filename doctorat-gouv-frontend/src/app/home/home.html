@@ -1,0 +1,53 @@
+<header class="fr-header" role="banner">
+  <div class="fr-container">
+    <div class="fr-header__body">
+      <div class="fr-header__brand">
+        <dsfr-header
+          brand="République Française"
+          serviceTitle="Doctorat.gouv.fr"
+          service-tagline="Plateforme nationale des thèses">
+        </dsfr-header>
+      </div>
+
+      <!-- Bouton d'ouverture de la recherche -->
+      <div class="fr-header__tools">
+        <button class="fr-btn fr-btn--search" aria-controls="header-search" title="Rechercher">
+          Rechercher
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu de navigation -->
+    <div class="fr-header__menu fr-modal" id="header-menu">
+      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+        <ul class="fr-nav__list">
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/">Accueil</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">S'informer</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Explorer</a></li>
+          <li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Publication</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Modale de recherche -->
+    <div class="fr-header__search fr-modal" id="header-search">
+      <form class="fr-search-bar" role="search" (submit)="onSearch($event)">
+        <input class="fr-input" type="search" id="search" name="search" placeholder="Rechercher">
+        <button class="fr-btn" type="submit">Rechercher</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main>
+  <h1>Bienvenue sur Doctorat Beta.gouv.fr</h1>
+  <p>Plateforme nationale d’import et de gestion des propositions de thèse.</p>
+
+  <dsfr-tag label="Prototype"></dsfr-tag>
+
+  <section style="margin-top: 2rem;">
+    <dsfr-button label="Importer les thèses"></dsfr-button>
+  </section>
+</main>
+
+<dsfr-footer></dsfr-footer>

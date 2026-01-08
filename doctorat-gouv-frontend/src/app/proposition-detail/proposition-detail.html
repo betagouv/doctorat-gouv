@@ -1,0 +1,112 @@
+<div class="page-background" *ngIf="thesis">
+  <div class="container">
+
+    <!-- Première card -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h2 class="card-title fr-mb-10v">
+          {{ thesis?.theseTitre }}
+        </h2>
+
+		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
+		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
+		  <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
+		  <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle }}
+		</p>
+
+		<p>
+		  <img src="/assets/icons/direction.png" class="icon-img" alt="">
+		  <strong>Direction de la thèse :</strong>
+		  {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
+		</p>
+
+<!--		<p>-->
+<!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
+<!--		  <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}-->
+<!--		</p>-->
+
+		<p>
+		  <img src="/assets/icons/date_debut.png" class="icon-img" alt="">
+		  <strong>Début de la thèse :</strong>
+		  {{ thesis?.dateDebutThese | date:'d MMMM y' }}
+		</p>
+
+		<p class="fr-mb-9v">
+		  <img src="/assets/icons/date_fin.png" class="icon-img" alt="">
+		  <strong>Date limite de candidature :</strong>
+		  {{ thesis?.dateLimiteCandidature ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm') : 'Non renseigné' }}
+		</p>
+
+
+		<div class="keywords-title">
+		  Mots clés
+		  <span class="line"></span>
+		</div>
+
+		<div class="mt-3 fr-mb-9v">
+		  <span *ngFor="let mot of thesis?.motsCles | keyvalue" class="badge">
+		    {{ mot.value }}
+		  </span>
+		</div>
+		
+       <div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
+	       <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn"> Prendre contact </button> 
+	   </div>
+
+      </div>
+    </div>
+
+    <!-- Deuxième card -->
+    <div class="card shadow">
+      <div class="card-body">
+        <h2 class="section-title">Résumé</h2>
+        <p class="paragraph fr-mb-12v">{{ thesis?.resume }}</p>
+
+        <h3 class="section-title">Objectif et Contexte</h3>
+        <p class="paragraph">{{ thesis?.objectif }}</p>
+        <p class="paragraph">{{ thesis?.contexte }}</p>
+		
+		<hr class="separator">
+		
+		<h3 class="section-title">Profil recherché</h3>
+		<p class="paragraph">{{ thesis?.profilRecherche }}</p>
+		
+		<hr class="separator">
+		
+		<h3 class="section-title">Précision sur l'encadrement</h3>
+		<p class="paragraph fr-mb-12v">{{ thesis?.modalitesEncadrement }}</p>
+
+		<h3 class="section-title">Résultat attendu</h3>
+		<p class="paragraph fr-mb-12v">{{ thesis?.resultatsAttendus }}</p>
+		
+		<h3 class="section-title">Objectif de valorisation des travaux</h3>
+		<p class="paragraph fr-mb-12v">{{ thesis?.valorisationTravaux }}</p>
+		
+		<h3 class="section-title">Financement</h3>
+		<p class="paragraph fr-mb-12v">
+		  {{ thesis?.financementDetails ? thesis.financementDetails : 'Non renseigné.' }}
+		</p>
+
+		<h3 class="section-title">Méthode de travail</h3>
+		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail }}</p>
+
+		<h3 class="section-title">Références bibliographiques</h3>
+		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques }}</p>
+		
+		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
+		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn"> Prendre contact </button> 
+		</div>
+				
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,262 @@
+.fr-header .fr-container,
+.search-main.fr-container {
+	max-width: 95% !important; // supprime la limite DSFR
+	width: 85%;
+	// max-width: 1800px; // limite sur grands écrans
+	margin: 0 auto; // centre horizontalement
+	padding-left: 0; // optionnel : supprime les marges internes
+	padding-right: 0; // optionnel
+
+}
+
+.fr-card {
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/*.fr-card__body {
+  padding: 1rem;
+}*/
+
+/*.fr-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1a2a6c;  bleu institutionnel 
+}*/
+
+.fr-card__desc {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.fr-tag.violet {
+  color: rgb(0, 50, 100) !important; /* bleu DSFR plus clair */
+  background-color: rgb(209, 206, 238);   /* violet */
+  color: #fff;                 /* texte en blanc pour contraste */
+}
+
+.fr-card__img {
+  width: 100%;
+  aspect-ratio: 4 / 3; /* force un ratio 16:9 */
+  overflow: hidden;
+  position: relative;
+}
+
+.fr-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* recadre l’image sans déformation */
+}
+
+.fr-card__img .badge {
+  position: absolute;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Premier badge (vert fluorescent, texte noir) */
+.fr-card__img .badge-green {
+  bottom: 2.5rem; /* placé plus haut */
+  background-color: rgb(196, 255, 185);
+  color: #000;
+  bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
+}
+
+/* Second badge (rose fluorescent, texte noir) */
+.fr-card__img .badge-pink {
+  margin-top: 1.5rem;
+  bottom: 0.5rem; /* placé en bas */
+  background-color: rgb(254, 242, 163); /* rose flashy */
+  color: #000;
+}
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Flèche custom sans DSFR icons */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #0063cb; /* bleu DSFR */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.arrow-link::after {
+  content: "→"; /* flèche unicode */
+  margin-left: 0.25rem;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.arrow-link:hover::after {
+  transform: translateX(4px); /* petit effet de glissement */
+}
+
+.pagination-fixed {
+  //position: fixed;
+  bottom: 0;          // toujours collé en bas
+  left: 0;
+  width: 100%;        // occupe toute la largeur
+  display: flex;
+  justify-content: center; // centré horizontalement
+  background: #fff;   // fond blanc pour lisibilité
+  padding: 1rem 0;    // espace autour
+  //box-shadow: 0 -2px 5px rgba(0,0,0,0.1); // petite ombre pour la démarquer
+  z-index: 1000;      // reste au-dessus du contenu
+}
+
+
+.search-form {
+	background-color: #E3E3FD;
+	border-radius: 0.5rem;
+	padding: 2rem; // espace intérieur
+	color: white; // texte en blanc pour contraste
+	width: 97%;
+	// max-width: 1800px; // limite sur grands écrans
+	margin: 0 auto;
+	box-shadow: 0 8px 8px rgba(0,0,0,0.1);
+	margin-top: 0.5rem;
+
+	.form-content {
+		
+		width: 60%;
+		margin: 0 auto;
+
+		// barre de recherche
+		.fr-search-bar {
+			border-radius: 0.5rem;
+			padding: 1rem; // espace intérieur
+			width: 98%;
+			margin: 0 auto; // centre horizontalement
+
+			.fr-input {
+				background-color: #fff;
+				flex: 1;
+			}
+
+			.fr-btn {
+				margin-left: 0.5rem;
+			}
+		}
+		
+		.custom-search-bar {
+		  margin: 2rem auto;
+		  padding: 0 1rem;
+		  width: 95%;
+		  
+		  .custom-label {
+		    display: block;
+		    font-weight: bold;
+		    margin-bottom: 0.5rem;
+		    font-size: 1rem;
+		    color: #333;
+		  }
+		  
+		  .custom-input-wrapper {
+		  	  position: relative;
+		  	  display: flex;
+		  	  align-items: center;
+		  	  background-color: white;
+		  	}
+
+		  	.custom-icon {
+		  	  position: absolute;
+		  	  left: 0.75rem;
+		  	  font-size: 1.2rem;
+		  	  color: rgb(0, 0, 255);
+		  	  font-weight: bold;
+		  	  pointer-events: none;
+		  	}
+
+		  	.custom-input {
+		  	  width: 100%;
+		  	  padding: 0.75rem 1rem 0.75rem 2.5rem; // espace pour la loupe
+		  	  border: none;
+		  	  border-bottom: 2px solid rgb(0, 0, 74); // 🔹 trait bleu en bas
+		  	  font-size: 1rem;
+		  	  transition: border-color 0.2s ease-in-out;
+
+		  	  &:focus {
+		  	    border-color: #0055b8;
+		  	    outline: none;
+		  	  }
+		  	}
+
+		  	.custom-hint {
+		  	  font-size: 0.875rem;
+		  	  color: #666;
+		  	  margin-top: 0.5rem;
+		  	}
+		  
+		}
+
+		.pill-select {
+			//border-radius: 2rem;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			background-color: white;
+			color: #000;
+		}
+
+		// liens et actions
+		.actions-row {
+			align-items: center;
+
+			// lien "Plus/Moins de filtres"
+			.toggle-filters {
+				font-weight: 500;
+				margin-top: 0.5rem;
+				color: #000; // bleu DSFR géré par .fr-link, mais on force contraste si besoin
+			}
+
+			// lien "Comprendre les filtres"
+			.help-filters {
+				font-weight: 500;
+				margin-right: 1rem;
+				color: #000;
+			}
+
+			// alignements
+			.fr-text--left {
+				text-align: left;
+			}
+
+			.fr-text--right {
+				text-align: right;
+			}
+
+			// bouton principal
+			.fr-btn--primary {
+				background-color: #fff;
+				color: #6f42c1;
+				border: 1px solid #fff;
+			}
+
+			.fr-btn--primary:hover {
+				background-color: #6f42c1;
+				color: #fff;
+				border: 1px solid #fff;
+			}
+		}
+	}
+}
