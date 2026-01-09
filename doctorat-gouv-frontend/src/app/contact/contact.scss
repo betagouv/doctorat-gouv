@@ -1,0 +1,100 @@
+.page-background {
+  background-image: url('/assets/images/default.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.container {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* On centre l'alerte et on limite sa largeur */
+.info-alert {
+  max-width: 80%;
+  margin: 0 auto 2rem auto;
+}
+
+/* Ajuster un peu la typo pour se rapprocher de la maquette */
+.info-alert p {
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+
+.card {
+  background: #fff;
+  padding: 2rem;
+}
+
+.card-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(0, 0, 128);
+}
+
+/* Grille générale */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* mobile */
+  row-gap: 1.5rem;
+  padding-left: 2rem; /* marge à gauche comme sur la maquette */
+}
+
+/* Champs larges = 75% */
+.form-field.large {
+  width: 75%;
+}
+
+/* Champs petits = 40% */
+.form-field.small {
+  width: 40%;
+}
+
+/* RGPD sous le champ motivation */
+.rgpd-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Ligne des boutons */
+.buttons-row {
+  display: flex;
+  justify-content: flex-end; /* aligné à droite */
+  gap: 1rem;                 /* espace entre les boutons */
+  width: 100%;               /* occupe toute la ligne */
+  margin-top: 1.5rem;
+}
+
+/* Pour que les boutons ne s'étirent pas */
+.buttons-row .fr-btn {
+  width: auto;
+}
+
+
+/* Sur écrans moyens et grands : tout reste aligné à gauche */
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Bouton aligné à gauche */
+.submit-btn {
+  margin-top: 1rem;
+  width: auto;
+}
+

@@ -1,0 +1,98 @@
+<div class="page-background">
+
+	<div class="container">
+
+		<div class="card shadow">
+			<div class="card-body">
+
+				<h2 class="card-title fr-mb-6v">Prendre contact</h2>
+
+				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-grid">
+
+					<!-- Nom -->
+					<div class="form-field large">
+						<label class="fr-label">Nom</label>
+						<input class="fr-input" formControlName="nom" type="text">
+					</div>
+
+					<!-- Prénom -->
+					<div class="form-field large">
+						<label class="fr-label">Prénom</label>
+						<input class="fr-input" formControlName="prenom" type="text">
+					</div>
+
+					<!-- Civilité -->
+					<div class="form-field large">
+						<label class="fr-label">Civilité</label>
+						<select class="fr-select" formControlName="civilite">
+							<option value="" disabled selected>Choisir…</option>
+							<option *ngFor="let c of civilites" [value]="c">{{ c }}</option>
+						</select>
+					</div>
+
+					<!-- Email -->
+					<div class="form-field large">
+						<label class="fr-label">Adresse électronique</label>
+						<input class="fr-input" formControlName="email" type="email">
+						<p class="fr-hint-text">Format attendu : nom@domaine.fr</p>
+					</div>
+
+					<!-- Vous êtes -->
+					<div class="form-field small">
+						<label class="fr-label">Vous êtes</label>
+						<select class="fr-select" formControlName="profil">
+							<option value="" disabled selected>Choisir…</option>
+							<option *ngFor="let p of profils" [value]="p">{{ p }}</option>
+						</select>
+					</div>
+
+					<!-- Depuis combien d'années -->
+					<div class="form-field small">
+						<label class="fr-label">Depuis combien d'années</label>
+						<select class="fr-select" formControlName="annees">
+							<option value="" disabled selected>Choisir…</option>
+							<option *ngFor="let a of annees" [value]="a">{{ a }} an(s)</option>
+						</select>
+					</div>
+
+					<!-- Secteur -->
+					<div class="form-field small">
+						<label class="fr-label">Dans quel secteur</label>
+						<select class="fr-select" formControlName="secteur">
+							<option value="" disabled selected>Choisir…</option>
+							<option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
+						</select>
+					</div>
+
+					<!-- Texte de motivation -->
+					<div class="form-field large">
+					  <label class="fr-label">Texte de motivation</label>
+					  <textarea class="fr-input" formControlName="message" rows="5"></textarea>
+
+					  <!-- RGPD -->
+					  <div class="rgpd-info">
+					    <span class="fr-icon-info-fill" aria-hidden="true"></span>
+					    <span>RGPD</span>
+					  </div>
+					</div>
+
+					<!-- Boutons alignés à droite -->
+					<div class="buttons-row">
+					  <button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">
+					    Annuler
+					  </button>
+
+					  <button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
+					    Valider
+					  </button>
+					</div>
+
+
+				</form>
+
+
+			</div>
+		</div>
+
+	</div>
+</div>

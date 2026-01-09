@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
@@ -8,7 +9,10 @@ import { DatePipe } from '@angular/common';
 @Component({
 	selector: 'app-proposition-detail',
 	standalone: true,
-	imports: [CommonModule, DatePipe],
+	imports: [
+		CommonModule, 
+		RouterModule,
+		DatePipe],
 	templateUrl: './proposition-detail.html',
 	styleUrl: './proposition-detail.scss',
 })
