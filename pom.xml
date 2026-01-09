@@ -8,10 +8,10 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>doctorat-gouv-backend</module>
-    <module>doctorat-gouv-frontend</module>
-  </modules>
+	<modules>
+		<module>doctorat-gouv-backend</module>
+		<!--    <module>doctorat-gouv-frontend</module>-->
+	</modules>
 
 	<properties>
 		<java.version>21</java.version>
