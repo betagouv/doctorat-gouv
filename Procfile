@@ -1,0 +1,1 @@
+web: java -jar doctorat-gouv-backend/target/*.jar --spring.profiles.active=rec
