@@ -16,6 +16,17 @@ public class SecurityConfig {
 	            // Autorise librement l'accès à ton endpoint
 	            .requestMatchers("/api/propositions-these/**").permitAll()
 	            .requestMatchers("/api/filters/**").permitAll()
+	            .requestMatchers(
+	            	    "/", "/index.html",
+	            	    "/favicon.ico",
+	            	    "/assets/**",
+	            	    "/**/*.js",
+	            	    "/**/*.css",
+	            	    "/**/*.woff2",
+	            	    "/**/*.woff",
+	            	    "/**/*.ttf"
+	            	).permitAll()
+
 	            // Les autres endpoints peuvent être protégés
 	            .anyRequest().authenticated()
 	        )

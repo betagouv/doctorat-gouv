@@ -10,7 +10,7 @@
 
 	<modules>
 		<module>doctorat-gouv-backend</module>
-		<!--    <module>doctorat-gouv-frontend</module>-->
+		<module>doctorat-gouv-frontend</module>
 	</modules>
 
 	<properties>

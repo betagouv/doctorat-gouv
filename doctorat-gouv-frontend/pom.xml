@@ -57,7 +57,7 @@
 							<target>
 								<copy
 									todir="../doctorat-gouv-backend/src/main/resources/static">
-									<fileset dir="dist/doctorat-gouv-frontend" />
+									<fileset dir="dist/doctorat-gouv-frontend/browser" />
 								</copy>
 							</target>
 						</configuration>
