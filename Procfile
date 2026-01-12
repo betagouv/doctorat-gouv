@@ -1,1 +1,18 @@
-web: java -jar doctorat-gouv-backend/target/*.jar
+web: bash -c '
+  echo "=== Listing /app ===";
+  ls -R /app;
+
+  echo "=== Searching for Spring Boot JAR ===";
+  JAR=$(find /app -maxdepth 4 -type f -name "*SNAPSHOT.jar" -o -name "*.jar" | grep -v "original" | head -n 1);
+
+  echo "=== JAR found: $JAR ===";
+
+  if [ -z "$JAR" ]; then
+    echo "ERROR: No executable JAR found in /app or submodules.";
+    echo "Check Maven build or module structure.";
+    exit 1;
+  fi
+
+  echo "=== Starting Spring Boot ===";
+  java -jar "$JAR"
+'
