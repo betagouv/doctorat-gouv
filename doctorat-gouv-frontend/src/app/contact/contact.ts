@@ -37,7 +37,13 @@ export class Contact {
 	    profil: ['', Validators.required],
 	    annees: ['', Validators.required],
 	    secteur: ['', Validators.required],
-	    message: ['', Validators.required]
+	    message: ['', Validators.required],
+		
+		// nouveaux champs 
+		confirmMaster: [false, Validators.requiredTrue], 
+		cv: [null, Validators.required], 
+		documents: [null]
+		
 	  });
 	}
 

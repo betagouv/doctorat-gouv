@@ -1,5 +1,23 @@
 <div class="page-background">
 
+	<div class="container-header">
+
+		<!-- Titre centré comme sur la maquette -->
+		<h2 class="form-title fr-mb-4v">Formulaire de mise en relation</h2>
+
+		<!-- Alerte DSFR d'information -->
+		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
+			<p class="fr-alert__title">
+				L’ajout d’un CV et d’un texte de motivation est obligatoire.
+			</p>
+			<p>
+				Les informations saisies seront envoyées au directeur de thèse concerné.
+				Il reviendra vers vous sous 15 jours, s’il souhaite donner suite à votre candidature.
+			</p>
+		</div>
+
+	</div>
+
 	<div class="container">
 
 		<div class="card shadow">
@@ -63,33 +81,67 @@
 							<option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
 						</select>
 					</div>
+					
+					
+					<!-- Confirmation diplôme -->
+					<div class="form-field large">
+					  <div class="fr-checkbox-group">
+					    <input type="checkbox" id="confirmMaster" formControlName="confirmMaster">
+					    <label class="fr-label" for="confirmMaster">
+					      Je confirme que je dispose ou que je prépare un diplôme de master ou conférant le grade de master
+					    </label>
+					  </div>
+					</div>
+
+					<!-- Upload CV -->
+					<div class="form-field large">
+					  <label class="fr-label" for="cvUpload">Ajouter un CV</label>
+					  <p class="fr-hint-text">
+					    Taille maximale : xx Mo. Format supporté : pdf.
+					  </p>
+
+					  <input class="fr-upload" type="file" id="cvUpload" formControlName="cv" multiple>
+					</div>
+
+					<!-- Upload autres documents -->
+					<div class="form-field large">
+					  <label class="fr-label" for="docsUpload">
+					    Ajouter d’autres documents (lettre de recommandation, proposition de sujet ...) – facultatif
+					  </label>
+					  <p class="fr-hint-text">
+					    Taille maximale : xx Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles.
+					  </p>
+
+					  <input class="fr-upload" type="file" id="docsUpload" formControlName="documents" multiple>
+					</div>
+
+					
+					
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">
-					  <label class="fr-label">Texte de motivation</label>
-					  <textarea class="fr-input" formControlName="message" rows="5"></textarea>
+						<label class="fr-label">Texte de motivation</label>
+						<textarea class="fr-input" formControlName="message" rows="5"></textarea>
 
-					  <!-- RGPD -->
-					  <div class="rgpd-info">
-					    <span class="fr-icon-info-fill" aria-hidden="true"></span>
-					    <span>RGPD</span>
-					  </div>
+						<!-- RGPD -->
+						<div class="rgpd-info">
+							<span class="fr-icon-info-fill" aria-hidden="true"></span>
+							<span>RGPD</span>
+						</div>
 					</div>
 
 					<!-- Boutons alignés à droite -->
 					<div class="buttons-row">
-					  <button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">
-					    Annuler
-					  </button>
+						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">
+							Annuler
+						</button>
 
-					  <button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
-					    Valider
-					  </button>
+						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
+							Valider
+						</button>
 					</div>
 
-
 				</form>
-
 
 			</div>
 		</div>
