@@ -1,1 +1,1 @@
-web: ./start.sh
+web: java -jar doctorat-gouv-backend/target/*.jar
