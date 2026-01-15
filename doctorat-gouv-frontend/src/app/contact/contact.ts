@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
 import { NgFor } from '@angular/common';
 
 @Component({
@@ -13,6 +16,8 @@ import { NgFor } from '@angular/common';
   styleUrls: ['./contact.scss']
 })
 export class Contact {
+	
+	private readonly apiBase = `${environment.apiUrl}`;
 
 	contactForm!: FormGroup;
 
@@ -28,29 +33,34 @@ export class Contact {
 	  'Sciences médicales'
 	];
 
-	constructor(private fb: FormBuilder) {
+	constructor(private fb: FormBuilder, private http: HttpClient) {
 	  this.contactForm = this.fb.group({
 	    nom: ['', Validators.required],
 	    prenom: ['', Validators.required],
-	    civilite: ['', Validators.required],
+	    civilite: [''],
 	    email: ['', [Validators.required, Validators.email]],
-	    profil: ['', Validators.required],
-	    annees: ['', Validators.required],
-	    secteur: ['', Validators.required],
-	    message: ['', Validators.required],
+	    profil: [''],
+	    annees: [''],
+	    secteur: [''],
+	    message: [''],
 		
 		// nouveaux champs 
-		confirmMaster: [false, Validators.requiredTrue], 
-		cv: [null, Validators.required], 
+		confirmMaster: [false], 
+		cv: [null], 
 		documents: [null]
 		
 	  });
 	}
+	
+	onSubmit() {
+		console.log("SUBMIT APPELÉ !");
+		console.log("Form valid:", this.contactForm.valid);
+	  if (this.contactForm.valid) {
+	    this.http.post(`${this.apiBase}/contact`, this.contactForm.value)
+	      .subscribe(() => {
+	        console.log("Email envoyé");
+	      });
+	  }
+	}
 
-
-  onSubmit() {
-    if (this.contactForm.valid) {
-      console.log('Formulaire envoyé :', this.contactForm.value);
-    }
-  }
 }

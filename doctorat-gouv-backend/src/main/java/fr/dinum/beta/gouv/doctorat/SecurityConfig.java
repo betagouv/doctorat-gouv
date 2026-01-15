@@ -16,6 +16,7 @@ public class SecurityConfig {
 	            // Autorise librement l'accès à ton endpoint
 	            .requestMatchers("/api/propositions-these/**").permitAll()
 	            .requestMatchers("/api/filters/**").permitAll()
+	            .requestMatchers("/api/contact/**").permitAll()
 	            .requestMatchers(
 	            	    "/", "/index.html",
 	            	    "/favicon.ico",
