@@ -20,6 +20,9 @@ export class Contact {
 	private readonly apiBase = `${environment.apiUrl}`;
 
 	contactForm!: FormGroup;
+	
+	cvBase64: string | null = null; 
+	documentBase64: string | null = null;
 
 	civilites = ['Mr', 'Mme', 'Mlle'];
 	profils = ['Doctorant', 'Étudiant', 'Chercheur', 'Salarié'];
@@ -47,20 +50,45 @@ export class Contact {
 		// nouveaux champs 
 		confirmMaster: [false], 
 		cv: [null], 
-		documents: [null]
+		document: [null]
 		
 	  });
 	}
 	
 	onSubmit() {
-		console.log("SUBMIT APPELÉ !");
-		console.log("Form valid:", this.contactForm.valid);
 	  if (this.contactForm.valid) {
-	    this.http.post(`${this.apiBase}/contact`, this.contactForm.value)
-	      .subscribe(() => {
-	        console.log("Email envoyé");
-	      });
+
+	    const payload = {
+	      ...this.contactForm.value,
+	      cvBase64: this.cvBase64,
+	      documentBase64: this.documentBase64,
+	    };
+
+	    this.http.post(`${this.apiBase}/contact`, payload)
+	      .subscribe(() => console.log("Email envoyé"));
 	  }
+	}
+
+	onCvSelected(event: any) {
+	  const file = event.target.files[0];
+	  if (!file) return;
+
+	  const reader = new FileReader();
+	  reader.onload = () => {
+	    this.cvBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
+	  };
+	  reader.readAsDataURL(file);
+	}
+
+	onDocsSelected(event: any) {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const reader = new FileReader();
+		reader.onload = () => {
+		  this.documentBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
+		};
+		reader.readAsDataURL(file);
 	}
 
 }

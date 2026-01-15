@@ -100,7 +100,7 @@
 					    Taille maximale : xx Mo. Format supporté : pdf.
 					  </p>
 
-					  <input class="fr-upload" type="file" id="cvUpload" formControlName="cv" multiple>
+					  <input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple>
 					</div>
 
 					<!-- Upload autres documents -->
@@ -112,11 +112,8 @@
 					    Taille maximale : xx Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles.
 					  </p>
 
-					  <input class="fr-upload" type="file" id="docsUpload" formControlName="documents" multiple>
+					  <input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)" multiple>
 					</div>
-
-					
-					
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">

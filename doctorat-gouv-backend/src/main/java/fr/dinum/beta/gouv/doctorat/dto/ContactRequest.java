@@ -14,7 +14,7 @@ public class ContactRequest {
 
 	public String emailEncadrant;
 	public String cvBase64;
-	public String diplomeBase64;
+	public String documentBase64;
 	public String titreSujet;
 	public String urlSujet;
 	public String urlVitrine;
@@ -107,12 +107,12 @@ public class ContactRequest {
 		this.cvBase64 = cvBase64;
 	}
 
-	public String getDiplomeBase64() {
-		return diplomeBase64;
+	public String getDocumentBase64() {
+		return documentBase64;
 	}
 
-	public void setDiplomeBase64(String diplomeBase64) {
-		this.diplomeBase64 = diplomeBase64;
+	public void setDocumentBase64(String documentBase64) {
+		this.documentBase64 = documentBase64;
 	}
 
 	public String getTitreSujet() {
