@@ -1,4 +1,4 @@
-<div class="page-background">
+<div class="page-background" *ngIf="!showConfirmation">
 
 	<div class="container-header">
 
@@ -29,15 +29,25 @@
 
 					<!-- Nom -->
 					<div class="form-field large">
-						<label class="fr-label">Nom</label>
-						<input class="fr-input" formControlName="nom" type="text">
+					  <label class="fr-label">Nom <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" formControlName="nom" type="text">
+
+					  <p class="fr-error-text" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
+					    Le nom doit contenir entre 2 et 30 caractères.
+					  </p>
 					</div>
+
 
 					<!-- Prénom -->
 					<div class="form-field large">
-						<label class="fr-label">Prénom</label>
-						<input class="fr-input" formControlName="prenom" type="text">
+					  <label class="fr-label">Prénom <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" formControlName="prenom" type="text">
+
+					  <p class="fr-error-text" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
+					    Le prénom doit contenir entre 2 et 30 caractères.
+					  </p>
 					</div>
+
 
 					<!-- Civilité -->
 					<div class="form-field large">
@@ -50,10 +60,14 @@
 
 					<!-- Email -->
 					<div class="form-field large">
-						<label class="fr-label">Adresse électronique</label>
-						<input class="fr-input" formControlName="email" type="email">
-						<p class="fr-hint-text">Format attendu : nom@domaine.fr</p>
+					  <label class="fr-label">Adresse électronique <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" formControlName="email" type="email">
+
+					  <p class="fr-error-text" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
+					    Veuillez saisir une adresse email valide.
+					  </p>
 					</div>
+
 
 					<!-- Vous êtes -->
 					<div class="form-field small">
@@ -65,23 +79,23 @@
 					</div>
 
 					<!-- Depuis combien d'années -->
-					<div class="form-field small">
-						<label class="fr-label">Depuis combien d'années</label>
-						<select class="fr-select" formControlName="annees">
-							<option value="" disabled selected>Choisir…</option>
-							<option *ngFor="let a of annees" [value]="a">{{ a }} an(s)</option>
-						</select>
+					<div class="form-field small" *ngIf="showExperienceFields">
+					  <label class="fr-label">Depuis combien d'années</label>
+					  <select class="fr-select" formControlName="annees">
+					    <option value="" disabled selected>Choisir…</option>
+					    <option *ngFor="let a of annees" [value]="a">{{ a }} an(s)</option>
+					  </select>
 					</div>
 
 					<!-- Secteur -->
-					<div class="form-field small">
-						<label class="fr-label">Dans quel secteur</label>
-						<select class="fr-select" formControlName="secteur">
-							<option value="" disabled selected>Choisir…</option>
-							<option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
-						</select>
+					<div class="form-field small" *ngIf="showExperienceFields">
+					  <label class="fr-label">Dans quel secteur</label>
+					  <select class="fr-select" formControlName="secteur">
+					    <option value="" disabled selected>Choisir…</option>
+					    <option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
+					  </select>
 					</div>
-					
+
 					
 					<!-- Confirmation diplôme -->
 					<div class="form-field large">
@@ -101,6 +115,7 @@
 					  </p>
 
 					  <input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple>
+					  <p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid"> Le CV est obligatoire. </p>
 					</div>
 
 					<!-- Upload autres documents -->
@@ -117,14 +132,20 @@
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">
-						<label class="fr-label">Texte de motivation</label>
-						<textarea class="fr-input" formControlName="message" rows="5"></textarea>
+					  <label class="fr-label">Texte de motivation</label>
 
-						<!-- RGPD -->
-						<div class="rgpd-info">
-							<span class="fr-icon-info-fill" aria-hidden="true"></span>
-							<span>RGPD</span>
-						</div>
+					  <textarea 
+					    class="fr-input" 
+					    formControlName="message" 
+					    rows="5"
+					    placeholder="Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ..."
+					  ></textarea>
+
+					  <!-- RGPD -->
+					  <div class="rgpd-info">
+					    <span class="fr-icon-info-fill" aria-hidden="true"></span>
+					    <span>RGPD</span>
+					  </div>
 					</div>
 
 					<!-- Boutons alignés à droite -->
@@ -145,3 +166,28 @@
 
 	</div>
 </div>
+
+<div *ngIf="showConfirmation" class="confirmation-wrapper">
+
+  <h2 class="fr-h3 fr-mb-3w">Confirmation de candidature</h2>
+
+  <p class="fr-text--lg">
+    Votre candidature à la thèse 
+    <strong>{{ contactForm.value.titreSujet || 'au sujet sélectionné' }}</strong> 
+    a bien été prise en compte.
+  </p>
+
+  <div class="fr-alert fr-alert--success fr-mt-4w">
+    <h3 class="fr-alert__title">Votre candidature a bien été prise en compte</h3>
+    <p>
+      Vous recevrez un courriel dans quelques instants contenant un lien de confirmation.
+    </p>
+  </div>
+
+  <p class="fr-mt-4w fr-text--sm">
+    <strong>Détail —</strong> Si vous n’avez pas reçu de courriel 
+    (n’hésitez pas à vérifier dans les indésirables), vous pouvez saisir à nouveau votre adresse électronique.
+  </p>
+
+</div>
+

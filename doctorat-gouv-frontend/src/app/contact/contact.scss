@@ -154,5 +154,27 @@ input[type="file"].fr-upload::file-selector-button {
   background-color: rgb(244, 244, 244) !important;
 }
 
+// SCSS pour la confirmation après envoi du formulaire
+.confirmation-wrapper {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.confirmation-container {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.confirmation-container .fr-icon-check-line {
+  color: green;
+  font-size: 1.4rem;
+  margin-right: 0.5rem;
+}
+
 
 
