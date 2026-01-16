@@ -1,60 +1,46 @@
 <header class="fr-header" role="banner">
-  <div class="fr-container">
-    <div class="fr-header__body">
+  <div class="fr-header__body">
+    <div class="fr-container">
+      <div class="fr-header__body-row">
 
-      <!-- Brand -->
-      <div class="fr-header__brand">
-        <dsfr-header brand="République Française"
-                     serviceTitle="Doctorat.gouv.fr"
-                     service-tagline="Plateforme nationale des thèses">
-        </dsfr-header>
-      </div>
+        <!-- BRAND -->
+		<div class="fr-header__brand">
+		  <a href="/">
+		    <img src="assets/header-brand.png" alt="République Française - Doctorat.gouv.fr">
+		  </a>
+		</div>
 
-      <!-- Outils à droite -->
-      <div class="fr-header__tools">
-        <!-- Bouton Se connecter -->
-        <div class="fr-header__tools-links">
-          <ul class="fr-btns-group">
-            <li>
-              <a class="fr-btn" href="/connexion">
-                <span aria-hidden="false"></span>
-                Se connecter
-              </a>
-            </li>
-          </ul>
+        <!-- TOOLS -->
+        <div class="fr-header__tools">
+          <div class="fr-header__search fr-modal">
+            <form class="fr-search-bar" role="search" (submit)="onSearchForHeader($event)">
+              <input class="fr-input" type="search" placeholder="Rechercher">
+              <button class="fr-btn" type="submit">
+                <span class="fr-icon-search-line" aria-hidden="true"></span>
+                Rechercher
+              </button>
+            </form>
+          </div>
+
         </div>
 
-        <!-- Barre de recherche -->
-        <div class="fr-header__search">
-          <form class="fr-search-bar" role="search"
-                (submit)="onSearchForHeader($event)">
-            <input class="fr-input"
-                   type="search"
-                   id="search"
-                   name="search"
-                   placeholder="Rechercher">
-            <button class="fr-btn" title="Rechercher" type="submit">
-              <span class="fr-icon-search-line" aria-hidden="true"></span>
-              <span class="fr-btn--text">Rechercher</span>
-            </button>
-          </form>
-        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Menu de navigation -->
-    <div class="fr-header__menu fr-modal" id="header-menu">
+  <!-- MENU -->
+  <div class="fr-header__menu fr-modal" id="header-menu">
+    <div class="fr-container">
       <nav class="fr-nav" role="navigation" aria-label="Menu principal">
         <ul class="fr-nav__list">
-          <li class="fr-nav__item"><a class="fr-nav__link" href="/">Je m'informe</a></li>
-          <li class="fr-nav__item"><a class="fr-nav__link" href="/propositions">Candidat</a></li>
-          <li class="fr-nav__item"><a class="fr-nav__link" href="/candidats">Entreprise</a></li>
-          <li class="fr-nav__item"><a class="fr-nav__link" href="/contact">Partenaire</a></li>
+			<li class="fr-nav__item"><a class="fr-nav__link" href="/">Retour au site</a></li>
         </ul>
       </nav>
     </div>
   </div>
 </header>
+
+
 
 <!-- ==================== FORMULAIRE DE RECHERCHE ==================== -->
 <!-- ====================== FORMULAIRE ====================== -->

@@ -1,12 +1,51 @@
-.fr-header .fr-container,
-.search-main.fr-container {
-	max-width: 95% !important; // supprime la limite DSFR
-	width: 85%;
-	// max-width: 1800px; // limite sur grands écrans
-	margin: 0 auto; // centre horizontalement
-	padding-left: 0; // optionnel : supprime les marges internes
-	padding-right: 0; // optionnel
+.fr-header .fr-container {
+  max-width: 79% !important;
+  width: 79%;
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 1.1rem !important;
+}
 
+.fr-nav__link {
+  font-size: 1.1rem;
+}
+
+.fr-header__menu .fr-nav__link {
+  padding-top: 1.2rem !important;
+  padding-bottom: 1.2rem !important;
+}
+
+.fr-header__search {
+  flex: 1;
+}
+
+.fr-header__search .fr-search-bar {
+  width: 100%;
+}
+
+
+/* Le bloc outils prend plus de place à droite */
+/*.fr-header__tools {
+  flex: 2;  occupe tout l’espace disponible 
+  display: flex;
+  justify-content: flex-end;  reste collé à droite 
+  gap: 1rem;  espace entre Connexion et la recherche 
+}*/
+
+
+
+/*.fr-header__brand img {
+  height: 140px;  ou ce que tu veux 
+}*/
+
+
+.search-main.fr-container {
+	max-width: 95% !important;
+	width: 95%;
+	margin: 0 auto;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .fr-card {
