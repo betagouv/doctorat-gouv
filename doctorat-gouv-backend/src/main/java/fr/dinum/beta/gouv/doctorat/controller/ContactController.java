@@ -41,12 +41,12 @@ public class ContactController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<String> sendMails(@RequestBody ContactRequest request) {
-    	log.info("Demande de contact reçue le : {}", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(java.time.LocalDateTime.now()));
+    public ResponseEntity<?> sendMails(@RequestBody ContactRequest request) {
         templateMailEncadrant(request);
         templateMailCandidat(request);
-        return ResponseEntity.ok("Email envoyé");
+        return ResponseEntity.ok(Map.of("message", "Email envoyé"));
     }
+
 
 	private void templateMailEncadrant(ContactRequest req) {
 
@@ -57,6 +57,7 @@ public class ContactController {
 	    params.put("prenom", req.prenom);
 	    params.put("civilite", req.civilite);
 	    params.put("titre_sujet", req.titreSujet);
+	    params.put("profil", req.profil);
 	    params.put("email", req.email);
 	    params.put("motivation", req.message);
 	    params.put("url_ressources", req.urlVitrine);
@@ -73,8 +74,7 @@ public class ContactController {
 	    }
 
 	    try {
-	        // emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
-	        emailService.sendTemplateEmailWithAttachments("mohamed-laarbi.el-hani.ext@beta.gouv.fr", 15, params, attachments);
+	        emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
 	    } catch (JsonProcessingException e) {
 	        log.error("Error sending template email to encadrant: {}", req.emailEncadrant, e);
 	    }
@@ -101,8 +101,7 @@ public class ContactController {
 
         
         try {
-        	// emailService.sendTemplateEmail(request.email,14, params);
-        	emailService.sendTemplateEmail("mohamed-laarbi.el-hani.ext@beta.gouv.fr",14, params);
+        	emailService.sendTemplateEmail(request.email,14, params);
 		} catch (JsonProcessingException e) {
 			log.error("Error sending template email to candidate: {}", request.email, e);
 		}
