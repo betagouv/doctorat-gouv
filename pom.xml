@@ -9,8 +9,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>doctorat-gouv-backend</module>
 		<module>doctorat-gouv-frontend</module>
+		<module>doctorat-gouv-backend</module>
 	</modules>
 
 	<properties>
