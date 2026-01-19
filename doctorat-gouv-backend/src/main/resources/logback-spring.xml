@@ -21,18 +21,24 @@
     <!-- Profil dev : logs détaillés -->
     <springProfile name="dev">
         <root level="INFO">
-            <appender-ref ref="STDOUT"/>
+			<appender-ref ref="STDOUT" />
         </root>
     </springProfile>
 
-    <!-- Profil test : logs info -->
+	<springProfile name="rec">
+		<root level="INFO">
+			<appender-ref ref="STDOUT" />
+		</root>
+	</springProfile>
+
+	<!-- Profil test : logs info -->
     <springProfile name="test">
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
 
-    <!-- Profil prod : logs info + fichier -->
+	<!-- Profil prod : logs info + fichier -->
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
