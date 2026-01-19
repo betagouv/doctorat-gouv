@@ -43,11 +43,7 @@
 			"scripts": [
 				"node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js"
 			],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
@@ -74,6 +70,25 @@
           },
           "defaultConfiguration": "production"
         },
+		"server": {
+		  "builder": "@angular-devkit/build-angular:server",
+		  "options": {
+		    "outputPath": "dist/doctorat-gouv-frontend/server",
+		    "main": "src/main.server.ts",
+		    "tsConfig": "tsconfig.server.json"
+		  },
+		  "configurations": {
+		    "production": {
+		      "fileReplacements": [
+		        {
+		          "replace": "src/environments/environment.ts",
+		          "with": "src/environments/environment.prod.ts"
+		        }
+		      ]
+		    },
+		    "development": {}
+		  }
+		},
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
