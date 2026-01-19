@@ -265,21 +265,81 @@ export class Search implements OnInit {
 
   /** Retourne le chemin d’image correspondant au domaine d’impact */
   getImageForThesis(thesis: any): string {
-    const mapping: { [key: string]: string } = {
-      'Santé':                                   'DS-1-Sante.jpg',
-      'Culture, créativité, société':            'DI-2-culture-creativite-societe.jpg',
-      'Sécurité civile pour la société':        'DS-3-Securité_civile.jpg',
-      'Numérique, industrie, espace':            'DI-4-numerique-industrie-espace.jpg',
-      'Climat, énergie, mobilité':              'DI-5-climat-energie-mobilite.jpg',
-      'Alimentation, bioéconomie, ressources naturelles, agriculture et environnement':
-                                                'DI-6-alimentation-bioeconomie.jpg'
+
+    // 1) Mapping ODD
+    const oddMapping: Record<string, string> = {
+      "Eau propre et assainissement": "ODD-6-eau-assainissement.jpg",
+      "Consommation et production responsables": "ODD-12-consomation-responsable.jpg",
+      "Mesures relatives à la lutte contre les changements climatiques": "ODD-13-changements-climatiques.jpg",
+      "Bonne santé et bien-être": "ODD-3-sante.jpg",
+      "Inégalités réduites": "ODD-10-inegalites-reduites.jpg",
+      "Égalité entre les sexes": "ODD-5-egalite.jpg",
+      "Industrie, innovation et infrastructure": "ODD-9-Industrie, innovation-et-infrastructure.jpg",
+      "Éducation de qualité": "ODD-4-education.jpg",
+      "Vie aquatique": "ODD-14-vie-aquatique.jpg",
+      "Villes et communautés durables": "ODD-11-villes-durables.jpg",
+      "Vie terrestre": "ODD-15-vie-terrestre.jpg",
+      "Partenariats pour la réalisation des objectifs": "ODD-17-partenariats.jpg",
+      "Énergie propre et d'un coût abordable": "ODD-7-energie-propre.jpg"
     };
 
-    const domaine = thesis.domainesImpactListe?.[0];
-    return domaine && mapping[domaine]
-      ? `assets/images/${mapping[domaine]}`
-      : 'assets/images/default.jpg';
+    // 2) Mapping domaines d’impact
+    const impactMapping: Record<string, string> = {
+      "Santé": "DS-1-Sante.jpg",
+      "Culture, créativité, société": "DI-2-culture-creativite-societe.jpg",
+      "Sécurité civile pour la société": "DS-3-Securité_civile.jpg",
+      "Numérique, industrie, espace": "DI-4-numerique-industrie-espace.jpg",
+      "Climat, énergie, mobilité": "DI-5-climat-energie-mobilite.jpg",
+      "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement":
+        "DI-6-alimentation-bioeconomie.jpg"
+    };
+
+    // 3) Mapping spécialités (match partiel)
+    const specialiteMapping: { key: string; file: string }[] = [
+      { key: "Mathématique", file: "DS-1-mathematiques.jpg" },
+      { key: "Physique", file: "DS-2-physique.jpg" },
+      { key: "Sciences de la Terre et de l'Univers, Espace", file: "DS-3-terre-univers-espace.jpg" },
+      { key: "Chimie", file: "DS-4-chimie.jpg" },
+	  { key: "éducation", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+	  { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+	  { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+	  { key: "Agronomie", file: "DS-10-agronomique-ecologiques.jpg" },
+	  { key: "Ecologie", file: "DS-10-agronomique-ecologiques.jpg" },
+	  { key: "Biologie", file: "DS-5-biologie-medcine.jpg" },
+    ];
+
+    // -------------------------
+    // 1) Vérifier ODD
+    // -------------------------
+    const odd = thesis.objectifsDeveloppementDurableListe?.[0];
+    if (odd && oddMapping[odd]) {
+      return `assets/images/odd/${oddMapping[odd]}`;
+    }
+
+    // -------------------------
+    // 2) Vérifier domaines d’impact
+    // -------------------------
+    const impact = thesis.domainesImpactListe?.[0];
+    if (impact && impactMapping[impact]) {
+      return `assets/images/domaine_thematique/${impactMapping[impact]}`;
+    }
+
+    // -------------------------
+    // 3) Vérifier spécialité (match partiel)
+    // -------------------------
+    const specialite = thesis.specialite ?? "";
+    for (const entry of specialiteMapping) {
+      if (specialite.includes(entry.key)) {
+        return `assets/images/domaine_scientifique/${entry.file}`;
+      }
+    }
+
+    // -------------------------
+    // 4) Image par défaut
+    // -------------------------
+    return "assets/images/default.jpg";
   }
+
 
   getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
     return thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0
