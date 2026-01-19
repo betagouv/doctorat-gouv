@@ -28,6 +28,8 @@ import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrFooterModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
+import { Header } from '../header/header';
+
 /* ---------- SERVICE QUI FOURNIT LES OPTIONS DE FILTRE ---------- */
 import { FilterService, AllFilterOptions } from '../services/filter.service';
 /* -------------------------------------------------------------- */
@@ -39,6 +41,7 @@ import { FilterService, AllFilterOptions } from '../services/filter.service';
     CommonModule,
     RouterModule,
     FormsModule,
+	Header,
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,

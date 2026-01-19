@@ -4,12 +4,15 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
+import { Header } from '../header/header';
+
 @Component({
   selector: 'app-contact',
   standalone: true,
   imports: [
 	CommonModule,
-	ReactiveFormsModule
+	ReactiveFormsModule,
+	Header
   ],
   templateUrl: './contact.html',
   styleUrls: ['./contact.scss']

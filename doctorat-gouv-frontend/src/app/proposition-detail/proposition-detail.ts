@@ -6,13 +6,17 @@ import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DatePipe } from '@angular/common';
 
+import { Header } from '../header/header';
+
 @Component({
 	selector: 'app-proposition-detail',
 	standalone: true,
 	imports: [
-		CommonModule, 
+		CommonModule,
 		RouterModule,
-		DatePipe],
+		DatePipe,
+		Header
+	],
 	templateUrl: './proposition-detail.html',
 	styleUrl: './proposition-detail.scss',
 })

@@ -1,0 +1,107 @@
+.fr-header .fr-container {
+  max-width: 79% !important;
+  width: 79%;
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 1.1rem !important;
+}
+
+.fr-nav__link {
+  font-size: 1.1rem;
+}
+
+.fr-header__menu .fr-nav__link {
+  padding-top: 1.2rem !important;
+  padding-bottom: 1.2rem !important;
+}
+
+.fr-header__search {
+  flex: 1;
+}
+
+.fr-header__search .fr-search-bar {
+  width: 100%;
+}
+
+
+/* Le bloc outils prend plus de place à droite */
+/*.fr-header__tools {
+  flex: 2;  occupe tout l’espace disponible 
+  display: flex;
+  justify-content: flex-end;  reste collé à droite 
+  gap: 1rem;  espace entre Connexion et la recherche 
+}*/
+
+
+
+/*.fr-header__brand img {
+  height: 140px;  ou ce que tu veux 
+}*/
+
+
+
+/* Bandeau */
+.info-banner {
+  background-color: rgb(232, 232, 255);
+  border-bottom: 1px solid #d5d5f0;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(0, 128, 255);
+  font-size: 0.95rem;
+}
+
+/* Colonne gauche : icône + texte */
+.info-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 4rem;
+}
+
+/* Icône EXACTE comme ta photo */
+.info-icon {
+  background-color: #0053b3; /* bleu vif comme ton image */
+  color: #ffffff;            /* “i” blanc */
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;        /* angles légèrement arrondis */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;           /* taille du “i” */
+  font-family: Arial, sans-serif;
+}
+
+/* Texte */
+.info-banner p {
+  margin: 0;
+}
+
+/* Lien */
+.info-banner a {
+  color: rgb(0, 128, 255);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Bouton X */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #000091;
+  padding: 0 0.5rem;
+  margin-right: 2rem;
+}
+
+.close-btn:hover {
+  opacity: 0.7;
+}
+
+
