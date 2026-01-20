@@ -12,16 +12,20 @@
  *  
  *****************************************************************************************/
 
-import { Component, OnInit, OnDestroy  } from '@angular/core';
+/*****************************************************************************************
+ *  SEARCH COMPONENT – version dropdown custom (mono‑sélection)
+ *****************************************************************************************/
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
-import { PageResponse } from '../models/page-response.model';
+import { FilterService, AllFilterOptions } from '../services/filter.service';
 
 import { DsfrHeaderModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
@@ -30,10 +34,6 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
 import { Header } from '../header/header';
 
-/* ---------- SERVICE QUI FOURNIT LES OPTIONS DE FILTRE ---------- */
-import { FilterService, AllFilterOptions } from '../services/filter.service';
-/* -------------------------------------------------------------- */
-
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -41,7 +41,7 @@ import { FilterService, AllFilterOptions } from '../services/filter.service';
     CommonModule,
     RouterModule,
     FormsModule,
-	Header,
+    Header,
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,
@@ -50,12 +50,13 @@ import { FilterService, AllFilterOptions } from '../services/filter.service';
   templateUrl: './search.html',
   styleUrls: ['./search.scss']
 })
-export class Search implements OnInit {
+export class Search implements OnInit, OnDestroy {
+
   /* ------------------- Pagination ------------------- */
   pageSize = 27;
   currentPage = 0;
   totalPages = 0;
-  totalResults = 0;               // nombre total de résultats (global)
+  totalResults = 0;
 
   /* ------------------- Modèle de recherche ------------------- */
   query = '';
@@ -66,142 +67,177 @@ export class Search implements OnInit {
   ecole = '';
   defisSociete = '';
 
-  /* ------------------- Options affichées dans chaque <select> ------------------- */
+  /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
   localisationOpts: string[] = [];
   laboratoireOpts: string[] = [];
   ecoleOpts: string[] = [];
   defisSocieteOpts: string[] = [];
 
+  /* ------------------- Dropdown states ------------------- */
+  disciplineOpen = false;
+  localisationOpen = false;
+  laboratoireOpen = false;
+  ecoleOpen = false;
+  defisSocieteOpen = false;
+
+  /* ------------------- Search inside dropdown ------------------- */
+  disciplineSearch = '';
+  localisationSearch = '';
+  laboratoireSearch = '';
+  ecoleSearch = '';
+  defisSocieteSearch = '';
+
   /* ------------------- UI ------------------- */
-  showMoreFilters = false;        // affichage de la deuxième rangée de filtres
+  showMoreFilters = false;
   results: PropositionTheseDto[] = [];
   view: 'liste' | 'carte' = 'liste';
-  
+  /*  dropdownPosition = {
+    top: 0,
+    left: 0,
+    width: 0
+  };*/
+
+
   /* ------------------- Reactive trigger ------------------- */
   private filterChanges$ = new Subject<void>();
   private filterSub!: Subscription;
 
-  /* ------------------- Injection de dépendances ------------------- */
   constructor(
     private router: Router,
     private propositionService: PropositionTheseService,
-    private filterService: FilterService          // ← nouveau service
+    private filterService: FilterService
   ) {}
 
-  /* ------------------- Cycle de vie ------------------- */
+  /* ------------------- Lifecycle ------------------- */
   ngOnInit(): void {
-	this.loadFilterOptions();
+	document.addEventListener('click', this.handleClickOutside.bind(this));
 
-	// 1️ - Souscrire au Subject avec debounce
-	this.filterSub = this.filterChanges$
-	  .pipe(
-	    debounceTime(300),          // attendre 300 ms d’inactivité
-	    // distinctUntilChanged()      // ne pas relancer si la valeur n’a pas changé
-	  )
-	  .subscribe(() => {
-	    // Chaque fois que le debounce se déclenche, on lance la recherche
-	    this.onSearch(0);          // on repart toujours à la première page
-	  });
+    this.loadFilterOptions();
+
+    this.filterSub = this.filterChanges$
+      .pipe(debounceTime(300))
+      .subscribe(() => this.onSearch(0));
   }
-  
+
   ngOnDestroy(): void {
-    // Nettoyer l’abonnement pour éviter les fuites mémoire
-    if (this.filterSub) {
-      this.filterSub.unsubscribe();
+    if (this.filterSub) this.filterSub.unsubscribe();
+	document.removeEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  /* ------------------- Dropdown logic ------------------- */
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    // Si on clique dans un dropdown → ne rien faire
+    if (target.closest('.dropdown-filter')) return;
+
+    // Sinon → fermer
+    this.closeAllDropdowns();
+  }
+
+  toggleDropdown(panel: string): void {
+    const isOpening = !(this as any)[panel];
+
+    this.closeAllDropdowns();
+
+    if (isOpening) {
+      (this as any)[panel] = true;
     }
   }
   
-  /* -----------------------------------------------------------------
-     Méthode appelée à chaque changement de champ
-     ----------------------------------------------------------------- */
+/*  toggleDropdownOld(panel: string, event?: MouseEvent): void {
+    const isOpening = !(this as any)[panel];
+
+    this.closeAllDropdowns();
+
+    if (isOpening && event) {
+      const button = event.target as HTMLElement;
+      const rect = button.getBoundingClientRect();
+
+      this.dropdownPosition = {
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      };
+
+      (this as any)[panel] = true;
+    }
+  }*/
+
+
+
+  filteredOptions(list: string[], search: string): string[] {
+    if (!search) return list;
+    return list.filter(opt =>
+      opt.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  selectSingle(filterName: string, value: string): void {
+    (this as any)[filterName] = value;
+    this.onFilterChange();
+  }
+
+  resetFilter(filterName: string): void {
+    (this as any)[filterName] = '';
+    this.onFilterChange();
+  }
+
+  /* ------------------- Filters ------------------- */
   onFilterChange(): void {
-    // On pousse simplement un signal dans le Subject.
-    // Le debounce gérera le timing réel.
     this.filterChanges$.next();
   }
 
-  /** Charge toutes les listes d’options depuis le back‑end */
   private loadFilterOptions(): void {
     this.filterService.getAllOptions().subscribe({
       next: (data: AllFilterOptions) => {
-        this.disciplineOpts   = data.discipline;
+        this.disciplineOpts = data.discipline;
         this.localisationOpts = data.localisation;
-        this.laboratoireOpts  = data.laboratoire;
-        this.ecoleOpts        = data.ecole;
-		this.defisSocieteOpts = data.defisSociete;
+        this.laboratoireOpts = data.laboratoire;
+        this.ecoleOpts = data.ecole;
+        this.defisSocieteOpts = data.defisSociete;
       },
-      error: err => {
-        console.error('Erreur lors du chargement des filtres', err);
-        // Vous pouvez afficher un toast ou un message d’erreur à l’utilisateur ici.
-      }
+      error: err => console.error('Erreur lors du chargement des filtres', err)
     });
   }
 
-  /* ------------------- Recherche ------------------- */
-  /** Construit l’objet de filtres à partir des champs remplis */
   private buildActiveFilters(): Record<string, string> {
     const active: Record<string, string> = {};
 
-    // Chaque champ n’est ajouté que s’il possède une valeur non vide
-    if (this.discipline)   active['discipline']   = this.discipline;
+    if (this.discipline) active['discipline'] = this.discipline;
     if (this.localisation) active['localisation'] = this.localisation;
-    if (this.laboratoire)  active['laboratoire']  = this.laboratoire;
-    if (this.ecole)        active['ecole']        = this.ecole;
-	if (this.defisSociete) active['defisSociete'] = this.defisSociete;
+    if (this.laboratoire) active['laboratoire'] = this.laboratoire;
+    if (this.ecole) active['ecole'] = this.ecole;
+    if (this.defisSociete) active['defisSociete'] = this.defisSociete;
 
-    // Le champ de recherche libre (titre / mots‑clés)
-    if (this.query?.trim()) {
-      active['query'] = this.query.trim();
-    }
+    if (this.query?.trim()) active['query'] = this.query.trim();
 
     return active;
   }
 
-  /** Lance la recherche (page = 0 par défaut) */
+  /* ------------------- Search ------------------- */
   onSearch(page: number = 0): void {
     const activeFilters = this.buildActiveFilters();
 
     this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: data => {
-        this.results      = data.content;
-        this.currentPage  = data.number;
-        this.totalPages   = data.totalPages;
-        this.totalResults = data.totalElements;   // nombre total de résultats (global)
+        this.results = data.content;
+        this.currentPage = data.number;
+        this.totalPages = data.totalPages;
+        this.totalResults = data.totalElements;
 
-        // Scroll jusqu’au compteur de résultats
         document.getElementById('results-count')
-                ?.scrollIntoView({ behavior: 'smooth' });
+          ?.scrollIntoView({ behavior: 'smooth' });
       },
       error: err => console.error('❌ Erreur lors de la recherche :', err)
     });
   }
 
-  /* ------------------- Pagination (next / previous / specific) ------------------- */
-  goToNextPage(): void {
-    if (this.currentPage < this.totalPages - 1) {
-      this.onSearch(this.currentPage + 1);
-    }
-  }
-
-  goToPreviousPage(): void {
-    if (this.currentPage > 0) {
-      this.onSearch(this.currentPage - 1);
-    }
-  }
-
-  /** Retourne un tableau d’indice de pages autour de la page courante (pour l’affichage) */
-  getPagesAround(): number[] {
-    const start = Math.max(1, this.currentPage - 2);
-    const end   = Math.min(this.totalPages - 2, this.currentPage + 2);
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  }
-
+  /* ------------------- Pagination ------------------- */
   goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages) {
       this.onSearch(page);
-
-      // Scroll jusqu’au compteur de résultats + focus (accessibilité)
       const el = document.getElementById('results-count');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
@@ -210,11 +246,17 @@ export class Search implements OnInit {
     }
   }
 
-  /* ------------------- Recherche depuis l’en‑tête du site ------------------- */
+  getPagesAround(): number[] {
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(this.totalPages - 2, this.currentPage + 2);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
+  /* ------------------- Header search ------------------- */
   onSearchForHeader(event: Event): void {
     event.preventDefault();
     const input = (event.target as HTMLFormElement)
-                    .querySelector<HTMLInputElement>('#search');
+      .querySelector<HTMLInputElement>('#search');
     const query = input?.value.trim();
 
     if (query) {
@@ -227,46 +269,27 @@ export class Search implements OnInit {
     this.showMoreFilters = !this.showMoreFilters;
   }
 
-  /** Transforme un dictionnaire de mots clés en tableau d’entrée */
+  removeFilter(filterName: keyof Search): void {
+    (this as any)[filterName] = '';
+    this.onFilterChange();
+  }
+
+  /* ------------------- Image helpers ------------------- */
   getEntries(motsCles: Record<string, string> | null): [string, string][] {
     return motsCles ? Object.entries(motsCles) : [];
   }
 
-  /**
-   * Retourne le résumé (ou un fallback) tronqué à `maxWords` mots.
-   * Si aucune des propriétés attendues n’est renseignée, on renvoie
-   * « Résumé non disponible ».
-   */
   getResumeOrFallback(thesis: any, maxWords = 30): string {
-    // 1️ - On commence avec une chaîne vide – jamais null.
-    let text = '';
+    let text = thesis?.resume || thesis?.objectif || thesis?.context || '';
+    if (!text) return 'Résumé non disponible';
 
-    // 2️ - On remplit `text` dès qu’on trouve une valeur.
-    if (thesis?.resume) {
-      text = thesis.resume;
-    } else if (thesis?.objectif) {
-      text = thesis.objectif;
-    } else if (thesis?.context) {
-      text = thesis.context;
-    } else {
-      // Aucun champ trouvé → on sort immédiatement.
-      return 'Résumé non disponible';
-    }
-
-    // 3️ - On découpe la chaîne en mots et on limite le nombre de mots.
     const words = text.split(/\s+/);
-    if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(' ') + ' …';
-    }
-
-    // 4️ - Retour du texte complet
-    return text;
+    return words.length > maxWords
+      ? words.slice(0, maxWords).join(' ') + ' …'
+      : text;
   }
 
-  /** Retourne le chemin d’image correspondant au domaine d’impact */
   getImageForThesis(thesis: any): string {
-
-    // 1) Mapping ODD
     const oddMapping: Record<string, string> = {
       "Eau propre et assainissement": "ODD-6-eau-assainissement.jpg",
       "Consommation et production responsables": "ODD-12-consomation-responsable.jpg",
@@ -283,7 +306,6 @@ export class Search implements OnInit {
       "Énergie propre et d'un coût abordable": "ODD-7-energie-propre.jpg"
     };
 
-    // 2) Mapping domaines d’impact
     const impactMapping: Record<string, string> = {
       "Santé": "DS-1-Sante.jpg",
       "Culture, créativité, société": "DI-2-culture-creativite-societe.jpg",
@@ -294,39 +316,28 @@ export class Search implements OnInit {
         "DI-6-alimentation-bioeconomie.jpg"
     };
 
-    // 3) Mapping spécialités (match partiel)
     const specialiteMapping: { key: string; file: string }[] = [
       { key: "Mathématique", file: "DS-1-mathematiques.jpg" },
       { key: "Physique", file: "DS-2-physique.jpg" },
       { key: "Sciences de la Terre et de l'Univers, Espace", file: "DS-3-terre-univers-espace.jpg" },
       { key: "Chimie", file: "DS-4-chimie.jpg" },
-	  { key: "éducation", file: "DS-6-Sciences humaines-et-humanite.jpg" },
-	  { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
-	  { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
-	  { key: "Agronomie", file: "DS-10-agronomique-ecologiques.jpg" },
-	  { key: "Ecologie", file: "DS-10-agronomique-ecologiques.jpg" },
-	  { key: "Biologie", file: "DS-5-biologie-medcine.jpg" },
+      { key: "éducation", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+      { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+      { key: "Agronomie", file: "DS-10-agronomique-ecologiques.jpg" },
+      { key: "Ecologie", file: "DS-10-agronomique-ecologiques.jpg" },
+      { key: "Biologie", file: "DS-5-biologie-medcine.jpg" }
     ];
 
-    // -------------------------
-    // 1) Vérifier ODD
-    // -------------------------
     const odd = thesis.objectifsDeveloppementDurableListe?.[0];
     if (odd && oddMapping[odd]) {
       return `assets/images/odd/${oddMapping[odd]}`;
     }
 
-    // -------------------------
-    // 2) Vérifier domaines d’impact
-    // -------------------------
     const impact = thesis.domainesImpactListe?.[0];
     if (impact && impactMapping[impact]) {
       return `assets/images/domaine_thematique/${impactMapping[impact]}`;
     }
 
-    // -------------------------
-    // 3) Vérifier spécialité (match partiel)
-    // -------------------------
     const specialite = thesis.specialite ?? "";
     for (const entry of specialiteMapping) {
       if (specialite.includes(entry.key)) {
@@ -334,36 +345,31 @@ export class Search implements OnInit {
       }
     }
 
-    // -------------------------
-    // 4) Image par défaut
-    // -------------------------
     return "assets/images/default.jpg";
   }
 
-
   getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
-    return thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0
-      ? thesis.domainesImpactListe[0]
-      : null;
+    return thesis.domainesImpactListe?.[0] ?? null;
   }
 
   getFirstDomaineWithMaxLength(
     thesis: { domainesImpactListe: string[] | null },
     maxLength = 10
   ): string | null {
-    if (thesis.domainesImpactListe && thesis.domainesImpactListe.length > 0) {
-      const domaine = thesis.domainesImpactListe[0];
-      return domaine.length > maxLength ? domaine.slice(0, maxLength) + '…' : domaine;
-    }
-    return null;
+    const domaine = thesis.domainesImpactListe?.[0];
+    return domaine
+      ? domaine.length > maxLength
+        ? domaine.slice(0, maxLength) + '…'
+        : domaine
+      : null;
   }
   
-  /** Réinitialise le filtre indiqué et relance la recherche */
-  removeFilter(filterName: keyof Search): void {
-    // 1️ - Remettre la propriété à la valeur vide
-    (this as any)[filterName] = '';
-
-    // 2️ - Notifier le système de changement de filtre
-    this.onFilterChange();   // <-- déclenche le Subject → debounce → onSearch()
+  closeAllDropdowns(): void {
+    this.disciplineOpen = false;
+    this.defisSocieteOpen = false;
+    this.localisationOpen = false;
+    this.laboratoireOpen = false;
+    this.ecoleOpen = false;
   }
+
 }

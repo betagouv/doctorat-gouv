@@ -1,132 +1,250 @@
 <app-header></app-header>
 
-
-<!-- ==================== FORMULAIRE DE RECHERCHE ==================== -->
-<!-- ====================== FORMULAIRE ====================== -->
-<!-- On ne garde plus le (ngSubmit) car on ne soumet plus le formulaire -->
 <div class="search-form">
-
   <div class="form-content">
 
-    <!-- Titre -->
     <h1 class="fr-h1 fr-text--center">
       Trouver une offre de thèse ou d’accompagnement
     </h1>
 
-    <!-- ------------------------------------------------ -->
-    <!-- Barre de recherche principale (texte libre) -->
-    <!-- ------------------------------------------------ -->
-	<div class="custom-search-bar">
-	  <div class="custom-input-wrapper">
-<!--	    <span class="custom-icon">🔍</span>-->
-		<span class="custom-icon">
-		  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-		    <circle cx="11" cy="11" r="8"></circle>
-		    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-		  </svg>
-		</span>
+    <!-- ===================== BARRE DE RECHERCHE ===================== -->
+    <div class="custom-search-bar">
+      <div class="custom-input-wrapper">
+        <span class="custom-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
 
-	    <input type="search"
-	           id="query"
-	           name="query"
-	           class="custom-input"
-	           placeholder="Rechercher par titre ou mot clés"
-	           [(ngModel)]="query"
-	           (ngModelChange)="onFilterChange()"
-	           aria-label="Champ de recherche">
-	  </div>
-	</div>
-
-
-
-
-
-    <!-- ------------------------------------------------ -->
-    <!-- Ligne 1 : Discipline – Défis de société – Localisation -->
-    <!-- ------------------------------------------------ -->
-    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
-
-      <!-- Discipline -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="discipline"
-                name="discipline"
-                [(ngModel)]="discipline"
-                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
-          <option value="">Discipline</option>
-          <option *ngFor="let opt of disciplineOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Défis de société -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="defisSociete"
-                name="defisSociete"
-                [(ngModel)]="defisSociete"
-                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
-          <option value="">Défis de société</option>
-          <option *ngFor="let opt of defisSocieteOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Localisation -->
-      <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="localisation"
-                name="localisation"
-                [(ngModel)]="localisation"
-                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
-          <option value="">Localisation géographique</option>
-          <option *ngFor="let opt of localisationOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
+        <input type="search"
+               id="query"
+               name="query"
+               class="custom-input"
+               placeholder="Rechercher par titre ou mot clés"
+               [(ngModel)]="query"
+               (ngModelChange)="onFilterChange()"
+               aria-label="Champ de recherche">
       </div>
     </div>
 
-    <!-- ------------------------------------------------ -->
-    <!-- Ligne 2 : Laboratoire – École (affichée si showMoreFilters) -->
-    <!-- ------------------------------------------------ -->
+    <!-- ===================== LIGNE 1 : 3 DROPDOWNS ===================== -->
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
+
+      <!-- DISCIPLINE -->
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="dropdown-filter">
+          <button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
+            {{ discipline || 'Discipline' }}
+            <span class="fr-icon-arrow-down-s-line"></span>
+          </button>
+
+          <div class="dropdown-panel" *ngIf="disciplineOpen">
+
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text"
+                     class="search-input"
+                     placeholder="Rechercher"
+                     [(ngModel)]="disciplineSearch">
+            </div>
+
+            <div class="fr-checkbox-group fr-mb-2w">
+              <input type="checkbox"
+                     id="discipline_all"
+                     [checked]="!discipline"
+                     (change)="resetFilter('discipline')">
+              <label for="discipline_all">Tout sélectionner</label>
+            </div>
+
+            <div class="checkbox-list">
+              <div class="fr-checkbox-group"
+                   *ngFor="let opt of filteredOptions(disciplineOpts, disciplineSearch)">
+                <input type="checkbox"
+                       [id]="'discipline_' + opt"
+                       [checked]="discipline === opt"
+                       (change)="selectSingle('discipline', opt)">
+                <label [for]="'discipline_' + opt">{{ opt }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- DEFIS DE SOCIETE -->
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="dropdown-filter">
+          <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
+            {{ defisSociete || 'Défis de société' }}
+            <span class="fr-icon-arrow-down-s-line"></span>
+          </button>
+
+          <div class="dropdown-panel" *ngIf="defisSocieteOpen">
+
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text"
+                     class="search-input"
+                     placeholder="Rechercher"
+                     [(ngModel)]="defisSocieteSearch">
+            </div>
+
+            <div class="fr-checkbox-group fr-mb-2w">
+              <input type="checkbox"
+                     id="defisSociete_all"
+                     [checked]="!defisSociete"
+                     (change)="resetFilter('defisSociete')">
+              <label for="defisSociete_all">Tout sélectionner</label>
+            </div>
+
+            <div class="checkbox-list">
+              <div class="fr-checkbox-group"
+                   *ngFor="let opt of filteredOptions(defisSocieteOpts, defisSocieteSearch)">
+                <input type="checkbox"
+                       [id]="'defisSociete_' + opt"
+                       [checked]="defisSociete === opt"
+                       (change)="selectSingle('defisSociete', opt)">
+                <label [for]="'defisSociete_' + opt">{{ opt }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- LOCALISATION -->
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="dropdown-filter">
+          <button class="dropdown-btn" (click)="toggleDropdown('localisationOpen')">
+            {{ localisation || 'Localisation géographique' }}
+            <span class="fr-icon-arrow-down-s-line"></span>
+          </button>
+
+          <div class="dropdown-panel" *ngIf="localisationOpen">
+
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text"
+                     class="search-input"
+                     placeholder="Rechercher"
+                     [(ngModel)]="localisationSearch">
+            </div>
+
+            <div class="fr-checkbox-group fr-mb-2w">
+              <input type="checkbox"
+                     id="localisation_all"
+                     [checked]="!localisation"
+                     (change)="resetFilter('localisation')">
+              <label for="localisation_all">Tout sélectionner</label>
+            </div>
+
+            <div class="checkbox-list">
+              <div class="fr-checkbox-group"
+                   *ngFor="let opt of filteredOptions(localisationOpts, localisationSearch)">
+                <input type="checkbox"
+                       [id]="'localisation_' + opt"
+                       [checked]="localisation === opt"
+                       (change)="selectSingle('localisation', opt)">
+                <label [for]="'localisation_' + opt">{{ opt }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================== LIGNE 2 : 2 DROPDOWNS ===================== -->
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w"
          *ngIf="showMoreFilters">
 
-      <!-- Laboratoire -->
+      <!-- LABORATOIRE -->
       <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="laboratoire"
-                name="laboratoire"
-                [(ngModel)]="laboratoire"
-                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
-          <option value="">Laboratoire de recherche</option>
-          <option *ngFor="let opt of laboratoireOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
+        <div class="dropdown-filter">
+          <button class="dropdown-btn" (click)="toggleDropdown('laboratoireOpen')">
+            {{ laboratoire || 'Laboratoire de recherche' }}
+            <span class="fr-icon-arrow-down-s-line"></span>
+          </button>
+
+          <div class="dropdown-panel" *ngIf="laboratoireOpen">
+
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text"
+                     class="search-input"
+                     placeholder="Rechercher"
+                     [(ngModel)]="laboratoireSearch">
+            </div>
+
+            <div class="fr-checkbox-group fr-mb-2w">
+              <input type="checkbox"
+                     id="laboratoire_all"
+                     [checked]="!laboratoire"
+                     (change)="resetFilter('laboratoire')">
+              <label for="laboratoire_all">Tout sélectionner</label>
+            </div>
+
+            <div class="checkbox-list">
+              <div class="fr-checkbox-group"
+                   *ngFor="let opt of filteredOptions(laboratoireOpts, laboratoireSearch)">
+                <input type="checkbox"
+                       [id]="'laboratoire_' + opt"
+                       [checked]="laboratoire === opt"
+                       (change)="selectSingle('laboratoire', opt)">
+                <label [for]="'laboratoire_' + opt">{{ opt }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
 
-      <!-- École -->
+      <!-- ECOLE -->
       <div class="fr-col-12 fr-col-md-4">
-        <select class="fr-select pill-select"
-                id="ecole"
-                name="ecole"
-                [(ngModel)]="ecole"
-                (ngModelChange)="onFilterChange()">   <!-- <-- NEW -->
-          <option value="">Établissement diplômant</option>
-          <option *ngFor="let opt of ecoleOpts" [value]="opt">
-            {{ opt }}
-          </option>
-        </select>
+        <div class="dropdown-filter">
+          <button class="dropdown-btn" (click)="toggleDropdown('ecoleOpen')">
+            {{ ecole || 'Établissement diplômant' }}
+            <span class="fr-icon-arrow-down-s-line"></span>
+          </button>
+
+          <div class="dropdown-panel" *ngIf="ecoleOpen">
+
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text"
+                     class="search-input"
+                     placeholder="Rechercher"
+                     [(ngModel)]="ecoleSearch">
+            </div>
+
+            <div class="fr-checkbox-group fr-mb-2w">
+              <input type="checkbox"
+                     id="ecole_all"
+                     [checked]="!ecole"
+                     (change)="resetFilter('ecole')">
+              <label for="ecole_all">Tout sélectionner</label>
+            </div>
+
+            <div class="checkbox-list">
+              <div class="fr-checkbox-group"
+                   *ngFor="let opt of filteredOptions(ecoleOpts, ecoleSearch)">
+                <input type="checkbox"
+                       [id]="'ecole_' + opt"
+                       [checked]="ecole === opt"
+                       (change)="selectSingle('ecole', opt)">
+                <label [for]="'ecole_' + opt">{{ opt }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
+
     </div>
 
-    <!-- ------------------------------------------------ -->
-    <!-- Actions (plus/moins de filtres) -->
-    <!-- ------------------------------------------------ -->
+    <!-- ===================== ACTIONS ===================== -->
     <div class="fr-grid-row fr-mt-2w actions-row">
       <div class="fr-col-12 fr-col-md-6 fr-text--left">
         <a href="javascript:void(0)"
@@ -135,61 +253,57 @@
           {{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
         </a>
       </div>
-
-      <!-- Le bouton « Rechercher » est supprimé – plus besoin de type="submit" -->
     </div>
 
   </div>
 </div>
 
-<!-- ==================== SECTION DES RESULTATS ==================== -->
 <main class="fr-container fr-py-4w search-main">
 
-  <!-- ==== TAGS ACTIFS ==== -->
   <section class="fr-tags-group fr-mt-4w"
            *ngIf="discipline || defisSociete || localisation || laboratoire || ecole">
     <p class="fr-text--bold">Filtres actifs :</p>
-	<ul class="fr-tags-group__list">
-	
-		<li *ngIf="discipline">
-			<span class="fr-tag">
-				Discipline : {{ discipline }}
-				<button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
-			</span>
-		</li>
-	
-		<li *ngIf="defisSociete">
-			<span class="fr-tag">
-				Défis société : {{ defisSociete }}
-				<button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
-			</span>
-		</li>
-	
-		<li *ngIf="localisation">
-			<span class="fr-tag">
-				Localisation : {{ localisation }}
-				<button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
-			</span>
-		</li>
-	
-		<li *ngIf="laboratoire">
-			<span class="fr-tag">
-				Laboratoire : {{ laboratoire }}
-				<button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
-			</span>
-		</li>
-	
-		<li *ngIf="ecole">
-			<span class="fr-tag">
-				Établissement : {{ ecole }}
-				<button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
-			</span>
-		</li>
-	
-	</ul>
+    <ul class="fr-tags-group__list">
+
+      <li *ngIf="discipline">
+        <span class="fr-tag">
+          Discipline : {{ discipline }}
+          <button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="defisSociete">
+        <span class="fr-tag">
+          Défis société : {{ defisSociete }}
+          <button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="localisation">
+        <span class="fr-tag">
+          Localisation : {{ localisation }}
+          <button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="laboratoire">
+        <span class="fr-tag">
+          Laboratoire : {{ laboratoire }}
+          <button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
+        </span>
+      </li>
+
+      <li *ngIf="ecole">
+        <span class="fr-tag">
+          Établissement : {{ ecole }}
+          <button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
+        </span>
+      </li>
+
+    </ul>
   </section>
 
-  <!-- ==== LISTE DES THÈSES ==== -->
+  <!-- ===================== RÉSULTATS ===================== -->
   <section class="fr-mt-4w" *ngIf="results.length">
 
     <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
@@ -197,7 +311,6 @@
       de recherche
     </p>
 
-    <!-- ------- VUE LISTE (cards) ------- -->
     <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
@@ -205,25 +318,21 @@
 
         <div class="fr-card fr-card--shadow fr-card--sm">
 
-          <!-- Image + badges -->
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
                  alt="Illustration de la thèse" />
 
-            <!-- Domaine (badge vert) -->
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
               {{ getFirstDomaineWithMaxLength(thesis, 60) }}
             </span>
 
-            <!-- Spécialité (badge rose) -->
             <span class="fr-tag badge badge-pink"
                   *ngIf="thesis?.specialite">
               {{ thesis.specialite }}
             </span>
           </div>
 
-          <!-- Corps de la card -->
           <div class="fr-card__body">
             <h3 class="fr-card__title custom-blue">
               {{ thesis.theseTitre }}
@@ -232,7 +341,6 @@
             <p class="fr-card__desc">
               {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
 
-              <!-- Mots clés -->
               <ng-container *ngIf="thesis.motsCles">
                 <strong>Mots clés :</strong>
                 <div class="fr-tags-group fr-tags-group--column">
@@ -245,18 +353,18 @@
             </p>
           </div>
 
-          <!-- Footer avec lien détaillé -->
-		  <div class="fr-card__footer">
-		    <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
-		      Voir détail
-		    </a>
-		  </div>
-
+          <div class="fr-card__footer">
+            <a [routerLink]="['/proposition']"
+               [queryParams]="{ id: thesis.id }"
+               class="arrow-link">
+              Voir détail
+            </a>
+          </div>
 
         </div>
       </div>
 
-      <!-- ===== PAGINATION ===== -->
+      <!-- PAGINATION -->
       <div class="fr-container fr-my-4w pagination-fixed">
         <nav class="fr-pagination"
              role="navigation"
@@ -265,61 +373,49 @@
 
           <ul class="fr-pagination__list">
 
-            <!-- Précédent -->
             <li>
               <button class="fr-pagination__link"
                       (click)="goToPage(currentPage - 1)"
-                      [disabled]="currentPage === 0"
-                      aria-label="Page précédente">
-                <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+                      [disabled]="currentPage === 0">
+                <span class="fr-icon-arrow-left-s-line"></span>
                 <span class="fr-mx-1w">Précédent</span>
               </button>
             </li>
 
-            <!-- Première page -->
             <li>
               <button class="fr-pagination__link"
                       (click)="goToPage(0)"
-                      [class.fr-pagination__link--current]="currentPage === 0"
-                      [attr.aria-current]="currentPage === 0 ? 'page' : null">
+                      [class.fr-pagination__link--current]="currentPage === 0">
                 1
               </button>
             </li>
 
-            <!-- Ellipse avant -->
             <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
 
-            <!-- Pages autour de la courante -->
             <li *ngFor="let i of getPagesAround()">
               <button class="fr-pagination__link"
                       (click)="goToPage(i)"
-                      [class.fr-pagination__link--current]="currentPage === i"
-                      [attr.aria-current]="currentPage === i ? 'page' : null">
+                      [class.fr-pagination__link--current]="currentPage === i">
                 {{ i + 1 }}
               </button>
             </li>
 
-            <!-- Ellipse après -->
             <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
 
-            <!-- Dernière page -->
             <li>
               <button class="fr-pagination__link"
                       (click)="goToPage(totalPages - 1)"
-                      [class.fr-pagination__link--current]="currentPage === totalPages - 1"
-                      [attr.aria-current]="currentPage === totalPages - 1 ? 'page' : null">
+                      [class.fr-pagination__link--current]="currentPage === totalPages - 1">
                 {{ totalPages }}
               </button>
             </li>
 
-            <!-- Suivant -->
             <li>
               <button class="fr-pagination__link"
                       (click)="goToPage(currentPage + 1)"
-                      [disabled]="currentPage === totalPages - 1"
-                      aria-label="Page suivante">
+                      [disabled]="currentPage === totalPages - 1">
                 <span class="fr-mx-1w">Suivant</span>
-                <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+                <span class="fr-icon-arrow-right-s-line"></span>
               </button>
             </li>
 
@@ -327,11 +423,6 @@
         </nav>
       </div>
 
-    </div>
-
-    <!-- ------- VUE CARTE (placeholder) ------- -->
-    <div *ngIf="view === 'carte'" class="fr-mt-2w">
-      <p>Vue carte (à implémenter)</p>
     </div>
 
   </section>
