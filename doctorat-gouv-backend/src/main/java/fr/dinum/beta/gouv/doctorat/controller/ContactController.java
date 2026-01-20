@@ -74,7 +74,9 @@ public class ContactController {
 	    }
 
 	    try {
-	        emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
+	    	if (isValidEmail(req.emailEncadrant)) {
+	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
+	    	}
 	    } catch (JsonProcessingException e) {
 	        log.error("Error sending template email to encadrant: {}", req.emailEncadrant, e);
 	    }
@@ -89,23 +91,30 @@ public class ContactController {
 	 */
 	private void templateMailCandidat(ContactRequest request) {
 		log.info("Préparation template mail candidat");
-		Map<String, Object> params = Map.of(
-				"nom", request.nom,
-			    "prenom", request.prenom,
-			    "titre_sujet", "Sujet de thèse intelligence artificielle",
-			    "email", request.email,
-			    "motivation", request.message,
-			    "url_ressources", "https://doctorat-gouv.fr",
-			    "nom_plateforme", "DOCTORAT GOUV"
-		);
-
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("nom", request.nom);
+		params.put("prenom", request.prenom);
+		params.put("titre_sujet", "Sujet de thèse intelligence artificielle");
+		params.put("email", request.email);
+		params.put("motivation", request.message);
+		params.put("url_ressources", "https://doctorat.sites.beta.gouv.fr/");
+		params.put("nom_plateforme", "DOCTORAT GOUV");
         
         try {
-        	emailService.sendTemplateEmail(request.email,14, params);
+			if (isValidEmail(request.email)) {
+				emailService.sendTemplateEmail(request.email, 14, params);
+			}
 		} catch (JsonProcessingException e) {
 			log.error("Error sending template email to candidate: {}", request.email, e);
 		}
         log.info("Mail candidat envoyé");
+	}
+	
+	private boolean isValidEmail(String email) {
+	    return email != null
+	        && !email.isBlank()
+	        && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 	}
 
 }
