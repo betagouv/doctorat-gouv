@@ -94,7 +94,7 @@ public class PropositionThese {
 	@Column(length = 40)
 	private String etablissementVille;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String specialite;
 
 	private String domaineScientifique;
@@ -153,7 +153,7 @@ public class PropositionThese {
 	@ElementCollection
 	private Map<String, String> motsCles;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String theseTitreAnglais;
 
 	@ElementCollection
@@ -201,19 +201,19 @@ public class PropositionThese {
 	@Column(length = 3)
 	private String confidentiel;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String urlInfosComplementaires;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String financementEtat;
 
 	@ElementCollection
 	private List<String> financementTypes;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String financementEmployeur;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String financementOrigine;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
