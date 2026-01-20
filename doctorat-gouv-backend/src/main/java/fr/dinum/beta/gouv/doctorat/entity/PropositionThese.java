@@ -70,7 +70,7 @@ public class PropositionThese {
 	@Column(length = 250)
 	private String ecoleDoctoraleLibelle;
 
-	@Column(length = 9)
+	@Column(length = 20)
 	private String uniteRechercheRor;
 
 	@Column(length = 300)
@@ -147,7 +147,7 @@ public class PropositionThese {
 	@ElementCollection
 	private List<String> objectifsDeveloppementDurableListe;
 
-	@Column(length = 255)
+	@Column(length = 500)
 	private String theseTitre;
 
 	@ElementCollection
