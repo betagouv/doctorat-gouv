@@ -112,3 +112,33 @@
   margin-right: 0.5rem;
   vertical-align: -10px; // ajuste la position verticale
 }
+
+/* Supprime le style de lien DSFR sur l'icon ORCID */
+a.orcid-link,
+a.orcid-link:link,
+a.orcid-link:visited,
+a.orcid-link:hover,
+a.orcid-link:active,
+a.orcid-link:focus {
+  text-decoration: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  color: inherit !important;
+}
+
+/* Supprime l’icône externe DSFR */
+a.orcid-link::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* L’icône elle-même */
+.orcid-link img.orcid-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 0px; /* ou 0 si tu veux collé */
+  cursor: pointer;
+}
+

@@ -37,11 +37,12 @@
 					</execution>
 					<execution>
 						<id>npm-build</id>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<arguments>run build</arguments>
+							<arguments>run build -- --configuration production</arguments>
 						</configuration>
 					</execution>
 				</executions>
@@ -52,12 +53,13 @@
 				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<phase>install</phase>
+                        <id>copy-frontend</id> 
+                        <phase>process-resources</phase>
 						<configuration>
 							<target>
 								<copy
 									todir="../doctorat-gouv-backend/src/main/resources/static">
-									<fileset dir="dist/doctorat-gouv-frontend" />
+									<fileset dir="dist/doctorat-gouv-frontend/browser" />
 								</copy>
 							</target>
 						</configuration>

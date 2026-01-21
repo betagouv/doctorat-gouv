@@ -50,6 +50,7 @@ public class AdumApiService {
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 		log.info("Import terminé avec le statut HTTP : {}", response.getStatusCode());
 		String responseBody = response.getBody();
+		log.info("Taille JSON ADUM (brut) = {}", responseBody.length());
 		savePropositionsFromJson(responseBody);
 		return responseBody;
 	}

@@ -1,22 +1,34 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { NgFor } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
   imports: [
+	CommonModule,
 	ReactiveFormsModule,
-	NgFor
+	Header
   ],
   templateUrl: './contact.html',
   styleUrls: ['./contact.scss']
 })
 export class Contact {
+	
+	private readonly apiBase = `${environment.apiUrl}`;
 
 	contactForm!: FormGroup;
+	showExperienceFields = false;
+	showConfirmation = false;
+	
+	cvBase64: string | null = null; 
+	documentBase64: string | null = null;
 
-	civilites = ['Mr', 'Mme', 'Mlle'];
+	civilites = ['Monsieur', 'Madame', 'Ne se prononce pas'];
 	profils = ['Doctorant', 'Étudiant', 'Chercheur', 'Salarié'];
 	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '> 10'];
 	secteurs = [
@@ -28,23 +40,97 @@ export class Contact {
 	  'Sciences médicales'
 	];
 
-	constructor(private fb: FormBuilder) {
+	constructor(private fb: FormBuilder, private http: HttpClient) {
 	  this.contactForm = this.fb.group({
-	    nom: ['', Validators.required],
-	    prenom: ['', Validators.required],
-	    civilite: ['', Validators.required],
+        nom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]], 
+		prenom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
+	    civilite: [''],
 	    email: ['', [Validators.required, Validators.email]],
-	    profil: ['', Validators.required],
-	    annees: ['', Validators.required],
-	    secteur: ['', Validators.required],
-	    message: ['', Validators.required]
+	    profil: [''],
+	    annees: [''],
+	    secteur: [''],
+	    message: [''],
+		
+		confirmMaster: [false], 
+		cv: [null, [Validators.required]], 
+		document: [null]
+		
 	  });
+	  
+	  this.contactForm.get('profil')?.valueChanges.subscribe(value => {
+	    this.showExperienceFields = (value === 'Salarié' || value === 'Chercheur');
+
+	    if (!this.showExperienceFields) {
+	      this.contactForm.patchValue({
+	        annees: '',
+	        secteur: ''
+	      });
+	    }
+	  });
+
+	  
+	}
+	
+	onSubmitOld() {
+	  this.contactForm.markAllAsTouched();
+
+	  if (!this.contactForm.valid) {
+	    console.warn("Formulaire invalide");
+	    return;
+	  }
+
+	  const payload = {
+	    ...this.contactForm.value,
+	    cvBase64: this.cvBase64,
+	    documentBase64: this.documentBase64,
+	  };
+
+	  this.http.post(`${this.apiBase}/contact`, payload)
+	    .subscribe(() => console.log("Email envoyé"));
+	}
+	
+	onSubmit() {
+	  this.contactForm.markAllAsTouched();
+
+	  if (!this.contactForm.valid) {
+		console.warn("Formulaire invalide");
+	    return;
+	  }
+
+	  const payload = {
+	    ...this.contactForm.value,
+	    cvBase64: this.cvBase64,
+	    documentBase64: this.documentBase64,
+	  };
+
+	  this.http.post(`${this.apiBase}/contact`, payload)
+	    .subscribe(() => {
+	      this.showConfirmation = true;
+		  console.log("Email envoyé")
+	    });
 	}
 
 
-  onSubmit() {
-    if (this.contactForm.valid) {
-      console.log('Formulaire envoyé :', this.contactForm.value);
-    }
-  }
+	onCvSelected(event: any) {
+	  const file = event.target.files[0];
+	  if (!file) return;
+
+	  const reader = new FileReader();
+	  reader.onload = () => {
+	    this.cvBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
+	  };
+	  reader.readAsDataURL(file);
+	}
+
+	onDocsSelected(event: any) {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const reader = new FileReader();
+		reader.onload = () => {
+		  this.documentBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
+		};
+		reader.readAsDataURL(file);
+	}
+
 }

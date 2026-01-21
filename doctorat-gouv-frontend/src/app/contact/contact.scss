@@ -1,9 +1,14 @@
 .page-background {
-  background-image: url('/assets/images/default.jpg');
+  // background-image: url('/assets/images/default.jpg');
   background-size: cover;
   background-position: center;
   min-height: 100vh;
   padding: 2rem 0;
+}
+
+.container-header {
+  width: 60%;
+  margin: 0 auto;
 }
 
 .container {
@@ -12,27 +17,45 @@
 }
 
 .form-title {
-  text-align: center;
-  font-size: 1.5rem;
+  text-align: left; 
+  margin-left: 0;
+  font-size: 1.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
 /* On centre l'alerte et on limite sa largeur */
 .info-alert {
-  max-width: 80%;
+  max-width: 100%;
   margin: 0 auto 2rem auto;
 }
 
 /* Ajuster un peu la typo pour se rapprocher de la maquette */
 .info-alert p {
   margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+}
+
+/* Upload DSFR */
+.fr-upload {
+  margin-top: 0.5rem;
+}
+
+/* Checkbox alignée proprement */
+.fr-checkbox-group {
+  margin-top: 0.5rem;
   font-size: 0.95rem;
 }
 
+/* Harmonisation des blocs upload */
+.form-field.large input[type="file"] {
+  margin-top: 0.5rem;
+}
+
+
 
 .card {
-  background: #fff;
+  background: rgb(244, 244, 244);
   padding: 2rem;
 }
 
@@ -97,4 +120,61 @@
   margin-top: 1rem;
   width: auto;
 }
+
+/* Forcer le fond blanc sur tous les champs DSFR */
+.fr-input,
+.fr-select,
+.fr-upload {
+  background-color: #ffffff !important;
+}
+
+/* Pour les textarea */
+textarea.fr-input {
+  background-color: #ffffff !important;
+}
+
+/* Pour les selects DSFR qui utilisent parfois un wrapper */
+.form-field select.fr-select {
+  background-color: #ffffff !important;
+}
+
+/* Harmoniser le fond du champ fichier avec la carte */
+input[type="file"].fr-upload {
+  background-color: rgb(244, 244, 244) !important;
+  color: #000; /* pour garder un texte lisible */
+}
+
+/* Pour Chrome / Edge */
+input[type="file"].fr-upload::-webkit-file-upload-button {
+  background-color: rgb(244, 244, 244) !important;
+}
+
+/* Pour Firefox */
+input[type="file"].fr-upload::file-selector-button {
+  background-color: rgb(244, 244, 244) !important;
+}
+
+// SCSS pour la confirmation après envoi du formulaire
+.confirmation-wrapper {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.confirmation-container {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.confirmation-container .fr-icon-check-line {
+  color: green;
+  font-size: 1.4rem;
+  margin-right: 0.5rem;
+}
+
+
 

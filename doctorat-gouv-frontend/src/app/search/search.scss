@@ -1,12 +1,17 @@
-.fr-header .fr-container,
 .search-main.fr-container {
-	max-width: 95% !important; // supprime la limite DSFR
-	width: 85%;
-	// max-width: 1800px; // limite sur grands écrans
-	margin: 0 auto; // centre horizontalement
-	padding-left: 0; // optionnel : supprime les marges internes
-	padding-right: 0; // optionnel
+	max-width: 95% !important;
+	width: 95%;
+	margin: 0 auto;
+	padding-left: 0;
+	padding-right: 0;
+	position: relative;
+	z-index: 0;
+}
 
+.search-form {
+  position: relative;
+  z-index: 1000;
+  overflow: visible !important;
 }
 
 .fr-card {
@@ -130,7 +135,8 @@
 	background-color: #E3E3FD;
 	border-radius: 0.5rem;
 	padding: 2rem; // espace intérieur
-	color: white; // texte en blanc pour contraste
+	// color: white; // texte en blanc pour contraste
+	color: black;
 	width: 97%;
 	// max-width: 1800px; // limite sur grands écrans
 	margin: 0 auto;
@@ -259,4 +265,144 @@
 			}
 		}
 	}
+}
+
+/* ========================= */
+/*   DROPDOWN CUSTOM FILTER  */
+/* ========================= */
+/*.dropdown-panel {
+  position: absolute;
+  z-index: 3000 !important;
+}*/
+
+.dropdown-filter {
+  position: relative;
+  z-index: 2000;
+}
+
+
+.dropdown-btn {
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.dropdown-btn:hover {
+  border-color: #b5b5b5;
+}
+
+.dropdownPosition {
+  top: 0;
+  left: 0;
+  width: 0;
+};
+
+
+.dropdown-panel {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 4px;
+  padding: 1rem;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  position: absolute;
+  z-index: 3000 !important;
+}
+
+/* ========================= */
+/*   SEARCH BOX INSIDE PANEL */
+/* ========================= */
+
+.search-box {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* ========================= */
+/*   CHECKBOX LIST           */
+/* ========================= */
+
+.checkbox-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.fr-checkbox-group {
+  margin-bottom: 0.5rem;
+}
+
+.fr-checkbox-group input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.fr-checkbox-group label {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+
+/* ========================= */
+/*   RESPONSIVE DROPDOWN     */
+/* ========================= */
+
+@media (max-width: 768px) {
+  .dropdown-btn {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .dropdown-panel {
+    position: fixed !important;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90% !important;
+    max-height: 60vh !important;
+    border-radius: 8px;
+    z-index: 99999 !important;
+  }
+
+  .search-box {
+    margin-bottom: 1.5rem;
+  }
+
+  .checkbox-list {
+    max-height: 45vh !important;
+  }
 }
