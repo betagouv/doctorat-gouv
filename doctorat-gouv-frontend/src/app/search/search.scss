@@ -406,3 +406,51 @@
     max-height: 45vh !important;
   }
 }
+
+.info-bulle-these {
+	background-color: rgb(242, 242, 255);
+	/* violet très clair DSFR */
+	border-left: 4px solid rgb(0, 0, 255);
+	/* violet DSFR plus soutenu */
+	padding: 1.5rem;
+	border-radius: 8px;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	margin-top: 1.5rem;
+
+	/*  .info-bulle-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #6a3dbf;
+  }*/
+
+	.info-bulle-icon {
+		width: 65px;
+		height: 65px;
+		flex-shrink: 0;
+		object-fit: contain;
+	}
+
+	.info-bulle-text {
+		margin: 0;
+		font-size: 1.3rem;
+		color: #2a2a2a;
+		line-height: 1.5;
+		font-weight: 500;
+	}
+}
+
+/* Optionnel : responsive */
+@media (max-width: 600px) {
+  .info-bulle-these {
+    flex-direction: column;
+    text-align: left;
+
+    .info-bulle-icon {
+      font-size: 1.8rem;
+    }
+  }
+}
+
