@@ -114,6 +114,9 @@ export class Search implements OnInit, OnDestroy {
 	document.addEventListener('click', this.handleClickOutside.bind(this));
 
     this.loadFilterOptions();
+	
+	// Charger les résultats dès l'arrivée sur la page 
+	this.onSearch(0);
 
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
