@@ -28,11 +28,24 @@
 		  <img src="/assets/icons/direction.png" class="icon-img" alt="">
 		  <strong>Direction de la thèse :</strong>
 		  {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
-		  <ng-container *ngIf="thesis?.deposantOrcid"> 
-			/ 
-			<a [href]="'https://orcid.org/' + thesis?.deposantOrcid" target="_blank" rel="noopener"> https://orcid.org/{{ thesis?.deposantOrcid }} </a> 
+
+		  <ng-container *ngIf="thesis?.deposantOrcid">
+		    <a 
+		      [href]="'https://orcid.org/' + thesis.deposantOrcid"
+		      target="_blank"
+		      rel="noopener"
+		      class="orcid-link"
+		    >
+		      <img 
+		        src="assets/orcid.logo.icon.svg"
+		        alt="ORCID"
+		        class="orcid-icon"
+		      >
+		    </a>
 		  </ng-container>
 		</p>
+
+
 
 <!--		<p>-->
 <!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
