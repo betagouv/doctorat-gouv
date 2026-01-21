@@ -1,6 +1,6 @@
 .search-main.fr-container {
-	max-width: 95% !important;
-	width: 95%;
+	max-width: 90% !important;
+	width: 90%;
 	margin: 0 auto;
 	padding-left: 0;
 	padding-right: 0;
@@ -22,11 +22,14 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%; /* indispensable pour homogénéiser */
 }
 
-/*.fr-card__body {
-  padding: 1rem;
-}*/
+.fr-card__body {
+  flex: 1 !important;   /* empêche l'étirement vertical */
+  padding: 1rem;        /* optionnel : remet un padding propre */
+  display: flex; flex-direction: column;
+}
 
 /*.fr-card__title {
   font-size: 1.1rem;
@@ -36,8 +39,10 @@
 }*/
 
 .fr-card__desc {
-  font-size: 0.9rem;
-  color: #444;
+	font-size: 0.9rem;
+	color: #444;
+	flex-grow: 1; 
+	margin-bottom: 1rem;
 }
 
 .fr-card__footer {
@@ -45,6 +50,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-right: 0.7rem;
 }
 
 .fr-tag.violet {
