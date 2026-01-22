@@ -324,7 +324,7 @@ export class Search implements OnInit, OnDestroy {
       { key: "Physique", file: "DS-2-physique.jpg" },
       { key: "Sciences de la Terre et de l'Univers, Espace", file: "DS-3-terre-univers-espace.jpg" },
       { key: "Chimie", file: "DS-4-chimie.jpg" },
-      { key: "éducation", file: "DS-6-Sciences humaines-et-humanite.jpg" },
+      { key: "éducation", file: "DS-6-Sciences-humaines-et-humanite.jpg" },
       { key: "sociale", file: "DS-6-Sciences humaines-et-humanite.jpg" },
       { key: "Agronomie", file: "DS-10-agronomique-ecologiques.jpg" },
       { key: "Ecologie", file: "DS-10-agronomique-ecologiques.jpg" },
