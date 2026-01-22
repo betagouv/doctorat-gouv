@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute} from '@angular/router';
 import { PropositionTheseService } from '../services/proposition-these-service';
+import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DatePipe } from '@angular/common';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
@@ -28,7 +28,9 @@ export class PropositionDetail {
 
 	constructor(
 		private route: ActivatedRoute,
-		private propositionTheseService: PropositionTheseService
+		private router: Router,
+		private propositionTheseService: PropositionTheseService,
+		private contactContextService: ContactContextService
 	) { }
 
 
@@ -43,9 +45,7 @@ export class PropositionDetail {
 		   .getThesisById(this.thesisId)               // le service attend un number
 		   .subscribe((data: PropositionTheseDto) => {
 		     this.thesis = data;
-			 console.log('thèse55 : ', this.thesis);
-
-			
+			 // console.log('thèse : ', this.thesis);
 		   });
 	}
 	
@@ -64,5 +64,16 @@ export class PropositionDetail {
 	      : domaine
 	    : null;
 	}
+	
+	goToContact() {
+		this.contactContextService.setContext(
+		  this.thesisId,
+		  this.thesis?.theseTitre ?? null,
+		  this.thesis?.deposantEmail ?? null
+		);
 
+		this.router.navigate(['/contact']);
+
+	}
+	
 }

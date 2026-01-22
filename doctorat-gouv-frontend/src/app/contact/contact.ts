@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ContactContextService } from '../services/contact-context-service';
 import { environment } from '../../environments/environment';
 
 import { Header } from '../header/header';
@@ -40,7 +41,7 @@ export class Contact {
 	  'Sciences médicales'
 	];
 
-	constructor(private fb: FormBuilder, private http: HttpClient) {
+	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService) {
 	  this.contactForm = this.fb.group({
         nom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]], 
 		prenom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
@@ -71,43 +72,35 @@ export class Contact {
 	  
 	}
 	
-	onSubmitOld() {
-	  this.contactForm.markAllAsTouched();
-
-	  if (!this.contactForm.valid) {
-	    console.warn("Formulaire invalide");
-	    return;
-	  }
-
-	  const payload = {
-	    ...this.contactForm.value,
-	    cvBase64: this.cvBase64,
-	    documentBase64: this.documentBase64,
-	  };
-
-	  this.http.post(`${this.apiBase}/contact`, payload)
-	    .subscribe(() => console.log("Email envoyé"));
-	}
-	
 	onSubmit() {
-	  this.contactForm.markAllAsTouched();
 
-	  if (!this.contactForm.valid) {
-		console.warn("Formulaire invalide");
-	    return;
-	  }
+		const { id, sujet, email } = this.contactContextService.getContext();
 
-	  const payload = {
-	    ...this.contactForm.value,
-	    cvBase64: this.cvBase64,
-	    documentBase64: this.documentBase64,
-	  };
+		this.contactForm.markAllAsTouched();
 
-	  this.http.post(`${this.apiBase}/contact`, payload)
-	    .subscribe(() => {
-	      this.showConfirmation = true;
-		  console.log("Email envoyé")
-	    });
+		if (!this.contactForm.valid) {
+			console.warn("Formulaire invalide");
+			return;
+		}
+
+		const payload = {
+			...this.contactForm.value,
+			cvBase64: this.cvBase64,
+			documentBase64: this.documentBase64,
+			// 🔥 Ajout des données du contexte 
+			idPropositionThese: id,
+			titreSujet: sujet, 
+			emailEncadrant: email
+		};
+
+		this.http.post(`${this.apiBase}/contact`, payload)
+			.subscribe(() => {
+				this.showConfirmation = true;
+				console.log("Email envoyé")
+			});
+
+		// Vider le contexte après usage 
+		this.contactContextService.clear();
 	}
 
 
