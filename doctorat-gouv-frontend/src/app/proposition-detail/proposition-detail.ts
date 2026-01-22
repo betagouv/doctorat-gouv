@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DatePipe } from '@angular/common';
-
+import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Header } from '../header/header';
 
 @Component({
@@ -15,6 +15,7 @@ import { Header } from '../header/header';
 		CommonModule,
 		RouterModule,
 		DatePipe,
+		DefaultValuePipe,
 		Header
 	],
 	templateUrl: './proposition-detail.html',

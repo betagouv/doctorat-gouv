@@ -23,17 +23,17 @@
         </h2>
 
 		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
-		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle }}
+		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle | defaultValue }}
 		</p>
 
 		<p>
 		  <img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
-		  <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle }}
+		  <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle | defaultValue }}
 		</p>
 
 		<p>
 		  <img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
-		  <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle }}
+		  <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle | defaultValue }}
 		</p>
 
 		<p>
@@ -97,38 +97,38 @@
     <div class="card shadow">
       <div class="card-body">
         <h2 class="section-title">Résumé</h2>
-        <p class="paragraph fr-mb-12v">{{ thesis?.resume }}</p>
+        <p class="paragraph fr-mb-12v">{{ thesis?.resume | defaultValue }}</p>
 
         <h3 class="section-title">Objectif et Contexte</h3>
-        <p class="paragraph">{{ thesis?.objectif }}</p>
-        <p class="paragraph">{{ thesis?.contexte }}</p>
+        <p class="paragraph">{{ thesis?.objectif | defaultValue }}</p>
+        <p class="paragraph">{{ thesis?.contexte | defaultValue }}</p>
 		
 		<hr class="separator">
 		
 		<h3 class="section-title">Profil recherché</h3>
-		<p class="paragraph">{{ thesis?.profilRecherche }}</p>
+		<p class="paragraph">{{ thesis?.profilRecherche | defaultValue }}</p>
 		
 		<hr class="separator">
 		
 		<h3 class="section-title">Précision sur l'encadrement</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.modalitesEncadrement }}</p>
+		<p class="paragraph fr-mb-12v">{{ thesis?.modalitesEncadrement | defaultValue }}</p>
 
 		<h3 class="section-title">Résultat attendu</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.resultatsAttendus }}</p>
+		<p class="paragraph fr-mb-12v">{{ thesis?.resultatsAttendus | defaultValue }}</p>
 		
 		<h3 class="section-title">Objectif de valorisation des travaux</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.valorisationTravaux }}</p>
+		<p class="paragraph fr-mb-12v">{{ thesis?.valorisationTravaux | defaultValue }}</p>
 		
 		<h3 class="section-title">Financement</h3>
 		<p class="paragraph fr-mb-12v">
-		  {{ thesis?.financementDetails ? thesis.financementDetails : 'Non renseigné.' }}
+		  {{ thesis?.financementDetails | defaultValue }}
 		</p>
 
 		<h3 class="section-title">Méthode de travail</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail }}</p>
+		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail | defaultValue }}</p>
 
 		<h3 class="section-title">Références bibliographiques</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques }}</p>
+		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques | defaultValue }}</p>
 		
 		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
 		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" [routerLink]="['/contact']"> Prendre contact </button> 
