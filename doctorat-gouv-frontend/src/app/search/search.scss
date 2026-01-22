@@ -25,6 +25,17 @@
   height: 100%; /* indispensable pour homogénéiser */
 }
 
+.card-clickable {
+  cursor: pointer;
+}
+
+.card-clickable a,
+.card-clickable button {
+  cursor: pointer;
+  z-index: 10;
+}
+
+
 .fr-card__body {
   flex: 1 !important;   /* empêche l'étirement vertical */
   padding: 1rem;        /* optionnel : remet un padding propre */

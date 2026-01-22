@@ -312,7 +312,7 @@ export class Search implements OnInit, OnDestroy {
     const impactMapping: Record<string, string> = {
       "Santé": "DS-1-Sante.jpg",
       "Culture, créativité, société": "DI-2-culture-creativite-societe.jpg",
-      "Sécurité civile pour la société": "DS-3-Securité_civile.jpg",
+      "Sécurité civile pour la société": "DS-3-Securite_civile.jpg",
       "Numérique, industrie, espace": "DI-4-numerique-industrie-espace.jpg",
       "Climat, énergie, mobilité": "DI-5-climat-energie-mobilite.jpg",
       "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement":
@@ -374,5 +374,20 @@ export class Search implements OnInit, OnDestroy {
     this.laboratoireOpen = false;
     this.ecoleOpen = false;
   }
+  
+/*  goToDetail(id: number): void {
+    this.router.navigate(['/proposition'], { queryParams: { id } });
+  }*/
+  
+  goToDetail(id: number): void {
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      return; // l'utilisateur sélectionne du texte → ne pas naviguer
+    }
+
+    this.router.navigate(['/proposition'], { queryParams: { id } });
+  }
+
+
 
 }
