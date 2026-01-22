@@ -1,6 +1,5 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +28,9 @@ import fr.dinum.beta.gouv.doctorat.service.BrevoEmailService;
 public class ContactController {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContactController.class);
+	
+	@Value("${app.mail.enabled:false}")
+	private boolean mailEnabled;
 
     private final BrevoEmailService emailService;
 
@@ -42,8 +45,15 @@ public class ContactController {
      */
     @PostMapping
     public ResponseEntity<?> sendMails(@RequestBody ContactRequest request) {
-        templateMailEncadrant(request);
-        templateMailCandidat(request);
+    	log.info("Réception d'une demande de contact le : " + java.time.LocalDateTime.now());
+    	
+    	if (mailEnabled) {
+    	    templateMailEncadrant(request);
+    	    templateMailCandidat(request);
+    	} else {
+    	    log.warn("Mode DEV : mails désactivés");
+    	}
+
         return ResponseEntity.ok(Map.of("message", "Email envoyé"));
     }
 
@@ -75,6 +85,7 @@ public class ContactController {
 
 	    try {
 	    	if (isValidEmail(req.emailEncadrant)) {
+	    		log.info("Envoi de l'email à l'encadrant : {}", req.emailEncadrant);
 	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
 	    	}
 	    } catch (JsonProcessingException e) {
@@ -95,7 +106,7 @@ public class ContactController {
 		Map<String, Object> params = new HashMap<>();
 		params.put("nom", request.nom);
 		params.put("prenom", request.prenom);
-		params.put("titre_sujet", "Sujet de thèse intelligence artificielle");
+		params.put("titre_sujet", request.titreSujet);
 		params.put("email", request.email);
 		params.put("motivation", request.message);
 		params.put("url_ressources", "https://doctorat.sites.beta.gouv.fr/");
