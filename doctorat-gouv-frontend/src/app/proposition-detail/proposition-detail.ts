@@ -47,5 +47,21 @@ export class PropositionDetail {
 			
 		   });
 	}
+	
+	getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
+	  return thesis.domainesImpactListe?.[0] ?? null;
+	}
+	
+	getFirstDomaineWithMaxLength(
+	  thesis: { domainesImpactListe: string[] | null },
+	  maxLength = 10
+	): string | null {
+	  const domaine = thesis.domainesImpactListe?.[0];
+	  return domaine
+	    ? domaine.length > maxLength
+	      ? domaine.slice(0, maxLength) + '…'
+	      : domaine
+	    : null;
+	}
 
 }

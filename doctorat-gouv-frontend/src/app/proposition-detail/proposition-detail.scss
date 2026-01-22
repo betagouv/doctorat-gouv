@@ -87,6 +87,49 @@
   cursor: pointer;
 }
 
+.badges-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; // important pour ne pas étirer en largeur
+  gap: 0.3rem;             // espace vertical entre les badges
+}
+
+.badge-green,
+.badge-pink {
+  display: inline-block;   // largeur = contenu
+}
+
+/* Premier badge */
+.badge-green {
+  background-color: rgb(196, 255, 185);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0; // marge verticale seulement si tu veux
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(198, 255, 198);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
+
+/* Second badge */
+.badge-pink {
+  background-color: rgb(254, 242, 163);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(254, 245, 188);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
 
 .separator {
   border: none;

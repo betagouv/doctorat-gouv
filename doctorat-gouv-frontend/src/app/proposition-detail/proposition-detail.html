@@ -6,6 +6,18 @@
     <!-- Première card -->
     <div class="card shadow mb-4">
       <div class="card-body">
+		
+		<div class="fr-mb-4v badges-container">
+		  <span class="badge-green" *ngIf="getFirstDomaine(thesis)">
+		    {{ getFirstDomaineWithMaxLength(thesis, 60) }}
+		  </span>
+
+		  <span class="badge-pink" *ngIf="thesis?.specialite">
+		    {{ thesis.specialite }}
+		  </span>
+		</div>
+
+		
         <h2 class="card-title fr-mb-10v">
           {{ thesis?.theseTitre }}
         </h2>
@@ -44,8 +56,6 @@
 		    </a>
 		  </ng-container>
 		</p>
-
-
 
 <!--		<p>-->
 <!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
