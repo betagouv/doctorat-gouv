@@ -388,6 +388,12 @@ export class Search implements OnInit, OnDestroy {
     this.router.navigate(['/proposition'], { queryParams: { id } });
   }
 
-
+  limitWords(text: string | null, maxWords: number): string {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    return words.length > maxWords
+      ? words.slice(0, maxWords).join(' ') + '…'
+      : text;
+  }
 
 }
