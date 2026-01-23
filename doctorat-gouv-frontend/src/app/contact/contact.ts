@@ -39,7 +39,7 @@ export class Contact {
 	  'Autre'
 	];
 
-	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '> 10'];
+	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '10'];
 	secteurs = [
 		'Agriculture',
 		'Bâtiment - Travaux publics',
