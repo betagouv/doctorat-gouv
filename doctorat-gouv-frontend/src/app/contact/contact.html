@@ -121,17 +121,26 @@
 					  <p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid"> Le CV est obligatoire. </p>
 					</div>
 
-					<!-- Upload autres documents -->
+					<!-- Upload un autre document -->
 					<div class="form-field large">
-					  <label class="fr-label" for="docsUpload">
-					    Ajouter d’autres documents (lettre de recommandation, proposition de sujet ...) – facultatif
-					  </label>
-					  <p class="fr-hint-text">
-					    Taille maximale : 1 Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles.
-					  </p>
-
-					  <input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)" multiple>
+						<label class="fr-label" for="docsUpload">
+							Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de
+							recommandation...)
+							<span class="fr-text--xs fr-text--error">*</span>
+						</label>
+					
+						<p class="fr-hint-text">
+							Taille maximale : 1 Mo. Formats supportés : pdf.
+						</p>
+					
+						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
+							multiple>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.invalid">
+							Le document est obligatoire.
+						</p>
 					</div>
+
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">

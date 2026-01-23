@@ -73,7 +73,8 @@ export class Contact {
 		
 		confirmMaster: [false], 
 		cv: [null, [Validators.required]], 
-		document: [null]
+		document: [null, Validators.required],
+
 		
 	  });
 	  
