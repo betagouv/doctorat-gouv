@@ -101,13 +101,20 @@
 
 					
 					<!-- Confirmation diplôme -->
-					<div class="form-field large">
-					  <div class="fr-checkbox-group">
-					    <input type="checkbox" id="confirmMaster" formControlName="confirmMaster">
-					    <label class="fr-label" for="confirmMaster">
-					      Je confirme que je dispose ou que je prépare un diplôme de master ou conférant le grade de master
-					    </label>
-					  </div>
+					<div class="form-field large confirm-master-field">
+						<div class="fr-checkbox-group">
+							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required>
+							<label class="fr-label" for="confirmMaster">
+								Je confirme que je dispose ou que je prépare un diplôme de master ou
+								conférant le grade de master
+								<!-- <span class="required-star">*</span> -->
+							</label>
+						</div>
+					
+						<p class="fr-error-text"
+							*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
+							Vous devez confirmer disposer ou préparer un diplôme de master.
+						</p>
 					</div>
 
 					<!-- Upload CV -->

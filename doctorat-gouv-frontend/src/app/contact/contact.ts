@@ -71,7 +71,7 @@ export class Contact {
 	    message: [''],
 		rgpdConsent: [false, Validators.requiredTrue],
 		
-		confirmMaster: [false], 
+		confirmMaster: [false, Validators.requiredTrue],
 		cv: [null, [Validators.required]], 
 		document: [null, Validators.required],
 
