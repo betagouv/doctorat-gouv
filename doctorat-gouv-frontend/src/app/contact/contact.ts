@@ -30,16 +30,34 @@ export class Contact {
 	documentBase64: string | null = null;
 
 	civilites = ['Monsieur', 'Madame', 'Ne se prononce pas'];
-	profils = ['Doctorant', 'Étudiant', 'Chercheur', 'Salarié'];
+	profils = [
+	  'Etudiant au sein d\'un master français',
+	  'Chercheur en entreprise',
+	  'Autre professionel en activité',
+	  'Elève d\'une autre école conférant le grade de master',
+	  'Etudiant d\'un master étranger',
+	  'Autre'
+	];
+
 	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '> 10'];
 	secteurs = [
-	  'Sciences humaines',
-	  'Sciences sociales',
-	  'Sciences exactes',
-	  'Sciences de l’ingénieur',
-	  'Sciences de la vie',
-	  'Sciences médicales'
+		'Agriculture',
+		'Bâtiment - Travaux publics',
+		'Énergie',
+		'Hôtellerie - Restauration, Tourisme',
+		'Industrie',
+		'Industrie agroalimentaire',
+		'Industrie automobile',
+		'Industrie pharmaceutique',
+		'Industrie textile',
+		'Luxe',
+		'Maritime et fluvial',
+		'Numérique',
+		'Soin et accompagnement',
+		'Tourisme',
+		'Transport - Logistique'
 	];
+
 
 	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService) {
 	  this.contactForm = this.fb.group({
@@ -51,6 +69,7 @@ export class Contact {
 	    annees: [''],
 	    secteur: [''],
 	    message: [''],
+		rgpdConsent: [false, Validators.requiredTrue],
 		
 		confirmMaster: [false], 
 		cv: [null, [Validators.required]], 
@@ -59,7 +78,7 @@ export class Contact {
 	  });
 	  
 	  this.contactForm.get('profil')?.valueChanges.subscribe(value => {
-	    this.showExperienceFields = (value === 'Salarié' || value === 'Chercheur');
+	    this.showExperienceFields = (value === 'Chercheur en entreprise' || value === 'Autre professionel en activité');
 
 	    if (!this.showExperienceFields) {
 	      this.contactForm.patchValue({

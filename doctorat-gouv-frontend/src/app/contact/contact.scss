@@ -83,15 +83,19 @@
   width: 40%;
 }
 
-/* RGPD sous le champ motivation */
-.rgpd-info {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #666;
+/* Le champ RGPD doit s'étendre sur toute la largeur */
+.rgpd-field {
+  width: 100% !important;
 }
+
+/* Le label DSFR peut s'étendre naturellement */
+.rgpd-field .fr-label {
+  max-width: 100%;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+
 
 /* Ligne des boutons */
 .buttons-row {
