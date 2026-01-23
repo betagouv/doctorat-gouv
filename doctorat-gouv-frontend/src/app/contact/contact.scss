@@ -1,9 +1,13 @@
 .page-background {
-  // background-image: url('/assets/images/default.jpg');
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  padding: 2rem 0;
+	// background-image: url('/assets/images/default.jpg');
+	background-size: cover;
+	background-position: center;
+	min-height: 100vh;
+	padding: 2rem 0;
+/*	background: linear-gradient(to bottom,
+			rgb(236, 236, 236) 0%,
+			#ffffff 100% // blanc
+		);*/
 }
 
 .container-header {
@@ -28,6 +32,8 @@
 .info-alert {
   max-width: 100%;
   margin: 0 auto 2rem auto;
+  background-color:white;
+  //border-radius: 8px;
 }
 
 /* Ajuster un peu la typo pour se rapprocher de la maquette */
@@ -57,7 +63,12 @@
 .card {
   background: rgb(244, 244, 244);
   padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
+
+
+
 
 .card-title {
   font-size: 2rem;
