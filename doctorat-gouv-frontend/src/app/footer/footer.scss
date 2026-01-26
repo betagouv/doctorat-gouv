@@ -1,0 +1,99 @@
+.footer-gouv {
+  background: #ffffff;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  color: #000;
+
+  display: flex;
+  flex-direction: column; // Empêche toute influence entre top et bottom
+  
+  border-top: 3px solid #000091; // Ligne bleue DSFR épaisse
+
+  /* --- SECTION HAUT : LOGO + MENU --- */
+  .footer-top {
+    display: flex;
+    align-items: center;        // Centre verticalement image + menu
+    justify-content: flex-start; // Évite que le menu parte trop loin
+    gap: 20rem;                  // Espace entre image et menu
+    margin-bottom: 1.5rem;      // Sépare proprement du footer-bottom
+  }
+
+  .brand-block {
+    display: flex;
+    align-items: center;
+
+    .logo {
+	  margin-left: 6rem;    // Ajuste la position horizontale de l’image
+      width: 600px;             // Ajuste selon ton image
+      height: 250px;
+    }
+  }
+
+  .gov-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;        // Centre verticalement les liens
+    gap: 1.5rem;                // Espace entre les liens
+    margin-left: 1rem;          // Ajuste la proximité avec l’image
+
+    a {
+      color: #000;
+      text-decoration: none;
+      font-size: 1.1rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  /* --- SÉPARATEUR --- */
+  hr {
+    //margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid #ccc;
+  }
+
+  /* --- SECTION BAS : LIENS INTERNES + LICENCE --- */
+  .footer-bottom {
+	margin-left: 6rem;  // Aligne avec le logo
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;          // Réduit la hauteur
+    //margin-top: 0.5rem;   // Footer plus compact
+  }
+
+  .internal-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;          // Espacement réduit
+
+    a {
+      color: #000;
+      text-decoration: none;
+      padding: 0 0.3rem;  // Réduit la hauteur et l’espace autour du texte
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    /* Barre verticale entre les liens */
+    a:not(:last-child)::after {
+      content: "";
+      display: inline-block;
+      width: 1px;
+      height: 14px;
+      background-color: #666;   // Gris discret comme sur les sites gouv
+      margin-left: 0.5rem;
+    }
+  }
+
+  .license {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 0.3rem;   // Réduit encore la hauteur
+  }
+
+}
