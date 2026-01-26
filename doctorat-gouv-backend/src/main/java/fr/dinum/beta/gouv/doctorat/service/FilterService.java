@@ -1,13 +1,15 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
-import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Service;
+
+import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
+import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
+import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 
 @Service
 public class FilterService {
@@ -21,7 +23,7 @@ public class FilterService {
     /** Récupère toutes les listes d’options en un seul appel */
     public AllFilterOptions getAllFilters() {
         // 1️ - Listes simples existantes
-        List<String> disciplines   = repo.findDistinctDisciplines();
+        List<String> disciplines   = getDomainesScientifiquesLibelles();
         List<String> localisations = repo.findDistinctLocalisations();
         List<String> laboratoires = repo.findDistinctLaboratoires();
         List<String> ecoles       = repo.findDistinctEcoles();
@@ -48,4 +50,18 @@ public class FilterService {
                 ecoles,
                 defisSociete);
     }
+    
+	/**
+	 * Récupère la liste des libellés des domaines scientifiques à partir de leurs codes.
+	 * @return
+	 */
+	public List<String> getDomainesScientifiquesLibelles() {
+		List<String> codes = repo.findDistinctDomainesScientifiques();
+
+		return codes.stream().
+				map(DomaineScientifique::labelFromCode)
+				.filter(Objects::nonNull)
+				.toList();
+	}
+
 }

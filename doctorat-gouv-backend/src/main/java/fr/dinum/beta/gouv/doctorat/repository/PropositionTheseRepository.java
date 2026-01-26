@@ -40,5 +40,8 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
     /** Valeurs distinctes de objectifsDeveloppementDurableListe */
     @Query("SELECT DISTINCT o FROM PropositionThese p JOIN p.objectifsDeveloppementDurableListe o")
     List<String> findDistinctObjectifsDurables();
+    
+    @Query("SELECT DISTINCT p.domaineScientifique FROM PropositionThese p")
+	List<String> findDistinctDomainesScientifiques();
 
 }
