@@ -23,9 +23,14 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
     
     @Query("SELECT DISTINCT p.specialite FROM PropositionThese p WHERE p.specialite IS NOT NULL")
     List<String> findDistinctDisciplines();
-
-    @Query("SELECT DISTINCT p.uniteRechercheVille FROM PropositionThese p WHERE p.uniteRechercheVille IS NOT NULL order by p.uniteRechercheVille asc")
-    List<String> findDistinctLocalisations();
+    
+	@Query("""
+			SELECT DISTINCT p.uniteRechercheCodePostal
+			FROM PropositionThese p
+			WHERE p.uniteRechercheCodePostal IS NOT NULL
+			ORDER BY p.uniteRechercheCodePostal ASC
+			""")
+	List<String> findDistinctLocalisations();
 
     @Query("SELECT DISTINCT p.uniteRechercheLibelle FROM PropositionThese p WHERE p.uniteRechercheLibelle IS NOT NULL")
     List<String> findDistinctLaboratoires();

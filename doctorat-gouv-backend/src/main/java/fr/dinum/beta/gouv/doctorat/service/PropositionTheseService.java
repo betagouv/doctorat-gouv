@@ -19,6 +19,7 @@ import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
+import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
 import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -100,7 +101,15 @@ public class PropositionTheseService {
 						andPredicates.add(cb.equal(root.get("domaineScientifique"), code));
 					}
 				}
-				case "localisation" -> andPredicates.add(cb.equal(root.get("uniteRechercheVille"), value));
+				case "localisation" -> {
+				    List<String> depts = RegionsFrance.departementsFromRegion(value);
+
+				    List<Predicate> deptPredicates = depts.stream()
+				        .map(dept -> cb.like(root.get("uniteRechercheCodePostal"), dept + "%"))
+				        .toList();
+
+				    andPredicates.add(cb.or(deptPredicates.toArray(Predicate[]::new)));
+				}
 				case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
 				case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
 

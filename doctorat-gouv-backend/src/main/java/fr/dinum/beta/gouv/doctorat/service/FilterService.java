@@ -1,6 +1,8 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
+import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 
 @Service
@@ -24,7 +27,7 @@ public class FilterService {
     public AllFilterOptions getAllFilters() {
         // 1️ - Listes simples existantes
         List<String> disciplines   = getDomainesScientifiquesLibelles();
-        List<String> localisations = repo.findDistinctLocalisations();
+        List<String> localisations = getLocalisationsRegions();
         List<String> laboratoires = repo.findDistinctLaboratoires();
         List<String> ecoles       = repo.findDistinctEcoles();
 
@@ -61,7 +64,27 @@ public class FilterService {
 		return codes.stream().
 				map(DomaineScientifique::labelFromCode)
 				.filter(Objects::nonNull)
+				.sorted()
 				.toList();
 	}
+	
+	/**
+	 * Récupère la liste des régions à partir des codes postaux des localisations.
+	 * @return
+	 */
+	public List<String> getLocalisationsRegions() {
+	    List<String> codesPostaux = repo.findDistinctLocalisations();
+	    
+	    Collator collator = Collator.getInstance(Locale.FRENCH); 
+	    collator.setStrength(Collator.PRIMARY); // ignore accents
+
+	    return codesPostaux.stream()
+	            .map(RegionsFrance::regionFromCodePostal)
+	            .filter(Objects::nonNull)
+	            .distinct()
+	            .sorted(collator)
+	            .toList();
+	}
+
 
 }
