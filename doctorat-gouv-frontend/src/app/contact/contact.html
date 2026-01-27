@@ -10,14 +10,33 @@
 
 		<!-- Alerte DSFR d'information -->
 		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
-			<p class="fr-alert__title">
-				L’ajout d’un CV et d’un texte de motivation est obligatoire.
-			</p>
-			<p>
-				Les informations saisies seront envoyées au directeur de thèse concerné.
-				Il reviendra vers vous sous 15 jours, s’il souhaite donner suite à votre candidature.
-			</p>
+
+		  <p class="fr-alert__title">
+		    <strong>Pour être mis en relation, merci de remplir le formulaire ci-dessous et de fournir les documents demandés :</strong>
+		  </p>
+
+		  <p class="fr-mt-2w"><strong>Si vous souhaitez vous-même faire un doctorat :</strong></p>
+		  <ul class="fr-pl-3w fr-mb-3w">
+		    <li>Un CV</li>
+		    <li>Un document attestant de votre intérêt et aptitude à la recherche</li>
+		    <li>Un court message décrivant vos motivations</li>
+		  </ul>
+
+		  <p class="fr-mt-2w"><strong>Si vous souhaitez établir un partenariat :</strong></p>
+		  <ul class="fr-pl-3w fr-mb-3w">
+		    <li>Un descriptif de votre organisation</li>
+		    <li>Un descriptif de votre problématique</li>
+		    <li>Un court message expliquant votre besoin</li>
+		  </ul>
+
+		  <p class="fr-mt-3w">
+		    Les informations saisies seront envoyées à la directrice ou au directeur de thèse concerné,
+		    qui reviendra vers vous s’il souhaite donner suite à votre candidature.
+		  </p>
+
 		</div>
+
+
 
 	</div>
 
@@ -26,7 +45,7 @@
 		<div class="card shadow">
 			<div class="card-body">
 
-				<h2 class="card-title fr-mb-6v">Prendre contact</h2>
+<!--				<h2 class="card-title fr-mb-6v">Prendre contact</h2>-->
 
 				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-grid">
 
@@ -137,7 +156,7 @@
 						</label>
 					
 						<p class="fr-hint-text">
-							Taille maximale : 1 Mo. Formats supportés : pdf.
+							Taille maximale : 5 Mo. Formats supportés : pdf.
 						</p>
 					
 						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
@@ -180,12 +199,12 @@
 
 					<!-- Boutons alignés à droite -->
 					<div class="buttons-row">
-						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">
-							Annuler
-						</button>
-
+						<!--						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">-->
+						<!--							Annuler-->
+						<!--						</button>-->
+					
 						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
-							Valider
+							Envoyer
 						</button>
 					</div>
 
