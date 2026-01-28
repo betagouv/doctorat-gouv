@@ -25,18 +25,22 @@ export class Contact {
 	contactForm!: FormGroup;
 	showExperienceFields = false;
 	showConfirmation = false;
+	showMasterConfirmation = true;
 	
 	cvBase64: string | null = null; 
 	documentBase64: string | null = null;
 
 	civilites = ['Monsieur', 'Madame', 'Ne se prononce pas'];
 	profils = [
-	  'Etudiant au sein d\'un master français',
-	  'Chercheur en entreprise',
-	  'Autre professionel en activité',
-	  'Elève d\'une autre école conférant le grade de master',
-	  'Etudiant d\'un master étranger',
-	  'Autre'
+	  "Étudiant au sein d'un master français",
+	  "Élève d'une école d'ingénieur",
+	  "Élève d'une autre grande école conférant le grade master",
+	  "Étudiant d'un master étranger",
+	  "Chercheur en entreprise",
+	  "Autre professionnel en activité",
+	  "Entreprise souhaitant établir un partenariat",
+	  "Autre organisation souhaitant établir un partenariat",
+	  "Autre"
 	];
 
 	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '10'];
@@ -79,7 +83,16 @@ export class Contact {
 	  });
 	  
 	  this.contactForm.get('profil')?.valueChanges.subscribe(value => {
-	    this.showExperienceFields = (value === 'Chercheur en entreprise' || value === 'Autre professionel en activité');
+
+	    /* ----------------------------------------------------
+	     * 1) Gestion des champs "années" et "secteur"
+	     * ---------------------------------------------------- */
+	    const profilsAvecExperience = [
+	      "Chercheur en entreprise",
+	      "Autre professionnel en activité"
+	    ];
+
+	    this.showExperienceFields = profilsAvecExperience.includes(value);
 
 	    if (!this.showExperienceFields) {
 	      this.contactForm.patchValue({
@@ -87,9 +100,32 @@ export class Contact {
 	        secteur: ''
 	      });
 	    }
+
+	    /* ----------------------------------------------------
+	     * 2) Gestion de la case "Master"
+	     * ---------------------------------------------------- */
+	    const profilsSansMaster = [
+	      "Entreprise souhaitant établir un partenariat",
+	      "Autre organisation souhaitant établir un partenariat",
+	      "Autre"
+	    ];
+
+	    this.showMasterConfirmation = !profilsSansMaster.includes(value);
+
+	    const confirmMasterControl = this.contactForm.get('confirmMaster');
+
+	    if (this.showMasterConfirmation) {
+	      // Le champ est visible → il doit être obligatoire
+	      confirmMasterControl?.setValidators([Validators.requiredTrue]);
+	    } else {
+	      // Le champ est masqué → on enlève l'obligation
+	      confirmMasterControl?.clearValidators();
+	      confirmMasterControl?.setValue(false);
+	    }
+
+	    confirmMasterControl?.updateValueAndValidity();
 	  });
 
-	  
 	}
 	
 	onSubmit() {
