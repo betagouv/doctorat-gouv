@@ -346,9 +346,22 @@
           </div>
 
           <div class="fr-card__body">
-            <h3 class="fr-card__title custom-blue">
-              {{ limitWords(thesis.theseTitre, 30) }}
-            </h3><br/>
+			<div>
+				<h3 class="fr-card__title custom-blue">
+					{{ limitWords(thesis.theseTitre, 30) }}
+				</h3>
+			</div>
+			
+			<p class="fr-card__desc_type">
+			  {{
+			    thesis.typeProposition === 'proposition'
+			      ? 'Sujet de thèse'
+			      : thesis.typeProposition === 'offre'
+			        ? "Offre d'accompagnement"
+			        : thesis.typeProposition
+			  }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+			</p>
+
 
             <p class="fr-card__desc">
               {{ getResumeOrFallback(thesis, 30) }}<br/><br/>

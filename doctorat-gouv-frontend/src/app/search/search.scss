@@ -47,7 +47,6 @@
   font-weight: 600;
   margin: 0;
   color: #1a2a6c;  //bleu institutionnel 
-  margin-bottom: 1.8rem;
 }
 
 .fr-card__desc {
@@ -55,6 +54,13 @@
 	color: #444;
 	flex-grow: 1; 
 	margin-bottom: 1rem;
+}
+
+.fr-card__desc_type {
+	font-size: 0.9rem;
+	color: #444;
+	flex-grow: 1; 
+	margin-bottom: 1.4rem;
 }
 
 .fr-card__footer {

@@ -395,5 +395,20 @@ export class Search implements OnInit, OnDestroy {
       ? words.slice(0, maxWords).join(' ') + '…'
       : text;
   }
+  
+  cleanVille(ville: string | null): string {
+    if (!ville) return '';
+
+    // Normalisation pour ignorer la casse
+    const lower = ville.toLowerCase();
+
+    // Si "cedex" est présent, on coupe avant
+    if (lower.includes('cedex')) {
+      return ville.substring(0, lower.indexOf('cedex')).trim();
+    }
+
+    return ville;
+  }
+
 
 }
