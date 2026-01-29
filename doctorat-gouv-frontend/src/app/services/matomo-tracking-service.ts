@@ -9,11 +9,11 @@ declare global {
 	}
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class MatomoTrackingService {
 
 	constructor(private router: Router) {
-
+		
 		// Définir l'ID du site Matomo selon l'environnement
 		window._paq = window._paq || [];
 		window._paq.push(['setSiteId', environment.matomoSiteId]);
