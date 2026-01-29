@@ -38,19 +38,18 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .headers(headers -> headers
-                .contentSecurityPolicy(csp -> csp
-                		.policyDirectives(
-                			    "default-src 'self'; " +
-                			    "img-src 'self' data:; " +
-                			    "style-src 'self' 'unsafe-inline'; " +
-                			    "script-src 'self' 'unsafe-inline' blob:; " +
-                			    "font-src 'self' data:; " +
-                			    "worker-src 'self' blob:; " +
-                			    "connect-src 'self' https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io"
-                			)
-
-                )
-            );
+            	    .contentSecurityPolicy(csp -> csp
+            	        .policyDirectives(
+            	            "default-src 'self'; " +
+            	            "img-src 'self' data: https://stats.beta.gouv.fr; " +
+            	            "style-src 'self' 'unsafe-inline'; " +
+            	            "script-src 'self' 'unsafe-inline' blob: https://stats.beta.gouv.fr; " +
+            	            "font-src 'self' data:; " +
+            	            "worker-src 'self' blob:; " +
+            	            "connect-src 'self' https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io https://stats.beta.gouv.fr;"
+            	        )
+            	    )
+            	);
 
         return http.build();
     }
