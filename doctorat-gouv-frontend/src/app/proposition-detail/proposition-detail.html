@@ -21,6 +21,16 @@
         <h2 class="card-title fr-mb-10v">
           {{ thesis?.theseTitre }}
         </h2>
+		
+		<p><img src="/assets/icons/type_proposition.png" class="icon-img" alt="">
+			<strong>Type proposition :</strong> {{
+			thesis.typeProposition === 'proposition'
+			? 'Sujet de thèse'
+			: thesis.typeProposition === 'offre'
+			? "Offre d'accompagnement"
+			: thesis.typeProposition
+			}}
+		</p>
 
 		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
 		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle | defaultValue }}
