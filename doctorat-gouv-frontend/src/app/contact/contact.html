@@ -150,10 +150,14 @@
 					<!-- Upload un autre document -->
 					<div class="form-field large">
 						<label class="fr-label" for="docsUpload">
-							Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de
-							recommandation...)
-							<span class="fr-text--xs fr-text--error">*</span>
+						  {{ 
+						    isOrganisationProfile 
+						      ? "Ajouter un autre document (ex : descriptif de votre organisation, un descriptif de votre problématique...)" 
+						      : "Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de recommandation...)" 
+						  }}
+						  <span class="fr-text--xs fr-text--error">*</span>
 						</label>
+
 					
 						<p class="fr-hint-text">
 							Taille maximale : 5 Mo. Formats supportés : pdf.
@@ -170,13 +174,15 @@
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">
-					  <label class="fr-label">Texte de motivation</label>
+						<label class="fr-label">
+						  {{ isOrganisationProfile ? 'Présentation du besoin' : 'Texte de motivation' }}
+						</label>
 
 					  <textarea 
 					    class="fr-input" 
 					    formControlName="message" 
 					    rows="5"
-					    placeholder="Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ..."
+					    [placeholder]="isOrganisationProfile ? '' : 'Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ...'"
 					  ></textarea>
 
 					 <!-- Consentement RGPD -->

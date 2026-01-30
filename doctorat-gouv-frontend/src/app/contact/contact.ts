@@ -26,6 +26,7 @@ export class Contact {
 	showExperienceFields = false;
 	showConfirmation = false;
 	showMasterConfirmation = true;
+	isOrganisationProfile = false;
 	
 	cvBase64: string | null = null; 
 	documentBase64: string | null = null;
@@ -111,6 +112,8 @@ export class Contact {
 	    ];
 
 	    this.showMasterConfirmation = !profilsSansMaster.includes(value);
+		this.isOrganisationProfile = profilsSansMaster.includes(value);
+
 
 	    const confirmMasterControl = this.contactForm.get('confirmMaster');
 
