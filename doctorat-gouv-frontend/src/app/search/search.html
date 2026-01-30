@@ -345,38 +345,40 @@
             </span>
           </div>
 
-          <div class="fr-card__body">
+		<div class="fr-card__body">
 			<div>
 				<h3 class="fr-card__title custom-blue">
 					{{ limitWords(thesis.theseTitre, 30) }}
 				</h3>
 			</div>
-			
+		
 			<p class="fr-card__desc_type">
-			  {{
-			    thesis.typeProposition === 'proposition'
-			      ? 'Sujet de thèse'
-			      : thesis.typeProposition === 'offre'
-			        ? "Offre d'accompagnement"
-			        : thesis.typeProposition
-			  }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+				{{
+				thesis.typeProposition === 'proposition'
+				? 'Sujet de thèse'
+				: thesis.typeProposition === 'offre'
+				? "Offre d'accompagnement"
+				: thesis.typeProposition
+				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
 			</p>
-
-
-            <p class="fr-card__desc">
-              {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
-
-              <ng-container *ngIf="thesis.motsCles">
-                <strong>Mots clés :</strong>
-                <div class="fr-tags-group fr-tags-group--column">
-                  <span class="fr-tag violet"
-                        *ngFor="let entry of getEntries(thesis.motsCles)">
-                    {{ entry[1] }}
-                  </span>
-                </div>
-              </ng-container>
-            </p>
-          </div>
+		
+			<div>
+				<p class="fr-card__desc">
+					{{ getResumeOrFallback(thesis, 30) }}
+				</p>
+			</div>
+			<div class="fr-mt-2w">
+				<ng-container *ngIf="thesis.motsCles">
+					<strong>Mots clés :</strong>
+					<div class="fr-tags-group fr-tags-group--column">
+						<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
+							{{ entry[1] }}
+						</span>
+					</div>
+				</ng-container>
+			</div>
+		
+		</div>
 
           <div class="fr-card__footer">
             <a [routerLink]="['/proposition']"

@@ -49,19 +49,19 @@
   color: #1a2a6c;  //bleu institutionnel 
 }
 
-.fr-card__desc {
-	font-size: 0.9rem;
-	color: #444;
-	flex-grow: 1; 
-	margin-bottom: 1rem;
+.fr-card__desc_type {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.8rem; /* plus propre que flex-grow */
 }
 
-.fr-card__desc_type {
-	font-size: 0.9rem;
-	color: #444;
-	flex-grow: 1; 
-	margin-bottom: 1.4rem;
+.fr-card__desc {
+  font-size: 0.9rem;
+  color: #444;
+  flex-grow: 1; /* le seul bloc extensible */
+  margin-bottom: 1rem;
 }
+
 
 .fr-card__footer {
   padding: 0.5rem 1rem;
