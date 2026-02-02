@@ -409,6 +409,11 @@ export class Search implements OnInit, OnDestroy {
 
     return ville;
   }
+  
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
 
 
 }
