@@ -49,7 +49,7 @@ public class PropositionThese {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateDebutThese;
 
-	@Column(length = 16)
+	@Column(length = 20)
 	private String deposantOrcid;
 
 	@Column(length = 50)
@@ -82,7 +82,7 @@ public class PropositionThese {
 	@Column(length = 40)
 	private String uniteRechercheVille;
 
-	@Column(length = 9)
+	@Column(length = 20)
 	private String etablissementRor;
 
 	@Column(length = 250)
@@ -99,7 +99,7 @@ public class PropositionThese {
 
 	private String domaineScientifique;
 
-	@Column(length = 16)
+	@Column(length = 20)
 	private String directionTheseOrcid;
 
 	@Column(length = 50)
@@ -111,7 +111,7 @@ public class PropositionThese {
 	@Column(length = 100)
 	private String directionTheseEmail;
 
-	@Column(length = 16)
+	@Column(length = 20)
 	private String codirectionTheseOrcid;
 
 	@Column(length = 50)
@@ -147,7 +147,7 @@ public class PropositionThese {
 	@ElementCollection
 	private List<String> objectifsDeveloppementDurableListe;
 
-	@Column(length = 500)
+	@Column(length = 600)
 	private String theseTitre;
 
 	@ElementCollection
@@ -213,7 +213,7 @@ public class PropositionThese {
 	@Column(length = 500)
 	private String financementEmployeur;
 
-	@Column(length = 500)
+	@Column(columnDefinition = "TEXT")
 	private String financementOrigine;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
@@ -238,6 +238,9 @@ public class PropositionThese {
 
 	@Column(length = 3)
 	private String candidatureEnLignePossible;
+	
+	@Column(length = 300)
+	private String urlPdf;
 
 	public Long getId() {
 		return id;
@@ -821,6 +824,14 @@ public class PropositionThese {
 
 	public void setCandidatureEnLignePossible(String candidatureEnLignePossible) {
 		this.candidatureEnLignePossible = candidatureEnLignePossible;
+	}
+
+	public String getUrlPdf() {
+		return urlPdf;
+	}
+
+	public void setUrlPdf(String urlPdf) {
+		this.urlPdf = urlPdf;
 	}
 
 }
