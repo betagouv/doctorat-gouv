@@ -1,0 +1,200 @@
+.page-background {
+	background: linear-gradient(to bottom, rgb(200, 200, 255) 0%, rgb(230, 230, 249) 100%);
+	min-height: 100vh;
+	padding: 2rem 0;
+
+}
+
+.container-header {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.container {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.form-title {
+  text-align: left; 
+  margin-left: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* On centre l'alerte et on limite sa largeur */
+.info-alert {
+  max-width: 100%;
+  margin: 0 auto 2rem auto;
+  background-color:white;
+  box-shadow: 0 2px 2px rgb(100, 100, 100);
+  //border-radius: 8px;
+}
+
+/* Ajuster un peu la typo pour se rapprocher de la maquette */
+.info-alert p {
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+/* Upload DSFR */
+.fr-upload {
+  margin-top: 0.5rem;
+}
+
+/* Checkbox alignée proprement */
+.fr-checkbox-group {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Harmonisation des blocs upload */
+.form-field.large input[type="file"] {
+  margin-top: 0.5rem;
+}
+
+
+
+.card {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
+}
+
+
+
+
+.card-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(0, 0, 128);
+}
+
+/* Grille générale */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* mobile */
+  row-gap: 1.5rem;
+  padding-left: 2rem; /* marge à gauche comme sur la maquette */
+}
+
+/* Champs larges = 75% */
+.form-field.large {
+  width: 75%;
+}
+
+/* Champs petits = 40% */
+.form-field.small {
+  width: 40%;
+}
+
+/* Le champ RGPD doit s'étendre sur toute la largeur */
+.rgpd-field {
+  width: 100% !important;
+}
+
+/* Le label DSFR peut s'étendre naturellement */
+.rgpd-field .fr-label {
+  max-width: 100%;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+
+
+.required-star {
+  color: rgb(0, 0, 0); /* rouge DSFR */
+  margin-left: 0.15rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+
+
+
+/* Ligne des boutons */
+.buttons-row {
+  display: flex;
+  justify-content: flex-end; /* aligné à droite */
+  gap: 1rem;                 /* espace entre les boutons */
+  width: 100%;               /* occupe toute la ligne */
+  margin-top: 1.5rem;
+}
+
+/* Pour que les boutons ne s'étirent pas */
+.buttons-row .fr-btn {
+  width: auto;
+}
+
+
+/* Sur écrans moyens et grands : tout reste aligné à gauche */
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Bouton aligné à gauche */
+.submit-btn {
+  margin-top: 1rem;
+  width: auto;
+}
+
+/* Forcer le fond blanc sur tous les champs DSFR */
+.fr-input,
+.fr-select,
+.fr-upload {
+  background-color: #ffffff !important;
+}
+
+/* Pour les textarea */
+textarea.fr-input {
+  background-color: #ffffff !important;
+}
+
+/* Pour les selects DSFR qui utilisent parfois un wrapper */
+.form-field select.fr-select {
+  background-color: #ffffff !important;
+}
+
+/* Harmoniser le fond du champ fichier avec la carte */
+input[type="file"].fr-upload {
+  background-color: rgb(244, 244, 244) !important;
+  color: #000; /* pour garder un texte lisible */
+}
+
+/* Pour Chrome / Edge */
+input[type="file"].fr-upload::-webkit-file-upload-button {
+  background-color: rgb(244, 244, 244) !important;
+}
+
+/* Pour Firefox */
+input[type="file"].fr-upload::file-selector-button {
+  background-color: rgb(244, 244, 244) !important;
+}
+
+// SCSS pour la confirmation après envoi du formulaire
+.confirmation-wrapper {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.confirmation-container {
+  background: rgb(244, 244, 244);
+  padding: 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.confirmation-container .fr-icon-check-line {
+  color: green;
+  font-size: 1.4rem;
+  margin-right: 0.5rem;
+}
+
+
+

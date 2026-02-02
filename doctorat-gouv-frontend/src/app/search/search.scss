@@ -1,0 +1,468 @@
+.search-main.fr-container {
+	max-width: 90% !important;
+	width: 90%;
+	margin: 0 auto;
+	padding-left: 0;
+	padding-right: 0;
+	position: relative;
+	z-index: 0;
+}
+
+.search-form {
+  position: relative;
+  overflow: visible !important;
+}
+
+.fr-card {
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1) !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* indispensable pour homogénéiser */
+}
+
+.card-clickable {
+  cursor: pointer;
+}
+
+.card-clickable a,
+.card-clickable button {
+  cursor: pointer;
+  z-index: 10;
+}
+
+
+.fr-card__body {
+  flex: 1 !important;   /* empêche l'étirement vertical */
+  padding: 1rem;        /* optionnel : remet un padding propre */
+  display: flex; flex-direction: column;
+}
+
+.fr-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1a2a6c;  //bleu institutionnel 
+}
+
+.fr-card__desc_type {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.8rem; /* plus propre que flex-grow */
+}
+
+.fr-card__desc {
+  font-size: 0.9rem;
+  color: #444;
+  flex-grow: 1; /* le seul bloc extensible */
+  margin-bottom: 1rem;
+}
+
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 0.7rem;
+}
+
+.fr-tag.violet {
+  color: rgb(0, 50, 100) !important; /* bleu DSFR plus clair */
+  background-color: rgb(209, 206, 238);   /* violet */
+  color: #fff;                 /* texte en blanc pour contraste */
+}
+
+.fr-card__img {
+  width: 100%;
+  //aspect-ratio: 4 / 3; /* force un ratio 16:9 */
+  overflow: hidden;
+  position: relative;
+}
+
+.fr-card__img img {
+  width: 100%;
+  //height: 100%;
+  object-fit: cover; /* recadre l’image sans déformation */
+}
+
+.fr-card__img .badge {
+  position: absolute;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Premier badge (vert fluorescent, texte noir) */
+.fr-card__img .badge-green {
+  bottom: 2.5rem; /* placé plus haut */
+  background-color: rgb(196, 255, 185);
+  color: #000;
+  bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
+}
+
+/* Second badge (rose fluorescent, texte noir) */
+.fr-card__img .badge-pink {
+  margin-top: 1.5rem;
+  bottom: 0.5rem; /* placé en bas */
+  background-color: rgb(254, 242, 163); /* rose flashy */
+  color: #000;
+}
+
+.fr-card__footer {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top:auto; /* pousse le footer en bas */
+}
+
+/* Flèche custom sans DSFR icons */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #0063cb; /* bleu DSFR */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.arrow-link::after {
+  content: "→"; /* flèche unicode */
+  margin-left: 0.25rem;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.arrow-link:hover::after {
+  transform: translateX(4px); /* petit effet de glissement */
+}
+
+.pagination-fixed {
+  bottom: 0;          // toujours collé en bas
+  left: 0;
+  width: 100%;        // occupe toute la largeur
+  display: flex;
+  justify-content: center; // centré horizontalement
+  background: #fff;   // fond blanc pour lisibilité
+  padding: 1rem 0;    // espace autour
+  //box-shadow: 0 -2px 5px rgba(0,0,0,0.1); // petite ombre pour la démarquer
+  z-index: 1000;      // reste au-dessus du contenu
+}
+
+
+.search-form {
+	background-color: rgb(232, 232, 255); // violet très clair DSFR
+	padding: 2rem; // espace intérieur
+	color: black;
+	width: 100%;
+	margin: 0 auto;
+
+	.form-content {
+		
+		width: 60%;
+		margin: 0 auto;
+
+		// barre de recherche
+		.fr-search-bar {
+			border-radius: 0.5rem;
+			padding: 1rem; // espace intérieur
+			width: 98%;
+			margin: 0 auto; // centre horizontalement
+
+			.fr-input {
+				background-color: #fff;
+				flex: 1;
+			}
+
+			.fr-btn {
+				margin-left: 0.5rem;
+			}
+		}
+		
+		.custom-search-bar {
+		  margin: 2rem auto;
+		  padding: 0 1rem;
+		  width: 95%;
+		  
+		  .custom-label {
+		    display: block;
+		    font-weight: bold;
+		    margin-bottom: 0.5rem;
+		    font-size: 1rem;
+		    color: #333;
+		  }
+		  
+		  .custom-input-wrapper {
+		  	  position: relative;
+		  	  display: flex;
+		  	  align-items: center;
+		  	  background-color: white;
+		  	}
+
+		  	.custom-icon {
+		  	  position: absolute;
+		  	  left: 0.75rem;
+		  	  font-size: 1.2rem;
+		  	  color: rgb(0, 0, 255);
+		  	  font-weight: bold;
+		  	  pointer-events: none;
+		  	}
+
+		  	.custom-input {
+		  	  width: 100%;
+		  	  padding: 0.75rem 1rem 0.75rem 2.5rem; // espace pour la loupe
+		  	  border: none;
+		  	  border-bottom: 2px solid rgb(0, 0, 74); // 🔹 trait bleu en bas
+		  	  font-size: 1rem;
+		  	  transition: border-color 0.2s ease-in-out;
+
+		  	  &:focus {
+		  	    border-color: #0055b8;
+		  	    outline: none;
+		  	  }
+		  	}
+
+		  	.custom-hint {
+		  	  font-size: 0.875rem;
+		  	  color: #666;
+		  	  margin-top: 0.5rem;
+		  	}
+		  
+		}
+
+		.pill-select {
+			//border-radius: 2rem;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			background-color: white;
+			color: #000;
+		}
+
+		// liens et actions
+		.actions-row {
+			align-items: center;
+
+			// lien "Plus/Moins de filtres"
+			.toggle-filters {
+				font-weight: 500;
+				margin-top: 0.5rem;
+				color: #000; // bleu DSFR géré par .fr-link, mais on force contraste si besoin
+			}
+
+			// lien "Comprendre les filtres"
+			.help-filters {
+				font-weight: 500;
+				margin-right: 1rem;
+				color: #000;
+			}
+
+			// alignements
+			.fr-text--left {
+				text-align: left;
+			}
+
+			.fr-text--right {
+				text-align: right;
+			}
+
+			// bouton principal
+			.fr-btn--primary {
+				background-color: #fff;
+				color: #6f42c1;
+				border: 1px solid #fff;
+			}
+
+			.fr-btn--primary:hover {
+				background-color: #6f42c1;
+				color: #fff;
+				border: 1px solid #fff;
+			}
+		}
+	}
+}
+
+/* ========================= */
+/*   DROPDOWN CUSTOM FILTER  */
+/* ========================= */
+.dropdown-filter {
+  position: relative;
+}
+
+
+.dropdown-btn {
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+   z-index: 2000 !important;
+}
+
+.dropdown-btn:hover {
+  border-color: #b5b5b5;
+}
+
+.dropdownPosition {
+  top: 0;
+  left: 0;
+  width: 0;
+};
+
+
+.dropdown-panel {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 4px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  position: absolute;
+  z-index: 5000 !important;
+}
+
+/* ========================= */
+/*   SEARCH BOX INSIDE PANEL */
+/* ========================= */
+
+.search-box {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* ========================= */
+/*   CHECKBOX LIST           */
+/* ========================= */
+
+.checkbox-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.fr-checkbox-group {
+  margin-bottom: 0.5rem;
+}
+
+.fr-checkbox-group input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.fr-checkbox-group label {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+
+/* ========================= */
+/*   RESPONSIVE DROPDOWN     */
+/* ========================= */
+
+@media (max-width: 768px) {
+  .dropdown-btn {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .dropdown-panel {
+    position: fixed !important;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90% !important;
+    max-height: 60vh !important;
+    border-radius: 8px;
+    z-index: 99999 !important;
+  }
+
+  .search-box {
+    margin-bottom: 1.5rem;
+  }
+
+  .checkbox-list {
+    max-height: 45vh !important;
+  }
+}
+
+.info-bulle-these {
+	background-color: rgb(242, 242, 255);
+	/* violet très clair DSFR */
+	border-left: 4px solid rgb(0, 0, 255);
+	/* violet DSFR plus soutenu */
+	padding: 1.5rem;
+	border-radius: 8px;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	margin-top: 1.5rem;
+
+	/*  .info-bulle-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #6a3dbf;
+  }*/
+
+	.info-bulle-icon {
+		width: 65px;
+		height: 65px;
+		flex-shrink: 0;
+		object-fit: contain;
+	}
+
+	.info-bulle-text {
+		margin: 0;
+		font-size: 1.3rem;
+		color: #2a2a2a;
+		line-height: 1.5;
+		font-weight: 500;
+	}
+}
+
+/* Optionnel : responsive */
+@media (max-width: 600px) {
+  .info-bulle-these {
+    flex-direction: column;
+    text-align: left;
+
+    .info-bulle-icon {
+      font-size: 1.8rem;
+    }
+  }
+}
+

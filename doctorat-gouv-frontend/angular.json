@@ -23,28 +23,36 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+			"assets": [
+			  {
+			    "glob": "**/*",
+			    "input": "public",
+			    "output": "/"
+			  },
+			  {
+			    "glob": "**/*",
+			    "input": "src/assets",
+			    "output": "assets"
+			  }
+			],
+			"styles": [
+				"node_modules/@gouvfr/dsfr/dist/dsfr.min.css",
+				"node_modules/@gouvfr/dsfr/dist/utility/icons/icons.min.css",
+				"src/styles.scss"
+			],
+			"scripts": [
+				"node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js"
+			],
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
+			  "fileReplacements": [ { "replace": "src/environments/environment.ts", "with": "src/environments/environment.prod.ts" } ],
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "3MB",
+                  "maximumError": "3MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -62,6 +70,25 @@
           },
           "defaultConfiguration": "production"
         },
+		"server": {
+		  "builder": "@angular-devkit/build-angular:server",
+		  "options": {
+		    "outputPath": "dist/doctorat-gouv-frontend/server",
+		    "main": "src/main.server.ts",
+		    "tsConfig": "tsconfig.server.json"
+		  },
+		  "configurations": {
+		    "production": {
+		      "fileReplacements": [
+		        {
+		          "replace": "src/environments/environment.ts",
+		          "with": "src/environments/environment.prod.ts"
+		        }
+		      ]
+		    },
+		    "development": {}
+		  }
+		},
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
@@ -91,9 +118,6 @@
                 "glob": "**/*",
                 "input": "public"
               }
-            ],
-            "styles": [
-              "src/styles.scss"
             ]
           }
         }

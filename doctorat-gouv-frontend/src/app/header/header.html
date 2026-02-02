@@ -1,0 +1,65 @@
+<header class="fr-header" role="banner">
+  <div class="fr-header__body">
+    <div class="fr-container">
+      <div class="fr-header__body-row">
+
+        <!-- BRAND -->
+        <div class="fr-header__brand">
+          <a href="https://doctorat.gouv.fr/" class="fr-header__brand-link">
+            <img src="assets/header-brand.png" alt="République Française - Doctorat.gouv.fr">
+          </a>
+        </div>
+
+		<!-- TOOLS -->
+		<!--        <div class="fr-header__tools">-->
+		<!--          <div class="fr-header__search fr-modal">-->
+		<!--            <form class="fr-search-bar" role="search" (submit)="onSearchForHeader($event)">-->
+		<!--              <input class="fr-input" type="search" placeholder="Rechercher">-->
+		<!--              <button class="fr-btn" type="submit">-->
+		<!--                <span class="fr-icon-search-line" aria-hidden="true"></span>-->
+		<!--                Rechercher-->
+		<!--              </button>-->
+		<!--            </form>-->
+		<!--          </div>-->
+		<!--        </div>-->
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div class="fr-header__menu fr-modal" id="header-menu">
+    <div class="fr-container">
+      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+		<ul class="fr-nav__list">
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="/">Toutes les offres</a>
+			</li>
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">Retour au site</a>
+			</li>
+		</ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="info-banner" *ngIf="showBanner">
+  <div class="info-left">
+    <span class="info-icon" aria-hidden="true">i</span>
+
+    <p>
+      Lancement de la plateforme : le site est encore en phase d'expérimentation,
+      n'hésitez pas à 
+      <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">donner votre avis</a>
+      pour nous aider à améliorer le service.
+    </p>
+  </div>
+
+  <button class="close-btn" (click)="closeBanner()" aria-label="Fermer le bandeau">
+    ×
+  </button>
+</div>
+
+
+

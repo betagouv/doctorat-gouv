@@ -1,0 +1,180 @@
+.page-background {
+	background: linear-gradient(to bottom, rgb(200, 200, 255) 0%, rgb(230, 230, 249) 100%);
+	min-height: 100vh;
+	padding: 2rem 0;
+
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.shadow {
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: rgb(0, 0, 128);
+}
+
+.section-title {
+  font-size: 2.2rem;        // Taille police plus grand
+  font-weight: 800;         // très gras
+  color: #000;           // couleur noire
+  letter-spacing: 0.5px;    // léger espacement
+  margin: 2rem 0 1rem;      // respiration au-dessus
+  text-transform: none;     // garder les accents et la casse
+}
+
+.keywords-title {
+  display: flex; // utilise flexbox
+  align-items: center; // aligne verticalement
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: rgb(54, 54, 54);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+
+  .line {
+    flex: 1;
+    height: 2px;
+    background-color:  rgb(54, 54, 54);
+    margin-left: 1rem;
+    opacity: 0.8;
+  }
+}
+
+.custom-btn {
+  font-size: 1.4rem;        // augmente la taille du texte
+  padding: 1rem 1.5rem;     // augmente la hauteur du bouton
+  text-align: center;       // centre le texte
+  justify-content: center;  // centre le contenu
+  margin-bottom: 1.1rem;    // espace en bas
+}
+
+.badge {
+  display: inline-block;
+  background: rgb(200, 200, 255);
+  color: rgb(0, 0, 210);
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem;
+  font-size: 0.85rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.badge:hover {
+  background: rgb(170, 170, 255);
+  color: rgb(0, 0, 150);
+  cursor: pointer;
+}
+
+.badges-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; // important pour ne pas étirer en largeur
+  gap: 0.3rem;             // espace vertical entre les badges
+}
+
+.badge-green,
+.badge-pink {
+  display: inline-block;   // largeur = contenu
+}
+
+/* Premier badge */
+.badge-green {
+  background-color: rgb(196, 255, 185);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0; // marge verticale seulement si tu veux
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(198, 255, 198);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
+
+/* Second badge */
+.badge-pink {
+  background-color: rgb(254, 242, 163);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(254, 245, 188);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
+
+.separator {
+  border: none;
+  border-top: 2px solid #eee;
+  margin: 1.5rem 0;
+}
+
+.icon {
+  margin-right: 0.5rem;
+}
+
+.paragraph {
+  text-align: justify;     // ajuste le texte comme un vrai paragraphe
+  line-height: 1.6;        // espace entre les lignes pour la lisibilité
+  margin-bottom: 1rem;     // espace entre les paragraphes
+  font-size: 1rem;         // taille standard
+  color: #333;             // couleur sobre
+}
+
+.icon-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 0.5rem;
+  vertical-align: -10px; // ajuste la position verticale
+}
+
+/* Supprime le style de lien DSFR sur l'icon ORCID */
+a.orcid-link,
+a.orcid-link:link,
+a.orcid-link:visited,
+a.orcid-link:hover,
+a.orcid-link:active,
+a.orcid-link:focus {
+  text-decoration: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  color: inherit !important;
+}
+
+/* Supprime l’icône externe DSFR */
+a.orcid-link::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* L’icône elle-même */
+.orcid-link img.orcid-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 0px; /* ou 0 si tu veux collé */
+  cursor: pointer;
+}
+
