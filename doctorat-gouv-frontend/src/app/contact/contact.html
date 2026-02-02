@@ -29,7 +29,7 @@
 		
 			</ul>
 		
-			<p class="fr-mt-3w">
+			<p class="fr-mt-2w">
 				Les informations saisies seront envoyées à la directrice ou au directeur de thèse concerné,
 				qui reviendra vers vous s’il souhaite donner suite à votre candidature.
 			</p>
@@ -138,7 +138,7 @@
 
 					<!-- Upload CV -->
 					<div class="form-field large">
-						<label class="fr-label" for="cvUpload">Ajouter un CV</label>
+						<label class="fr-label" for="cvUpload">{{ !isOrganisationProfile ? "Ajouter un CV" : "Ajouter un descriptif de votre organisation" }}</label>
 						<p class="fr-hint-text">
 							Taille maximale : 1 Mo. Format supporté : pdf.
 						</p>
