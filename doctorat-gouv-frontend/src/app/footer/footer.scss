@@ -71,11 +71,12 @@
 
     a {
       color: #000;
-      text-decoration: none;
       padding: 0 0.3rem;  // Réduit la hauteur et l’espace autour du texte
+	  text-decoration: none !important;
+	  background-image: none !important;
 
       &:hover {
-        text-decoration: underline;
+        text-decoration: underline !important;
       }
     }
 
