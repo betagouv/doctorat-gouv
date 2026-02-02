@@ -162,27 +162,60 @@ export class Contact {
 		this.contactContextService.clear();
 	}
 
-
 	onCvSelected(event: any) {
 	  const file = event.target.files[0];
 	  if (!file) return;
 
+	  // Vérification du format
+	  if (file.type !== 'application/pdf') {
+	    this.contactForm.get('cv')?.setErrors({ invalidFormat: true });
+	    this.cvBase64 = null;
+	    return;
+	  }
+
+	  // Vérification de la taille (1 Mo = 1 * 1024 * 1024)
+	  if (file.size > 1 * 1024 * 1024) {
+	    this.contactForm.get('cv')?.setErrors({ fileTooLarge: true });
+	    this.cvBase64 = null;
+	    return;
+	  }
+
+	  // Conversion en Base64
 	  const reader = new FileReader();
 	  reader.onload = () => {
-	    this.cvBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
+	    this.cvBase64 = (reader.result as string).split(',')[1];
+	    this.contactForm.get('cv')?.setErrors(null); // fichier valide
 	  };
 	  reader.readAsDataURL(file);
 	}
 
-	onDocsSelected(event: any) {
-		const file = event.target.files[0];
-		if (!file) return;
 
-		const reader = new FileReader();
-		reader.onload = () => {
-		  this.documentBase64 = (reader.result as string).split(',')[1]; // enlever le prefixe data:
-		};
-		reader.readAsDataURL(file);
+	onDocsSelected(event: any) {
+	  const file = event.target.files[0];
+	  if (!file) return;
+
+	  // Vérification du format
+	  if (file.type !== 'application/pdf') {
+	    this.contactForm.get('document')?.setErrors({ invalidFormat: true });
+	    this.documentBase64 = null;
+	    return;
+	  }
+
+	  // Vérification de la taille (5 Mo)
+	  if (file.size > 5 * 1024 * 1024) {
+	    this.contactForm.get('document')?.setErrors({ fileTooLarge: true });
+	    this.documentBase64 = null;
+	    return;
+	  }
+
+	  // Conversion en Base64
+	  const reader = new FileReader();
+	  reader.onload = () => {
+	    this.documentBase64 = (reader.result as string).split(',')[1];
+	    this.contactForm.get('document')?.setErrors(null); // fichier valide
+	  };
+	  reader.readAsDataURL(file);
 	}
+
 
 }
