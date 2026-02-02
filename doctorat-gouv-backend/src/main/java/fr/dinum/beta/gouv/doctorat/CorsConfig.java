@@ -16,7 +16,8 @@ public class CorsConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins(
                             "http://localhost:4200",
-                            "https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io"
+                            "https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io",
+                            "https://app.doctorat.gouv.fr"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")

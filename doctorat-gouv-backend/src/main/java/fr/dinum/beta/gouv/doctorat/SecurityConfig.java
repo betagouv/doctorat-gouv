@@ -46,7 +46,9 @@ public class SecurityConfig {
             	            "script-src 'self' 'unsafe-inline' blob: https://stats.beta.gouv.fr; " +
             	            "font-src 'self' data:; " +
             	            "worker-src 'self' blob:; " +
-            	            "connect-src 'self' https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io https://stats.beta.gouv.fr;"
+            	            "connect-src 'self' https://doctorat-gouv-dev.osc-secnum-fr1.scalingo.io"
+            	            + " https://app.doctorat.gouv.fr/"
+            	            + " https://stats.beta.gouv.fr;"
             	        )
             	    )
             	);
