@@ -10,14 +10,33 @@
 
 		<!-- Alerte DSFR d'information -->
 		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
+		
 			<p class="fr-alert__title">
-				L’ajout d’un CV et d’un texte de motivation est obligatoire.
+				<strong>Pour être mis en relation, merci de remplir le formulaire ci-dessous et de fournir les documents
+					demandés :</strong>
 			</p>
-			<p>
-				Les informations saisies seront envoyées au directeur de thèse concerné.
-				Il reviendra vers vous sous 15 jours, s’il souhaite donner suite à votre candidature.
+		
+			<ul class="fr-pl-3w fr-mb-3w">
+				<li class="fr-mt-2w">
+					Si vous souhaitez vous-même faire un doctorat : un CV, un document attestant de votre intérêt et aptitude à
+					la recherche, un court message décrivant vos motivations
+				</li>
+		
+				<li class="fr-mt-2w">
+					Si vous souhaitez établir un partenariat : un descriptif de votre organisation, un descriptif du partenariat
+					envisagé, un court message expliquant votre besoin
+				</li>
+		
+			</ul>
+		
+			<p class="fr-mt-2w">
+				Les informations saisies seront envoyées à la directrice ou au directeur de thèse concerné,
+				qui reviendra vers vous s’il souhaite donner suite à votre candidature.
 			</p>
+		
 		</div>
+
+
 
 	</div>
 
@@ -26,7 +45,7 @@
 		<div class="card shadow">
 			<div class="card-body">
 
-				<h2 class="card-title fr-mb-6v">Prendre contact</h2>
+<!--				<h2 class="card-title fr-mb-6v">Prendre contact</h2>-->
 
 				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-grid">
 
@@ -101,64 +120,122 @@
 
 					
 					<!-- Confirmation diplôme -->
-					<div class="form-field large">
-					  <div class="fr-checkbox-group">
-					    <input type="checkbox" id="confirmMaster" formControlName="confirmMaster">
-					    <label class="fr-label" for="confirmMaster">
-					      Je confirme que je dispose ou que je prépare un diplôme de master ou conférant le grade de master
-					    </label>
-					  </div>
+					<div class="form-field large confirm-master-field" *ngIf="showMasterConfirmation">
+						<div class="fr-checkbox-group">
+							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required>
+							<label class="fr-label" for="confirmMaster">
+								Je confirme que je dispose ou que je prépare un diplôme de master
+								ou conférant le grade de master
+							</label>
+						</div>
+					
+						<p class="fr-error-text"
+							*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
+							Vous devez confirmer disposer ou préparer un diplôme de master.
+						</p>
 					</div>
+
 
 					<!-- Upload CV -->
 					<div class="form-field large">
-					  <label class="fr-label" for="cvUpload">Ajouter un CV</label>
-					  <p class="fr-hint-text">
-					    Taille maximale : xx Mo. Format supporté : pdf.
-					  </p>
-
-					  <input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple>
-					  <p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid"> Le CV est obligatoire. </p>
+						<label class="fr-label" for="cvUpload">{{ !isOrganisationProfile ? "Ajouter un CV" : "Ajouter un descriptif de votre organisation" }}
+							<span class="fr-text--xs fr-text--error">*</span>
+						</label>
+						<p class="fr-hint-text">
+							Taille maximale : 1 Mo. Format supporté : pdf.
+						</p>
+					
+						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
+							Le fichier doit être au format PDF.
+						</p>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
+							Le fichier dépasse la taille maximale de 1 Mo.
+						</p>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
+							Le CV est obligatoire.
+						</p>
+					
 					</div>
 
-					<!-- Upload autres documents -->
+					<!-- Upload un autre document -->
 					<div class="form-field large">
-					  <label class="fr-label" for="docsUpload">
-					    Ajouter d’autres documents (lettre de recommandation, proposition de sujet ...) – facultatif
-					  </label>
-					  <p class="fr-hint-text">
-					    Taille maximale : xx Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles.
-					  </p>
-
-					  <input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)" multiple>
+						<label class="fr-label" for="docsUpload">
+							{{
+							isOrganisationProfile
+							? "Ajouter un un descriptif du partenariat envisagé"
+							: "Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de
+							recommandation...)"
+							}}
+							<span class="fr-text--xs fr-text--error">*</span>
+						</label>
+					
+					
+						<p class="fr-hint-text">
+							Taille maximale : 5 Mo. Formats supportés : pdf.
+						</p>
+					
+						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
+							multiple>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
+							Le fichier doit être au format PDF.
+						</p>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
+							Le fichier dépasse la taille maximale de 5 Mo.
+						</p>
+					
+						<p class="fr-error-text"
+							*ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.errors?.['required']">
+							Le document est obligatoire.
+						</p>
+					
 					</div>
+
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">
-					  <label class="fr-label">Texte de motivation</label>
+						<label class="fr-label">
+						  {{ isOrganisationProfile ? 'Présentation du besoin' : 'Texte de motivation' }}
+						</label>
 
 					  <textarea 
 					    class="fr-input" 
 					    formControlName="message" 
 					    rows="5"
-					    placeholder="Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ..."
+					    [placeholder]="isOrganisationProfile ? '' : 'Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ...'"
 					  ></textarea>
 
-					  <!-- RGPD -->
-					  <div class="rgpd-info">
-					    <span class="fr-icon-info-fill" aria-hidden="true"></span>
-					    <span>RGPD</span>
-					  </div>
+					 <!-- Consentement RGPD -->
+					<div class="form-field large rgpd-field">
+						<div class="fr-checkbox-group">
+							<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required>
+							<label class="fr-label" for="rgpdConsent">
+								J'accepte de recevoir vos e-mails et confirme avoir pris connaissance de vos
+								<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">mentions légales</a>.
+							</label>
+						</div>
+					
+						<p class="fr-error-text" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
+							Vous devez accepter pour continuer.
+						</p>
+					 </div>
+
+
 					</div>
 
 					<!-- Boutons alignés à droite -->
 					<div class="buttons-row">
-						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">
-							Annuler
-						</button>
-
+						<!--						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">-->
+						<!--							Annuler-->
+						<!--						</button>-->
+					
 						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
-							Valider
+							Envoyer
 						</button>
 					</div>
 

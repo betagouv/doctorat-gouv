@@ -1,19 +1,31 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
-import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
-import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
-import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
-import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
-import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
-import jakarta.persistence.criteria.*;
-import org.springframework.data.domain.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
+import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
+import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
+import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
+import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
+import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
+import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class PropositionTheseService {
@@ -83,10 +95,23 @@ public class PropositionTheseService {
                 String pattern = "%" + lowered + "%";
 
                 switch (key) {
-                    case "discipline" -> andPredicates.add(cb.equal(root.get("specialite"), value));
-                    case "localisation" -> andPredicates.add(cb.equal(root.get("uniteRechercheVille"), value));
-                    case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
-                    case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
+				case "discipline" -> {
+					String code = DomaineScientifique.codeFromLabel(value);
+					if (code != null) {
+						andPredicates.add(cb.equal(root.get("domaineScientifique"), code));
+					}
+				}
+				case "localisation" -> {
+				    List<String> depts = RegionsFrance.departementsFromRegion(value);
+
+				    List<Predicate> deptPredicates = depts.stream()
+				        .map(dept -> cb.like(root.get("uniteRechercheCodePostal"), dept + "%"))
+				        .toList();
+
+				    andPredicates.add(cb.or(deptPredicates.toArray(Predicate[]::new)));
+				}
+				case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
+				case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
 
                     // -------------------------------------------------
                     // Nouveau filtre « Défis de société »

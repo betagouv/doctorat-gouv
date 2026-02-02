@@ -1,6 +1,6 @@
 .search-main.fr-container {
-	max-width: 95% !important;
-	width: 95%;
+	max-width: 90% !important;
+	width: 90%;
 	margin: 0 auto;
 	padding-left: 0;
 	padding-right: 0;
@@ -10,7 +10,6 @@
 
 .search-form {
   position: relative;
-  z-index: 1000;
   overflow: visible !important;
 }
 
@@ -18,33 +17,57 @@
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1) !important;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%; /* indispensable pour homogénéiser */
 }
 
-/*.fr-card__body {
-  padding: 1rem;
-}*/
+.card-clickable {
+  cursor: pointer;
+}
 
-/*.fr-card__title {
+.card-clickable a,
+.card-clickable button {
+  cursor: pointer;
+  z-index: 10;
+}
+
+
+.fr-card__body {
+  flex: 1 !important;   /* empêche l'étirement vertical */
+  padding: 1rem;        /* optionnel : remet un padding propre */
+  display: flex; flex-direction: column;
+}
+
+.fr-card__title {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
-  color: #1a2a6c;  bleu institutionnel 
-}*/
+  color: #1a2a6c;  //bleu institutionnel 
+}
+
+.fr-card__desc_type {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.8rem; /* plus propre que flex-grow */
+}
 
 .fr-card__desc {
   font-size: 0.9rem;
   color: #444;
+  flex-grow: 1; /* le seul bloc extensible */
+  margin-bottom: 1rem;
 }
+
 
 .fr-card__footer {
   padding: 0.5rem 1rem;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-right: 0.7rem;
 }
 
 .fr-tag.violet {
@@ -55,14 +78,14 @@
 
 .fr-card__img {
   width: 100%;
-  aspect-ratio: 4 / 3; /* force un ratio 16:9 */
+  //aspect-ratio: 4 / 3; /* force un ratio 16:9 */
   overflow: hidden;
   position: relative;
 }
 
 .fr-card__img img {
   width: 100%;
-  height: 100%;
+  //height: 100%;
   object-fit: cover; /* recadre l’image sans déformation */
 }
 
@@ -94,6 +117,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top:auto; /* pousse le footer en bas */
 }
 
 /* Flèche custom sans DSFR icons */
@@ -118,7 +142,6 @@
 }
 
 .pagination-fixed {
-  //position: fixed;
   bottom: 0;          // toujours collé en bas
   left: 0;
   width: 100%;        // occupe toute la largeur
@@ -132,16 +155,11 @@
 
 
 .search-form {
-	background-color: #E3E3FD;
-	border-radius: 0.5rem;
+	background-color: rgb(232, 232, 255); // violet très clair DSFR
 	padding: 2rem; // espace intérieur
-	// color: white; // texte en blanc pour contraste
 	color: black;
-	width: 97%;
-	// max-width: 1800px; // limite sur grands écrans
+	width: 100%;
 	margin: 0 auto;
-	box-shadow: 0 8px 8px rgba(0,0,0,0.1);
-	margin-top: 0.5rem;
 
 	.form-content {
 		
@@ -270,14 +288,8 @@
 /* ========================= */
 /*   DROPDOWN CUSTOM FILTER  */
 /* ========================= */
-/*.dropdown-panel {
-  position: absolute;
-  z-index: 3000 !important;
-}*/
-
 .dropdown-filter {
   position: relative;
-  z-index: 2000;
 }
 
 
@@ -293,6 +305,7 @@
   align-items: center;
   cursor: pointer;
   font-size: 0.95rem;
+   z-index: 2000 !important;
 }
 
 .dropdown-btn:hover {
@@ -314,12 +327,11 @@
   border-radius: 4px;
   margin-top: 4px;
   padding: 1rem;
-  z-index: 20;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   max-height: 300px;
   overflow-y: auto;
   position: absolute;
-  z-index: 3000 !important;
+  z-index: 5000 !important;
 }
 
 /* ========================= */
@@ -406,3 +418,51 @@
     max-height: 45vh !important;
   }
 }
+
+.info-bulle-these {
+	background-color: rgb(242, 242, 255);
+	/* violet très clair DSFR */
+	border-left: 4px solid rgb(0, 0, 255);
+	/* violet DSFR plus soutenu */
+	padding: 1.5rem;
+	border-radius: 8px;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	margin-top: 1.5rem;
+
+	/*  .info-bulle-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #6a3dbf;
+  }*/
+
+	.info-bulle-icon {
+		width: 65px;
+		height: 65px;
+		flex-shrink: 0;
+		object-fit: contain;
+	}
+
+	.info-bulle-text {
+		margin: 0;
+		font-size: 1.3rem;
+		color: #2a2a2a;
+		line-height: 1.5;
+		font-weight: 500;
+	}
+}
+
+/* Optionnel : responsive */
+@media (max-width: 600px) {
+  .info-bulle-these {
+    flex-direction: column;
+    text-align: left;
+
+    .info-bulle-icon {
+      font-size: 1.8rem;
+    }
+  }
+}
+

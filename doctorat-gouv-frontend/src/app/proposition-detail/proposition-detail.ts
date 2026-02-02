@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute} from '@angular/router';
 import { PropositionTheseService } from '../services/proposition-these-service';
+import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DatePipe } from '@angular/common';
-
+import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Header } from '../header/header';
 
 @Component({
@@ -15,6 +15,7 @@ import { Header } from '../header/header';
 		CommonModule,
 		RouterModule,
 		DatePipe,
+		DefaultValuePipe,
 		Header
 	],
 	templateUrl: './proposition-detail.html',
@@ -27,7 +28,9 @@ export class PropositionDetail {
 
 	constructor(
 		private route: ActivatedRoute,
-		private propositionTheseService: PropositionTheseService
+		private router: Router,
+		private propositionTheseService: PropositionTheseService,
+		private contactContextService: ContactContextService
 	) { }
 
 
@@ -42,10 +45,36 @@ export class PropositionDetail {
 		   .getThesisById(this.thesisId)               // le service attend un number
 		   .subscribe((data: PropositionTheseDto) => {
 		     this.thesis = data;
-			 console.log('thèse55 : ', this.thesis);
-
-			
+			 // console.log('thèse : ', this.thesis);
 		   });
 	}
+	
+	getFirstDomaine(thesis: { domainesImpactListe: string[] | null }): string | null {
+	  return thesis.domainesImpactListe?.[0] ?? null;
+	}
+	
+	getFirstDomaineWithMaxLength(
+	  thesis: { domainesImpactListe: string[] | null },
+	  maxLength = 10
+	): string | null {
+	  const domaine = thesis.domainesImpactListe?.[0];
+	  return domaine
+	    ? domaine.length > maxLength
+	      ? domaine.slice(0, maxLength) + '…'
+	      : domaine
+	    : null;
+	}
+	
+	goToContact() {
+		this.contactContextService.setContext(
+		  this.thesisId,
+		  this.thesis?.theseTitre ?? null,
+		  this.thesis?.deposantEmail ?? null,
+		  this.thesis?.typeProposition ?? null
+		);
 
+		this.router.navigate(['/contact']);
+
+	}
+	
 }

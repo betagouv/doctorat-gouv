@@ -1,9 +1,8 @@
 .page-background {
-  // background-image: url('/assets/images/default.jpg');
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  padding: 2rem 0;
+	background: linear-gradient(to bottom, rgb(200, 200, 255) 0%, rgb(230, 230, 249) 100%);
+	min-height: 100vh;
+	padding: 2rem 0;
+
 }
 
 .container-header {
@@ -28,12 +27,15 @@
 .info-alert {
   max-width: 100%;
   margin: 0 auto 2rem auto;
+  background-color:white;
+  box-shadow: 0 2px 2px rgb(100, 100, 100);
+  //border-radius: 8px;
 }
 
 /* Ajuster un peu la typo pour se rapprocher de la maquette */
 .info-alert p {
   margin-bottom: 0.25rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 /* Upload DSFR */
@@ -57,7 +59,11 @@
 .card {
   background: rgb(244, 244, 244);
   padding: 2rem;
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
 }
+
+
+
 
 .card-title {
   font-size: 2rem;
@@ -83,15 +89,29 @@
   width: 40%;
 }
 
-/* RGPD sous le champ motivation */
-.rgpd-info {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #666;
+/* Le champ RGPD doit s'étendre sur toute la largeur */
+.rgpd-field {
+  width: 100% !important;
 }
+
+/* Le label DSFR peut s'étendre naturellement */
+.rgpd-field .fr-label {
+  max-width: 100%;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+
+
+.required-star {
+  color: rgb(0, 0, 0); /* rouge DSFR */
+  margin-left: 0.15rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+
+
 
 /* Ligne des boutons */
 .buttons-row {

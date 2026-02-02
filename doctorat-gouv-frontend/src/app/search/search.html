@@ -310,13 +310,25 @@
       <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
       de recherche
     </p>
+	
+	<div class="info-bulle-these">
+		<!--		<div class="info-bulle-icon">-->
+		<!--			💡-->
+		<!--		</div>-->
+		<img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
+		<p class="info-bulle-text">
+			En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez
+			identifier des chercheuses et chercheurs avec qui construire votre propre projet doctoral. La candidature auprès
+			d'une école doctorale ne se fait qu'après avoir défini ensemble le sujet de thèse.
+		</p>
+	</div>
 
     <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
            *ngFor="let thesis of results">
 
-        <div class="fr-card fr-card--shadow fr-card--sm">
+        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
 
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
@@ -333,25 +345,40 @@
             </span>
           </div>
 
-          <div class="fr-card__body">
-            <h3 class="fr-card__title custom-blue">
-              {{ thesis.theseTitre }}
-            </h3><br/>
-
-            <p class="fr-card__desc">
-              {{ getResumeOrFallback(thesis, 30) }}<br/><br/>
-
-              <ng-container *ngIf="thesis.motsCles">
-                <strong>Mots clés :</strong>
-                <div class="fr-tags-group fr-tags-group--column">
-                  <span class="fr-tag violet"
-                        *ngFor="let entry of getEntries(thesis.motsCles)">
-                    {{ entry[1] }}
-                  </span>
-                </div>
-              </ng-container>
-            </p>
-          </div>
+		<div class="fr-card__body">
+			<div>
+				<h3 class="fr-card__title custom-blue">
+					{{ limitWords(thesis.theseTitre, 30) }}
+				</h3>
+			</div>
+		
+			<p class="fr-card__desc_type">
+				{{
+				thesis.typeProposition === 'proposition'
+				? 'Sujet de thèse'
+				: thesis.typeProposition === 'offre'
+				? "Offre d'accompagnement"
+				: thesis.typeProposition
+				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+			</p>
+		
+			<div>
+				<p class="fr-card__desc">
+					{{ getResumeOrFallback(thesis, 30) }}
+				</p>
+			</div>
+			<div class="fr-mt-2w">
+				<ng-container *ngIf="thesis.motsCles">
+					<strong>Mots clés :</strong>
+					<div class="fr-tags-group fr-tags-group--column">
+						<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
+							{{ entry[1] }}
+						</span>
+					</div>
+				</ng-container>
+			</div>
+		
+		</div>
 
           <div class="fr-card__footer">
             <a [routerLink]="['/proposition']"
@@ -426,4 +453,16 @@
     </div>
 
   </section>
+  
+  <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top"
+          data-fr-back-to-top (click)="scrollToTop()">
+    Haut de page
+  </button>
+  
+<!--  <button class="fr-btn fr-btn--secondary fr-icon-arrow-up-s-line back-to-top"-->
+<!--          (click)="scrollToTop()">-->
+<!--    Haut de page-->
+<!--  </button>-->
+  
+
 </main>

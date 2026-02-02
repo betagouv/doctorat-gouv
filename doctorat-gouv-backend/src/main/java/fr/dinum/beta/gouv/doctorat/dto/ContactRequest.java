@@ -2,6 +2,8 @@ package fr.dinum.beta.gouv.doctorat.dto;
 
 public class ContactRequest {
 
+	public long idPropositionThese;
+	
 	public String nom;
 	public String prenom;
 	public String civilite;
@@ -18,6 +20,7 @@ public class ContactRequest {
 	public String titreSujet;
 	public String urlSujet;
 	public String urlVitrine;
+	public String typeOffre;
 
 	public String getNom() {
 		return nom;
@@ -137,5 +140,21 @@ public class ContactRequest {
 
 	public void setUrlVitrine(String urlVitrine) {
 		this.urlVitrine = urlVitrine;
+	}
+
+	public long getIdPropositionThese() {
+		return idPropositionThese;
+	}
+
+	public void setIdPropositionThese(long idPropositionThese) {
+		this.idPropositionThese = idPropositionThese;
+	}
+
+	public String getTypeOffre() {
+		return typeOffre;
+	}
+
+	public void setTypeOffre(String typeOffre) {
+		this.typeOffre = typeOffre;
 	}
 }

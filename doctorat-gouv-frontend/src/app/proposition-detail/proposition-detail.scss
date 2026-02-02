@@ -1,14 +1,8 @@
 .page-background {
-/*  background-color: #0053b3; // bleu DSFR
-  min-height: 100vh;
-  padding: 2rem 0;*/
-  background-image: url('/assets/images/default.jpg');
-  // background-image: url('/assets/images/DS-1-Sante.jpg');
-  background-size: cover;       // l’image couvre toute la zone
-  background-position: center;  // centrée
-  background-repeat: no-repeat; // pas de répétition
-  min-height: 100vh;            // occupe toute la hauteur de la fenêtre
-  padding: 2rem 0;
+	background: linear-gradient(to bottom, rgb(200, 200, 255) 0%, rgb(230, 230, 249) 100%);
+	min-height: 100vh;
+	padding: 2rem 0;
+
 }
 
 .container {
@@ -18,13 +12,12 @@
 
 .card {
   background: #fff;
-  //border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .shadow {
-  box-shadow: 0 50px 46px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
 }
 
 .card-title {
@@ -87,6 +80,49 @@
   cursor: pointer;
 }
 
+.badges-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; // important pour ne pas étirer en largeur
+  gap: 0.3rem;             // espace vertical entre les badges
+}
+
+.badge-green,
+.badge-pink {
+  display: inline-block;   // largeur = contenu
+}
+
+/* Premier badge */
+.badge-green {
+  background-color: rgb(196, 255, 185);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0; // marge verticale seulement si tu veux
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(198, 255, 198);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
+
+/* Second badge */
+.badge-pink {
+  background-color: rgb(254, 242, 163);
+  color: #000;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: rgb(254, 245, 188);
+    color: rgb(0, 0, 150);
+    cursor: pointer;
+  }
+}
 
 .separator {
   border: none;

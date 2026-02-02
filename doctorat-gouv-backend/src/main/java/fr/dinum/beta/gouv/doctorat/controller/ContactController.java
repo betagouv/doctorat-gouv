@@ -1,6 +1,5 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +28,30 @@ import fr.dinum.beta.gouv.doctorat.service.BrevoEmailService;
 public class ContactController {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContactController.class);
+	
+	private static final Map<String, Integer> TEMPLATE_BY_PROFIL = Map.of(
+		    "Étudiant au sein d'un master français", 14,
+		    "Étudiant d'un master étranger", 19,
+		    "Élève d'une école d'ingénieur", 28,
+		    "Élève d'une autre grande école conférant le grade master", 20,
+		    "Chercheur en entreprise", 21,
+		    "Entreprise souhaitant établir un partenariat", 29,
+		    "Autre professionnel en activité", 22,
+		    "Autre organisation souhaitant établir un partenariat", 30,
+		    "Autre", 23
+		    // Les autres profils retomberont sur la valeur par défaut
+		);
+	
+	private static final Map<String, Integer> TEMPLATE_BY_TYPE_OFFRE = Map.of(
+		    "proposition", 24,
+		    "offre", 15
+		    // les autres retombent sur la valeur par défaut
+		);
+
+
+	
+	@Value("${app.mail.enabled:false}")
+	private boolean mailEnabled;
 
     private final BrevoEmailService emailService;
 
@@ -42,8 +66,15 @@ public class ContactController {
      */
     @PostMapping
     public ResponseEntity<?> sendMails(@RequestBody ContactRequest request) {
-        templateMailEncadrant(request);
-        templateMailCandidat(request);
+    	log.info("Réception d'une demande de contact le : " + java.time.LocalDateTime.now());
+    	
+    	if (mailEnabled) {
+    	    templateMailEncadrant(request);
+    	    templateMailCandidat(request);
+    	} else {
+    	    log.warn("Mode DEV : mails désactivés");
+    	}
+
         return ResponseEntity.ok(Map.of("message", "Email envoyé"));
     }
 
@@ -75,7 +106,9 @@ public class ContactController {
 
 	    try {
 	    	if (isValidEmail(req.emailEncadrant)) {
-	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
+	    		int templateId = resolveTemplateIdEncadrant(req.getTypeOffre());
+	    		log.info("Envoi de l'email à l'encadrant : {} avec template {}", req.emailEncadrant, templateId);
+	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, templateId, params, attachments);
 	    	}
 	    } catch (JsonProcessingException e) {
 	        log.error("Error sending template email to encadrant: {}", req.emailEncadrant, e);
@@ -95,21 +128,33 @@ public class ContactController {
 		Map<String, Object> params = new HashMap<>();
 		params.put("nom", request.nom);
 		params.put("prenom", request.prenom);
-		params.put("titre_sujet", "Sujet de thèse intelligence artificielle");
+		params.put("titre_sujet", request.titreSujet);
 		params.put("email", request.email);
 		params.put("motivation", request.message);
-		params.put("url_ressources", "https://doctorat.sites.beta.gouv.fr/");
 		params.put("nom_plateforme", "DOCTORAT GOUV");
+		String url = String.format("https://app.doctorat.gouv.fr/proposition?id=%s", request.getIdPropositionThese());
+		params.put("url_ressources", url);
+		
         
         try {
 			if (isValidEmail(request.email)) {
-				emailService.sendTemplateEmail(request.email, 14, params);
+				int templateId = resolveTemplateIdCandidat(request.profil); 
+				emailService.sendTemplateEmail(request.email, templateId, params);
 			}
 		} catch (JsonProcessingException e) {
 			log.error("Error sending template email to candidate: {}", request.email, e);
 		}
         log.info("Mail candidat envoyé");
 	}
+	
+	private int resolveTemplateIdCandidat(String profil) {
+	    return TEMPLATE_BY_PROFIL.getOrDefault(profil, 14); // 14 = valeur par défaut
+	}
+	
+	private int resolveTemplateIdEncadrant(String typeOffre) {
+	    return TEMPLATE_BY_TYPE_OFFRE.getOrDefault(typeOffre, 24); // 24 = valeur par défaut
+	}
+
 	
 	private boolean isValidEmail(String email) {
 	    return email != null
