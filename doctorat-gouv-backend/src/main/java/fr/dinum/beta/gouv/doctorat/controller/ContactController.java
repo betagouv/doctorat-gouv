@@ -29,6 +29,19 @@ public class ContactController {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContactController.class);
 	
+	private static final Map<String, Integer> TEMPLATE_BY_PROFIL = Map.of(
+		    "Étudiant au sein d'un master français", 14,
+		    "Étudiant d'un master étranger", 19,
+		    "Élève d'une école d'ingénieur", 20,
+		    "Élève d'une autre grande école conférant le grade master", 20,
+		    "Chercheur en entreprise", 21,
+		    "Entreprise souhaitant établir un partenariat", 29,
+		    "Autre organisation souhaitant établir un partenariat", 30,
+		    "Autre", 23
+		    // Les autres profils retomberont sur la valeur par défaut
+		);
+
+	
 	@Value("${app.mail.enabled:false}")
 	private boolean mailEnabled;
 
@@ -109,17 +122,24 @@ public class ContactController {
 		params.put("titre_sujet", request.titreSujet);
 		params.put("email", request.email);
 		params.put("motivation", request.message);
-		params.put("url_ressources", "https://doctorat.sites.beta.gouv.fr/");
 		params.put("nom_plateforme", "DOCTORAT GOUV");
+		String url = String.format("https://app.doctorat.gouv.fr/proposition?id=%s", request.getIdPropositionThese());
+		params.put("url_ressources", url);
+		
         
         try {
 			if (isValidEmail(request.email)) {
-				emailService.sendTemplateEmail(request.email, 14, params);
+				int templateId = resolveTemplateId(request.profil); 
+				emailService.sendTemplateEmail(request.email, templateId, params);
 			}
 		} catch (JsonProcessingException e) {
 			log.error("Error sending template email to candidate: {}", request.email, e);
 		}
         log.info("Mail candidat envoyé");
+	}
+	
+	private int resolveTemplateId(String profil) {
+	    return TEMPLATE_BY_PROFIL.getOrDefault(profil, 14); // 14 = valeur par défaut
 	}
 	
 	private boolean isValidEmail(String email) {
