@@ -32,14 +32,22 @@ public class ContactController {
 	private static final Map<String, Integer> TEMPLATE_BY_PROFIL = Map.of(
 		    "Étudiant au sein d'un master français", 14,
 		    "Étudiant d'un master étranger", 19,
-		    "Élève d'une école d'ingénieur", 20,
+		    "Élève d'une école d'ingénieur", 28,
 		    "Élève d'une autre grande école conférant le grade master", 20,
 		    "Chercheur en entreprise", 21,
 		    "Entreprise souhaitant établir un partenariat", 29,
+		    "Autre professionnel en activité", 22,
 		    "Autre organisation souhaitant établir un partenariat", 30,
 		    "Autre", 23
 		    // Les autres profils retomberont sur la valeur par défaut
 		);
+	
+	private static final Map<String, Integer> TEMPLATE_BY_TYPE_OFFRE = Map.of(
+		    "proposition", 24,
+		    "offre", 15
+		    // les autres retombent sur la valeur par défaut
+		);
+
 
 	
 	@Value("${app.mail.enabled:false}")
@@ -98,8 +106,9 @@ public class ContactController {
 
 	    try {
 	    	if (isValidEmail(req.emailEncadrant)) {
-	    		log.info("Envoi de l'email à l'encadrant : {}", req.emailEncadrant);
-	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, 15, params, attachments);
+	    		int templateId = resolveTemplateIdEncadrant(req.getTypeOffre());
+	    		log.info("Envoi de l'email à l'encadrant : {} avec template {}", req.emailEncadrant, templateId);
+	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, templateId, params, attachments);
 	    	}
 	    } catch (JsonProcessingException e) {
 	        log.error("Error sending template email to encadrant: {}", req.emailEncadrant, e);
@@ -129,7 +138,7 @@ public class ContactController {
         
         try {
 			if (isValidEmail(request.email)) {
-				int templateId = resolveTemplateId(request.profil); 
+				int templateId = resolveTemplateIdCandidat(request.profil); 
 				emailService.sendTemplateEmail(request.email, templateId, params);
 			}
 		} catch (JsonProcessingException e) {
@@ -138,9 +147,14 @@ public class ContactController {
         log.info("Mail candidat envoyé");
 	}
 	
-	private int resolveTemplateId(String profil) {
+	private int resolveTemplateIdCandidat(String profil) {
 	    return TEMPLATE_BY_PROFIL.getOrDefault(profil, 14); // 14 = valeur par défaut
 	}
+	
+	private int resolveTemplateIdEncadrant(String typeOffre) {
+	    return TEMPLATE_BY_TYPE_OFFRE.getOrDefault(typeOffre, 24); // 24 = valeur par défaut
+	}
+
 	
 	private boolean isValidEmail(String email) {
 	    return email != null

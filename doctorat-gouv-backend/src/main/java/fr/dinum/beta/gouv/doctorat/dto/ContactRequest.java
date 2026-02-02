@@ -20,6 +20,7 @@ public class ContactRequest {
 	public String titreSujet;
 	public String urlSujet;
 	public String urlVitrine;
+	public String typeOffre;
 
 	public String getNom() {
 		return nom;
@@ -147,5 +148,13 @@ public class ContactRequest {
 
 	public void setIdPropositionThese(long idPropositionThese) {
 		this.idPropositionThese = idPropositionThese;
+	}
+
+	public String getTypeOffre() {
+		return typeOffre;
+	}
+
+	public void setTypeOffre(String typeOffre) {
+		this.typeOffre = typeOffre;
 	}
 }

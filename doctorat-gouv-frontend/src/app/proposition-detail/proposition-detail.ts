@@ -69,7 +69,8 @@ export class PropositionDetail {
 		this.contactContextService.setContext(
 		  this.thesisId,
 		  this.thesis?.theseTitre ?? null,
-		  this.thesis?.deposantEmail ?? null
+		  this.thesis?.deposantEmail ?? null,
+		  this.thesis?.typeProposition ?? null
 		);
 
 		this.router.navigate(['/contact']);

@@ -133,7 +133,7 @@ export class Contact {
 	
 	onSubmit() {
 
-		const { id, sujet, email } = this.contactContextService.getContext();
+		const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
 
 		this.contactForm.markAllAsTouched();
 
@@ -149,7 +149,8 @@ export class Contact {
 			// 🔥 Ajout des données du contexte 
 			idPropositionThese: id,
 			titreSujet: sujet, 
-			emailEncadrant: email
+			emailEncadrant: email,
+			typeOffre: typeOffre
 		};
 
 		this.http.post(`${this.apiBase}/contact`, payload)
