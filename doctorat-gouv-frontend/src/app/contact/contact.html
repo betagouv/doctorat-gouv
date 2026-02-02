@@ -138,7 +138,9 @@
 
 					<!-- Upload CV -->
 					<div class="form-field large">
-						<label class="fr-label" for="cvUpload">{{ !isOrganisationProfile ? "Ajouter un CV" : "Ajouter un descriptif de votre organisation" }}</label>
+						<label class="fr-label" for="cvUpload">{{ !isOrganisationProfile ? "Ajouter un CV" : "Ajouter un descriptif de votre organisation" }}
+							<span class="fr-text--xs fr-text--error">*</span>
+						</label>
 						<p class="fr-hint-text">
 							Taille maximale : 1 Mo. Format supporté : pdf.
 						</p>
@@ -164,7 +166,7 @@
 						<label class="fr-label" for="docsUpload">
 							{{
 							isOrganisationProfile
-							? "Ajouter un autre document (ex : descriptif de votre organisation, un descriptif de votre problématique...)"
+							? "Ajouter un un descriptif du partenariat envisagé"
 							: "Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de
 							recommandation...)"
 							}}
