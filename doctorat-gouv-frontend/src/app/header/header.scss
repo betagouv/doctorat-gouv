@@ -5,15 +5,82 @@
   padding-left: 0;
   padding-right: 0;
   font-size: 1.1rem !important;
+  border-bottom: none !important;
+  border: none;
+}
+
+
+/* Alignement horizontal du header */
+.fr-header__body-row {
+  margin-top: 0.5rem;
+  margin-left: 0.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2.2rem; /* espace entre Marianne, logo et texte */
+}
+
+/* Logo Marianne */
+.fr-logo {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Logo Doctorat.gouv.fr */
+.fr-header__service img {
+  height: 90px; /* augmente la taille */
+  width: auto;
+}
+
+/* Bloc texte à droite */
+.fr-header__service-tagline {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Titre */
+.tagline-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Badge BETA */
+.tagline-beta {
+  background-color: rgb(203, 247, 198); /* vert clair officiel */
+  color: #005500;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* Sous-titre */
+.tagline-subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 1.3rem;
+  color: #444;
+}
+
+
+/* Optionnel : si tu veux encore plus d’espace */
+.fr-header__service {
+  margin-left: 1rem;
 }
 
 .fr-nav__link {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
 .fr-header__menu .fr-nav__link {
   padding-top: 1.2rem !important;
-  padding-bottom: 1.2rem !important;
+  padding-bottom: 1.4rem !important;
 }
 
 .fr-header__search {
@@ -23,22 +90,6 @@
 .fr-header__search .fr-search-bar {
   width: 100%;
 }
-
-
-/* Le bloc outils prend plus de place à droite */
-/*.fr-header__tools {
-  flex: 2;  occupe tout l’espace disponible 
-  display: flex;
-  justify-content: flex-end;  reste collé à droite 
-  gap: 1rem;  espace entre Connexion et la recherche 
-}*/
-
-
-
-/*.fr-header__brand img {
-  height: 140px;  ou ce que tu veux 
-}*/
-
 
 
 /* Bandeau */
