@@ -18,6 +18,12 @@
   gap: 1.8rem; /* espace entre Marianne, logo et texte */
 }
 
+.fr-header__brand {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
 /* Logo Marianne */
 .fr-logo {
   font-size: 1.05rem;
@@ -153,86 +159,67 @@
   opacity: 0.7;
 }
 
+
 /* ========================= */
-/*   HEADER RESPONSIVE       */
-/* ========================= */
-
-@media (max-width: 768px) {
-
-  /* Le container DSFR doit repasser en full width */
-  .fr-header .fr-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  /* Image du header : on la contraint */
-  .fr-header__brand img {
-    max-width: 480px;   /* taille raisonnable */
-    height: auto;
-  }
-
-  /* Centrer le bloc brand */
-  .fr-header__brand {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: 0.5rem 0;
-  }
-
-  /* Le body-row doit s’empiler proprement */
-  .fr-header__body-row {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-@media (max-width: 768px) {
-
-  .info-banner {
-    flex-direction: column;
-    text-align: left;
-    padding: 1rem;
-  }
-
-  .info-left {
-    margin-left: 0;
-    gap: 0.5rem;
-  }
-
-  .close-btn {
-    margin-right: 0;
-    align-self: flex-end;
-  }
-}
-/* ========================= */
-/*   MENU RESPONSIVE         */
+/*   MENU MOBILE PROPRE      */
 /* ========================= */
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
 
-  /* Le container du menu */
+  /* Le menu desktop doit disparaître en mobile */
+  .menu-desktop {
+    display: none !important;
+  }
+
+  /* Le menu mobile DSFR devient un panneau latéral */
+  .fr-header__menu.fr-modal {
+    display: block !important;
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 80%;
+    max-width: 320px;
+    background: #ffffff;
+    overflow-y: auto;
+    padding: 2rem 1.5rem;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+  }
+
+  /* Le container interne doit être full width */
   .fr-header__menu .fr-container {
     max-width: 100% !important;
     width: 100% !important;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0;
   }
 
-  /* Liste du menu en colonne */
+  /* Liste verticale */
   .fr-nav__list {
+    display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
   }
 
-  /* Liens du menu */
+  /* Liens lisibles et centrés */
   .fr-nav__link {
-    font-size: 1rem;
-    padding: 1rem 0 !important;
-    text-align: center;
+    font-size: 1.4rem;
+    padding: 1rem 0;
+    text-align: left;
     width: 100%;
+    color: #000091 !important;
+    font-weight: 600;
+  }
+  
+  .fr-header__service img {
+	align-self: left;
+  	height: 3rem;
+  	width: 10rem;
   }
 }
+
 
 
 
