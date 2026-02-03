@@ -1,9 +1,7 @@
 .fr-header .fr-container {
   max-width: 79% !important;
   width: 79%;
-  margin: 0 auto;
   padding-left: 0;
-  padding-right: 0;
   font-size: 1.1rem !important;
   border-bottom: none !important;
   border: none;
@@ -12,17 +10,17 @@
 
 /* Alignement horizontal du header */
 .fr-header__body-row {
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   margin-left: 0.1rem;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 2.2rem; /* espace entre Marianne, logo et texte */
+  gap: 1.8rem; /* espace entre Marianne, logo et texte */
 }
 
 /* Logo Marianne */
 .fr-logo {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   line-height: 1.2;
   margin: 0;
 }
