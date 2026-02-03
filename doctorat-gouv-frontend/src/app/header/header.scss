@@ -104,4 +104,86 @@
   opacity: 0.7;
 }
 
+/* ========================= */
+/*   HEADER RESPONSIVE       */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  /* Le container DSFR doit repasser en full width */
+  .fr-header .fr-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Image du header : on la contraint */
+  .fr-header__brand img {
+    max-width: 480px;   /* taille raisonnable */
+    height: auto;
+  }
+
+  /* Centrer le bloc brand */
+  .fr-header__brand {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+
+  /* Le body-row doit s’empiler proprement */
+  .fr-header__body-row {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media (max-width: 768px) {
+
+  .info-banner {
+    flex-direction: column;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .info-left {
+    margin-left: 0;
+    gap: 0.5rem;
+  }
+
+  .close-btn {
+    margin-right: 0;
+    align-self: flex-end;
+  }
+}
+/* ========================= */
+/*   MENU RESPONSIVE         */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  /* Le container du menu */
+  .fr-header__menu .fr-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Liste du menu en colonne */
+  .fr-nav__list {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Liens du menu */
+  .fr-nav__link {
+    font-size: 1rem;
+    padding: 1rem 0 !important;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+
 
