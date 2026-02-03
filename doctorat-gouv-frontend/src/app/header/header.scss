@@ -1,233 +1,259 @@
-.fr-header .fr-container {
-  max-width: 79% !important;
-  width: 79%;
-  padding-left: 0;
-  font-size: 1.1rem !important;
-  border-bottom: none !important;
-  border: none;
-}
+/* ========================================================= */
+/*   HEADER DESKTOP                                           */
+/* ========================================================= */
 
+.fr-header .fr-container {
+	max-width: 79% !important;
+	width: 79%;
+	padding-left: 0;
+	font-size: 1.1rem !important;
+	border: none !important;
+}
 
 /* Alignement horizontal du header */
 .fr-header__body-row {
-  margin-top: 0.4rem;
-  margin-left: 0.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1.8rem; /* espace entre Marianne, logo et texte */
+	margin-top: 0.3rem;
+	margin-left: 0.1rem;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 1.8rem;
 }
-
-.fr-header__brand {
-  border: none !important;
-  box-shadow: none !important;
-}
-
 
 /* Logo Marianne */
 .fr-logo {
-  font-size: 1.05rem;
-  line-height: 1.2;
-  margin: 0;
+	font-size: 1.1rem;
+	line-height: 1.2;
+	margin: 0;
+}
+
+/* Supprimer la bordure DSFR autour de Marianne */
+.fr-header__brand {
+	border: none !important;
+	box-shadow: none !important;
 }
 
 /* Logo Doctorat.gouv.fr */
 .fr-header__service img {
-  height: 90px; /* augmente la taille */
-  width: auto;
+	height: 80px;
+	width: auto;
 }
 
 /* Bloc texte à droite */
 .fr-header__service-tagline {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
 /* Titre */
 .tagline-title {
-  font-size: 2rem;
-  font-weight: 600;
-  margin: 0;
-  color: #000;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+	font-size: 1.6rem;
+	font-weight: 600;
+	margin: 0;
+	color: #000;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 /* Badge BETA */
 .tagline-beta {
-  background-color: rgb(203, 247, 198); /* vert clair officiel */
-  color: #005500;
-  font-size: 1.1rem;
-  font-weight: 700;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
+	background-color: rgb(203, 247, 198);
+	color: #005500;
+	font-size: 1.1rem;
+	font-weight: 700;
+	padding: 0.15rem 0.45rem;
+	border-radius: 4px;
 }
 
 /* Sous-titre */
 .tagline-subtitle {
-  margin: 0.25rem 0 0 0;
-  font-size: 1.3rem;
-  color: #444;
+	margin: 0.25rem 0 0 0;
+	font-size: 1.1rem;
+	color: #444;
 }
 
-
-/* Optionnel : si tu veux encore plus d’espace */
-.fr-header__service {
-  margin-left: 1rem;
-}
+/* ========================================================= */
+/*   MENU DESKTOP                                             */
+/* ========================================================= */
 
 .fr-nav__link {
-  font-size: 1.2rem;
+	font-size: 1.2rem;
 }
 
 .fr-header__menu .fr-nav__link {
-  padding-top: 1.2rem !important;
-  padding-bottom: 1.4rem !important;
+	padding-top: 1.2rem !important;
+	padding-bottom: 1.4rem !important;
 }
 
-.fr-header__search {
-  flex: 1;
+.menu-desktop {
+	display: flex;
+	justify-content: center;
+	gap: 2rem;
+	margin-top: 1rem;
 }
 
-.fr-header__search .fr-search-bar {
-  width: 100%;
+.menu-desktop a {
+	color: rgb(0, 0, 0);
+	font-size: 1.3rem;
+	font-weight: 500;
+	font-size: 1.2rem;
 }
 
+/* ========================================================= */
+/*   BANDEAU INFO                                             */
+/* ========================================================= */
 
-/* Bandeau */
 .info-banner {
-  background-color: rgb(232, 232, 255);
-  border-bottom: 1px solid #d5d5f0;
-  padding: 0.75rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: rgb(0, 128, 255);
-  font-size: 0.95rem;
+	background-color: rgb(232, 232, 255);
+	border-bottom: 1px solid #d5d5f0;
+	padding: 0.75rem 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: rgb(0, 128, 255);
+	font-size: 0.95rem;
 }
 
-/* Colonne gauche : icône + texte */
 .info-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-left: 4rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-left: 4rem;
 }
 
-/* Icône EXACTE comme ta photo */
 .info-icon {
-  background-color: #0053b3; /* bleu vif comme ton image */
-  color: #ffffff;            /* “i” blanc */
-  font-weight: bold;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;        /* angles légèrement arrondis */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;           /* taille du “i” */
-  font-family: Arial, sans-serif;
+	background-color: #0053b3;
+	/* bleu vif */
+	color: #ffffff;
+	/* “i” blanc */
+	font-weight: bold;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
+	/* angles légèrement arrondis */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 15px;
+	/* taille du “i” */
+	font-family: Arial, sans-serif;
 }
 
-/* Texte */
 .info-banner p {
-  margin: 0;
+	font-size: 1.2rem;
+	margin: 0;
 }
 
-/* Lien */
 .info-banner a {
-  color: rgb(0, 128, 255);
-  font-weight: 600;
-  text-decoration: underline;
+	color: rgb(0, 128, 255);
+	font-weight: 600;
+	text-decoration: underline;
 }
 
-/* Bouton X */
 .close-btn {
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
-  color: #000091;
-  padding: 0 0.5rem;
-  margin-right: 2rem;
+	background: none;
+	border: none;
+	font-size: 1.4rem;
+	line-height: 1;
+	cursor: pointer;
+	color: #000091;
+	padding: 0 0.5rem;
+	margin-right: 2rem;
 }
 
 .close-btn:hover {
-  opacity: 0.7;
+	opacity: 0.7;
 }
 
-
-/* ========================= */
-/*   MOBILE FIX              */
-/* ========================= */
+/* ========================================================= */
+/*   MOBILE RESPONSIVE                                        */
+/* ========================================================= */
 
 @media (max-width: 700px) {
 
-  /* Header en ligne, pas en colonne */
-  .fr-header__body-row {
-    flex-direction: row !important;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-  }
+	/* Header en ligne */
+	.fr-header__body-row {
+		display: flex;
+		flex-direction: column !important;
+		align-items: center;
+		gap: 1rem;
+		text-align: center;
+	}
 
-  /* Logo Doctorat réduit */
-  .fr-header__service img {
-    height: 3rem;
-    width: auto;
-  }
+	/* Ligne 1 : Marianne + logo Doctorat */
+	.mobile-header-top {
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		justify-content: center;
+		gap: 1.2rem;
+		width: 10%;
+	}
 
-  /* Cacher le menu desktop */
-  .menu-desktop {
-    display: none !important;
-  }
+	/* Logo Doctorat réduit */
+	.fr-header__service img {
+		height: 3rem;
+		width: auto;
+		align-self: left;
+	}
 
-  /* Menu mobile caché par défaut */
-  .fr-header__menu.fr-modal {
-    display: none !important;
-  }
+	/* Tagline sous le logo */
+	.fr-header__service-tagline {
+		text-align: center;
+		margin-top: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
 
-  /* Menu mobile ouvert */
-  .fr-header__menu.fr-modal.is-open {
-    display: block !important;
-    position: fixed !important;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 80%;
-    max-width: 320px;
-    background: #ffffff;
-    overflow-y: auto;
-    padding: 2rem 1.5rem;
-    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
-    z-index: 9999;
-  }
+	.tagline-title {
+		font-size: 1.3rem;
+	}
 
-  /* Container interne */
-  .fr-header__menu .fr-container {
-    padding: 0;
-    max-width: 100% !important;
-  }
+	.tagline-subtitle {
+		font-size: 1rem;
+	}
 
-  /* Liste verticale */
-  .fr-nav__list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
+	/* Menu desktop caché */
+	.menu-desktop {
+		display: none !important;
+	}
 
-  /* Liens lisibles */
-  .fr-nav__link {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #000091 !important;
-  }
+	/* MENU MOBILE — caché par défaut */
+	.fr-header__menu.fr-modal {
+		display: none !important;
+	}
+
+	/* MENU MOBILE — ouvert */
+	.fr-header__menu.fr-modal.is-open {
+		display: block !important;
+		position: fixed !important;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 80%;
+		max-width: 320px;
+		background: #ffffff;
+		overflow-y: auto;
+		padding: 2rem 1.5rem;
+		box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+		z-index: 9999;
+	}
+
+	.fr-header__menu .fr-container {
+		padding: 0;
+		max-width: 100% !important;
+	}
+
+	.fr-nav__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1.2rem;
+	}
+
+	.fr-nav__link {
+		font-size: 1.4rem;
+		font-weight: 600;
+		color: #000091 !important;
+	}
 }
-
-
-
-
-
