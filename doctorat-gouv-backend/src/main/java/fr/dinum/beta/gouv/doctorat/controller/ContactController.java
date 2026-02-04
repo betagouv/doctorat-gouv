@@ -107,11 +107,11 @@ public class ContactController {
 	    try {
 	    	if (isValidEmail(req.emailEncadrant)) {
 	    		int templateId = resolveTemplateIdEncadrant(req.getTypeOffre());
-	    		log.info("Envoi de l'email à l'encadrant : {} avec template {}", req.emailEncadrant, templateId);
+	    		log.info("Envoi de l'email à l'encadrant avec template {}", templateId);
 	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, templateId, params, attachments);
 	    	}
 	    } catch (JsonProcessingException e) {
-	        log.error("Error sending template email to encadrant: {}", req.emailEncadrant, e);
+	        log.error("Error sending template email to encadrant", e);
 	    }
 
 	    log.info("Mail encadrant envoyé");
@@ -142,7 +142,7 @@ public class ContactController {
 				emailService.sendTemplateEmail(request.email, templateId, params);
 			}
 		} catch (JsonProcessingException e) {
-			log.error("Error sending template email to candidate: {}", request.email, e);
+			log.error("Error sending template email to candidate", e);
 		}
         log.info("Mail candidat envoyé");
 	}
