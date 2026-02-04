@@ -69,7 +69,7 @@ public class BrevoEmailService {
 	    HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 	 
 	    ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
-	    log.info("Réponse Brevo : {}", response.getBody());
+	    log.debug("Réponse Brevo : {}", response.getBody());
 	}
 	
 	
