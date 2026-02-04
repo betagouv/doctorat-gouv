@@ -20,6 +20,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -66,6 +67,7 @@ export class Search implements OnInit, OnDestroy {
   laboratoire = '';
   ecole = '';
   defisSociete = '';
+  ecoleDoctoraleNumero = '';
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -92,11 +94,6 @@ export class Search implements OnInit, OnDestroy {
   showMoreFilters = false;
   results: PropositionTheseDto[] = [];
   view: 'liste' | 'carte' = 'liste';
-  /*  dropdownPosition = {
-    top: 0,
-    left: 0,
-    width: 0
-  };*/
 
 
   /* ------------------- Reactive trigger ------------------- */
@@ -104,6 +101,7 @@ export class Search implements OnInit, OnDestroy {
   private filterSub!: Subscription;
 
   constructor(
+	private route: ActivatedRoute,
     private router: Router,
     private propositionService: PropositionTheseService,
     private filterService: FilterService
@@ -111,9 +109,25 @@ export class Search implements OnInit, OnDestroy {
 
   /* ------------------- Lifecycle ------------------- */
   ngOnInit(): void {
-	document.addEventListener('click', this.handleClickOutside.bind(this));
+	  document.addEventListener('click', this.handleClickOutside.bind(this));
 
-    this.loadFilterOptions();
+	  // Lire les paramètres d’URL 
+	  this.route.queryParams.subscribe(params => {
+		  if (params['ecoledoctorale']) {
+
+			  // Initialiser les filtres
+			  this.discipline = ''; 
+			  this.localisation = ''; 
+			  this.laboratoire = ''; 
+			  this.ecole = ''; 
+			  this.defisSociete = ''; 
+			  this.query = '';
+
+			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
+		  }
+	  });
+
+	  this.loadFilterOptions();
 	
 	// Charger les résultats dès l'arrivée sur la page 
 	this.onSearch(0);
@@ -149,27 +163,6 @@ export class Search implements OnInit, OnDestroy {
     }
   }
   
-/*  toggleDropdownOld(panel: string, event?: MouseEvent): void {
-    const isOpening = !(this as any)[panel];
-
-    this.closeAllDropdowns();
-
-    if (isOpening && event) {
-      const button = event.target as HTMLElement;
-      const rect = button.getBoundingClientRect();
-
-      this.dropdownPosition = {
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width
-      };
-
-      (this as any)[panel] = true;
-    }
-  }*/
-
-
-
   filteredOptions(list: string[], search: string): string[] {
     if (!search) return list;
     return list.filter(opt =>
@@ -213,6 +206,10 @@ export class Search implements OnInit, OnDestroy {
     if (this.laboratoire) active['laboratoire'] = this.laboratoire;
     if (this.ecole) active['ecole'] = this.ecole;
     if (this.defisSociete) active['defisSociete'] = this.defisSociete;
+	if (this.ecoleDoctoraleNumero) {
+	  active['ecoleDoctoraleNumero'] = this.ecoleDoctoraleNumero;
+	}
+
 
     if (this.query?.trim()) active['query'] = this.query.trim();
 

@@ -78,23 +78,24 @@ public class PropositionTheseService {
     }
 
     /** Construction de la Specification */
-    private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
-        return (root, query, cb) -> {
-            query.distinct(true);                     // éviter les doublons liés aux JOIN
-            List<Predicate> andPredicates = new ArrayList<>();
+	private Specification<PropositionThese> buildSpecification(Map<String, String> filters) {
+		return (root, query, cb) -> {
+			query.distinct(true); // éviter les doublons liés aux JOIN
+			List<Predicate> andPredicates = new ArrayList<>();
 
-            // JOINTURES sur les deux listes (utilisées uniquement si le filtre « defisSociete » est présent)
-            Join<PropositionThese, String> joinDomainesImpact =
-                    root.joinList("domainesImpactListe", JoinType.LEFT);
-            Join<PropositionThese, String> joinObjectifsDurables =
-                    root.joinList("objectifsDeveloppementDurableListe", JoinType.LEFT);
+			// JOINTURES sur les deux listes (utilisées uniquement si le filtre
+			// « defisSociete » est présent)
+			Join<PropositionThese, String> joinDomainesImpact = root.joinList("domainesImpactListe", JoinType.LEFT);
+			Join<PropositionThese, String> joinObjectifsDurables = root.joinList("objectifsDeveloppementDurableListe",
+					JoinType.LEFT);
 
-            filters.forEach((key, value) -> {
-                if (value == null || value.isBlank()) return;
-                String lowered = value.toLowerCase();
-                String pattern = "%" + lowered + "%";
+			filters.forEach((key, value) -> {
+				if (value == null || value.isBlank())
+					return;
+				String lowered = value.toLowerCase();
+				String pattern = "%" + lowered + "%";
 
-                switch (key) {
+				switch (key) {
 				case "discipline" -> {
 					String code = DomaineScientifique.codeFromLabel(value);
 					if (code != null) {
@@ -102,65 +103,67 @@ public class PropositionTheseService {
 					}
 				}
 				case "localisation" -> {
-				    List<String> depts = RegionsFrance.departementsFromRegion(value);
+					List<String> depts = RegionsFrance.departementsFromRegion(value);
 
-				    List<Predicate> deptPredicates = depts.stream()
-				        .map(dept -> cb.like(root.get("uniteRechercheCodePostal"), dept + "%"))
-				        .toList();
+					List<Predicate> deptPredicates = depts.stream()
+							.map(dept -> cb.like(root.get("uniteRechercheCodePostal"), dept + "%")).toList();
 
-				    andPredicates.add(cb.or(deptPredicates.toArray(Predicate[]::new)));
+					andPredicates.add(cb.or(deptPredicates.toArray(Predicate[]::new)));
 				}
 				case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
 				case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
 
-                    // -------------------------------------------------
-                    // Nouveau filtre « Défis de société »
-                    // -------------------------------------------------
-                    case "defisSociete" -> {
-                        // Le défi peut être présent soit dans domainesImpactListe,
-                        // soit dans objectifsDeveloppementDurableListe.
-                        Predicate pDomaines   = cb.like(cb.lower(joinDomainesImpact), pattern);
-                        Predicate pObjectifs  = cb.like(cb.lower(joinObjectifsDurables), pattern);
-                        andPredicates.add(cb.or(pDomaines, pObjectifs));
-                    }
+				// -------------------------------------------------
+				// Nouveau filtre « Défis de société »
+				// -------------------------------------------------
+				case "defisSociete" -> {
+					// Le défi peut être présent soit dans domainesImpactListe,
+					// soit dans objectifsDeveloppementDurableListe.
+					Predicate pDomaines = cb.like(cb.lower(joinDomainesImpact), pattern);
+					Predicate pObjectifs = cb.like(cb.lower(joinObjectifsDurables), pattern);
+					andPredicates.add(cb.or(pDomaines, pObjectifs));
+				}
+				
+				case "ecoleDoctoraleNumero" -> 
+			    andPredicates.add(cb.equal(root.get("ecoleDoctoraleNumero"), value));
 
-                    // -------------------------------------------------
-                    // Recherche texte libre (déjà existante)
-                    // -------------------------------------------------
-                    case "query" -> {
-                        String[] tokens = value.trim().toLowerCase().split("\\s+");
-                        List<Predicate> tokenPredicates = new ArrayList<>();
 
-                        for (String token : tokens) {
-                            if (token.isBlank()) continue;
-                            String tokenPattern = "%" + token + "%";
+				// -------------------------------------------------
+				// Recherche texte libre (déjà existante)
+				// -------------------------------------------------
+				case "query" -> {
+					String[] tokens = value.trim().toLowerCase().split("\\s+");
+					List<Predicate> tokenPredicates = new ArrayList<>();
 
-                            // OR entre les différents champs pour le même token
-                            Predicate tokenInAnyField = cb.or(
-                                    cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
-                                    cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
-                                    cb.like(cb.lower(root.get("resume")), tokenPattern),
-                                    cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
-                                    // les maps de mots‑clés sont déjà traitées dans le filtre « defisSociete »,
-                                    // mais on les garde aussi ici au cas où vous voudriez les rechercher
-                                    // directement via le champ libre.
-                            );
-                            tokenPredicates.add(tokenInAnyField);
-                        }
-                        if (!tokenPredicates.isEmpty()) {
-                            andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
-                        }
-                    }
+					for (String token : tokens) {
+						if (token.isBlank())
+							continue;
+						String tokenPattern = "%" + token + "%";
 
-                    default -> { /* ignore unknown keys */ }
-                }
-            });
+						// OR entre les différents champs pour le même token
+						Predicate tokenInAnyField = cb.or(cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
+								cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
+								cb.like(cb.lower(root.get("resume")), tokenPattern),
+								cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
+						// les maps de mots‑clés sont déjà traitées dans le filtre « defisSociete »,
+						// mais on les garde aussi ici dans le cas où ont veut les rechercher
+						// directement via le champ libre.
+						);
+						tokenPredicates.add(tokenInAnyField);
+					}
+					if (!tokenPredicates.isEmpty()) {
+						andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
+					}
+				}
 
-            return andPredicates.isEmpty()
-                    ? cb.conjunction()
-                    : cb.and(andPredicates.toArray(Predicate[]::new));
-        };
-    }
+				default -> {
+					/* ignore unknown keys */ }
+				}
+			});
+
+			return andPredicates.isEmpty() ? cb.conjunction() : cb.and(andPredicates.toArray(Predicate[]::new));
+		};
+	}
     
     /**
      * Retourne la proposition de thèse correspondant à l’identifiant fourni.
