@@ -86,13 +86,13 @@ public class AdumApiService {
 				// Mise à jour nécessaire
 				p.setId(existingOpt.get().getId());
 				toSave.add(p);
-				log.debug("Proposition {} mise à jour (dateMaj plus récente)", p.getMatricule());
+				log.info("Proposition {} mise à jour (dateMaj plus récente)", p.getMatricule());
 			} else {
 				// Vérifie si elle existe déjà sans besoin de mise à jour
 				if (propositionTheseRepository.findByMatricule(p.getMatricule()).isEmpty()) {
 					// Nouvelle proposition
 					toSave.add(p);
-					log.debug("Nouvelle proposition {} insérée", p.getMatricule());
+					log.info("Nouvelle proposition {} insérée", p.getMatricule());
 				} else {
 					log.debug("Proposition {} ignorée (déjà à jour)", p.getMatricule());
 				}
