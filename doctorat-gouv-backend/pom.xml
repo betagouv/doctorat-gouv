@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fr.beta.gouv.doctorat</groupId>
 		<artifactId>doctorat-gouv</artifactId>
-		<version>0.2.0-rc1</version>
+		<version>0.2.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
