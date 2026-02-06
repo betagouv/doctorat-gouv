@@ -19,6 +19,8 @@
 /* Marianne */
 .fr-header__brand {
   border: none !important;
+  border-bottom: none !important; /* DSFR met parfois un border-bottom */
+  border-top: none !important; /* DSFR met parfois un border-top */
   box-shadow: none !important;
   display: flex;
   align-items: center;
@@ -238,11 +240,6 @@
     max-width: 100%;
   }
   
-  
-  
-  
-  
-  
   /* ========================================================= */
   /*   INFO-BANNER — VERSION MOBILE                             */
   /* ========================================================= */
@@ -285,20 +282,6 @@
       font-size: 1.3rem !important;
       padding: 0 !important;
     }
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
   /* Cacher menu desktop */
   .menu-desktop {
@@ -343,9 +326,39 @@
 
 .mobile-nav a {
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 400;
   color: rgb(0, 0, 0);
+  text-decoration: none !important; /* enlève le soulignement */ 
+  border-bottom: none !important; /* DSFR met parfois un border-bottom */
+  box-shadow: none !important;
 }
+
+.mobile-nav a:hover,
+.mobile-nav a:focus {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* ========================================================= */
+/*   SUPPRESSION TOTALE DU SOULIGNEMENT DSFR DANS LE MENU    */
+/* ========================================================= */
+
+.mobile-nav,
+.mobile-nav * {
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+
+  /* Variables DSFR à neutraliser */
+  --underline-img: none !important;
+  --underline-thickness: 0 !important;
+  --underline-color: transparent !important;
+  --underline-offset: 0 !important;
+  --text-decoration-color: transparent !important;
+}
+
+
 
 /* ========================================================= */
 /*   MENU DESKTOP                                             */
