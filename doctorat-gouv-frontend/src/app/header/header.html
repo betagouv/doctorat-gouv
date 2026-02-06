@@ -1,68 +1,100 @@
 <header class="fr-header" role="banner">
-	<div class="fr-header__body">
-		<div class="fr-container">
-		  <div class="fr-header__body-row">
+  <div class="fr-header__body-row">
 
-		    <!-- LOGO MARIANNE OFFICIEL -->
-		    <div class="fr-header__brand"> 
-		      <a href="/" title="Accueil - République Française">
-		        <p class="fr-logo">République<br>Française</p>
-		      </a> 
-		    </div> 
+    <!-- ===================================================== -->
+    <!-- VERSION DESKTOP (>700px)                              -->
+    <!-- ===================================================== -->
+    <div class="desktop-header-line">
+      <!-- Marianne -->
+      <div class="fr-header__brand">
+        <a href="/" title="Accueil - République Française">
+          <p class="fr-logo">République<br>Française</p>
+        </a>
+      </div>
 
-		    <!-- TON LOGO -->
-		    <div class="fr-header__service"> 
-		      <a href="https://doctorat.gouv.fr/" title="Doctorat.gouv.fr">
-		        <img src="assets/logos.png" alt="Doctorat.gouv.fr">
-		      </a> 
-		    </div>
-			
-			<div class="fr-header__service-tagline">
-			  <p class="tagline-title">
-			    La plateforme nationale du doctorat
-			    <span class="tagline-beta">BETA</span>
-			  </p>
-			  <p class="tagline-subtitle">
-			    De la définition du sujet de recherche à la poursuite de carrière
-			  </p>
-			</div>
+      <!-- Logo Doctorat -->
+      <div class="fr-header__service">
+        <a href="https://doctorat.gouv.fr/" title="Doctorat.gouv.fr">
+          <img src="assets/logos.png" alt="Doctorat.gouv.fr">
+        </a>
+      </div>
 
-		  </div>
-		</div>
+      <!-- Tagline -->
+      <div class="fr-header__service-tagline">
+        <p class="tagline-title">
+          La plateforme nationale du doctorat
+          <span class="tagline-beta">BETA</span>
+        </p>
+        <p class="tagline-subtitle">
+          De la définition du sujet de recherche à la poursuite de carrière
+        </p>
+      </div>
+    </div>
 
-	</div>
+    <!-- ===================================================== -->
+    <!-- VERSION MOBILE (<=700px)                              -->
+    <!-- ===================================================== -->
 
-	<!-- MENU -->
-	<!-- <div class="fr-header__menu fr-modal" id="header-menu"> -->
-	<div class="menu-desktop" id="header-menu">
-		<div class="fr-container">
-			<nav class="fr-nav" role="navigation" aria-label="Menu principal">
-				<ul class="fr-nav__list">
-					<li class="fr-nav__item">
-						<a class="fr-nav__link" href="/">Toutes les offres</a>
-					</li>
-					<li class="fr-nav__item">
-						<a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">Retour au site</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+    <!-- Ligne 1 : Marianne + Logo Doctorat + Burger -->
+    <div class="mobile-header-top">
+      <div class="fr-header__brand">
+        <a href="/" title="Accueil - République Française">
+          <p class="fr-logo">République<br>Française</p>
+        </a>
+      </div>
+
+      <div class="fr-header__service">
+        <a href="https://doctorat.gouv.fr/" title="Doctorat.gouv.fr">
+          <img src="assets/logos.png" alt="Doctorat.gouv.fr">
+        </a>
+      </div>
+
+      <!-- Bouton menu mobile -->
+      <button class="mobile-burger" aria-label="Ouvrir le menu">
+        <img src="assets/burger.svg" alt="">
+      </button>
+    </div>
+
+    <!-- Ligne 2 : Tagline mobile -->
+    <div class="mobile-tagline">
+      <p class="tagline-title">
+        La plateforme nationale du doctorat
+        <span class="tagline-beta">BETA</span>
+      </p>
+      <p class="tagline-subtitle">
+        De la définition du sujet de recherche à la poursuite de carrière
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- MENU DESKTOP                                           -->
+  <!-- ===================================================== -->
+  <div class="menu-desktop" id="header-menu">
+    <div class="fr-container">
+      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+        <ul class="fr-nav__list">
+          <li class="fr-nav__item">
+            <a class="fr-nav__link" href="/">Toutes les offres</a>
+          </li>
+          <li class="fr-nav__item">
+            <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">Retour au site</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </header>
 
-<div class="info-banner" *ngIf="showBanner">
-	<div class="info-left">
-		<span class="info-icon" aria-hidden="true">i</span>
+<!-- ===================================================== -->
+<!-- MENU MOBILE (slide-in)                                 -->
+<!-- ===================================================== -->
+<div class="mobile-menu">
+  <button class="mobile-menu-close" aria-label="Fermer le menu">×</button>
 
-		<p>
-			Lancement de la plateforme : le site est encore en phase d'expérimentation,
-			n'hésitez pas à
-			<a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">donner votre avis</a>
-			pour nous aider à améliorer le service.
-		</p>
-	</div>
-
-	<button class="close-btn" (click)="closeBanner()" aria-label="Fermer le bandeau">
-		×
-	</button>
+  <nav class="mobile-nav">
+    <a href="/">Toutes les offres</a>
+    <a href="https://doctorat.sites.beta.gouv.fr/">Retour au site</a>
+  </nav>
 </div>
