@@ -4,6 +4,7 @@ import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,10 +70,49 @@ public class FilterService {
 	}
 	
 	/**
-	 * Récupère la liste des régions à partir des codes postaux des localisations.
+	 * Récupère la liste des régions à partir des codes postaux des localisations existantes dans la base de données, en mettant d'abord les régions actives (celles qui ont au moins un sujet) et en triant le tout par ordre alphabétique.
 	 * @return
 	 */
 	public List<String> getLocalisationsRegions() {
+	    List<String> codesPostaux = repo.findDistinctLocalisations();
+
+	    Set<String> regionsAvecSujets = codesPostaux.stream()
+	            .map(RegionsFrance::regionFromCodePostal)
+	            .filter(Objects::nonNull)
+	            .collect(Collectors.toSet());
+
+	    Collator collator = Collator.getInstance(Locale.FRENCH);
+	    collator.setStrength(Collator.PRIMARY);
+
+	    return RegionsFrance.allRegions().stream()
+	            .sorted((r1, r2) -> {
+	                boolean a1 = regionsAvecSujets.contains(r1);
+	                boolean a2 = regionsAvecSujets.contains(r2);
+	                if (a1 != a2) return a1 ? -1 : 1; // actives d'abord
+	                return collator.compare(r1, r2);
+	            })
+	            .toList();
+	}
+	
+	/**
+	 * Récupère la liste des régions à partir des codes postaux des localisations existantes l'enum RegionsFrance.
+	 * @return
+	 */
+	public List<String> getAllLocalisationsRegionsFromEnum() {
+	    Collator collator = Collator.getInstance(Locale.FRENCH);
+	    collator.setStrength(Collator.PRIMARY);
+
+	    return RegionsFrance.allRegions().stream()
+	            .sorted(collator)
+	            .toList();
+	}
+
+	
+	/**
+	 * Récupère la liste des régions à partir des codes postaux des localisations existantes dans la base de données.
+	 * @return
+	 */
+	public List<String> getLocalisationsRegionsOnlyExistingInDB() {
 	    List<String> codesPostaux = repo.findDistinctLocalisations();
 	    
 	    Collator collator = Collator.getInstance(Locale.FRENCH); 
