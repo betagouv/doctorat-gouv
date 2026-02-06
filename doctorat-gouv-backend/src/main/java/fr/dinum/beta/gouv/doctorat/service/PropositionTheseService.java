@@ -82,6 +82,14 @@ public class PropositionTheseService {
 		return (root, query, cb) -> {
 			query.distinct(true); // éviter les doublons liés aux JOIN
 			List<Predicate> andPredicates = new ArrayList<>();
+			
+			// Ne garder que les sujets non désactivés (active = true ou null)
+			andPredicates.add(
+			    cb.or(
+			        cb.isTrue(root.get("active")),
+			        cb.isNull(root.get("active"))
+			    )
+			);
 
 			// JOINTURES sur les deux listes (utilisées uniquement si le filtre
 			// « defisSociete » est présent)
@@ -160,7 +168,7 @@ public class PropositionTheseService {
 					/* ignore unknown keys */ }
 				}
 			});
-
+			
 			return andPredicates.isEmpty() ? cb.conjunction() : cb.and(andPredicates.toArray(Predicate[]::new));
 		};
 	}

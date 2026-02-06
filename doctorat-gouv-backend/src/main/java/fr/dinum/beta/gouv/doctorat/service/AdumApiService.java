@@ -3,6 +3,8 @@ package fr.dinum.beta.gouv.doctorat.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,12 +87,14 @@ public class AdumApiService {
 			if (existingOpt.isPresent()) {
 				// Mise à jour nécessaire
 				p.setId(existingOpt.get().getId());
+				p.setActive(true); // réactivation si besoin
 				toSave.add(p);
 				log.info("Proposition {} mise à jour (dateMaj plus récente)", p.getMatricule());
 			} else {
 				// Vérifie si elle existe déjà sans besoin de mise à jour
 				if (propositionTheseRepository.findByMatricule(p.getMatricule()).isEmpty()) {
 					// Nouvelle proposition
+					p.setActive(true);
 					toSave.add(p);
 					log.info("Nouvelle proposition {} insérée", p.getMatricule());
 				} else {
@@ -101,6 +105,48 @@ public class AdumApiService {
 
 		log.info("Nombre de propositions à insérer/mettre à jour : {}", toSave.size());
 		propositionTheseRepository.saveAll(toSave);
+		
+		// Désactivation des sujets absents d'ADUM
+		log.info("Vérification des propositions locales absentes d'ADUM pour désactivation");
+		deactivateMissingPropositions(propositions);
+
+	}
+	
+	/**
+	 * Désactive les propositions locales qui ne sont plus présentes dans la liste ADUM.
+	 *
+	 * @param propositionsAdum liste des propositions renvoyées par ADUM
+	 */
+	private void deactivateMissingPropositions(List<PropositionThese> propositionsAdum) {
+		
+		log.info("Début de la désactivation des propositions absentes d'ADUM");
+
+	    // 1. Matricules présents dans ADUM
+	    Set<String> matriculesAdum = propositionsAdum.stream()
+	            .map(PropositionThese::getMatricule)
+	            .collect(Collectors.toSet());
+
+	    // 2. Toutes les propositions locales
+	    List<PropositionThese> allLocal = propositionTheseRepository.findAll();
+
+	    // 3. Désactivation des propositions absentes d'ADUM
+	    List<PropositionThese> toDeactivate = allLocal.stream()
+	            // On considère NULL comme actif
+	            //.filter(p -> p.getActive() == null || p.getActive() == true)
+	    		.filter(p -> !Boolean.FALSE.equals(p.getActive()))
+	            // Si ADUM ne renvoie plus ce matricule → désactivation
+	            .filter(p -> !matriculesAdum.contains(p.getMatricule()))
+	            .peek(p -> p.setActive(false))
+	            .collect(Collectors.toList());
+
+	    if (!toDeactivate.isEmpty()) {
+	        log.info("Désactivation de {} propositions absentes d'ADUM", toDeactivate.size());
+	        propositionTheseRepository.saveAll(toDeactivate);
+	    } else {
+	        log.info("Aucune désactivation nécessaire");
+	    }
+	    
+	    log.info("Fin de la désactivation des propositions absentes d'ADUM");
 	}
 	
 }
