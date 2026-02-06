@@ -290,67 +290,77 @@
 }
 
 /* ========================================================= */
-/*   MENU MOBILE (slide-in)                                   */
+/*   MENU MOBILE — STYLE DSFR  */
 /* ========================================================= */
 
 .mobile-menu {
   position: fixed;
   top: 0;
-  right: -100%;
+  right: -100%; /* caché par défaut */
   width: 75%;
   height: 100vh;
-  background: white;
-  box-shadow: -4px 0 12px rgba(0,0,0,0.15);
-  padding: 2rem 1.5rem;
-  transition: right 0.3s ease;
+  background: #f6f6f6; /* gris très clair DSFR */
+  border-left: 1px solid #e5e5e5;
+  padding: 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease-in-out;
   z-index: 9999;
 }
 
 .mobile-menu.open {
-  right: 0;
+  right: 0; /* slide-in */
 }
 
+/* Bouton de fermeture */
 .mobile-menu-close {
   background: none;
   border: none;
   font-size: 2rem;
+  color: #000091; /* bleu DSFR */
   cursor: pointer;
+  align-self: flex-end;
   margin-bottom: 1rem;
+  padding: 0;
 }
 
+/* Conteneur des liens */
 .mobile-nav {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  width: 100%;
 }
 
+/* Liens institutionnels */
 .mobile-nav a {
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: rgb(0, 0, 0);
-  text-decoration: none !important; /* enlève le soulignement */ 
-  border-bottom: none !important; /* DSFR met parfois un border-bottom */
-  box-shadow: none !important;
-}
-
-.mobile-nav a:hover,
-.mobile-nav a:focus {
+  display: block;
+  padding: 1rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #161616; /* noir DSFR */
   text-decoration: none !important;
-  border-bottom: none !important;
   box-shadow: none !important;
+  border-bottom: 1px solid #e5e5e5; /* séparateur DSFR */
 }
 
-/* ========================================================= */
-/*   SUPPRESSION TOTALE DU SOULIGNEMENT DSFR DANS LE MENU    */
-/* ========================================================= */
+/* Effet hover DSFR */
+.mobile-nav a:hover {
+  background: #e5e5f4; /* gris bleuté DSFR */
+  color: #000091; /* bleu DSFR */
+}
 
+/* Dernier lien sans bordure */
+.mobile-nav a:last-child {
+  border-bottom: none;
+}
+
+/* Suppression totale du soulignement DSFR */
 .mobile-nav,
 .mobile-nav * {
   text-decoration: none !important;
   box-shadow: none !important;
-  border-bottom: none !important;
+  border-bottom-style: none !important;
 
-  /* Variables DSFR à neutraliser */
   --underline-img: none !important;
   --underline-thickness: 0 !important;
   --underline-color: transparent !important;
