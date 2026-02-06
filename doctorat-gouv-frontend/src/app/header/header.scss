@@ -27,6 +27,8 @@
 }
 
 .fr-logo {
+	background: none !important; 
+	background-image: none !important;
   font-size: 0.8rem;
   line-height: 1.2;
   margin: 0;
@@ -132,6 +134,23 @@
   opacity: 0.7;
 }
 
+
+/*.fr-header__brand a,
+.fr-header__brand a *,
+.fr-logo {
+  background: none !important; 
+  background-image: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  border: none !important;
+}
+
+.fr-header__brand a {
+  --underline-img: none !important;
+  --underline-thickness: 0 !important;
+  --underline-color: transparent !important;
+}*/
+
 /* ========================================================= */
 /*   DESKTOP (>700px)                                         */
 /* ========================================================= */
@@ -194,6 +213,7 @@
   }
   
   .fr-header__brand {
+	background: none !important;
 	display: flex;
     border: none !important;
     box-shadow: none !important;
