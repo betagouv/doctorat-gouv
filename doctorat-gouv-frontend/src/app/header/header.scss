@@ -167,7 +167,7 @@
     border: none !important;
 	box-shadow: none !important;
 	margin-left: 0rem !important;
-	margin-top: 1rem !important;
+	margin-top: 0.7rem !important;
   }
   
   .fr-header__body-row { 
@@ -342,9 +342,9 @@
 }
 
 .mobile-nav a {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #000091;
+  color: rgb(0, 0, 0);
 }
 
 /* ========================================================= */
@@ -355,7 +355,6 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
-  //margin-top: 1rem;
 }
 
 .fr-nav__link {
