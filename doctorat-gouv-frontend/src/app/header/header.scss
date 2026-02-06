@@ -69,6 +69,67 @@
   color: #444;
 }
 
+/* ========================= */
+/*   BANDEAU INFO            */
+/* ========================= */
+
+.info-banner {
+  background-color: rgb(232, 232, 255);
+  border-bottom: 1px solid #d5d5f0;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(0, 128, 255);
+  font-size: 0.95rem;
+}
+
+.info-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 4rem;
+}
+
+.info-icon {
+  background-color: #0053b3;
+  color: #ffffff;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+}
+
+.info-banner p {
+  margin: 0;
+}
+
+.info-banner a {
+  color: rgb(0, 128, 255);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #000091;
+  padding: 0 0.5rem;
+  margin-right: 2rem;
+}
+
+.close-btn:hover {
+  opacity: 0.7;
+}
+
 /* ========================================================= */
 /*   DESKTOP (>700px)                                         */
 /* ========================================================= */
@@ -106,6 +167,7 @@
     border: none !important;
 	box-shadow: none !important;
 	margin-left: 0rem !important;
+	margin-top: 1rem !important;
   }
   
   .fr-header__body-row { 
@@ -114,6 +176,7 @@
 	border: none !important;
 	box-shadow: none !important;
 	margin-left: 0.5rem !important;
+	margin-bottom: 0.5rem !important;
 }
 
   /* Ligne 1 : Marianne + logo Doctorat + burger */
@@ -125,6 +188,7 @@
 	box-shadow: none !important;
     width: 100%;
     gap: 0.7rem;
+	margin-bottom: 0.5rem !important;
   }
   
   .fr-header__brand {
@@ -173,6 +237,68 @@
     text-align: left;
     max-width: 100%;
   }
+  
+  
+  
+  
+  
+  
+  /* ========================================================= */
+  /*   INFO-BANNER — VERSION MOBILE                             */
+  /* ========================================================= */
+
+
+    .info-banner {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      padding: 0.9rem 1rem !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    .info-left {
+      margin-left: 0 !important;
+      gap: 0.6rem !important;
+      align-items: flex-start !important;
+    }
+
+    .info-icon {
+      width: 72px !important;
+      height: 25px !important;
+      font-size: 13px !important;
+      margin-top: 0.15rem;
+    }
+
+    .info-banner p {
+      font-size: 0.9rem !important;
+      line-height: 1.35 !important;
+    }
+
+    .info-banner a {
+      font-size: 0.9rem !important;
+    }
+
+    .close-btn {
+      align-self: flex-end !important;
+      margin-right: 0 !important;
+      margin-top: 0.4rem !important;
+      font-size: 1.3rem !important;
+      padding: 0 !important;
+    }
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   /* Cacher menu desktop */
   .menu-desktop {
