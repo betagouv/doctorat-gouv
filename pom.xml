@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.beta.gouv.doctorat</groupId>
 	<artifactId>doctorat-gouv</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<packaging>pom</packaging>
 
 	<modules>

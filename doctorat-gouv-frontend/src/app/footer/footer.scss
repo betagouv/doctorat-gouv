@@ -1,45 +1,37 @@
 .footer-gouv {
   background: #ffffff;
-  padding: 2rem;
+  padding: 2rem 4rem; // Ajoute un padding horizontal
   font-family: Arial, sans-serif;
   color: #000;
+  border-top: 3px solid #000091;
 
   display: flex;
-  flex-direction: column; // Empêche toute influence entre top et bottom
-  
-  border-top: 3px solid #000091; // Ligne bleue DSFR épaisse
+  flex-direction: column;
 
-  /* --- SECTION HAUT : LOGO + MENU --- */
+  /* --- TOP --- */
   .footer-top {
     display: flex;
-    align-items: center;        // Centre verticalement image + menu
-    justify-content: flex-start; // Évite que le menu parte trop loin
-    gap: 20rem;                  // Espace entre image et menu
-    margin-bottom: 1.5rem;      // Sépare proprement du footer-bottom
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4rem; // Espace entre logo et liens
+    flex-wrap: wrap;
   }
 
-  .brand-block {
-    display: flex;
-    align-items: center;
-
-    .logo {
-	  margin-left: 6rem;    // Ajuste la position horizontale de l’image
-      width: 600px;             // Ajuste selon ton image
-      height: 250px;
-    }
+  .brand-block .logo {
+    width: 260px;
+    height: auto;
   }
 
   .gov-links {
     display: flex;
-    flex-direction: row;
-    align-items: center;        // Centre verticalement les liens
-    gap: 1.5rem;                // Espace entre les liens
-    margin-left: 1rem;          // Ajuste la proximité avec l’image
+    flex-wrap: wrap;
+    gap: 1.5rem;
 
     a {
       color: #000;
-      text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 1rem;
+	  //text-decoration: none !important; // Supprime le soulignement DSFR
+	  background-image: none !important;
 
       &:hover {
         text-decoration: underline;
@@ -47,46 +39,41 @@
     }
   }
 
-  /* --- SÉPARATEUR --- */
   hr {
-    //margin: 1.5rem 0;
     border: none;
     border-top: 1px solid #ccc;
+    margin: 1.5rem 0;
   }
 
-  /* --- SECTION BAS : LIENS INTERNES + LICENCE --- */
+  /* --- BOTTOM --- */
   .footer-bottom {
-	margin-left: 6rem;  // Aligne avec le logo
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;          // Réduit la hauteur
-    //margin-top: 0.5rem;   // Footer plus compact
+    gap: 0.5rem;
   }
 
   .internal-links {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;          // Espacement réduit
+    gap: 0.5rem;
 
     a {
       color: #000;
-      padding: 0 0.3rem;  // Réduit la hauteur et l’espace autour du texte
-	  text-decoration: none !important;
-	  background-image: none !important;
+      font-size: 0.8rem;
+      text-decoration: none !important;
+      background-image: none !important; // Supprime le soulignement DSFR
 
       &:hover {
         text-decoration: underline !important;
       }
     }
 
-    /* Barre verticale entre les liens */
     a:not(:last-child)::after {
       content: "";
       display: inline-block;
       width: 1px;
       height: 14px;
-      background-color: #666;   // Gris discret comme sur les sites gouv
+      background-color: #666;
       margin-left: 0.5rem;
     }
   }
@@ -94,7 +81,5 @@
   .license {
     font-size: 0.85rem;
     opacity: 0.8;
-    margin-top: 0.3rem;   // Réduit encore la hauteur
   }
-
 }
