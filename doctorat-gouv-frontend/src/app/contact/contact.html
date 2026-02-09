@@ -36,8 +36,6 @@
 		
 		</div>
 
-
-
 	</div>
 
 	<div class="container">
@@ -45,9 +43,9 @@
 		<div class="card shadow">
 			<div class="card-body">
 
-<!--				<h2 class="card-title fr-mb-6v">Prendre contact</h2>-->
-
-				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-grid">
+				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" >
+					
+					<div class="contact-grid">
 
 					<!-- Nom -->
 					<div class="form-field large">
@@ -226,6 +224,8 @@
 					 </div>
 
 
+					</div>
+					
 					</div>
 
 					<!-- Boutons alignés à droite -->
