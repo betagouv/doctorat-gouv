@@ -241,6 +241,10 @@ public class PropositionThese {
 	
 	@Column(length = 300)
 	private String urlPdf;
+	
+	@Column(name = "active", nullable = true)
+	private Boolean active = true;
+
 
 	public Long getId() {
 		return id;
@@ -832,6 +836,14 @@ public class PropositionThese {
 
 	public void setUrlPdf(String urlPdf) {
 		this.urlPdf = urlPdf;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 }
