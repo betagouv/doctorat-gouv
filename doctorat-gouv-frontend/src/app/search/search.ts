@@ -68,6 +68,7 @@ export class Search implements OnInit, OnDestroy {
   ecole = '';
   defisSociete = '';
   ecoleDoctoraleNumero = '';
+  etablissementRor = '';
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -124,6 +125,19 @@ export class Search implements OnInit, OnDestroy {
 			  this.query = '';
 
 			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
+		  };
+		  
+		  if (params['etablissementror']) { 
+			
+			// Initialiser les filtres
+			this.discipline = ''; 
+			this.localisation = ''; 
+			this.laboratoire = ''; 
+			this.ecole = ''; 
+			this.defisSociete = ''; 
+			this.query = '';
+			
+			this.etablissementRor = params['etablissementror'];
 		  }
 	  });
 
@@ -208,6 +222,9 @@ export class Search implements OnInit, OnDestroy {
     if (this.defisSociete) active['defisSociete'] = this.defisSociete;
 	if (this.ecoleDoctoraleNumero) {
 	  active['ecoleDoctoraleNumero'] = this.ecoleDoctoraleNumero;
+	}
+	if (this.etablissementRor) {
+	  active['etablissementRor'] = this.etablissementRor;
 	}
 
 
