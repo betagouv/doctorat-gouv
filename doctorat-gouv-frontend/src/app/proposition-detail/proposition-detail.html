@@ -140,6 +140,15 @@
 		<h3 class="section-title">Références bibliographiques</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques | defaultValue }}</p>
 		
+		<div *ngIf="thesis?.urlPdf">
+			<h3 class="section-title">Pièces jointes</h3>
+		
+			<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download target="_blank"
+				rel="noopener noreferrer">
+				Télécharger le PDF
+			</a>
+		</div>
+		
 		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
 		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> Prendre contact </button> 
 		</div>

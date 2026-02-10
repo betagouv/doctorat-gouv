@@ -681,8 +681,17 @@ public class PropositionTheseDto {
 	private String niveauAnglaisRequis;
 	private String niveauFrancaisRequis;
 	private String candidatureEnLignePossible;
+	private String urlPdf;
 	public String getEcoleDoctoraleLibelle() {
 		return ecoleDoctoraleLibelle;
+	}
+
+	public String getUrlPdf() {
+		return urlPdf;
+	}
+
+	public void setUrlPdf(String urlPdf) {
+		this.urlPdf = urlPdf;
 	}
 
 }

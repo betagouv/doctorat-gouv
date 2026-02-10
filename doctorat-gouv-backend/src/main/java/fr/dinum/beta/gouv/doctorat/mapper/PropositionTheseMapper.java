@@ -100,6 +100,8 @@ public class PropositionTheseMapper {
         dto.setNiveauAnglaisRequis(entity.getNiveauAnglaisRequis());
         dto.setNiveauFrancaisRequis(entity.getNiveauFrancaisRequis());
         dto.setCandidatureEnLignePossible(entity.getCandidatureEnLignePossible());
+        
+        dto.setUrlPdf(entity.getUrlPdf());
 
         return dto;
     }
@@ -199,6 +201,8 @@ public class PropositionTheseMapper {
         entity.setNiveauAnglaisRequis(dto.getNiveauAnglaisRequis());
         entity.setNiveauFrancaisRequis(dto.getNiveauFrancaisRequis());
         entity.setCandidatureEnLignePossible(dto.getCandidatureEnLignePossible());
+        
+        entity.setUrlPdf(dto.getUrlPdf());
 
         return entity;
     }

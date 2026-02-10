@@ -134,6 +134,8 @@ public class PropositionTheseService {
 				
 				case "ecoleDoctoraleNumero" -> 
 			    andPredicates.add(cb.equal(root.get("ecoleDoctoraleNumero"), value));
+				case "etablissementRor" ->
+			    andPredicates.add(cb.equal(root.get("etablissementRor"), value));
 
 
 				// -------------------------------------------------

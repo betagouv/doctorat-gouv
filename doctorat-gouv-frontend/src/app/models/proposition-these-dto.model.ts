@@ -91,5 +91,7 @@ export interface PropositionTheseDto{
   niveauAnglaisRequis: string | null;
   niveauFrancaisRequis: string | null;
   candidatureEnLignePossible: string | null;
+  
+  urlPdf: string | null;
 }
 
