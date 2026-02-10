@@ -261,7 +261,7 @@
 <main class="fr-container fr-py-4w search-main">
 
   <section class="fr-tags-group fr-mt-4w"
-           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole">
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
     <p class="fr-text--bold">Filtres actifs :</p>
     <ul class="fr-tags-group__list">
 
@@ -299,6 +299,24 @@
           <button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
         </span>
       </li>
+	  
+	  <li *ngIf="ecoleDoctoraleNumero">
+	    <span class="fr-tag">
+	      École doctorale : {{ ecoleDoctoraleNumero }}
+	      <button class="fr-tag__btn"
+	              (click)="removeFilter('ecoleDoctoraleNumero')"
+	              title="Supprimer">×</button>
+	    </span>
+	  </li>
+
+	  <li *ngIf="etablissementRor">
+	    <span class="fr-tag">
+	      Établissement ROR : {{ etablissementRor }}
+	      <button class="fr-tag__btn"
+	              (click)="removeFilter('etablissementRor')"
+	              title="Supprimer">×</button>
+	    </span>
+	  </li>
 
     </ul>
   </section>

@@ -285,11 +285,30 @@ export class Search implements OnInit, OnDestroy {
   toggleFilters(): void {
     this.showMoreFilters = !this.showMoreFilters;
   }
+  
+  private urlParamMap: Record<string, string> = {
+    ecoleDoctoraleNumero: 'ecoledoctorale',
+    etablissementRor: 'etablissementror'
+  };
 
   removeFilter(filterName: keyof Search): void {
+    // 1) Supprimer la valeur du filtre
     (this as any)[filterName] = '';
+
+    // 2) Trouver le nom du paramètre dans l’URL
+    const urlParam = this.urlParamMap[filterName] || filterName;
+
+    // 3) Mettre à jour l’URL
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [urlParam]: null },
+      queryParamsHandling: 'merge'
+    });
+
+    // 4) Relancer la recherche
     this.onFilterChange();
   }
+
 
   /* ------------------- Image helpers ------------------- */
   getEntries(motsCles: Record<string, string> | null): [string, string][] {
