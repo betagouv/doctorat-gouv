@@ -261,7 +261,7 @@
 <main class="fr-container fr-py-4w search-main">
 
   <section class="fr-tags-group fr-mt-4w"
-           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole">
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
     <p class="fr-text--bold">Filtres actifs :</p>
     <ul class="fr-tags-group__list">
 
@@ -299,22 +299,37 @@
           <button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
         </span>
       </li>
+	  
+	  <li *ngIf="ecoleDoctoraleNumero">
+	    <span class="fr-tag">
+	      École doctorale : {{ ecoleDoctoraleNumero }}
+	      <button class="fr-tag__btn"
+	              (click)="removeFilter('ecoleDoctoraleNumero')"
+	              title="Supprimer">×</button>
+	    </span>
+	  </li>
+
+	  <li *ngIf="etablissementRor">
+	    <span class="fr-tag">
+	      Établissement ROR : {{ etablissementRor }}
+	      <button class="fr-tag__btn"
+	              (click)="removeFilter('etablissementRor')"
+	              title="Supprimer">×</button>
+	    </span>
+	  </li>
 
     </ul>
   </section>
 
   <!-- ===================== RÉSULTATS ===================== -->
+  <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+    <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
+    de recherche
+  </p>
+  
   <section class="fr-mt-4w" *ngIf="results.length">
 
-    <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-      <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
-      de recherche
-    </p>
-	
 	<div class="info-bulle-these">
-		<!--		<div class="info-bulle-icon">-->
-		<!--			💡-->
-		<!--		</div>-->
 		<img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
 		<p class="info-bulle-text">
 			En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez

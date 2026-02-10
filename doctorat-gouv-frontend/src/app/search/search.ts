@@ -68,6 +68,7 @@ export class Search implements OnInit, OnDestroy {
   ecole = '';
   defisSociete = '';
   ecoleDoctoraleNumero = '';
+  etablissementRor = '';
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -124,6 +125,19 @@ export class Search implements OnInit, OnDestroy {
 			  this.query = '';
 
 			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
+		  };
+		  
+		  if (params['etablissementror']) { 
+			
+			// Initialiser les filtres
+			this.discipline = ''; 
+			this.localisation = ''; 
+			this.laboratoire = ''; 
+			this.ecole = ''; 
+			this.defisSociete = ''; 
+			this.query = '';
+			
+			this.etablissementRor = params['etablissementror'];
 		  }
 	  });
 
@@ -209,6 +223,9 @@ export class Search implements OnInit, OnDestroy {
 	if (this.ecoleDoctoraleNumero) {
 	  active['ecoleDoctoraleNumero'] = this.ecoleDoctoraleNumero;
 	}
+	if (this.etablissementRor) {
+	  active['etablissementRor'] = this.etablissementRor;
+	}
 
 
     if (this.query?.trim()) active['query'] = this.query.trim();
@@ -268,11 +285,30 @@ export class Search implements OnInit, OnDestroy {
   toggleFilters(): void {
     this.showMoreFilters = !this.showMoreFilters;
   }
+  
+  private urlParamMap: Record<string, string> = {
+    ecoleDoctoraleNumero: 'ecoledoctorale',
+    etablissementRor: 'etablissementror'
+  };
 
   removeFilter(filterName: keyof Search): void {
+    // 1) Supprimer la valeur du filtre
     (this as any)[filterName] = '';
+
+    // 2) Trouver le nom du paramètre dans l’URL
+    const urlParam = this.urlParamMap[filterName] || filterName;
+
+    // 3) Mettre à jour l’URL
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [urlParam]: null },
+      queryParamsHandling: 'merge'
+    });
+
+    // 4) Relancer la recherche
     this.onFilterChange();
   }
+
 
   /* ------------------- Image helpers ------------------- */
   getEntries(motsCles: Record<string, string> | null): [string, string][] {
