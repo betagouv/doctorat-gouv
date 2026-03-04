@@ -1,0 +1,2 @@
+ALTER TABLE proposition_these_financement_types
+ALTER COLUMN financement_types TYPE TEXT;
