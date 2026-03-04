@@ -242,6 +242,9 @@ public class PropositionThese {
 	@Column(length = 300)
 	private String urlPdf;
 	
+	@Column(length = 300)
+	private String urlCandidature;
+	
 	@Column(name = "active", nullable = true)
 	private Boolean active = true;
 
@@ -844,6 +847,14 @@ public class PropositionThese {
 
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+
+	public String getUrlCandidature() {
+		return urlCandidature;
+	}
+
+	public void setUrlCandidature(String urlCandidature) {
+		this.urlCandidature = urlCandidature;
 	}
 
 }
