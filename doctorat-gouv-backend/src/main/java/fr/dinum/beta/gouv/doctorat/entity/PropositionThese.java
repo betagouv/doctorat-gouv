@@ -208,6 +208,7 @@ public class PropositionThese {
 	private String financementEtat;
 
 	@ElementCollection
+	@Column(columnDefinition = "TEXT")
 	private List<String> financementTypes;
 
 	@Column(length = 500)
