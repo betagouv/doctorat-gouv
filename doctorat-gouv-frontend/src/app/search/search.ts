@@ -243,9 +243,9 @@ export class Search implements OnInit, OnDestroy {
         this.currentPage = data.number;
         this.totalPages = data.totalPages;
         this.totalResults = data.totalElements;
-
-        document.getElementById('results-count')
-          ?.scrollIntoView({ behavior: 'smooth' });
+		
+        // Après chargement des résultats, scroller vers le haut de la liste
+        // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
       error: err => console.error('❌ Erreur lors de la recherche :', err)
     });
