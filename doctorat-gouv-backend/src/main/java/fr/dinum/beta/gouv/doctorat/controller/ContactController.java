@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.dinum.beta.gouv.doctorat.dto.Attachment;
 import fr.dinum.beta.gouv.doctorat.dto.ContactRequest;
+import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.service.BrevoEmailService;
+import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
 
 /**
  *  Contrôleur chargé de gérer les demandes de contact et d’envoyer des e‑mails via BrevoEmailService.
@@ -54,9 +57,12 @@ public class ContactController {
 	private boolean mailEnabled;
 
     private final BrevoEmailService emailService;
+    
+	private final PropositionTheseService propositionTheseService;
 
-    public ContactController(BrevoEmailService emailService) {
+    public ContactController(BrevoEmailService emailService, PropositionTheseService propositionTheseService) {
         this.emailService = emailService;
+        this.propositionTheseService = propositionTheseService;
     }
 
     /**
@@ -93,6 +99,9 @@ public class ContactController {
 	    params.put("motivation", req.message);
 	    params.put("url_ressources", req.urlVitrine);
 	    params.put("nom_plateforme", "Doctorat.gouv");
+	    
+	    // Récupération de l’URL de candidature
+	    getSafeUrlCandidature(req.idPropositionThese).ifPresent(url -> params.put("url_candidature", url));
 
 	    List<Attachment> attachments = new ArrayList<>();
 
@@ -146,6 +155,36 @@ public class ContactController {
 		}
         log.info("Mail candidat envoyé");
 	}
+	
+	/**
+	 * Récupère l'URL de candidature associée à une proposition de thèse.
+	 * Retourne Optional.empty() si l'ID est invalide, si la proposition n'existe pas,
+	 * si l'URL est absente ou en cas d'erreur.
+	 */
+	private Optional<String> getSafeUrlCandidature(long idPropositionThese) {
+
+	    if (idPropositionThese <= 0) {
+	        log.warn("ID PropositionThese non fourni ou égal à 0");
+	        return Optional.empty();
+	    }
+
+	    try {
+	        PropositionTheseDto dto = propositionTheseService.findById(idPropositionThese);
+
+	        if (dto != null && dto.getUrlCandidature() != null && !dto.getUrlCandidature().isBlank()) {
+	            log.info("URL de candidature trouvée pour la proposition {}", idPropositionThese);
+	            return Optional.of(dto.getUrlCandidature());
+	        } else {
+	            log.warn("PropositionThese trouvée mais URL de candidature absente pour ID {}", idPropositionThese);
+	            return Optional.empty();
+	        }
+
+	    } catch (Exception e) {
+	        log.error("Erreur lors de la récupération de la proposition ID {}", idPropositionThese, e);
+	        return Optional.empty();
+	    }
+	}
+
 	
 	private int resolveTemplateIdCandidat(String profil) {
 	    return TEMPLATE_BY_PROFIL.getOrDefault(profil, 14); // 14 = valeur par défaut
