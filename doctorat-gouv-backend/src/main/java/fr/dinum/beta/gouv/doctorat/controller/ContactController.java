@@ -74,6 +74,10 @@ public class ContactController {
     public ResponseEntity<?> sendMails(@RequestBody ContactRequest request) {
     	log.info("Réception d'une demande de contact le : " + java.time.LocalDateTime.now());
     	
+    	// 1 - Validation du contexte 
+    	validateRequest(request);
+    	
+    	// 2 - Envoi des mails
     	if (mailEnabled) {
     	    templateMailEncadrant(request);
     	    templateMailCandidat(request);
@@ -85,6 +89,10 @@ public class ContactController {
     }
 
 
+	/**
+	 * Prépare et envoie un e‑mail à l’encadrant en utilisant un template.
+	 * @param req
+	 */
 	private void templateMailEncadrant(ContactRequest req) {
 
 	    log.info("Préparation template mail encadrant");
@@ -184,17 +192,52 @@ public class ContactController {
 	        return Optional.empty();
 	    }
 	}
+	
+	/**
+	 * Valide les données de la requête de contact.
+	 * @param req
+	 */
+	private void validateRequest(ContactRequest req) {
+
+	    if (req.getIdPropositionThese() <= 0) {
+	        throw new IllegalArgumentException("ID de proposition invalide.");
+	    }
+
+	    if (req.getEmailEncadrant() == null || !isValidEmail(req.getEmailEncadrant())) {
+	        throw new IllegalArgumentException("Email encadrant invalide.");
+	    }
+
+	    if (req.getEmail() == null || !isValidEmail(req.getEmail())) {
+	        throw new IllegalArgumentException("Email candidat invalide.");
+	    }
+
+	}
 
 	
+	/**
+	 * Résout l'ID du template à utiliser pour le candidat en fonction de son profil.
+	 * @param profil
+	 * @return
+	 */
 	private int resolveTemplateIdCandidat(String profil) {
 	    return TEMPLATE_BY_PROFIL.getOrDefault(profil, 14); // 14 = valeur par défaut
 	}
 	
+	/**
+	 * Résout l'ID du template à utiliser pour l'encadrant en fonction du type d'offre.
+	 * @param typeOffre
+	 * @return
+	 */
 	private int resolveTemplateIdEncadrant(String typeOffre) {
 	    return TEMPLATE_BY_TYPE_OFFRE.getOrDefault(typeOffre, 24); // 24 = valeur par défaut
 	}
 
 	
+	/**
+	 * Valide le format de l'adresse e‑mail.
+	 * @param email
+	 * @return
+	 */
 	private boolean isValidEmail(String email) {
 	    return email != null
 	        && !email.isBlank()
