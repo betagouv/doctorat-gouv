@@ -21,12 +21,15 @@ import { Header } from '../header/header';
 export class Contact {
 	
 	private readonly apiBase = `${environment.apiUrl}`;
-
+	
 	contactForm!: FormGroup;
 	showExperienceFields = false;
 	showConfirmation = false;
 	showMasterConfirmation = true;
 	isOrganisationProfile = false;
+	
+	sujetValide = true; 
+	sujetErreurMessage = "";
 	
 	cvBase64: string | null = null; 
 	documentBase64: string | null = null;
@@ -128,12 +131,28 @@ export class Contact {
 
 	    confirmMasterControl?.updateValueAndValidity();
 	  });
+	  
+	  const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+
+	  // 🔥 Vérification du contexte dès l'initialisation 
+	  // const { id, sujet } = this.contactContextService.getContext(); 
+	  if (!id || id === 0 || !sujet || sujet.trim().length === 0) { 
+	     this.sujetValide = false; 
+	     this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+	  }
 
 	}
 	
 	onSubmit() {
 
 		const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+		
+		// 🔥 Vérification du contexte dès l'initialisation 
+		// const { id, sujet } = this.contactContextService.getContext(); 
+		if (!id || id === 0 || !sujet || sujet.trim().length === 0) { 
+		   this.sujetValide = false; 
+		   this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+		}
 
 		this.contactForm.markAllAsTouched();
 

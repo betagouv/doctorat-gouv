@@ -35,6 +35,15 @@
 			</p>
 		
 		</div>
+		
+		<!-- Message si aucun sujet valide -->
+		<div *ngIf="!sujetValide" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
+			<p>{{ sujetErreurMessage }}</p>
+		
+			<!--		  <a routerLink="/search" class="fr-btn fr-btn--secondary fr-mt-2w">-->
+			<!--		    Retour aux sujets-->
+			<!--		  </a>-->
+		</div>
 
 	</div>
 
@@ -234,7 +243,7 @@
 						<!--							Annuler-->
 						<!--						</button>-->
 					
-						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit">
+						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="!sujetValide">
 							Envoyer
 						</button>
 					</div>
