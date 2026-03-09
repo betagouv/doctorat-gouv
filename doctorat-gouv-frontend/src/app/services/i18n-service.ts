@@ -15,11 +15,24 @@ export class I18nService {
     const saved = localStorage.getItem('lang') || 'fr';
     this.useLang(saved);
   }
-
+  
   useLang(lang: string) {
-	this.http.get<Record<string, any>>(`/assets/i18n/${lang}.json`).subscribe(translations => {
-	  this.translate.setTranslation(lang, translations, true);
-	  this.translate.use(lang);
-	});
+    // const files = ['shared', 'header', 'search', 'detail', 'contact', 'footer'];
+	const files = ['header'];
+    let loaded = 0;
+
+    files.forEach(file => {
+      this.http.get<Record<string, any>>(`/assets/i18n/${file}.${lang}.json`)
+        .subscribe(translations => {
+          this.translate.setTranslation(lang, translations, true);
+          loaded++;
+
+          if (loaded === files.length) {
+            this.translate.use(lang);
+            localStorage.setItem('lang', lang);
+          }
+        });
+    });
   }
+
 }
