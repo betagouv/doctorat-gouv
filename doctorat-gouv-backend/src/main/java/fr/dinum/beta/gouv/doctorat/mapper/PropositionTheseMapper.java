@@ -102,6 +102,7 @@ public class PropositionTheseMapper {
         dto.setCandidatureEnLignePossible(entity.getCandidatureEnLignePossible());
         
         dto.setUrlPdf(entity.getUrlPdf());
+        dto.setUrlCandidature(entity.getUrlCandidature());
 
         return dto;
     }
@@ -203,6 +204,7 @@ public class PropositionTheseMapper {
         entity.setCandidatureEnLignePossible(dto.getCandidatureEnLignePossible());
         
         entity.setUrlPdf(dto.getUrlPdf());
+        entity.setUrlCandidature(dto.getUrlCandidature());
 
         return entity;
     }

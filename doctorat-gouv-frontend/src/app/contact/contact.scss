@@ -22,6 +22,18 @@
   margin-bottom: 1rem;
 }
 
+/* Message d’erreur sujet invalide */ 
+.alert { 
+	border-radius: 4px; 
+	font-size: 0.95rem; 
+	margin-bottom: 1rem;
+	&.alert-warning { 
+		background-color: #fff4e5; 
+		border: 1px solid #f0ad4e; 
+		color: #8a6d3b; 
+	} 
+}
+
 /* Alerte */
 .info-alert {
   max-width: 100%;
@@ -33,6 +45,11 @@
 .info-alert p {
   margin-bottom: 0.25rem;
   font-size: 1rem;
+}
+
+/* Empêche le curseur interdit sur le lien */ 
+.info-alert a { 
+	cursor: pointer !important; 
 }
 
 /* Upload DSFR */
@@ -134,6 +151,7 @@
   .container,
   .container-header,
   .confirmation-wrapper {
+	margin-top: 1rem;
     width: 60%;
   }
 }

@@ -27,6 +27,7 @@ import { debounceTime } from 'rxjs/operators';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { FilterService, AllFilterOptions } from '../services/filter.service';
+import { SearchFiltersService } from '../services/search-filters-service';
 
 import { DsfrHeaderModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
@@ -105,7 +106,8 @@ export class Search implements OnInit, OnDestroy {
 	private route: ActivatedRoute,
     private router: Router,
     private propositionService: PropositionTheseService,
-    private filterService: FilterService
+    private filterService: FilterService,
+	private searchFiltersService: SearchFiltersService 
   ) {}
 
   /* ------------------- Lifecycle ------------------- */
@@ -142,6 +144,23 @@ export class Search implements OnInit, OnDestroy {
 	  });
 
 	  this.loadFilterOptions();
+	  
+	  // 🔥 Restaurer les filtres sauvegardés
+	  const saved = this.searchFiltersService.load();
+	  if (saved) {
+	    this.query = saved.query || '';
+	    this.discipline = saved.discipline || '';
+	    this.localisation = saved.localisation || '';
+	    this.laboratoire = saved.laboratoire || '';
+	    this.ecole = saved.ecole || '';
+	    this.defisSociete = saved.defisSociete || '';
+	    this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
+	    this.etablissementRor = saved.etablissementRor || '';
+
+	    // Relancer la recherche avec les filtres restaurés
+	    this.onSearch(0);
+	  }
+
 	
 	// Charger les résultats dès l'arrivée sur la page 
 	this.onSearch(0);
@@ -196,8 +215,22 @@ export class Search implements OnInit, OnDestroy {
 
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
+
+    // Sauvegarder les filtres
+    this.searchFiltersService.save({
+      query: this.query,
+      discipline: this.discipline,
+      localisation: this.localisation,
+      laboratoire: this.laboratoire,
+      ecole: this.ecole,
+      defisSociete: this.defisSociete,
+      ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+      etablissementRor: this.etablissementRor
+    });
+
     this.filterChanges$.next();
   }
+
 
   private loadFilterOptions(): void {
     this.filterService.getAllOptions().subscribe({
@@ -243,9 +276,9 @@ export class Search implements OnInit, OnDestroy {
         this.currentPage = data.number;
         this.totalPages = data.totalPages;
         this.totalResults = data.totalElements;
-
-        document.getElementById('results-count')
-          ?.scrollIntoView({ behavior: 'smooth' });
+		
+        // Après chargement des résultats, scroller vers le haut de la liste
+        // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
       error: err => console.error('❌ Erreur lors de la recherche :', err)
     });

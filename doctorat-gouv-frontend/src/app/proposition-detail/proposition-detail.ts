@@ -25,6 +25,8 @@ export class PropositionDetail {
 
 	thesisId!: number;
 	thesis: PropositionTheseDto | null = null;
+	
+	errorMessage: string | null = null;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -66,15 +68,24 @@ export class PropositionDetail {
 	}
 	
 	goToContact() {
-		this.contactContextService.setContext(
-		  this.thesisId,
-		  this.thesis?.theseTitre ?? null,
-		  this.thesis?.deposantEmail ?? null,
-		  this.thesis?.typeProposition ?? null
-		);
+	  // 1 - Vérification stricte du sujet
+	  if (!this.thesis || !this.thesisId || this.thesisId === 0) {
+	    console.warn("Sujet invalide : impossible d’ouvrir le formulaire de contact.");
+	    this.errorMessage = "Ce sujet n’est pas disponible pour une prise de contact.";
+	    return;
+	  }
 
-		this.router.navigate(['/contact']);
+	  // 2 - Mise à jour du contexte (sessionStorage + mémoire)
+	  this.contactContextService.setContext(
+	    this.thesisId,
+	    this.thesis.theseTitre ?? null,
+	    this.thesis.deposantEmail ?? null,
+	    this.thesis.typeProposition ?? null
+	  );
 
+	  // 3 - Navigation vers la page contact
+	  this.router.navigate(['/contact']);
 	}
+
 	
 }

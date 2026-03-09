@@ -1,7 +1,12 @@
 <app-header></app-header>
 
 <div class="page-background" *ngIf="thesis">
+	
   <div class="container">
+	
+	<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
+	  <p>{{ errorMessage }}</p>
+	</div>
 
     <!-- Première card -->
     <div class="card shadow mb-4">
