@@ -243,8 +243,8 @@
 						<!--							Annuler-->
 						<!--						</button>-->
 					
-						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="!sujetValide">
-							Envoyer
+						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="isSubmitting || !sujetValide">
+							{{ isSubmitting ? 'Envoi en cours...' : 'Envoyer' }}
 						</button>
 					</div>
 
