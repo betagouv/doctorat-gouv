@@ -21,15 +21,20 @@ import { Header } from '../header/header';
 export class Contact {
 	
 	private readonly apiBase = `${environment.apiUrl}`;
-
+	
 	contactForm!: FormGroup;
 	showExperienceFields = false;
 	showConfirmation = false;
 	showMasterConfirmation = true;
 	isOrganisationProfile = false;
 	
+	sujetValide = true; 
+	sujetErreurMessage = "";
+	
 	cvBase64: string | null = null; 
 	documentBase64: string | null = null;
+	
+	isSubmitting = false;
 
 	civilites = ['Monsieur', 'Madame', 'Ne se prononce pas'];
 	profils = [
@@ -128,12 +133,31 @@ export class Contact {
 
 	    confirmMasterControl?.updateValueAndValidity();
 	  });
+	  
+	  const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+
+	  // 🔥 Vérification du contexte dès l'initialisation 
+	  // const { id, sujet } = this.contactContextService.getContext(); 
+	  if (!id || id === 0 || !sujet || sujet.trim().length === 0) { 
+	     this.sujetValide = false; 
+	     this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+	  }
 
 	}
 	
 	onSubmit() {
+		
+		if (this.isSubmitting) {
+		  return; // Empêche tout double clic
+		}
 
+		// Vérification du contexte dès l'initialisation 
 		const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+		if (!id || id === 0 || !sujet || sujet.trim().length === 0) { 
+		   this.sujetValide = false; 
+		   this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+		   return; // 🔥 Très important : on bloque l’envoi si le contexte est invalide
+		}
 
 		this.contactForm.markAllAsTouched();
 
@@ -141,6 +165,8 @@ export class Contact {
 			console.warn("Formulaire invalide");
 			return;
 		}
+		
+		this.isSubmitting = true; // On bloque le bouton pour éviter les doubles soumissions
 
 		const payload = {
 			...this.contactForm.value,
@@ -154,13 +180,20 @@ export class Contact {
 		};
 
 		this.http.post(`${this.apiBase}/contact`, payload)
-			.subscribe(() => {
-				this.showConfirmation = true;
-				console.log("Email envoyé")
-			});
-
-		// Vider le contexte après usage 
-		this.contactContextService.clear();
+		  .subscribe({
+		    next: () => {
+		      this.showConfirmation = true;
+			  // Vider le contexte après usage
+		      this.contactContextService.clear();
+			  console.log("Formulaire envoyé avec succès");
+		    },
+		    error: () => {
+		      console.error("Erreur lors de l’envoi");
+		    },
+		    complete: () => {
+		      this.isSubmitting = false;
+		    }
+		  });
 	}
 
 	onCvSelected(event: any) {
