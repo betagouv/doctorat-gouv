@@ -65,6 +65,53 @@
         De la définition du sujet de recherche à la poursuite de carrière
       </p>
     </div>
+	
+	<!-- Menu Langue -->
+	<div class="fr-header__tools">
+	  <div class="fr-translate" [class.fr-translate--expanded]="langMenuOpen">
+	    
+	    <button
+	      class="fr-translate__btn"
+	      type="button"
+	      aria-haspopup="listbox"
+	      [attr.aria-expanded]="langMenuOpen"
+	      (click)="toggleLangMenu($event)">
+	      <span class="fr-translate__lang">
+	        {{ currentLang === 'fr' ? ('LANG.FR' | translate) : ('LANG.EN' | translate) }}
+	      </span>
+	    </button>
+
+	    <!-- IMPORTANT : pas de *ngIf ici -->
+	    <div class="fr-collapse" [class.fr-collapse--expanded]="langMenuOpen">
+	      <ul class="fr-translate__list" role="listbox">
+	        
+	        <li>
+	          <button
+	            type="button"
+	            class="fr-translate__link"
+	            role="option"
+	            [attr.aria-selected]="currentLang === 'fr'"
+	            (click)="changeLang('fr')">
+	            {{ 'LANG.FR' | translate }}
+	          </button>
+	        </li>
+
+	        <li>
+	          <button
+	            type="button"
+	            class="fr-translate__link"
+	            role="option"
+	            [attr.aria-selected]="currentLang === 'en'"
+	            (click)="changeLang('en')">
+	            {{ 'LANG.EN' | translate }}
+	          </button>
+	        </li>
+
+	      </ul>
+	    </div>
+
+	  </div>
+	</div>
 
   </div>
 

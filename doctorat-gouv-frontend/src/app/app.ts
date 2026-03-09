@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { I18nService } from './services/i18n-service';
 import { Footer } from './footer/footer';
 import { MatomoTrackingService } from './services/matomo-tracking-service';
 
@@ -11,8 +12,8 @@ import { MatomoTrackingService } from './services/matomo-tracking-service';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('doctorat-gouv-frontend');
-  
-  constructor(private matomo: MatomoTrackingService) {}
+	protected readonly title = signal('doctorat-gouv-frontend');
+
+	constructor(private i18n: I18nService, private matomo: MatomoTrackingService) {}
 
 }

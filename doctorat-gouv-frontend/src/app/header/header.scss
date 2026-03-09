@@ -41,6 +41,36 @@
   display: block;
 }
 
+/* Menu déroulant langue */
+.fr-translate {
+  position: relative;
+  display: inline-block; /* important pour que le menu se cale sous le bouton */
+}
+
+/* Le menu déroulant */
+.fr-translate .fr-collapse {
+  position: absolute;
+  top: 100%;          /* juste sous le bouton */
+  left: 0;            /* aligné exactement sous le bouton */
+  min-width: 100%;    /* même largeur que le bouton */
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.25rem 0;
+  z-index: 1000;
+}
+
+/* Alignement interne du texte */
+.fr-translate__list {
+  text-align: left;
+}
+
+.fr-translate__link {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
 /* Tagline */
 .fr-header__service-tagline,
 .mobile-tagline {

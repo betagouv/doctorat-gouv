@@ -1,13 +1,16 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { I18nService } from '../services/i18n-service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+	TranslateModule
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -15,8 +18,10 @@ import { FormsModule } from '@angular/forms';
 export class Header implements AfterViewInit {
 
   showBanner = true;
+  currentLang: 'fr' | 'en' = (localStorage.getItem('lang') as 'fr' | 'en') || 'fr';
+  langMenuOpen = false;
 
-  constructor() { }
+  constructor(private i18n: I18nService) { }
 
   ngAfterViewInit(): void {
     const burger = document.querySelector(".mobile-burger") as HTMLElement;
@@ -50,6 +55,22 @@ export class Header implements AfterViewInit {
       }
     });
   }
+  
+  changeLang(lang: 'fr' | 'en') {
+    this.currentLang = lang;
+    this.i18n.useLang(lang);
+  }
+
+  toggleLangMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.langMenuOpen = !this.langMenuOpen;
+  }
+
+  @HostListener('document:click')
+  closeMenu() {
+    this.langMenuOpen = false;
+  }
+
 
   onSearchForHeader(event: Event) {
     event.preventDefault();
