@@ -22,11 +22,11 @@
       <!-- Tagline -->
       <div class="fr-header__service-tagline">
         <p class="tagline-title">
-          La plateforme nationale du doctorat
-          <span class="tagline-beta">BETA</span>
+          {{ 'HEADER.TAGLINE_TITLE' | translate }}
+          <span class="tagline-beta">{{ 'HEADER.BETA' | translate }}</span>
         </p>
         <p class="tagline-subtitle">
-          De la définition du sujet de recherche à la poursuite de carrière
+          {{ 'HEADER.TAGLINE_SUBTITLE' | translate }}
         </p>
       </div>
     </div>
@@ -58,11 +58,11 @@
     <!-- Ligne 2 : Tagline mobile -->
     <div class="mobile-tagline">
       <p class="tagline-title">
-        La plateforme nationale du doctorat
+        {{ 'HEADER.TAGLINE_TITLE' | translate }}
         <span class="tagline-beta">BETA</span>
       </p>
       <p class="tagline-subtitle">
-        De la définition du sujet de recherche à la poursuite de carrière
+         {{ 'HEADER.TAGLINE_SUBTITLE' | translate }}
       </p>
     </div>
 	
@@ -123,10 +123,10 @@
       <nav class="fr-nav" role="navigation" aria-label="Menu principal">
         <ul class="fr-nav__list">
 		  <li class="fr-nav__item">
-			   <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">Accueil</a>
+			   <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">{{ 'HEADER.ACCUEIL' | translate }}</a>
 		  </li>
           <li class="fr-nav__item">
-            <a class="fr-nav__link" href="/">Retour aux offres</a>
+            <a class="fr-nav__link" href="/">{{ 'HEADER.RETOUR_AUX_OFFRES' | translate }}</a>
           </li>
         </ul>
       </nav>

@@ -6,6 +6,8 @@
   "HEADER": {
     "TAGLINE_TITLE": "La plateforme nationale du doctorat",
     "TAGLINE_SUBTITLE": "De la définition du sujet de recherche à la poursuite de carrière",
-    "BETA": "BETA"
+    "BETA": "BETA",
+	"ACCUEIL": "Accueil",
+	"RETOUR_AUX_OFFRES": "Retour aux offres"
   }
 }

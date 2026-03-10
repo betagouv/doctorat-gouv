@@ -6,6 +6,8 @@
   "HEADER": {
     "TAGLINE_TITLE": "The national doctoral platform",
     "TAGLINE_SUBTITLE": "From defining the research topic to career development",
-    "BETA": "BETA"
+    "BETA": "BETA",
+	"ACCUEIL": "Home",
+	"RETOUR_AUX_OFFRES": "Back to offers"
   }
 }
