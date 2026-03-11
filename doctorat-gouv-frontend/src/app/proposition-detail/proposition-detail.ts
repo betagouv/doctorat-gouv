@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute} from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
@@ -16,6 +17,7 @@ import { Header } from '../header/header';
 		RouterModule,
 		DatePipe,
 		DefaultValuePipe,
+		TranslateModule,
 		Header
 	],
 	templateUrl: './proposition-detail.html',

@@ -18,7 +18,7 @@ export class I18nService {
   
   useLang(lang: string) {
     // const files = ['shared', 'header', 'search', 'detail', 'contact', 'footer'];
-	const files = ['header', 'search'];
+	const files = ['header', 'search', 'detail'];
     let loaded = 0;
 
     files.forEach(file => {

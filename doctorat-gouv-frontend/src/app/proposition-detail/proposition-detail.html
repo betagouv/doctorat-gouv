@@ -28,32 +28,31 @@
         </h2>
 		
 		<p><img src="/assets/icons/type_proposition.png" class="icon-img" alt="">
-			<strong>Type d'offre :</strong> {{
-			thesis.typeProposition === 'proposition'
-			? 'Sujet de thèse'
-			: thesis.typeProposition === 'offre'
-			? "Offre d'accompagnement"
-			: thesis.typeProposition
-			}}
+			<strong>{{ 'DETAIL.TYPE_OFFRE' | translate }} :</strong>
+			{{ thesis.typeProposition === 'proposition'
+			    ? ('DETAIL.SUJET' | translate)
+			    : thesis.typeProposition === 'offre'
+			      ? ('DETAIL.OFFRE' | translate)
+			      : thesis.typeProposition }}
 		</p>
 
 		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
-		  <strong>Établissement :</strong> {{ thesis?.etablissementLibelle | defaultValue }}
+			<strong>{{ 'DETAIL.ETABLISSEMENT' | translate }} :</strong> {{ thesis?.etablissementLibelle | defaultValue }}
 		</p>
 
 		<p>
 		  <img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
-		  <strong>École doctorale :</strong> {{ thesis?.ecoleDoctoraleLibelle | defaultValue }}
+		  <strong>{{ 'DETAIL.ED' | translate }} :</strong> {{ thesis?.ecoleDoctoraleLibelle | defaultValue }}
 		</p>
 
 		<p>
 		  <img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
-		  <strong>Laboratoire de recherche :</strong> {{ thesis?.uniteRechercheLibelle | defaultValue }}
+		  <strong>{{ 'DETAIL.LABO' | translate }} :</strong> {{ thesis?.uniteRechercheLibelle | defaultValue }}
 		</p>
 
 		<p>
 		  <img src="/assets/icons/direction.png" class="icon-img" alt="">
-		  <strong>Direction de la thèse :</strong>
+		  <strong>{{ 'DETAIL.DIRECTION' | translate }} :</strong>
 		  {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
 
 		  <ng-container *ngIf="thesis?.deposantOrcid">
@@ -79,19 +78,21 @@
 
 		<p>
 		  <img src="/assets/icons/date_debut.png" class="icon-img" alt="">
-		  <strong>Début de la thèse :</strong>
+		  <strong>{{ 'DETAIL.DEBUT' | translate }} :</strong>
 		  {{ thesis?.dateDebutThese | date:'d MMMM y' }}
 		</p>
 
 		<p class="fr-mb-9v">
 		  <img src="/assets/icons/date_fin.png" class="icon-img" alt="">
-		  <strong>Date limite de candidature :</strong>
-		  {{ thesis?.dateLimiteCandidature ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm') : 'Non renseigné' }}
+		  <strong>{{ 'DETAIL.DATE_LIMITE' | translate }} :</strong>
+		  {{ thesis?.dateLimiteCandidature
+		      ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm')
+		      : ('DETAIL.NON_RENSEIGNE' | translate) }}
 		</p>
 
 
 		<div class="keywords-title">
-		  Mots clés
+		  {{ 'DETAIL.KEYWORDS' | translate }}
 		  <span class="line"></span>
 		</div>
 
@@ -102,7 +103,7 @@
 		</div>
 		
        <div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
-	       <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> Prendre contact </button> 
+	       <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> {{ 'DETAIL.CONTACT' | translate }} </button> 
 	   </div>
 
       </div>
@@ -111,51 +112,51 @@
     <!-- Deuxième card -->
     <div class="card shadow">
       <div class="card-body">
-        <h2 class="section-title">Résumé</h2>
+        <h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
         <p class="paragraph fr-mb-12v">{{ thesis?.resume | defaultValue }}</p>
 
-        <h3 class="section-title">Objectif et Contexte</h3>
+        <h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
         <p class="paragraph">{{ thesis?.objectif | defaultValue }}</p>
         <p class="paragraph">{{ thesis?.contexte | defaultValue }}</p>
 		
 		<hr class="separator">
 		
-		<h3 class="section-title">Profil recherché</h3>
+		<h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
 		<p class="paragraph">{{ thesis?.profilRecherche | defaultValue }}</p>
 		
 		<hr class="separator">
 		
-		<h3 class="section-title">Précision sur l'encadrement</h3>
+		<h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.modalitesEncadrement | defaultValue }}</p>
 
-		<h3 class="section-title">Résultat attendu</h3>
+		<h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.resultatsAttendus | defaultValue }}</p>
 		
-		<h3 class="section-title">Objectif de valorisation des travaux</h3>
+		<h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.valorisationTravaux | defaultValue }}</p>
 		
-		<h3 class="section-title">Financement</h3>
+		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">
 		  {{ thesis?.financementDetails | defaultValue }}
 		</p>
 
-		<h3 class="section-title">Méthode de travail</h3>
+		<h3 class="section-title">{{ 'DETAIL.METHODE' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail | defaultValue }}</p>
 
-		<h3 class="section-title">Références bibliographiques</h3>
+		<h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques | defaultValue }}</p>
 		
 		<div *ngIf="thesis?.urlPdf">
-			<h3 class="section-title">Pièces jointes</h3>
+			<h3 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h3>
 		
 			<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download target="_blank"
 				rel="noopener noreferrer">
-				Télécharger le PDF
+				{{ 'DETAIL.DOWNLOAD_PDF' | translate }}
 			</a>
 		</div>
 		
 		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
-		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> Prendre contact </button> 
+		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> {{ 'DETAIL.CONTACT' | translate }} </button> 
 		</div>
 				
       </div>
