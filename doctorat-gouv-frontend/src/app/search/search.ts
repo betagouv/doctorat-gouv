@@ -36,6 +36,8 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
 import { Header } from '../header/header';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -47,7 +49,8 @@ import { Header } from '../header/header';
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,
-    DsfrButtonModule
+    DsfrButtonModule,
+	TranslateModule
   ],
   templateUrl: './search.html',
   styleUrls: ['./search.scss']

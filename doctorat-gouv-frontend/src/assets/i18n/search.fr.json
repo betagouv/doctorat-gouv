@@ -1,0 +1,40 @@
+{
+  "SEARCH": {
+    "TITLE": "Trouver une offre de thèse ou d’accompagnement",
+    "PLACEHOLDER": "Rechercher par titre ou mot clés",
+    "MORE_FILTERS": "Plus de filtres",
+    "LESS_FILTERS": "Moins de filtres",
+    "ACTIVE_FILTERS": "Filtres actifs :",
+    "RESULTS": "{{count}} résultats",
+	"RESULTS_SUFIX": "de recherche",
+    "BACK_TO_TOP": "Haut de page"
+  },
+
+  "FILTERS": {
+    "DISCIPLINE": "Discipline",
+    "DEFIS": "Défis de société",
+    "LOCALISATION": "Localisation géographique",
+    "LABO": "Laboratoire de recherche",
+    "ECOLE": "Établissement diplômant",
+    "ED": "École doctorale",
+    "ROR": "Établissement ROR",
+    "SELECT_ALL": "Tout sélectionner",
+    "SEARCH": "Rechercher"
+  },
+
+  "CARDS": {
+    "SUJET": "Sujet de thèse",
+    "OFFRE": "Offre d'accompagnement",
+    "DETAIL": "Voir détail",
+    "KEYWORDS": "Mots clés :"
+  },
+
+  "INFO": {
+    "THESE": "En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez identifier des chercheuses et chercheurs avec qui construire votre propre projet doctoral. La candidature auprès d'une école doctorale ne se fait qu'après avoir défini ensemble le sujet de thèse."
+  },
+
+  "PAGINATION": {
+    "PREVIOUS": "Précédent",
+    "NEXT": "Suivant"
+  }
+}
