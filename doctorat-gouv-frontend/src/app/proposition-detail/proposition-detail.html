@@ -79,14 +79,14 @@
 		<p>
 		  <img src="/assets/icons/date_debut.png" class="icon-img" alt="">
 		  <strong>{{ 'DETAIL.DEBUT' | translate }} :</strong>
-		  {{ thesis?.dateDebutThese | date:'d MMMM y' }}
+		  {{ thesis?.dateDebutThese | dynamicDate:'d MMMM y' }}
 		</p>
 
 		<p class="fr-mb-9v">
 		  <img src="/assets/icons/date_fin.png" class="icon-img" alt="">
 		  <strong>{{ 'DETAIL.DATE_LIMITE' | translate }} :</strong>
 		  {{ thesis?.dateLimiteCandidature
-		      ? (thesis.dateLimiteCandidature | date:'d MMMM y à HH:mm')
+		      ? (thesis.dateLimiteCandidature | dynamicDate:("d MMMM y '" + ('DETAIL.AT' | translate) + "' HH:mm"))
 		      : ('DETAIL.NON_RENSEIGNE' | translate) }}
 		</p>
 

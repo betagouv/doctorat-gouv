@@ -24,6 +24,8 @@
     "METHODE": "Working method",
     "REFERENCES": "Bibliographic references",
     "PIECES_JOINTES": "Attachments",
-    "DOWNLOAD_PDF": "Download PDF"
+    "DOWNLOAD_PDF": "Download PDF",
+	
+	"AT": "at"
   }
 }

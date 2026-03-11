@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { ApplicationRef } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {
+	
+  public currentLocale = 'fr-FR';
 
   constructor(
     private http: HttpClient,
-    private translate: TranslateService
+    private translate: TranslateService,
+	private applicationRef: ApplicationRef
   ) {
     this.translate.addLangs(['fr', 'en']);
     this.translate.setDefaultLang('fr');
@@ -17,6 +21,10 @@ export class I18nService {
   }
   
   useLang(lang: string) {
+	
+	this.currentLocale = lang === 'en' ? 'en-US' : 'fr-FR';
+	this.applicationRef.tick();
+	
     // const files = ['shared', 'header', 'search', 'detail', 'contact', 'footer'];
 	const files = ['header', 'search', 'detail'];
     let loaded = 0;

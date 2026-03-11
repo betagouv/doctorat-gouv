@@ -5,8 +5,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
-import { DatePipe } from '@angular/common';
+import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
+import { TranslateService } from '@ngx-translate/core';
 import { Header } from '../header/header';
 
 @Component({
@@ -15,9 +16,9 @@ import { Header } from '../header/header';
 	imports: [
 		CommonModule,
 		RouterModule,
-		DatePipe,
 		DefaultValuePipe,
 		TranslateModule,
+		DynamicDatePipe,
 		Header
 	],
 	templateUrl: './proposition-detail.html',
@@ -34,7 +35,8 @@ export class PropositionDetail {
 		private route: ActivatedRoute,
 		private router: Router,
 		private propositionTheseService: PropositionTheseService,
-		private contactContextService: ContactContextService
+		private contactContextService: ContactContextService,
+		private translate: TranslateService
 	) { }
 
 
@@ -89,5 +91,8 @@ export class PropositionDetail {
 	  this.router.navigate(['/contact']);
 	}
 
-	
+	get currentLang(): string {
+	  return this.translate.currentLang;
+	}
+
 }
