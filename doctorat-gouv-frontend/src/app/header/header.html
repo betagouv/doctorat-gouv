@@ -138,19 +138,20 @@
 <!-- MENU MOBILE (slide-in)                                 -->
 <!-- ===================================================== -->
 <div class="mobile-menu">
-  <button class="mobile-menu-close" aria-label="Fermer le menu">Fermer ×</button>
+  <button class="mobile-menu-close" aria-label="Fermer le menu">{{ 'MOBILE.CLOSE' | translate }} ×</button>
 
   <nav class="mobile-nav">
     <a href="/">
       <span class="fr-icon-search-line" aria-hidden="true"></span>
-      Toutes les offres
+      {{ 'MOBILE.ALL_OFFERS' | translate }}
     </a>
 
     <a href="https://doctorat.sites.beta.gouv.fr/">
       <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-      Retour au site
+      {{ 'MOBILE.BACK_TO_SITE' | translate }}
     </a>
   </nav>
+
 </div>
 
 
@@ -161,13 +162,16 @@
   <div class="info-left">
     <span class="info-icon" aria-hidden="true">i</span>
 
-    <p>
-      Lancement de la plateforme : le site est encore en phase d'expérimentation,
-      n'hésitez pas à 
-      <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">donner votre avis</a>
-      pour nous aider à améliorer le service.<br/>
-	  <span>Pour une expérience optimale, la plateforme est conçue pour être utilisée sur ordinateur et en mode plein écran.</span>
-    </p>
+	<p>
+	  {{ 'INFO.LAUNCH_TITLE' | translate }}
+	  <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">
+	    {{ 'INFO.GIVE_FEEDBACK' | translate }}
+	  </a>
+	  {{ 'INFO.LAUNCH_END' | translate }}<br/>
+
+	  <span>{{ 'INFO.OPTIMAL_EXPERIENCE' | translate }}</span>
+	</p>
+
   </div>
 
   <button class="close-btn" (click)="closeBanner()" aria-label="Fermer le bandeau">
