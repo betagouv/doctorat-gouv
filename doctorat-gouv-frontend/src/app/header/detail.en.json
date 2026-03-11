@@ -1,0 +1,29 @@
+{
+  "DETAIL": {
+    "ERROR": "An error has occurred",
+    "TYPE_OFFRE": "Offer type",
+    "SUJET": "PhD topic",
+    "OFFRE": "Support offer",
+    "ETABLISSEMENT": "Institution",
+    "ED": "Doctoral school",
+    "LABO": "Research laboratory",
+    "DIRECTION": "Thesis supervision",
+    "DEBUT": "Thesis start date",
+    "DATE_LIMITE": "Application deadline",
+    "NON_RENSEIGNE": "Not provided",
+    "KEYWORDS": "Keywords",
+    "CONTACT": "Contact the team",
+
+    "RESUME": "Summary",
+    "OBJECTIF_CONTEXTE": "Objective and Context",
+    "PROFIL": "Desired profile",
+    "ENCADREMENT": "Supervision details",
+    "RESULTATS": "Expected results",
+    "VALORISATION": "Research valorization objectives",
+    "FINANCEMENT": "Funding",
+    "METHODE": "Working method",
+    "REFERENCES": "Bibliographic references",
+    "PIECES_JOINTES": "Attachments",
+    "DOWNLOAD_PDF": "Download PDF"
+  }
+}
