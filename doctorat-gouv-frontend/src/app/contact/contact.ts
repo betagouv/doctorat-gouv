@@ -4,6 +4,7 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { ContactContextService } from '../services/contact-context-service';
 import { environment } from '../../environments/environment';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { Header } from '../header/header';
 
@@ -13,6 +14,7 @@ import { Header } from '../header/header';
   imports: [
 	CommonModule,
 	ReactiveFormsModule,
+	TranslateModule,
 	Header
   ],
   templateUrl: './contact.html',

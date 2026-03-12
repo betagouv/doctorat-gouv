@@ -6,32 +6,22 @@
 	<div class="container-header">
 
 		<!-- Titre centré comme sur la maquette -->
-		<h2 class="form-title fr-mb-4v">Formulaire de mise en relation</h2>
+		<h2 class="form-title fr-mb-4v">{{ 'CONTACT.TITLE' | translate }}</h2>
 
 		<!-- Alerte DSFR d'information -->
 		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
 		
 			<p class="fr-alert__title">
-				<strong>Pour être mis en relation, merci de remplir le formulaire ci-dessous et de fournir les documents
-					demandés :</strong>
+			  <strong>{{ 'CONTACT.INFO_TITLE' | translate }}</strong>
 			</p>
-		
+
 			<ul class="fr-pl-3w fr-mb-3w">
-				<li class="fr-mt-2w">
-					Si vous souhaitez vous-même faire un doctorat : un CV, un document attestant de votre intérêt et aptitude à
-					la recherche, un court message décrivant vos motivations
-				</li>
-		
-				<li class="fr-mt-2w">
-					Si vous souhaitez établir un partenariat : un descriptif de votre organisation, un descriptif du partenariat
-					envisagé, un court message expliquant votre besoin
-				</li>
-		
+			  <li class="fr-mt-2w">{{ 'CONTACT.INFO_DOCTORAT' | translate }}</li>
+			  <li class="fr-mt-2w">{{ 'CONTACT.INFO_PARTENARIAT' | translate }}</li>
 			</ul>
-		
+
 			<p class="fr-mt-2w">
-				Les informations saisies seront envoyées à la directrice ou au directeur de thèse concerné,
-				qui reviendra vers vous s’il souhaite donner suite à votre candidature.
+			  {{ 'CONTACT.INFO_END' | translate }}
 			</p>
 		
 		</div>
@@ -58,69 +48,69 @@
 
 					<!-- Nom -->
 					<div class="form-field large">
-					  <label class="fr-label">Nom <span class="fr-text--xs fr-text--error">*</span></label>
+					  <label class="fr-label">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
 					  <input class="fr-input" formControlName="nom" type="text">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
-					    Le nom doit contenir entre 2 et 30 caractères.
+					    {{ 'CONTACT.ERROR_NOM' | translate }}.
 					  </p>
 					</div>
 
 
 					<!-- Prénom -->
 					<div class="form-field large">
-					  <label class="fr-label">Prénom <span class="fr-text--xs fr-text--error">*</span></label>
+					  <label class="fr-label">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
 					  <input class="fr-input" formControlName="prenom" type="text">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
-					    Le prénom doit contenir entre 2 et 30 caractères.
+					    {{ 'CONTACT.ERROR_PRENOM' | translate }}
 					  </p>
 					</div>
 
 
 					<!-- Civilité -->
 					<div class="form-field large">
-						<label class="fr-label">Civilité</label>
+						<label class="fr-label">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
 						<select class="fr-select" formControlName="civilite">
-							<option value="" disabled selected>Choisir…</option>
+							<option value="" disabled selected>{{ 'CONTACT.CIVILITE_CHOIX' | translate }}</option>
 							<option *ngFor="let c of civilites" [value]="c">{{ c }}</option>
 						</select>
 					</div>
 
 					<!-- Email -->
 					<div class="form-field large">
-					  <label class="fr-label">Adresse électronique <span class="fr-text--xs fr-text--error">*</span></label>
+					  <label class="fr-label">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
 					  <input class="fr-input" formControlName="email" type="email">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
-					    Veuillez saisir une adresse email valide.
+					    {{ 'CONTACT.ERROR_EMAIL' | translate }}
 					  </p>
 					</div>
 
 
 					<!-- Vous êtes -->
 					<div class="form-field small">
-						<label class="fr-label">Vous êtes</label>
+						<label class="fr-label">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
 						<select class="fr-select" formControlName="profil">
-							<option value="" disabled selected>Choisir…</option>
+							<option value="" disabled selected>{{ 'CONTACT.PROFIL_CHOIX' | translate }}</option>
 							<option *ngFor="let p of profils" [value]="p">{{ p }}</option>
 						</select>
 					</div>
 
 					<!-- Depuis combien d'années -->
 					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label">Depuis combien d'années</label>
+					  <label class="fr-label">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
 					  <select class="fr-select" formControlName="annees">
-					    <option value="" disabled selected>Choisir…</option>
+					    <option value="" disabled selected>{{ 'CONTACT.ANNEES_CHOIX' | translate }}</option>
 					    <option *ngFor="let a of annees" [value]="a">{{ a }} an(s)</option>
 					  </select>
 					</div>
 
 					<!-- Secteur -->
 					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label">Dans quel secteur</label>
+					  <label class="fr-label">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
 					  <select class="fr-select" formControlName="secteur">
-					    <option value="" disabled selected>Choisir…</option>
+					    <option value="" disabled selected>{{ 'CONTACT.SECTEUR_CHOIX' | translate }}</option>
 					    <option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
 					  </select>
 					</div>
@@ -131,39 +121,38 @@
 						<div class="fr-checkbox-group">
 							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required>
 							<label class="fr-label" for="confirmMaster">
-								Je confirme que je dispose ou que je prépare un diplôme de master
-								ou conférant le grade de master
+								{{ 'CONTACT.FIELD_CONFIRM_MASTER' | translate }}
 							</label>
 						</div>
 					
 						<p class="fr-error-text"
 							*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
-							Vous devez confirmer disposer ou préparer un diplôme de master.
+							{{ 'CONTACT.ERROR_MASTER' | translate }}
 						</p>
 					</div>
 
 
 					<!-- Upload CV -->
 					<div class="form-field large">
-						<label class="fr-label" for="cvUpload">{{ !isOrganisationProfile ? "Ajouter un CV" : "Ajouter un descriptif de votre organisation" }}
+						<label class="fr-label" for="cvUpload">{{ isOrganisationProfile ? ('CONTACT.UPLOAD_ORGA' | translate) : ('CONTACT.UPLOAD_CV' | translate) }}
 							<span class="fr-text--xs fr-text--error">*</span>
 						</label>
 						<p class="fr-hint-text">
-							Taille maximale : 1 Mo. Format supporté : pdf.
+							{{ 'CONTACT.UPLOAD_HINT_1MO' | translate }}
 						</p>
 					
-						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple>
+						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple accept=".pdf" >
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
-							Le fichier doit être au format PDF.
+							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
 						</p>
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
-							Le fichier dépasse la taille maximale de 1 Mo.
+							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_1MO' | translate }}
 						</p>
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
-							Le CV est obligatoire.
+							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
 						</p>
 					
 					</div>
@@ -171,34 +160,29 @@
 					<!-- Upload un autre document -->
 					<div class="form-field large">
 						<label class="fr-label" for="docsUpload">
-							{{
-							isOrganisationProfile
-							? "Ajouter un un descriptif du partenariat envisagé"
-							: "Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de
-							recommandation...)"
-							}}
+							{{ isOrganisationProfile ? ('CONTACT.UPLOAD_PARTENARIAT' | translate) : ('CONTACT.UPLOAD_DOC' | translate) }}
 							<span class="fr-text--xs fr-text--error">*</span>
 						</label>
 					
 					
 						<p class="fr-hint-text">
-							Taille maximale : 5 Mo. Formats supportés : pdf.
+							{{ 'CONTACT.UPLOAD_HINT_5MO' | translate }}
 						</p>
 					
 						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
-							multiple>
+							multiple accept=".pdf">
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
-							Le fichier doit être au format PDF.
+							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
 						</p>
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
-							Le fichier dépasse la taille maximale de 5 Mo.
+							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_5MO' | translate }}
 						</p>
 					
 						<p class="fr-error-text"
 							*ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.errors?.['required']">
-							Le document est obligatoire.
+							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
 						</p>
 					
 					</div>
@@ -207,14 +191,14 @@
 					<!-- Texte de motivation -->
 					<div class="form-field large">
 						<label class="fr-label">
-						  {{ isOrganisationProfile ? 'Présentation du besoin' : 'Texte de motivation' }}
+						  {{ isOrganisationProfile ? ('CONTACT.MESSAGE_LABEL_ORGA' | translate) : ('CONTACT.MESSAGE_LABEL' | translate) }}
 						</label>
 
 					  <textarea 
 					    class="fr-input" 
 					    formControlName="message" 
 					    rows="5"
-					    [placeholder]="isOrganisationProfile ? '' : 'Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ...'"
+					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
 					  ></textarea>
 
 					 <!-- Consentement RGPD -->
@@ -222,8 +206,8 @@
 						<div class="fr-checkbox-group">
 							<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required>
 							<label class="fr-label" for="rgpdConsent">
-								J'accepte de recevoir vos e-mails et confirme avoir pris connaissance de vos
-								<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">mentions légales</a>.
+								{{ 'CONTACT.RGPD' | translate }}
+								<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">{{ 'CONTACT.LEGAL' | translate }}</a>.
 							</label>
 						</div>
 					
@@ -244,8 +228,9 @@
 						<!--						</button>-->
 					
 						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="isSubmitting || !sujetValide">
-							{{ isSubmitting ? 'Envoi en cours...' : 'Envoyer' }}
+						  {{ isSubmitting ? ('CONTACT.SUBMIT_LOADING' | translate) : ('CONTACT.SUBMIT' | translate) }}
 						</button>
+
 					</div>
 
 				</form>
@@ -258,25 +243,16 @@
 
 <div *ngIf="showConfirmation" class="confirmation-wrapper">
 
-  <h2 class="fr-h3 fr-mb-3w">Confirmation d'envoi</h2>
+	<h2 class="fr-h3 fr-mb-3w">{{ 'CONTACT.CONFIRM_TITLE' | translate }}</h2>
 
-<!--  <p class="fr-text--lg">-->
-<!--    Votre demande à la thèse -->
-<!--    <strong>{{ contactForm.value.titreSujet || 'au sujet sélectionné' }}</strong> -->
-<!--    a bien été prise en compte.-->
-<!--  </p>-->
+	<div class="fr-alert fr-alert--success fr-mt-4w">
+	  <h3 class="fr-alert__title">{{ 'CONTACT.CONFIRM_SUCCESS' | translate }}</h3>
+	  <p>{{ 'CONTACT.CONFIRM_EMAIL' | translate }}</p>
+	</div>
 
-  <div class="fr-alert fr-alert--success fr-mt-4w">
-    <h3 class="fr-alert__title">Votre demande a bien été prise en compte</h3>
-    <p>
-      Vous recevrez un courriel de confirmation dans quelques instants.
-    </p>
-  </div>
-
-  <p class="fr-mt-4w fr-text--sm">
-    <strong>Détail —</strong> Si vous n’avez pas reçu de courriel 
-    (n’hésitez pas à vérifier dans les indésirables), vous pouvez saisir à nouveau votre adresse électronique.
-  </p>
+	<p class="fr-mt-4w fr-text--sm">
+	  {{ 'CONTACT.CONFIRM_DETAIL' | translate }}
+	</p>
 
 </div>
 

@@ -25,8 +25,7 @@ export class I18nService {
 	this.currentLocale = lang === 'en' ? 'en-US' : 'fr-FR';
 	this.applicationRef.tick();
 	
-    // const files = ['shared', 'header', 'search', 'detail', 'contact', 'footer'];
-	const files = ['header', 'search', 'detail'];
+	const files = ['header', 'search', 'detail', 'contact'];
     let loaded = 0;
 
     files.forEach(file => {

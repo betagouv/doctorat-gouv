@@ -1,0 +1,60 @@
+{
+  "CONTACT": {
+    "TITLE": "Formulaire de mise en relation",
+
+    "INFO_TITLE": "Pour être mis en relation, merci de remplir le formulaire ci-dessous et de fournir les documents demandés :",
+
+    "INFO_DOCTORAT": "Si vous souhaitez vous-même faire un doctorat : un CV, un document attestant de votre intérêt et aptitude à la recherche, un court message décrivant vos motivations",
+    "INFO_PARTENARIAT": "Si vous souhaitez établir un partenariat : un descriptif de votre organisation, un descriptif du partenariat envisagé, un court message expliquant votre besoin",
+
+    "INFO_END": "Les informations saisies seront envoyées à la directrice ou au directeur de thèse concerné, qui reviendra vers vous s’il souhaite donner suite à votre candidature.",
+
+    "FIELD_NOM": "Nom",
+    "FIELD_PRENOM": "Prénom",
+    "FIELD_CIVILITE": "Civilité",
+    "FIELD_EMAIL": "Adresse électronique",
+    "FIELD_PROFIL": "Vous êtes",
+    "FIELD_ANNEES": "Depuis combien d'années",
+    "FIELD_SECTEUR": "Dans quel secteur",
+    "FIELD_CONFIRM_MASTER": "Je confirme que je dispose ou que je prépare un diplôme de master ou conférant le grade de master",
+	
+	"CIVILITE_CHOIX": "Choisir…",
+	"PROFIL_CHOIX": "Choisir…",
+	"ANNEES_CHOIX": "Choisir…",
+	"SECTEUR_CHOIX": "Choisir…",
+
+    "ERROR_NOM": "Le nom doit contenir entre 2 et 30 caractères.",
+    "ERROR_PRENOM": "Le prénom doit contenir entre 2 et 30 caractères.",
+    "ERROR_EMAIL": "Veuillez saisir une adresse email valide.",
+    "ERROR_MASTER": "Vous devez confirmer disposer ou préparer un diplôme de master.",
+    "ERROR_REQUIRED": "Ce champ est obligatoire.",
+    "ERROR_FILE_PDF": "Le fichier doit être au format PDF.",
+    "ERROR_FILE_TOO_LARGE_1MO": "Le fichier dépasse la taille maximale de 1 Mo.",
+    "ERROR_FILE_TOO_LARGE_5MO": "Le fichier dépasse la taille maximale de 5 Mo.",
+	"ERROR_FILE_REQUIRED": "Le document est obligatoire.",
+
+    "UPLOAD_CV": "Ajouter un CV",
+    "UPLOAD_ORGA": "Ajouter un descriptif de votre organisation",
+    "UPLOAD_DOC": "Ajouter un autre document (ex : piste ou proposition de sujet, mémoire, production scientifique, lettre de recommandation...)",
+    "UPLOAD_PARTENARIAT": "Ajouter un descriptif du partenariat envisagé",
+
+    "UPLOAD_HINT_1MO": "Taille maximale : 1 Mo. Format supporté : pdf.",
+    "UPLOAD_HINT_5MO": "Taille maximale : 5 Mo. Formats supportés : pdf.",
+
+    "MESSAGE_LABEL": "Texte de motivation",
+    "MESSAGE_LABEL_ORGA": "Présentation du besoin",
+    "MESSAGE_PLACEHOLDER": "Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel ...",
+
+    "RGPD": "J'accepte de recevoir vos e-mails et confirme avoir pris connaissance de vos",
+    "LEGAL": "mentions légales",
+
+    "SUBMIT": "Envoyer",
+    "SUBMIT_LOADING": "Envoi en cours...",
+
+    "CONFIRM_TITLE": "Confirmation d'envoi",
+    "CONFIRM_SUCCESS": "Votre demande a bien été prise en compte",
+    "CONFIRM_EMAIL": "Vous recevrez un courriel de confirmation dans quelques instants.",
+    "CONFIRM_DETAIL": "Détail — Si vous n’avez pas reçu de courriel (n’hésitez pas à vérifier dans les indésirables), vous pouvez saisir à nouveau votre adresse électronique."
+  }
+
+}
