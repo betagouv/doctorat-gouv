@@ -90,6 +90,70 @@ export class PropositionDetail {
 	  // 3 - Navigation vers la page contact
 	  this.router.navigate(['/contact']);
 	}
+	
+	getThesisTitle(thesis: any): string {
+	  const lang = this.translate.currentLang;
+
+	  if (lang === 'en') {
+	    if (thesis.theseTitreAnglais && thesis.theseTitreAnglais.trim() !== '') {
+	      return thesis.theseTitreAnglais;
+	    }
+	  }
+
+	  return thesis.theseTitre;
+	}
+	
+	getThesisResume(thesis: any): string {
+	  const lang = this.translate.currentLang;
+
+	  if (lang === 'en') {
+	    if (thesis.resumeAnglais && thesis.resumeAnglais.trim() !== '') {
+	      return thesis.resumeAnglais;
+	    }
+	  }
+
+	  return thesis.resume;
+	}
+	
+	getProfilRecherche(thesis: any): string {
+	  const lang = this.translate.currentLang;
+
+	  if (lang === 'en') {
+	    if (thesis.profilRechercheAnglais && thesis.profilRechercheAnglais.trim() !== '') {
+	      return thesis.profilRechercheAnglais;
+	    }
+	  }
+
+	  return thesis.profilRecherche;
+	}
+	
+	getMotsCles(thesis: any): Record<string, string> {
+	  const lang = this.translate.currentLang;
+
+	  const fr = thesis?.motsCles || {};
+	  const en = thesis?.motsClesAnglais || {};
+
+	  const result: Record<string, string> = {};
+
+	  // On part des clés FR (référence)
+	  Object.keys(fr).forEach(key => {
+	    const frValue = fr[key];
+	    const enValue = en[key];
+
+	    if (lang === 'en') {
+	      if (enValue && enValue.trim() !== '') {
+	        result[key] = enValue;
+	        return;
+	      }
+	    }
+
+	    // Fallback sur FR
+	    result[key] = frValue;
+	  });
+
+	  return result;
+	}
+
 
 	get currentLang(): string {
 	  return this.translate.currentLang;
