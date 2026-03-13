@@ -37,6 +37,7 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 import { Header } from '../header/header';
 
 import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-search',
@@ -110,7 +111,8 @@ export class Search implements OnInit, OnDestroy {
     private router: Router,
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
-	private searchFiltersService: SearchFiltersService 
+	private searchFiltersService: SearchFiltersService,
+	private translate: TranslateService
   ) {}
 
   /* ------------------- Lifecycle ------------------- */
@@ -481,6 +483,51 @@ export class Search implements OnInit, OnDestroy {
   
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  getThesisTitle(thesis: any): string {
+    const lang = this.translate.currentLang;
+
+    if (lang === 'en') {
+      // Si la version anglaise existe, on l'utilise
+      if (thesis.theseTitreAnglais && thesis.theseTitreAnglais.trim() !== '') {
+        return thesis.theseTitreAnglais;
+      }
+    }
+
+    // Sinon fallback sur la version française
+    return thesis.theseTitre;
+  }
+  
+  getLocalizedResume(thesis: any, maxWords = 30): string {
+    const lang = this.translate.currentLang;
+
+    // Si la langue est EN et que resumeAnglais existe → on l'utilise
+    if (lang === 'en' && thesis?.resumeAnglais && thesis.resumeAnglais.trim() !== '') {
+      const words = thesis.resumeAnglais.split(/\s+/);
+      return words.length > maxWords
+        ? words.slice(0, maxWords).join(' ') + ' …'
+        : thesis.resumeAnglais;
+    }
+
+    // Sinon fallback sur la version FR existante
+    return this.getResumeOrFallback(thesis, maxWords);
+  }
+  
+  getLocalizedKeywords(thesis: any): [string, string][] {
+    const lang = this.translate.currentLang;
+
+    // Si la langue est EN et que motsClesAnglais existe → on l'utilise
+    if (
+      lang === 'en' &&
+      thesis?.motsClesAnglais &&
+      Object.keys(thesis.motsClesAnglais).length > 0
+    ) {
+      return this.getEntries(thesis.motsClesAnglais);
+    }
+
+    // Sinon fallback sur la version FR
+    return this.getEntries(thesis.motsCles);
   }
 
 

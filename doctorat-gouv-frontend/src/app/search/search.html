@@ -361,7 +361,7 @@
 		<div class="fr-card__body">
 			<div>
 				<h3 class="fr-card__title custom-blue">
-					{{ limitWords(thesis.theseTitre, 30) }}
+				  {{ limitWords(getThesisTitle(thesis), 30) }}
 				</h3>
 			</div>
 		
@@ -377,14 +377,14 @@
 		
 			<div>
 				<p class="fr-card__desc">
-					{{ getResumeOrFallback(thesis, 30) }}
+					{{ getLocalizedResume(thesis, 30) }}
 				</p>
 			</div>
 			<div class="fr-mt-2w">
 				<ng-container *ngIf="thesis.motsCles">
 					<strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
 					<div class="fr-tags-group fr-tags-group--column">
-						<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
+						<span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
 							{{ entry[1] }}
 						</span>
 					</div>
