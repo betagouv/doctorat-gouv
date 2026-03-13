@@ -7,10 +7,13 @@ public class ContactRequest {
 	public String nom;
 	public String prenom;
 	public String civilite;
+	public String civiliteLabel;
 	public String email;
 	public String profil;
+	public String profilLabel;
 	public Integer annees;
 	public String secteur;
+	public String secteurLabel;
 	public Boolean confirmMaster;
 	public String message;
 
@@ -21,6 +24,8 @@ public class ContactRequest {
 	public String urlSujet;
 	public String urlVitrine;
 	public String typeOffre;
+	
+	public String lang; // Langue du candidat (fr, en, etc.)
 
 	public String getNom() {
 		return nom;
@@ -156,5 +161,37 @@ public class ContactRequest {
 
 	public void setTypeOffre(String typeOffre) {
 		this.typeOffre = typeOffre;
+	}
+
+	public String getCiviliteLabel() {
+		return civiliteLabel;
+	}
+
+	public void setCiviliteLabel(String civiliteLabel) {
+		this.civiliteLabel = civiliteLabel;
+	}
+
+	public String getProfilLabel() {
+		return profilLabel;
+	}
+
+	public void setProfilLabel(String profilLabel) {
+		this.profilLabel = profilLabel;
+	}
+
+	public String getSecteurLabel() {
+		return secteurLabel;
+	}
+
+	public void setSecteurLabel(String secteurLabel) {
+		this.secteurLabel = secteurLabel;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 }

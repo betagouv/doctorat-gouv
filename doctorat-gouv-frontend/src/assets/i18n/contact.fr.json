@@ -54,7 +54,42 @@
     "CONFIRM_TITLE": "Confirmation d'envoi",
     "CONFIRM_SUCCESS": "Votre demande a bien été prise en compte",
     "CONFIRM_EMAIL": "Vous recevrez un courriel de confirmation dans quelques instants.",
-    "CONFIRM_DETAIL": "Détail — Si vous n’avez pas reçu de courriel (n’hésitez pas à vérifier dans les indésirables), vous pouvez saisir à nouveau votre adresse électronique."
+    "CONFIRM_DETAIL": "Détail — Si vous n’avez pas reçu de courriel (n’hésitez pas à vérifier dans les indésirables), vous pouvez saisir à nouveau votre adresse électronique.",
+	
+	"YEARS": "an(s)",
+	"CIVILITES": {
+	    "MONSIEUR": "Monsieur",
+	    "MADAME": "Madame",
+	    "NSP": "Ne se prononce pas"
+	  },
+	  "PROFILS": {
+	        "MASTER_FR": "Étudiant au sein d'un master français",
+	        "INGENIEUR": "Élève d'une école d'ingénieur",
+	        "GRANDE_ECOLE": "Élève d'une autre grande école conférant le grade master",
+	        "MASTER_ETRANGER": "Étudiant d'un master étranger",
+	        "CHERCHEUR_ENTREPRISE": "Chercheur en entreprise",
+	        "PROFESSIONNEL": "Autre professionnel en activité",
+	        "ENTREPRISE_PARTENARIAT": "Entreprise souhaitant établir un partenariat",
+	        "ORGA_PARTENARIAT": "Autre organisation souhaitant établir un partenariat",
+	        "AUTRE": "Autre"
+	  },
+	  "SECTEURS": {
+	      "AGRICULTURE": "Agriculture",
+	      "BTP": "Bâtiment - Travaux publics",
+	      "ENERGIE": "Énergie",
+	      "HOTELLERIE": "Hôtellerie - Restauration, Tourisme",
+	      "INDUSTRIE": "Industrie",
+	      "AGROALIMENTAIRE": "Industrie agroalimentaire",
+	      "AUTOMOBILE": "Industrie automobile",
+	      "PHARMA": "Industrie pharmaceutique",
+	      "TEXTILE": "Industrie textile",
+	      "LUXE": "Luxe",
+	      "MARITIME": "Maritime et fluvial",
+	      "NUMERIQUE": "Numérique",
+	      "SOINS": "Soin et accompagnement",
+	      "TOURISME": "Tourisme",
+	      "TRANSPORT": "Transport - Logistique"
+	    }
   }
 
 }

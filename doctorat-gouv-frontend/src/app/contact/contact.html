@@ -73,7 +73,7 @@
 						<label class="fr-label">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
 						<select class="fr-select" formControlName="civilite">
 							<option value="" disabled selected>{{ 'CONTACT.CIVILITE_CHOIX' | translate }}</option>
-							<option *ngFor="let c of civilites" [value]="c">{{ c }}</option>
+							<option *ngFor="let c of civilites" [value]="c">{{ c | translate }}</option>
 						</select>
 					</div>
 
@@ -93,7 +93,7 @@
 						<label class="fr-label">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
 						<select class="fr-select" formControlName="profil">
 							<option value="" disabled selected>{{ 'CONTACT.PROFIL_CHOIX' | translate }}</option>
-							<option *ngFor="let p of profils" [value]="p">{{ p }}</option>
+							<option *ngFor="let p of profils" [value]="p">{{ p | translate }}</option>
 						</select>
 					</div>
 
@@ -102,7 +102,7 @@
 					  <label class="fr-label">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
 					  <select class="fr-select" formControlName="annees">
 					    <option value="" disabled selected>{{ 'CONTACT.ANNEES_CHOIX' | translate }}</option>
-					    <option *ngFor="let a of annees" [value]="a">{{ a }} an(s)</option>
+					    <option *ngFor="let a of annees" [value]="a">{{ a }} {{ 'CONTACT.YEARS' | translate }}</option>
 					  </select>
 					</div>
 
@@ -111,7 +111,7 @@
 					  <label class="fr-label">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
 					  <select class="fr-select" formControlName="secteur">
 					    <option value="" disabled selected>{{ 'CONTACT.SECTEUR_CHOIX' | translate }}</option>
-					    <option *ngFor="let s of secteurs" [value]="s">{{ s }}</option>
+					    <option *ngFor="let s of secteurs" [value]="s">{{ s | translate }}</option>
 					  </select>
 					</div>
 

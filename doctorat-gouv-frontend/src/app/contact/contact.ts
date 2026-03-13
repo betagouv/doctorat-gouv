@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ContactContextService } from '../services/contact-context-service';
 import { environment } from '../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { Header } from '../header/header';
 
@@ -38,40 +39,46 @@ export class Contact {
 	
 	isSubmitting = false;
 
-	civilites = ['Monsieur', 'Madame', 'Ne se prononce pas'];
-	profils = [
-	  "Étudiant au sein d'un master français",
-	  "Élève d'une école d'ingénieur",
-	  "Élève d'une autre grande école conférant le grade master",
-	  "Étudiant d'un master étranger",
-	  "Chercheur en entreprise",
-	  "Autre professionnel en activité",
-	  "Entreprise souhaitant établir un partenariat",
-	  "Autre organisation souhaitant établir un partenariat",
-	  "Autre"
+	civilites = [
+	  'CONTACT.CIVILITES.MONSIEUR',
+	  'CONTACT.CIVILITES.MADAME',
+	  'CONTACT.CIVILITES.NSP'
 	];
+
+	profils = [
+	  'CONTACT.PROFILS.MASTER_FR',
+	  'CONTACT.PROFILS.INGENIEUR',
+	  'CONTACT.PROFILS.GRANDE_ECOLE',
+	  'CONTACT.PROFILS.MASTER_ETRANGER',
+	  'CONTACT.PROFILS.CHERCHEUR_ENTREPRISE',
+	  'CONTACT.PROFILS.PROFESSIONNEL',
+	  'CONTACT.PROFILS.ENTREPRISE_PARTENARIAT',
+	  'CONTACT.PROFILS.ORGA_PARTENARIAT',
+	  'CONTACT.PROFILS.AUTRE'
+	];
+
 
 	annees = [1, 2, 3, 4, 5, 6, 7, 8, 9, '10'];
+	
 	secteurs = [
-		'Agriculture',
-		'Bâtiment - Travaux publics',
-		'Énergie',
-		'Hôtellerie - Restauration, Tourisme',
-		'Industrie',
-		'Industrie agroalimentaire',
-		'Industrie automobile',
-		'Industrie pharmaceutique',
-		'Industrie textile',
-		'Luxe',
-		'Maritime et fluvial',
-		'Numérique',
-		'Soin et accompagnement',
-		'Tourisme',
-		'Transport - Logistique'
+	  'CONTACT.SECTEURS.AGRICULTURE',
+	  'CONTACT.SECTEURS.BTP',
+	  'CONTACT.SECTEURS.ENERGIE',
+	  'CONTACT.SECTEURS.HOTELLERIE',
+	  'CONTACT.SECTEURS.INDUSTRIE',
+	  'CONTACT.SECTEURS.AGROALIMENTAIRE',
+	  'CONTACT.SECTEURS.AUTOMOBILE',
+	  'CONTACT.SECTEURS.PHARMA',
+	  'CONTACT.SECTEURS.TEXTILE',
+	  'CONTACT.SECTEURS.LUXE',
+	  'CONTACT.SECTEURS.MARITIME',
+	  'CONTACT.SECTEURS.NUMERIQUE',
+	  'CONTACT.SECTEURS.SOINS',
+	  'CONTACT.SECTEURS.TOURISME',
+	  'CONTACT.SECTEURS.TRANSPORT'
 	];
 
-
-	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService) {
+	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService, private translate: TranslateService) {
 	  this.contactForm = this.fb.group({
         nom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]], 
 		prenom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
@@ -95,10 +102,10 @@ export class Contact {
 	    /* ----------------------------------------------------
 	     * 1) Gestion des champs "années" et "secteur"
 	     * ---------------------------------------------------- */
-	    const profilsAvecExperience = [
-	      "Chercheur en entreprise",
-	      "Autre professionnel en activité"
-	    ];
+		const profilsAvecExperience = [
+		  'CONTACT.PROFILS.CHERCHEUR_ENTREPRISE',
+		  'CONTACT.PROFILS.PROFESSIONNEL'
+		];
 
 	    this.showExperienceFields = profilsAvecExperience.includes(value);
 
@@ -112,11 +119,12 @@ export class Contact {
 	    /* ----------------------------------------------------
 	     * 2) Gestion de la case "Master"
 	     * ---------------------------------------------------- */
-	    const profilsSansMaster = [
-	      "Entreprise souhaitant établir un partenariat",
-	      "Autre organisation souhaitant établir un partenariat",
-	      "Autre"
-	    ];
+		const profilsSansMaster = [
+		  'CONTACT.PROFILS.ENTREPRISE_PARTENARIAT',
+		  'CONTACT.PROFILS.ORGA_PARTENARIAT',
+		  'CONTACT.PROFILS.AUTRE'
+		];
+
 
 	    this.showMasterConfirmation = !profilsSansMaster.includes(value);
 		this.isOrganisationProfile = profilsSansMaster.includes(value);
@@ -169,16 +177,37 @@ export class Contact {
 		}
 		
 		this.isSubmitting = true; // On bloque le bouton pour éviter les doubles soumissions
+		
+		// 🔥 Récupération des clés i18n
+		const civiliteKey = this.contactForm.value.civilite;
+		const profilKey = this.contactForm.value.profil;
+		const secteurKey = this.contactForm.value.secteur;
+
+		// 🔥 Traductions (labels)
+		const civiliteLabel = civiliteKey ? this.translate.instant(civiliteKey) : null;
+		const profilLabel = profilKey ? this.translate.instant(profilKey) : null;
+		const secteurLabel = secteurKey ? this.translate.instant(secteurKey) : null;
 
 		const payload = {
 			...this.contactForm.value,
+			
+			// 🔥 Ajout des labels traduits
+			civiliteLabel: civiliteLabel,
+			profilLabel: profilLabel,
+			secteurLabel: secteurLabel,
+			
+			// 🔥 Ajout des fichiers PJ en Base64
 			cvBase64: this.cvBase64,
 			documentBase64: this.documentBase64,
+			
 			// 🔥 Ajout des données du contexte 
 			idPropositionThese: id,
 			titreSujet: sujet, 
 			emailEncadrant: email,
-			typeOffre: typeOffre
+			typeOffre: typeOffre,
+			
+			// 🔥 Langue active (utile si le backend doit faire du traitement spécifique selon la langue)
+			lang: this.translate.currentLang
 		};
 
 		this.http.post(`${this.apiBase}/contact`, payload)
@@ -252,6 +281,5 @@ export class Contact {
 	  };
 	  reader.readAsDataURL(file);
 	}
-
 
 }
