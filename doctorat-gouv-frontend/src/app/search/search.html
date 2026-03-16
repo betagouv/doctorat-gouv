@@ -75,7 +75,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
-            {{ defisSociete || 'FILTERS.DEFIS' | translate }}
+			{{ defisSociete ? getDefisSocieteLabel(defisSociete) : ('FILTERS.DEFIS' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -104,7 +104,7 @@
                        [id]="'defisSociete_' + opt"
                        [checked]="defisSociete === opt"
                        (change)="selectSingle('defisSociete', opt)">
-                <label [for]="'defisSociete_' + opt">{{ opt }}</label>
+                <label [for]="'defisSociete_' + opt">{{ getDefisSocieteLabel(opt) }}</label>
               </div>
             </div>
 
@@ -273,7 +273,7 @@
 
       <li *ngIf="defisSociete">
         <span class="fr-tag">
-          {{ 'FILTERS.DEFIS' | translate }} : {{ defisSociete }}
+			{{ 'FILTERS.DEFIS' | translate }} : {{ getDefisSocieteLabel(defisSociete) }}
           <button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
         </span>
       </li>
