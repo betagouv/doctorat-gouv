@@ -105,6 +105,27 @@ export class Search implements OnInit, OnDestroy {
   /* ------------------- Reactive trigger ------------------- */
   private filterChanges$ = new Subject<void>();
   private filterSub!: Subscription;
+  
+  
+  
+  
+  
+  disciplineTranslations: Record<string, string> = {
+    "Mathématiques et leurs interactions": "Mathematics and their interactions",
+    "Physique": "Physics",
+    "Sciences de la terre et de l'univers, espace": "Earth and universe sciences, space",
+    "Chimie": "Chemistry",
+    "Biologie, médecine et santé": "Biology, medicine and health",
+    "Sciences humaines et humanités": "Human sciences and humanities",
+    "Sciences de la société": "Social sciences",
+    "Sciences pour l'ingénieur": "Engineering sciences",
+    "Sciences et technologies de l'information et de la communication":
+      "Information and communication sciences and technologies",
+    "Sciences agronomiques et écologiques": "Agronomic and ecological sciences"
+  };
+
+  
+  
 
   constructor(
 	private route: ActivatedRoute,
@@ -530,6 +551,12 @@ export class Search implements OnInit, OnDestroy {
     return this.getEntries(thesis.motsCles);
   }
 
+  getDisciplineLabel(opt: string): string {
+    if (this.translate.currentLang === 'en') {
+      return this.disciplineTranslations[opt] || opt;
+    }
+    return opt;
+  }
 
 
 }

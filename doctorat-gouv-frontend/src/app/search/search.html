@@ -34,7 +34,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
-            {{ discipline || 'FILTERS.DISCIPLINE' | translate }}
+			{{ discipline ? getDisciplineLabel(discipline) : ('FILTERS.DISCIPLINE' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -63,7 +63,7 @@
                        [id]="'discipline_' + opt"
                        [checked]="discipline === opt"
                        (change)="selectSingle('discipline', opt)">
-                <label [for]="'discipline_' + opt">{{ opt }}</label>
+                <label [for]="'discipline_' + opt">{{ getDisciplineLabel(opt) }}</label>
               </div>
             </div>
 
@@ -266,7 +266,7 @@
 
       <li *ngIf="discipline">
         <span class="fr-tag">
-          {{ 'FILTERS.DISCIPLINE' | translate }} : {{ discipline }}
+			{{ 'FILTERS.DISCIPLINE' | translate }} : {{ getDisciplineLabel(discipline) }}
           <button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
         </span>
       </li>
@@ -335,6 +335,22 @@
 	        {{ 'INFO.THESE' | translate }}
 		</p>
 	</div>
+	
+	<!-- Boutons DSFR -->
+	<!--	<div class="fr-btns-group fr-btns-group--inline fr-mt-3w">-->
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.ALL_OFFERS' | translate }}-->
+	<!--	  </button>-->
+	
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.THESIS_OFFER' | translate }}-->
+	<!--	  </button>-->
+	
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.SUPERVISION_OFFER' | translate }}-->
+	<!--	  </button>-->
+	<!--	</div>-->
+
 
     <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
