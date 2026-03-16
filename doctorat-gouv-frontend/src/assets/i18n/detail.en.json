@@ -26,7 +26,9 @@
     "PIECES_JOINTES": "Attachments",
     "DOWNLOAD_PDF": "Download PDF",
 	
-	"NON_RENSEIGNE": "Not provided",
-	"AT": "at"
+	"AT": "at",
+	
+	"INFO_TRADUCTION_MANQUANTE": "Some fields may appear in French if the thesis supervisor has not provided an English version."
+
   }
 }

@@ -112,6 +112,14 @@
     <!-- Deuxième card -->
     <div class="card shadow">
       <div class="card-body">
+		
+		<div 
+		  class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w"
+		  *ngIf="translate.currentLang !== 'fr'">
+		  {{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
+		</div>
+
+		
         <h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
 		<p class="paragraph fr-mb-12v">{{ getThesisResume(thesis) | defaultValue }}</p>
 

@@ -36,7 +36,7 @@ export class PropositionDetail {
 		private router: Router,
 		private propositionTheseService: PropositionTheseService,
 		private contactContextService: ContactContextService,
-		private translate: TranslateService
+		public translate: TranslateService
 	) { }
 
 

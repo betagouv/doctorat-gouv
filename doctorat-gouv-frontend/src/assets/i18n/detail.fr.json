@@ -26,7 +26,9 @@
     "PIECES_JOINTES": "Pièces jointes",
     "DOWNLOAD_PDF": "Télécharger le PDF",
 	
-	"NON_RENSEIGNE": "Non renseigné",
-	"AT": "à"
+	"AT": "à",
+	
+	"INFO_TRADUCTION_MANQUANTE": "Certains champs peuvent apparaître en français si la direction de thèse n’a pas fourni de version anglaise."
+
   }
 }
