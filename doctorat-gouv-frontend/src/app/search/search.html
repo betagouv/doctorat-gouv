@@ -373,7 +373,8 @@
 
             <span class="fr-tag badge badge-pink"
                   *ngIf="thesis?.specialite">
-              {{ thesis.specialite }}
+				  {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
+
             </span>
           </div>
 

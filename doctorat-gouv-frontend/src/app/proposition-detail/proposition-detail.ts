@@ -30,6 +30,36 @@ export class PropositionDetail {
 	thesis: PropositionTheseDto | null = null;
 	
 	errorMessage: string | null = null;
+	
+	defisSocieteTranslations: Record<string, string> = {
+	    // Défis de société
+	    "Santé": "Health",
+	    "Culture, créativité, société": "Culture, creativity, society",
+	    "Sécurité civile pour la société": "Civil security for society",
+	    "Numérique, industrie, espace": "Digital, industry, space",
+	    "Climat, énergie, mobilité": "Climate, energy, mobility",
+	    "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement":
+	      "Food, bioeconomy, natural resources, agriculture and environment",
+
+	    // ODD (ONU)
+	    "Pas de pauvreté": "No Poverty",
+	    "Faim \"zéro\"": "Zero Hunger",
+	    "Bonne santé et bien-être": "Good Health and Well-being",
+	    "Éducation de qualité": "Quality Education",
+	    "Égalité entre les sexes": "Gender Equality",
+	    "Eau propre et assainissement": "Clean Water and Sanitation",
+	    "Énergie propre et d'un coût abordable": "Affordable and Clean Energy",
+	    "Travail décent et croissance économique": "Decent Work and Economic Growth",
+	    "Industrie, innovation et infrastructure": "Industry, Innovation and Infrastructure",
+	    "Inégalités réduites": "Reduced Inequalities",
+	    "Villes et communautés durables": "Sustainable Cities and Communities",
+	    "Consommation et production responsables": "Responsible Consumption and Production",
+	    "Mesures relatives à la lutte contre les changements climatiques": "Climate Action",
+	    "Vie aquatique": "Life Below Water",
+	    "Vie terrestre": "Life on Land",
+	    "Paix, justice et institutions efficaces": "Peace, Justice and Strong Institutions",
+	    "Partenariats pour la réalisation des objectifs": "Partnerships for the Goals"
+	  };
 
 	constructor(
 		private route: ActivatedRoute,
@@ -59,16 +89,22 @@ export class PropositionDetail {
 	  return thesis.domainesImpactListe?.[0] ?? null;
 	}
 	
-	getFirstDomaineWithMaxLength(
-	  thesis: { domainesImpactListe: string[] | null },
-	  maxLength = 10
-	): string | null {
-	  const domaine = thesis.domainesImpactListe?.[0];
-	  return domaine
-	    ? domaine.length > maxLength
-	      ? domaine.slice(0, maxLength) + '…'
-	      : domaine
-	    : null;
+	getFirstDomaineWithMaxLength(thesis: { domainesImpactListe: string[] | null }, maxLength = 10): string | null {
+		const domaine = thesis.domainesImpactListe?.[0];
+		if (!domaine) return null;
+
+		// 🔥 Traduction FR → EN si nécessaire
+		const label = this.getDomaineLabel(domaine);
+
+		// 🔥 Coupe propre
+		return label.length > maxLength ? label.slice(0, maxLength) + '…' : label;
+	}
+	
+	getDomaineLabel(domaine: string): string {
+	  if (this.translate.currentLang === 'en') {
+	    return this.defisSocieteTranslations[domaine] || domaine;
+	  }
+	  return domaine;
 	}
 	
 	goToContact() {

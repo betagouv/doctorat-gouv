@@ -118,7 +118,7 @@ export class Search implements OnInit, OnDestroy {
     "Sciences de la société": "Social sciences",
     "Sciences pour l'ingénieur": "Engineering sciences",
     "Sciences et technologies de l'information et de la communication":
-      "Information and communication sciences and technologies",
+    "Information and communication sciences and technologies",
     "Sciences agronomiques et écologiques": "Agronomic and ecological sciences"
   };
   
@@ -472,18 +472,51 @@ export class Search implements OnInit, OnDestroy {
     return thesis.domainesImpactListe?.[0] ?? null;
   }
 
-  getFirstDomaineWithMaxLength(
-    thesis: { domainesImpactListe: string[] | null },
-    maxLength = 10
-  ): string | null {
+  getFirstDomaineWithMaxLength(thesis: { domainesImpactListe: string[] | null }, maxLength = 60): string | null {
     const domaine = thesis.domainesImpactListe?.[0];
-    return domaine
-      ? domaine.length > maxLength
-        ? domaine.slice(0, maxLength) + '…'
-        : domaine
-      : null;
+    if (!domaine) return null;
+
+    // 🔥 Traduction FR → EN si nécessaire
+    const label = this.getDomaineLabel(domaine);
+
+    // 🔥 Coupe propre
+    return label.length > maxLength ? label.slice(0, maxLength) + '…' : label;
+  }
+
+  
+  getDomaineLabel(domaine: string): string {
+    if (this.translate.currentLang === 'en') {
+      return this.defisSocieteTranslations[domaine] || domaine;
+    }
+    return domaine;
   }
   
+  getTranslatedValue(value: string): string {
+    if (this.translate.currentLang !== 'en') {
+      return value; // FR → on garde tel quel
+    }
+
+    // 🔥 Ordre de priorité : discipline → défis de société
+    return (
+      this.disciplineTranslations[value] ||
+      this.defisSocieteTranslations[value] ||
+      value // fallback FR
+    );
+  }
+  
+  getSpecialiteLabel(value: string): string {
+    return this.getTranslatedValue(value);
+  }
+  
+  getSpecialiteLabelWithMaxLength(value: string | null, maxLength = 60): string {
+    if (!value) return '';
+
+	const translated = value;
+	// const translated = this.getTranslatedValue(value);
+    return translated.length > maxLength ? translated.slice(0, maxLength) + '…' : translated;
+  }
+
+
   closeAllDropdowns(): void {
     this.disciplineOpen = false;
     this.defisSocieteOpen = false;
