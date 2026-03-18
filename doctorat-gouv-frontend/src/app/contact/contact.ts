@@ -87,7 +87,7 @@ export class Contact {
 	    profil: [''],
 	    annees: [''],
 	    secteur: [''],
-		message: ['', [Validators.required, Validators.minLength(255), Validators.maxLength(2000)]],
+		message: ['', [Validators.required, Validators.minLength(255), Validators.maxLength(3000)]],
 		rgpdConsent: [false, Validators.requiredTrue],
 		
 		confirmMaster: [false, Validators.requiredTrue],

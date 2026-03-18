@@ -201,6 +201,11 @@
 					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
 					  ></textarea>
 					  
+					  <div class="fr-hint-text">
+					    {{ contactForm.get('message')?.value?.length || 0 }} / 3000
+					  </div>
+
+					  
 					  <p class="fr-error-text"
 					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
 					    {{ 'CONTACT.ERROR_REQUIRED' | translate }}
