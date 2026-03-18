@@ -200,6 +200,21 @@
 					    rows="5"
 					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
 					  ></textarea>
+					  
+					  <p class="fr-error-text"
+					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
+					    {{ 'CONTACT.ERROR_REQUIRED' | translate }}
+					  </p>
+
+					  <p class="fr-error-text"
+					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
+					    {{ 'CONTACT.ERROR_MIN_LENGTH' | translate }}
+					  </p>
+
+					  <p class="fr-error-text"
+					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['maxlength']">
+					    {{ 'CONTACT.ERROR_MAX_LENGTH' | translate }}
+					  </p>
 
 					 <!-- Consentement RGPD -->
 					<div class="form-field large rgpd-field">

@@ -32,6 +32,9 @@
     "ERROR_FILE_TOO_LARGE_1MO": "Le fichier dépasse la taille maximale de 1 Mo.",
     "ERROR_FILE_TOO_LARGE_5MO": "Le fichier dépasse la taille maximale de 5 Mo.",
 	"ERROR_FILE_REQUIRED": "Le document est obligatoire.",
+	
+	"ERROR_MIN_LENGTH": "Le message doit contenir au moins 255 caractères.",
+	"ERROR_MAX_LENGTH": "Le message ne peut pas dépasser 2000 caractères.",
 
     "UPLOAD_CV": "Ajouter un CV",
     "UPLOAD_ORGA": "Ajouter un descriptif de votre organisation",
