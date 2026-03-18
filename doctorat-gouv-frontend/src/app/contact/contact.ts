@@ -150,7 +150,7 @@ export class Contact {
 	  // const { id, sujet } = this.contactContextService.getContext(); 
 	  if (!id || id === 0) { 
 	     this.sujetValide = false; 
-	     this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+	     this.sujetErreurMessage = 'CONTACT.NO_VALID_SUBJECT';
 	  }
 
 	}
@@ -165,7 +165,7 @@ export class Contact {
 		const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
 		if (!id || id === 0) { 
 		   this.sujetValide = false; 
-		   this.sujetErreurMessage = "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets."; 
+		   this.sujetErreurMessage = 'CONTACT.NO_VALID_SUBJECT'; 
 		   return; // 🔥 Très important : on bloque l’envoi si le contexte est invalide
 		}
 

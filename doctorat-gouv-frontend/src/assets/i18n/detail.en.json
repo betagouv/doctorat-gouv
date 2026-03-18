@@ -2,33 +2,33 @@
   "DETAIL": {
     "ERROR": "An error has occurred",
     "TYPE_OFFRE": "Offer type",
-    "SUJET": "PhD topic",
-    "OFFRE": "Support offer",
+    "SUJET": "PhD project",
+    "OFFRE": "Mentoring offer",
     "ETABLISSEMENT": "Institution",
     "ED": "Doctoral school",
-    "LABO": "Research laboratory",
-    "DIRECTION": "Thesis supervision",
-    "DEBUT": "Thesis start date",
+    "LABO": "Research group",
+    "DIRECTION": "PhD supervision",
+    "DEBUT": "PhD start",
     "DATE_LIMITE": "Application deadline",
     "NON_RENSEIGNE": "Not provided",
     "KEYWORDS": "Keywords",
-    "CONTACT": "Contact the team",
+    "CONTACT": "Get in touch",
 
     "RESUME": "Summary",
     "OBJECTIF_CONTEXTE": "Objective and Context",
-    "PROFIL": "Desired profile",
+    "PROFIL": "Desired candidate profile",
     "ENCADREMENT": "Supervision details",
     "RESULTATS": "Expected results",
     "VALORISATION": "Research valorization objectives",
     "FINANCEMENT": "Funding",
     "METHODE": "Working method",
-    "REFERENCES": "Bibliographic references",
+    "REFERENCES": "References",
     "PIECES_JOINTES": "Attachments",
     "DOWNLOAD_PDF": "Download PDF",
 	
 	"AT": "at",
 	
-	"INFO_TRADUCTION_MANQUANTE": "Some fields may appear in French if the thesis supervisor has not provided an English version."
+	"INFO_TRADUCTION_MANQUANTE": "The French version may include additional information."
 
   }
 }

@@ -28,7 +28,7 @@
 		
 		<!-- Message si aucun sujet valide -->
 		<div *ngIf="!sujetValide" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
-			<p>{{ sujetErreurMessage }}</p>
+			<p>{{ sujetErreurMessage | translate }}</p>
 		
 			<!--		  <a routerLink="/search" class="fr-btn fr-btn--secondary fr-mt-2w">-->
 			<!--		    Retour aux sujets-->

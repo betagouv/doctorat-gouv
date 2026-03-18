@@ -1,6 +1,6 @@
 {
   "SEARCH": {
-    "TITLE": "Find a PhD topic or support offer",
+    "TITLE": "Find PhD opportunities : PhD projects and mentoring offers",
     "PLACEHOLDER": "Search by title or keywords",
     "MORE_FILTERS": "More filters",
     "LESS_FILTERS": "Fewer filters",
@@ -17,8 +17,8 @@
     "DISCIPLINE": "Discipline",
     "DEFIS": "Societal challenges",
     "LOCALISATION": "Geographical location",
-    "LABO": "Research laboratory",
-    "ECOLE": "Degree‑granting institution",
+    "LABO": "Research group",
+    "ECOLE": "University or institution",
     "ED": "Doctoral school",
     "ROR": "ROR institution",
     "SELECT_ALL": "Select all",
@@ -26,14 +26,14 @@
   },
 
   "CARDS": {
-    "SUJET": "PhD topic",
-    "OFFRE": "Support offer",
+    "SUJET": "PhD project",
+    "OFFRE": "Mentoring offer",
     "DETAIL": "View details",
     "KEYWORDS": "Keywords :"
   },
 
   "INFO": {
-    "THESE": "By exploring the PhD topics and support offers available on this platform, you can identify researchers with whom to build your own doctoral project. Applications to a doctoral school are only made after jointly defining the thesis topic."
+    "THESE": "By exploring the PhD opportunities, PhD projects and mentoring offers available on this platform, you can identify PhD supervisors to collaborate with in developing your own doctoral project. Applications to a doctoral school should only be submitted once the PhD project has been jointly defined."
   },
 
   "PAGINATION": {

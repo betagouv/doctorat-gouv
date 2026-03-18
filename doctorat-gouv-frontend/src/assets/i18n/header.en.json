@@ -8,16 +8,16 @@
     "TAGLINE_SUBTITLE": "From defining the research topic to career development",
     "BETA": "BETA",
 	"ACCUEIL": "Home",
-	"RETOUR_AUX_OFFRES": "Back to offers"
+	"RETOUR_AUX_OFFRES": "Back to PhD opportunities"
   },
   "INFO": {
-     "LAUNCH_TITLE": "Platform launch: the site is still in an experimental phase, feel free to",
-     "GIVE_FEEDBACK": "give your feedback",
-     "LAUNCH_END": "to help us improve the service.",
-     "OPTIMAL_EXPERIENCE": "For the best experience, the platform is designed to be used on a computer and in full-screen mode."
+     "LAUNCH_TITLE": "Platform launch: The website is still in beta.",
+     "GIVE_FEEDBACK": "Your feedback",
+     "LAUNCH_END": "is welcome to help us improve.",
+     "OPTIMAL_EXPERIENCE": "The website is optimized for desktop use and best viewed in light mode (rather than dark mode)."
    },
    "MOBILE": {
-     "ALL_OFFERS": "All offers",
+     "ALL_OFFERS": "PhD opportunities",
      "BACK_TO_SITE": "Back to the website",
 	 "CLOSE": "Close"
    }

@@ -3,7 +3,10 @@
 <div class="search-form">
   <div class="form-content">
 
-	<h1>{{ 'SEARCH.TITLE' | translate }}</h1>
+	<h1 [ngClass]="{ 'title-en': translate.currentLang === 'en' }">
+	  {{ 'SEARCH.TITLE' | translate }}
+	</h1>
+
 
 
     <!-- ===================== BARRE DE RECHERCHE ===================== -->

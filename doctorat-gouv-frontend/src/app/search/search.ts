@@ -158,7 +158,7 @@ export class Search implements OnInit, OnDestroy {
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
 	private searchFiltersService: SearchFiltersService,
-	private translate: TranslateService
+	public translate: TranslateService
   ) {}
 
   /* ------------------- Lifecycle ------------------- */

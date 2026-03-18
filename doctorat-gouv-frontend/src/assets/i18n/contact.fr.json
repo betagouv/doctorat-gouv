@@ -35,6 +35,8 @@
 	
 	"ERROR_MIN_LENGTH": "Le message doit contenir au moins 255 caractères.",
 	"ERROR_MAX_LENGTH": "Le message ne peut pas dépasser 3500 caractères.",
+	
+	"NO_VALID_SUBJECT": "Aucun sujet valide n’a été sélectionné. Merci de revenir à la liste des sujets.",
 
     "UPLOAD_CV": "Ajouter un CV",
     "UPLOAD_ORGA": "Ajouter un descriptif de votre organisation",
