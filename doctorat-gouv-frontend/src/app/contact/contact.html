@@ -232,7 +232,7 @@
 						</div>
 					
 						<p class="fr-error-text" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
-							Vous devez accepter pour continuer.
+							{{ 'CONTACT.ERROR_RGPD' | translate }}
 						</p>
 					 </div>
 
