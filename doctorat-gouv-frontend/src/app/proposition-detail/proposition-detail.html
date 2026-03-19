@@ -153,9 +153,13 @@
 		</ng-container>
 		
 		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">
-		  {{ thesis?.financementDetails | defaultValue }}
+		<p class="paragraph fr-mb-12v" *ngIf="thesis?.financementDetails; else noFinancement">
+		  {{ thesis.financementDetails }}
 		</p>
+
+		<ng-template #noFinancement>
+		  <p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
+		</ng-template>
 
 		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
 		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>

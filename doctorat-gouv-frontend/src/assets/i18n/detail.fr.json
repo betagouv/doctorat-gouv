@@ -21,6 +21,7 @@
     "RESULTATS": "Résultat attendu",
     "VALORISATION": "Objectif de valorisation des travaux",
     "FINANCEMENT": "Financement",
+	"NO_FINANCEMENT": "Plusieurs voies peuvent être explorées pour financer le projet doctoral. Pour en savoir plus : <a href='https://doctorat.gouv.fr/avant-le-doctorat/je-m-informe/financement/' target='_blank'>financement du doctorat</a>.",
     "METHODE": "Méthode de travail",
     "REFERENCES": "Références bibliographiques",
     "PIECES_JOINTES": "Pièces jointes",

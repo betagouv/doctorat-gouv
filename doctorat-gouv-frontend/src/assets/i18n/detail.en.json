@@ -21,6 +21,7 @@
     "RESULTATS": "Expected results",
     "VALORISATION": "Research valorization objectives",
     "FINANCEMENT": "Funding",
+	"NO_FINANCEMENT": "Several avenues can be explored to fund the doctoral project. For more information: <a href='https://doctorat.gouv.fr/avant-le-doctorat/je-m-informe/financement/' target='_blank'>funding information</a>.",
     "METHODE": "Working method",
     "REFERENCES": "References",
     "PIECES_JOINTES": "Attachments",
