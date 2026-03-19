@@ -130,30 +130,44 @@
 		
 		<hr class="separator">
 		
-		<h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
-		<p class="paragraph">{{ getProfilRecherche(thesis) | defaultValue }}</p>
+		<ng-container *ngIf="getProfilRecherche(thesis) as profil">
+		  <h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
+		  <p class="paragraph">{{ profil }}</p>
+		</ng-container>
 		
 		<hr class="separator">
 		
-		<h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.modalitesEncadrement | defaultValue }}</p>
+		<ng-container *ngIf="thesis?.modalitesEncadrement as encadrement">
+		  <h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
+		  <p class="paragraph fr-mb-12v">{{ encadrement }}</p>
+		</ng-container>
 
-		<h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.resultatsAttendus | defaultValue }}</p>
+		<ng-container *ngIf="thesis?.resultatsAttendus as resultats">
+		  <h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
+		  <p class="paragraph fr-mb-12v">{{ resultats }}</p>
+		</ng-container>
 		
-		<h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.valorisationTravaux | defaultValue }}</p>
+		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
+		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
+		  <p class="paragraph fr-mb-12v">{{ valorisation }}</p>
+		</ng-container>
 		
 		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
 		<p class="paragraph fr-mb-12v">
 		  {{ thesis?.financementDetails | defaultValue }}
 		</p>
 
-		<h3 class="section-title">{{ 'DETAIL.METHODE' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.methodeDeTravail | defaultValue }}</p>
+		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
+		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
+		  <p class="paragraph fr-mb-12v">{{ valorisation }}</p>
+		</ng-container>
 
-		<h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
-		<p class="paragraph fr-mb-12v">{{ thesis?.referencesBibliographiques | defaultValue }}</p>
+
+		<ng-container *ngIf="thesis?.referencesBibliographiques as references">
+		  <h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
+		  <p class="paragraph fr-mb-12v">{{ references }}</p>
+		</ng-container>
+
 		
 		<div *ngIf="thesis?.urlPdf">
 			<h3 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h3>
