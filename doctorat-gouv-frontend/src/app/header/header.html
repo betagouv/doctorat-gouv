@@ -22,11 +22,11 @@
       <!-- Tagline -->
       <div class="fr-header__service-tagline">
         <p class="tagline-title">
-          La plateforme nationale du doctorat
-          <span class="tagline-beta">BETA</span>
+          {{ 'HEADER.TAGLINE_TITLE' | translate }}
+          <span class="tagline-beta">{{ 'HEADER.BETA' | translate }}</span>
         </p>
         <p class="tagline-subtitle">
-          De la définition du sujet de recherche à la poursuite de carrière
+          {{ 'HEADER.TAGLINE_SUBTITLE' | translate }}
         </p>
       </div>
     </div>
@@ -58,13 +58,60 @@
     <!-- Ligne 2 : Tagline mobile -->
     <div class="mobile-tagline">
       <p class="tagline-title">
-        La plateforme nationale du doctorat
+        {{ 'HEADER.TAGLINE_TITLE' | translate }}
         <span class="tagline-beta">BETA</span>
       </p>
       <p class="tagline-subtitle">
-        De la définition du sujet de recherche à la poursuite de carrière
+         {{ 'HEADER.TAGLINE_SUBTITLE' | translate }}
       </p>
     </div>
+	
+	<!-- Menu Langue -->
+	<div class="fr-header__tools">
+	  <div class="fr-translate" [class.fr-translate--expanded]="langMenuOpen">
+	    
+	    <button
+	      class="fr-translate__btn"
+	      type="button"
+	      aria-haspopup="listbox"
+	      [attr.aria-expanded]="langMenuOpen"
+	      (click)="toggleLangMenu($event)">
+	      <span class="fr-translate__lang">
+	        {{ currentLang === 'fr' ? ('LANG.FR' | translate) : ('LANG.EN' | translate) }}
+	      </span>
+	    </button>
+
+	    <!-- IMPORTANT : pas de *ngIf ici -->
+	    <div class="fr-collapse" [class.fr-collapse--expanded]="langMenuOpen">
+	      <ul class="fr-translate__list" role="listbox">
+	        
+	        <li>
+	          <button
+	            type="button"
+	            class="fr-translate__link"
+	            role="option"
+	            [attr.aria-selected]="currentLang === 'fr'"
+	            (click)="changeLang('fr')">
+	            {{ 'LANG.FR' | translate }}
+	          </button>
+	        </li>
+
+	        <li>
+	          <button
+	            type="button"
+	            class="fr-translate__link"
+	            role="option"
+	            [attr.aria-selected]="currentLang === 'en'"
+	            (click)="changeLang('en')">
+	            {{ 'LANG.EN' | translate }}
+	          </button>
+	        </li>
+
+	      </ul>
+	    </div>
+
+	  </div>
+	</div>
 
   </div>
 
@@ -76,10 +123,10 @@
       <nav class="fr-nav" role="navigation" aria-label="Menu principal">
         <ul class="fr-nav__list">
 		  <li class="fr-nav__item">
-			   <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">Accueil</a>
+			   <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">{{ 'HEADER.ACCUEIL' | translate }}</a>
 		  </li>
           <li class="fr-nav__item">
-            <a class="fr-nav__link" href="/">Retour aux offres</a>
+            <a class="fr-nav__link" href="/">{{ 'HEADER.RETOUR_AUX_OFFRES' | translate }}</a>
           </li>
         </ul>
       </nav>
@@ -91,19 +138,20 @@
 <!-- MENU MOBILE (slide-in)                                 -->
 <!-- ===================================================== -->
 <div class="mobile-menu">
-  <button class="mobile-menu-close" aria-label="Fermer le menu">Fermer ×</button>
+  <button class="mobile-menu-close" aria-label="Fermer le menu">{{ 'MOBILE.CLOSE' | translate }} ×</button>
 
   <nav class="mobile-nav">
     <a href="/">
       <span class="fr-icon-search-line" aria-hidden="true"></span>
-      Toutes les offres
+      {{ 'MOBILE.ALL_OFFERS' | translate }}
     </a>
 
     <a href="https://doctorat.sites.beta.gouv.fr/">
       <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-      Retour au site
+      {{ 'MOBILE.BACK_TO_SITE' | translate }}
     </a>
   </nav>
+
 </div>
 
 
@@ -114,13 +162,16 @@
   <div class="info-left">
     <span class="info-icon" aria-hidden="true">i</span>
 
-    <p>
-      Lancement de la plateforme : le site est encore en phase d'expérimentation,
-      n'hésitez pas à 
-      <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">donner votre avis</a>
-      pour nous aider à améliorer le service.<br/>
-	  <span>Pour une expérience optimale, la plateforme est conçue pour être utilisée sur ordinateur et en mode plein écran.</span>
-    </p>
+	<p>
+	  {{ 'INFO.LAUNCH_TITLE' | translate }}
+	  <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">
+	    {{ 'INFO.GIVE_FEEDBACK' | translate }}
+	  </a>
+	  {{ 'INFO.LAUNCH_END' | translate }}<br/>
+
+	  <span>{{ 'INFO.OPTIMAL_EXPERIENCE' | translate }}</span>
+	</p>
+
   </div>
 
   <button class="close-btn" (click)="closeBanner()" aria-label="Fermer le bandeau">

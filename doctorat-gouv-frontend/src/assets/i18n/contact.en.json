@@ -1,0 +1,102 @@
+{
+  "CONTACT": {
+    "TITLE": "Contact form",
+
+    "INFO_TITLE": "To be put in touch, please fill in the form below and provide the requested documents:",
+
+    "INFO_DOCTORAT": "If you wish to pursue a PhD yourself: a CV, a document demonstrating your interest and aptitude for research, and a short message describing your motivations",
+    "INFO_PARTENARIAT": "If you wish to establish a partnership: a description of your organisation, a description of the proposed partnership, and a short message explaining your needs",
+
+    "INFO_END": "The information you provide will be sent to the thesis supervisor, who will contact you if they wish to follow up on your request.",
+
+    "FIELD_NOM": "Last name",
+    "FIELD_PRENOM": "First name",
+    "FIELD_CIVILITE": "Title",
+    "FIELD_EMAIL": "Email address",
+    "FIELD_PROFIL": "You are",
+    "FIELD_ANNEES": "For how many years",
+    "FIELD_SECTEUR": "In which sector",
+    "FIELD_CONFIRM_MASTER": "I confirm that I hold or am preparing a master's degree or equivalent",
+	
+	"CIVILITE_CHOIX": "Choose…",
+	"PROFIL_CHOIX": "Choose…",
+	"ANNEES_CHOIX": "Choose…",
+	"SECTEUR_CHOIX": "Choose…",
+
+    "ERROR_NOM": "The last name must contain between 2 and 30 characters.",
+    "ERROR_PRENOM": "The first name must contain between 2 and 30 characters.",
+    "ERROR_EMAIL": "Please enter a valid email address.",
+    "ERROR_MASTER": "You must confirm that you hold or are preparing a master's degree.",
+    "ERROR_REQUIRED": "This field is required.",
+    "ERROR_FILE_PDF": "The file must be in PDF format.",
+    "ERROR_FILE_TOO_LARGE_1MO": "The file exceeds the maximum size of 1 MB.",
+    "ERROR_FILE_TOO_LARGE_5MO": "The file exceeds the maximum size of 5 MB.",
+	"ERROR_FILE_REQUIRED": "This document is required.",
+	
+	"ERROR_MIN_LENGTH": "The message must contain at least 255 characters.",
+	"ERROR_MAX_LENGTH": "The message cannot exceed 3500 characters.",
+	"ERROR_RGPD": "You must accept to continue.",
+	
+	"NO_VALID_SUBJECT": "No valid subject was selected. Please return to the list of PhD opportunities.",
+
+    "UPLOAD_CV": "Add a CV",
+    "UPLOAD_ORGA": "Add a description of your organisation",
+    "UPLOAD_DOC": "Add another document (e.g. topic idea, thesis proposal, dissertation, scientific output, recommendation letter...)",
+    "UPLOAD_PARTENARIAT": "Add a description of the proposed partnership",
+
+    "UPLOAD_HINT_1MO": "Maximum size: 1 MB. Supported format: PDF.",
+    "UPLOAD_HINT_5MO": "Maximum size: 5 MB. Supported format: PDF.",
+
+    "MESSAGE_LABEL": "Motivation message",
+    "MESSAGE_LABEL_ORGA": "Description of your need",
+    "MESSAGE_PLACEHOLDER": "Scientific interest, relevant skills, availability, career plan ...",
+
+    "RGPD": "I agree to receive your emails and confirm that I have read your",
+    "LEGAL": "legal notice",
+
+    "SUBMIT": "Send",
+    "SUBMIT_LOADING": "Sending...",
+
+    "CONFIRM_TITLE": "Submission confirmation",
+    "CONFIRM_SUCCESS": "Your request has been successfully submitted",
+    "CONFIRM_EMAIL": "You will receive a confirmation email shortly.",
+    "CONFIRM_DETAIL": "Details — If you have not received an email (check your spam folder), you may enter your email address again.",
+	
+	"YEARS": "year(s)",
+	"CIVILITES": {
+	     "MONSIEUR": "Mr",
+	     "MADAME": "Ms",
+	     "NSP": "Prefer not to say"
+	   },
+
+	   "PROFILS": {
+	     "MASTER_FR": "Student in a French master's program",
+	     "INGENIEUR": "Engineering school student",
+	     "GRANDE_ECOLE": "Student in another grande école with master's equivalence",
+	     "MASTER_ETRANGER": "Student in a foreign master's program",
+	     "CHERCHEUR_ENTREPRISE": "Corporate researcher",
+	     "PROFESSIONNEL": "Other working professional",
+	     "ENTREPRISE_PARTENARIAT": "Company seeking a partnership",
+	     "ORGA_PARTENARIAT": "Other organisation seeking a partnership",
+	     "AUTRE": "Other"
+	   },
+
+	   "SECTEURS": {
+	     "AGRICULTURE": "Agriculture",
+	     "BTP": "Construction - Public works",
+	     "ENERGIE": "Energy",
+	     "HOTELLERIE": "Hospitality - Catering, Tourism",
+	     "INDUSTRIE": "Industry",
+	     "AGROALIMENTAIRE": "Agri-food industry",
+	     "AUTOMOBILE": "Automotive industry",
+	     "PHARMA": "Pharmaceutical industry",
+	     "TEXTILE": "Textile industry",
+	     "LUXE": "Luxury",
+	     "MARITIME": "Maritime and river transport",
+	     "NUMERIQUE": "Digital",
+	     "SOINS": "Care and support",
+	     "TOURISME": "Tourism",
+	     "TRANSPORT": "Transport - Logistics"
+	   }
+  }
+}

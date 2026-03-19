@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 public class AdumApiService {
 	
 	private static final Logger log = LoggerFactory.getLogger(AdumApiService.class);
+	
+	@Value("${adum.import.rattrapage:false}")
+	private boolean rattrapage;
 
 	private final AdumApiProperties properties;
 	private final RestTemplate restTemplate;
@@ -53,7 +57,16 @@ public class AdumApiService {
 		log.info("Import terminé avec le statut HTTP : {}", response.getStatusCode());
 		String responseBody = response.getBody();
 		log.info("Taille JSON ADUM (brut) = {}", responseBody.length());
-		savePropositionsFromJson(responseBody);
+		if (rattrapage) {
+			// En mode rattrapage, on met à jour toutes les propositions sans vérifier la date de mise à jour
+			log.info("Mode RATTRAPAGE activé : toutes les propositions seront mises à jour sans vérification de la date de mise à jour");
+		    savePropositionsFromJsonRattrapage(responseBody);
+		} else {
+			// En mode normal, on ne met à jour que les propositions plus récentes que celles déjà en base
+			log.info("Mode NORMAL activé : seules les propositions avec une date de mise à jour plus récente seront mises à jour");
+		    savePropositionsFromJson(responseBody);
+		}
+
 		return responseBody;
 	}
 	
@@ -111,6 +124,57 @@ public class AdumApiService {
 		deactivateMissingPropositions(propositions);
 
 	}
+	
+	/**
+	 * Méthode pour sauvegarder les propositions de thèses depuis une chaîne JSON en mode rattrapage (mise à jour systématique).
+	 * @param jsonString
+	 */
+	public void savePropositionsFromJsonRattrapage(String jsonString) {
+	    log.info("Sauvegarde des propositions en mode RATTRAPAGE");
+
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.registerModule(new JavaTimeModule());
+	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+	    AdumResponse response;
+	    try {
+	        response = mapper.readValue(jsonString, AdumResponse.class);
+	    } catch (JsonProcessingException e) {
+	        log.error("Erreur de traitement JSON : {}", e.getMessage(), e);
+	        return;
+	    }
+
+	    List<PropositionThese> propositions = response.getPropositions();
+	    List<PropositionThese> toSave = new ArrayList<>();
+
+	    for (PropositionThese p : propositions) {
+	    	
+	    	log.info("Traitement de la proposition (matricule {}) en mode RATTRAPAGE", p.getMatricule());
+
+	        Optional<PropositionThese> existingOpt =
+	                propositionTheseRepository.findByMatricule(p.getMatricule());
+
+	        if (existingOpt.isPresent()) {
+	            // Mise à jour systématique
+	            p.setId(existingOpt.get().getId());
+	            p.setActive(true);
+	            toSave.add(p);
+	            log.info("Proposition {} mise à jour (rattrapage)", p.getMatricule());
+	        } else {
+	            // Nouvelle proposition
+	            p.setActive(true);
+	            toSave.add(p);
+	            log.info("Nouvelle proposition {} insérée (rattrapage)", p.getMatricule());
+	        }
+	    }
+
+	    log.info("Nombre de propositions à insérer/mettre à jour (rattrapage) : {}", toSave.size());
+	    propositionTheseRepository.saveAll(toSave);
+
+	    // Désactivation des sujets absents d'ADUM
+	    deactivateMissingPropositions(propositions);
+	}
+
 	
 	/**
 	 * Désactive les propositions locales qui ne sont plus présentes dans la liste ADUM.

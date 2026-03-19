@@ -36,6 +36,9 @@ import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
 import { Header } from '../header/header';
 
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -47,7 +50,8 @@ import { Header } from '../header/header';
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,
-    DsfrButtonModule
+    DsfrButtonModule,
+	TranslateModule
   ],
   templateUrl: './search.html',
   styleUrls: ['./search.scss']
@@ -101,13 +105,60 @@ export class Search implements OnInit, OnDestroy {
   /* ------------------- Reactive trigger ------------------- */
   private filterChanges$ = new Subject<void>();
   private filterSub!: Subscription;
+  
+  
+  /* ------------------- Translations pour les filtres ------------------- */
+  disciplineTranslations: Record<string, string> = {
+    "Mathématiques et leurs interactions": "Mathematics and their interactions",
+    "Physique": "Physics",
+    "Sciences de la terre et de l'univers, espace": "Earth and universe sciences, space",
+    "Chimie": "Chemistry",
+    "Biologie, médecine et santé": "Biology, medicine and health",
+    "Sciences humaines et humanités": "Human sciences and humanities",
+    "Sciences de la société": "Social sciences",
+    "Sciences pour l'ingénieur": "Engineering sciences",
+    "Sciences et technologies de l'information et de la communication":
+    "Information and communication sciences and technologies",
+    "Sciences agronomiques et écologiques": "Agronomic and ecological sciences"
+  };
+  
+  defisSocieteTranslations: Record<string, string> = {
+    // Défis de société
+    "Santé": "Health",
+    "Culture, créativité, société": "Culture, creativity, society",
+    "Sécurité civile pour la société": "Civil security for society",
+    "Numérique, industrie, espace": "Digital, industry, space",
+    "Climat, énergie, mobilité": "Climate, energy, mobility",
+    "Alimentation, bioéconomie, ressources naturelles, agriculture et environnement":
+      "Food, bioeconomy, natural resources, agriculture and environment",
+
+    // ODD (ONU)
+    "Pas de pauvreté": "No Poverty",
+    "Faim \"zéro\"": "Zero Hunger",
+    "Bonne santé et bien-être": "Good Health and Well-being",
+    "Éducation de qualité": "Quality Education",
+    "Égalité entre les sexes": "Gender Equality",
+    "Eau propre et assainissement": "Clean Water and Sanitation",
+    "Énergie propre et d'un coût abordable": "Affordable and Clean Energy",
+    "Travail décent et croissance économique": "Decent Work and Economic Growth",
+    "Industrie, innovation et infrastructure": "Industry, Innovation and Infrastructure",
+    "Inégalités réduites": "Reduced Inequalities",
+    "Villes et communautés durables": "Sustainable Cities and Communities",
+    "Consommation et production responsables": "Responsible Consumption and Production",
+    "Mesures relatives à la lutte contre les changements climatiques": "Climate Action",
+    "Vie aquatique": "Life Below Water",
+    "Vie terrestre": "Life on Land",
+    "Paix, justice et institutions efficaces": "Peace, Justice and Strong Institutions",
+    "Partenariats pour la réalisation des objectifs": "Partnerships for the Goals"
+  };
 
   constructor(
 	private route: ActivatedRoute,
     private router: Router,
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
-	private searchFiltersService: SearchFiltersService 
+	private searchFiltersService: SearchFiltersService,
+	public translate: TranslateService
   ) {}
 
   /* ------------------- Lifecycle ------------------- */
@@ -421,18 +472,51 @@ export class Search implements OnInit, OnDestroy {
     return thesis.domainesImpactListe?.[0] ?? null;
   }
 
-  getFirstDomaineWithMaxLength(
-    thesis: { domainesImpactListe: string[] | null },
-    maxLength = 10
-  ): string | null {
+  getFirstDomaineWithMaxLength(thesis: { domainesImpactListe: string[] | null }, maxLength = 60): string | null {
     const domaine = thesis.domainesImpactListe?.[0];
-    return domaine
-      ? domaine.length > maxLength
-        ? domaine.slice(0, maxLength) + '…'
-        : domaine
-      : null;
+    if (!domaine) return null;
+
+    // 🔥 Traduction FR → EN si nécessaire
+    const label = this.getDomaineLabel(domaine);
+
+    // 🔥 Coupe propre
+    return label.length > maxLength ? label.slice(0, maxLength) + '…' : label;
+  }
+
+  
+  getDomaineLabel(domaine: string): string {
+    if (this.translate.currentLang === 'en') {
+      return this.defisSocieteTranslations[domaine] || domaine;
+    }
+    return domaine;
   }
   
+  getTranslatedValue(value: string): string {
+    if (this.translate.currentLang !== 'en') {
+      return value; // FR → on garde tel quel
+    }
+
+    // 🔥 Ordre de priorité : discipline → défis de société
+    return (
+      this.disciplineTranslations[value] ||
+      this.defisSocieteTranslations[value] ||
+      value // fallback FR
+    );
+  }
+  
+  getSpecialiteLabel(value: string): string {
+    return this.getTranslatedValue(value);
+  }
+  
+  getSpecialiteLabelWithMaxLength(value: string | null, maxLength = 60): string {
+    if (!value) return '';
+
+	const translated = value;
+	// const translated = this.getTranslatedValue(value);
+    return translated.length > maxLength ? translated.slice(0, maxLength) + '…' : translated;
+  }
+
+
   closeAllDropdowns(): void {
     this.disciplineOpen = false;
     this.defisSocieteOpen = false;
@@ -480,6 +564,64 @@ export class Search implements OnInit, OnDestroy {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  getThesisTitle(thesis: any): string {
+    const lang = this.translate.currentLang;
+
+    if (lang === 'en') {
+      // Si la version anglaise existe, on l'utilise
+      if (thesis.theseTitreAnglais && thesis.theseTitreAnglais.trim() !== '') {
+        return thesis.theseTitreAnglais;
+      }
+    }
+
+    // Sinon fallback sur la version française
+    return thesis.theseTitre;
+  }
+  
+  getLocalizedResume(thesis: any, maxWords = 30): string {
+    const lang = this.translate.currentLang;
+
+    // Si la langue est EN et que resumeAnglais existe → on l'utilise
+    if (lang === 'en' && thesis?.resumeAnglais && thesis.resumeAnglais.trim() !== '') {
+      const words = thesis.resumeAnglais.split(/\s+/);
+      return words.length > maxWords
+        ? words.slice(0, maxWords).join(' ') + ' …'
+        : thesis.resumeAnglais;
+    }
+
+    // Sinon fallback sur la version FR existante
+    return this.getResumeOrFallback(thesis, maxWords);
+  }
+  
+  getLocalizedKeywords(thesis: any): [string, string][] {
+    const lang = this.translate.currentLang;
+
+    // Si la langue est EN et que motsClesAnglais existe → on l'utilise
+    if (
+      lang === 'en' &&
+      thesis?.motsClesAnglais &&
+      Object.keys(thesis.motsClesAnglais).length > 0
+    ) {
+      return this.getEntries(thesis.motsClesAnglais);
+    }
+
+    // Sinon fallback sur la version FR
+    return this.getEntries(thesis.motsCles);
+  }
+
+  getDisciplineLabel(opt: string): string {
+    if (this.translate.currentLang === 'en') {
+      return this.disciplineTranslations[opt] || opt;
+    }
+    return opt;
+  }
+  
+  getDefisSocieteLabel(opt: string): string {
+    if (this.translate.currentLang === 'en') {
+      return this.defisSocieteTranslations[opt] || opt;
+    }
+    return opt;
+  }
 
 
 }

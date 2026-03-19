@@ -1,0 +1,35 @@
+{
+  "DETAIL": {
+    "ERROR": "An error has occurred",
+    "TYPE_OFFRE": "Offer type",
+    "SUJET": "PhD project",
+    "OFFRE": "Mentoring offer",
+    "ETABLISSEMENT": "Institution",
+    "ED": "Doctoral school",
+    "LABO": "Research group",
+    "DIRECTION": "PhD supervision",
+    "DEBUT": "PhD start",
+    "DATE_LIMITE": "Application deadline",
+    "NON_RENSEIGNE": "Not provided",
+    "KEYWORDS": "Keywords",
+    "CONTACT": "Get in touch",
+
+    "RESUME": "Summary",
+    "OBJECTIF_CONTEXTE": "Objective and Context",
+    "PROFIL": "Desired candidate profile",
+    "ENCADREMENT": "Supervision details",
+    "RESULTATS": "Expected results",
+    "VALORISATION": "Research valorization objectives",
+    "FINANCEMENT": "Funding",
+	"NO_FINANCEMENT": "Several avenues can be explored to fund the doctoral project. For more information: <a href='https://doctorat.gouv.fr/avant-le-doctorat/je-m-informe/financement/' target='_blank'>funding information</a>.",
+    "METHODE": "Working method",
+    "REFERENCES": "References",
+    "PIECES_JOINTES": "Attachments",
+    "DOWNLOAD_PDF": "Download PDF",
+	
+	"AT": "at",
+	
+	"INFO_TRADUCTION_MANQUANTE": "French content may be displayed where no English version is available yet."
+
+  }
+}
