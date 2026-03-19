@@ -1,0 +1,43 @@
+{
+  "SEARCH": {
+    "TITLE": "Find PhD opportunities : projects and mentoring offers",
+    "PLACEHOLDER": "Search by title or keywords",
+    "MORE_FILTERS": "More filters",
+    "LESS_FILTERS": "Fewer filters",
+    "ACTIVE_FILTERS": "Active filters:",
+    "RESULTS": "{{count}} search",
+	"RESULTS_SUFIX": "results",
+    "BACK_TO_TOP": "Back to top",
+	"ALL_OFFERS": "All offers",
+	"THESIS_OFFER": "Thesis offer",
+	"SUPERVISION_OFFER": "Supervision offer"
+  },
+
+  "FILTERS": {
+    "DISCIPLINE": "Discipline",
+    "DEFIS": "Societal challenges",
+    "LOCALISATION": "Geographical location",
+    "LABO": "Research group",
+    "ECOLE": "University or institution",
+    "ED": "Doctoral school",
+    "ROR": "ROR institution",
+    "SELECT_ALL": "Select all",
+    "SEARCH": "Search"
+  },
+
+  "CARDS": {
+    "SUJET": "PhD project",
+    "OFFRE": "Mentoring offer",
+    "DETAIL": "View details",
+    "KEYWORDS": "Keywords :"
+  },
+
+  "INFO": {
+    "THESE": "By exploring the PhD opportunities, PhD projects and mentoring offers available on this platform, you can identify PhD supervisors to collaborate with in developing your own doctoral project. Applications to a doctoral school should only be submitted once the PhD project has been jointly defined."
+  },
+
+  "PAGINATION": {
+    "PREVIOUS": "Previous",
+    "NEXT": "Next"
+  }
+}

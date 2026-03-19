@@ -1,0 +1,35 @@
+{
+  "DETAIL": {
+    "ERROR": "Une erreur est survenue",
+    "TYPE_OFFRE": "Type d'offre",
+    "SUJET": "Sujet de thèse",
+    "OFFRE": "Offre d'accompagnement",
+    "ETABLISSEMENT": "Établissement",
+    "ED": "École doctorale",
+    "LABO": "Laboratoire de recherche",
+    "DIRECTION": "Direction de la thèse",
+    "DEBUT": "Début de la thèse",
+    "DATE_LIMITE": "Date limite de candidature",
+    "NON_RENSEIGNE": "Non renseigné",
+    "KEYWORDS": "Mots clés",
+    "CONTACT": "Prendre contact",
+
+    "RESUME": "Résumé",
+    "OBJECTIF_CONTEXTE": "Objectif et Contexte",
+    "PROFIL": "Profil recherché",
+    "ENCADREMENT": "Précision sur l'encadrement",
+    "RESULTATS": "Résultat attendu",
+    "VALORISATION": "Objectif de valorisation des travaux",
+    "FINANCEMENT": "Financement",
+	"NO_FINANCEMENT": "Plusieurs voies peuvent être explorées pour financer le projet doctoral. Pour en savoir plus : <a href='https://doctorat.gouv.fr/avant-le-doctorat/je-m-informe/financement/' target='_blank'>financement du doctorat</a>.",
+    "METHODE": "Méthode de travail",
+    "REFERENCES": "Références bibliographiques",
+    "PIECES_JOINTES": "Pièces jointes",
+    "DOWNLOAD_PDF": "Télécharger le PDF",
+	
+	"AT": "à",
+	
+	"INFO_TRADUCTION_MANQUANTE": "Certains champs peuvent apparaître en français si la direction de thèse n’a pas fourni de version anglaise."
+
+  }
+}

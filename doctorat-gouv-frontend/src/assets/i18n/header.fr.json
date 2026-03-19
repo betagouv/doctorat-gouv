@@ -1,0 +1,24 @@
+{
+  "LANG": {
+    "FR": "FR - Français",
+    "EN": "EN - English"
+  },
+  "HEADER": {
+    "TAGLINE_TITLE": "La plateforme nationale du doctorat",
+    "TAGLINE_SUBTITLE": "De la définition du sujet de recherche à la poursuite de carrière",
+    "BETA": "BETA",
+	"ACCUEIL": "Accueil",
+	"RETOUR_AUX_OFFRES": "Toutes les offres"
+  },
+  "INFO": {
+    "LAUNCH_TITLE": "Lancement de la plateforme : le site est encore en phase d'expérimentation, n'hésitez pas à",
+    "GIVE_FEEDBACK": "donner votre avis",
+    "LAUNCH_END": "pour nous aider à améliorer le service.",
+    "OPTIMAL_EXPERIENCE": "Pour une expérience optimale, la plateforme est conçue pour être utilisée sur ordinateur et en mode plein écran."
+  },
+  "MOBILE": {
+    "ALL_OFFERS": "Toutes les offres",
+    "BACK_TO_SITE": "Retour au site",
+	"CLOSE": "Fermer"
+  }
+}

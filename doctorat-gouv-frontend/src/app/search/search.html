@@ -3,9 +3,11 @@
 <div class="search-form">
   <div class="form-content">
 
-    <h1 class="fr-h1 fr-text--center">
-      Trouver une offre de thèse ou d’accompagnement
-    </h1>
+	<h1 [ngClass]="{ 'title-en': translate.currentLang === 'en' }">
+	  {{ 'SEARCH.TITLE' | translate }}
+	</h1>
+
+
 
     <!-- ===================== BARRE DE RECHERCHE ===================== -->
     <div class="custom-search-bar">
@@ -21,7 +23,7 @@
                id="query"
                name="query"
                class="custom-input"
-               placeholder="Rechercher par titre ou mot clés"
+			   placeholder="{{ 'SEARCH.PLACEHOLDER' | translate }}"
                [(ngModel)]="query"
                (ngModelChange)="onFilterChange()"
                aria-label="Champ de recherche">
@@ -35,7 +37,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
-            {{ discipline || 'Discipline' }}
+			{{ discipline ? getDisciplineLabel(discipline) : ('FILTERS.DISCIPLINE' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -54,7 +56,7 @@
                      id="discipline_all"
                      [checked]="!discipline"
                      (change)="resetFilter('discipline')">
-              <label for="discipline_all">Tout sélectionner</label>
+              <label for="discipline_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
             <div class="checkbox-list">
@@ -64,7 +66,7 @@
                        [id]="'discipline_' + opt"
                        [checked]="discipline === opt"
                        (change)="selectSingle('discipline', opt)">
-                <label [for]="'discipline_' + opt">{{ opt }}</label>
+                <label [for]="'discipline_' + opt">{{ getDisciplineLabel(opt) }}</label>
               </div>
             </div>
 
@@ -76,7 +78,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
-            {{ defisSociete || 'Défis de société' }}
+			{{ defisSociete ? getDefisSocieteLabel(defisSociete) : ('FILTERS.DEFIS' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -95,7 +97,7 @@
                      id="defisSociete_all"
                      [checked]="!defisSociete"
                      (change)="resetFilter('defisSociete')">
-              <label for="defisSociete_all">Tout sélectionner</label>
+              <label for="defisSociete_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
             <div class="checkbox-list">
@@ -105,7 +107,7 @@
                        [id]="'defisSociete_' + opt"
                        [checked]="defisSociete === opt"
                        (change)="selectSingle('defisSociete', opt)">
-                <label [for]="'defisSociete_' + opt">{{ opt }}</label>
+                <label [for]="'defisSociete_' + opt">{{ getDefisSocieteLabel(opt) }}</label>
               </div>
             </div>
 
@@ -117,7 +119,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('localisationOpen')">
-            {{ localisation || 'Localisation géographique' }}
+            {{ localisation || 'FILTERS.LOCALISATION' | translate }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -136,7 +138,7 @@
                      id="localisation_all"
                      [checked]="!localisation"
                      (change)="resetFilter('localisation')">
-              <label for="localisation_all">Tout sélectionner</label>
+              <label for="localisation_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
             <div class="checkbox-list">
@@ -164,7 +166,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('laboratoireOpen')">
-            {{ laboratoire || 'Laboratoire de recherche' }}
+            {{ laboratoire || 'FILTERS.LABO' | translate }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -183,7 +185,7 @@
                      id="laboratoire_all"
                      [checked]="!laboratoire"
                      (change)="resetFilter('laboratoire')">
-              <label for="laboratoire_all">Tout sélectionner</label>
+              <label for="laboratoire_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
             <div class="checkbox-list">
@@ -205,7 +207,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('ecoleOpen')">
-            {{ ecole || 'Établissement diplômant' }}
+            {{ ecole || 'FILTERS.ECOLE' | translate }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -224,7 +226,7 @@
                      id="ecole_all"
                      [checked]="!ecole"
                      (change)="resetFilter('ecole')">
-              <label for="ecole_all">Tout sélectionner</label>
+              <label for="ecole_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
             <div class="checkbox-list">
@@ -250,7 +252,7 @@
         <a href="javascript:void(0)"
            class="fr-link toggle-filters"
            (click)="toggleFilters()">
-          {{ showMoreFilters ? 'Moins de filtres' : 'Plus de filtres' }}
+		   {{ showMoreFilters ? ('SEARCH.LESS_FILTERS' | translate) : ('SEARCH.MORE_FILTERS' | translate) }}
         </a>
       </div>
     </div>
@@ -262,40 +264,40 @@
 
   <section class="fr-tags-group fr-mt-4w"
            *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
-    <p class="fr-text--bold">Filtres actifs :</p>
+    <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
     <ul class="fr-tags-group__list">
 
       <li *ngIf="discipline">
         <span class="fr-tag">
-          Discipline : {{ discipline }}
+			{{ 'FILTERS.DISCIPLINE' | translate }} : {{ getDisciplineLabel(discipline) }}
           <button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
         </span>
       </li>
 
       <li *ngIf="defisSociete">
         <span class="fr-tag">
-          Défis société : {{ defisSociete }}
+			{{ 'FILTERS.DEFIS' | translate }} : {{ getDefisSocieteLabel(defisSociete) }}
           <button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
         </span>
       </li>
 
       <li *ngIf="localisation">
         <span class="fr-tag">
-          Localisation : {{ localisation }}
+          {{ 'FILTERS.LOCALISATION' | translate }} : {{ localisation }}
           <button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
         </span>
       </li>
 
       <li *ngIf="laboratoire">
         <span class="fr-tag">
-          Laboratoire : {{ laboratoire }}
+          {{ 'FILTERS.LABO' | translate }} : {{ laboratoire }}
           <button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
         </span>
       </li>
 
       <li *ngIf="ecole">
         <span class="fr-tag">
-          Établissement : {{ ecole }}
+          {{ 'FILTERS.ECOLE' | translate }} : {{ ecole }}
           <button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
         </span>
       </li>
@@ -323,8 +325,9 @@
 
   <!-- ===================== RÉSULTATS ===================== -->
   <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-    <span class="fr-text--bold custom-bold">{{ totalResults }} résultats</span>
-    de recherche
+    <span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+</span>
+    {{ 'SEARCH.RESULTS_SUFIX' | translate }}
   </p>
   
   <section class="fr-mt-4w" *ngIf="results.length">
@@ -332,11 +335,25 @@
 	<div class="info-bulle-these">
 		<img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
 		<p class="info-bulle-text">
-			En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez
-			identifier des chercheuses et chercheurs avec qui construire votre propre projet doctoral. La candidature auprès
-			d'une école doctorale ne se fait qu'après avoir défini ensemble le sujet de thèse.
+	        {{ 'INFO.THESE' | translate }}
 		</p>
 	</div>
+	
+	<!-- Boutons DSFR -->
+	<!--	<div class="fr-btns-group fr-btns-group--inline fr-mt-3w">-->
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.ALL_OFFERS' | translate }}-->
+	<!--	  </button>-->
+	
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.THESIS_OFFER' | translate }}-->
+	<!--	  </button>-->
+	
+	<!--	  <button class="fr-btn fr-btn--secondary" >-->
+	<!--	    {{ 'SEARCH.SUPERVISION_OFFER' | translate }}-->
+	<!--	  </button>-->
+	<!--	</div>-->
+
 
     <div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
@@ -356,37 +373,38 @@
 
             <span class="fr-tag badge badge-pink"
                   *ngIf="thesis?.specialite">
-              {{ thesis.specialite }}
+				  {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
+
             </span>
           </div>
 
 		<div class="fr-card__body">
 			<div>
 				<h3 class="fr-card__title custom-blue">
-					{{ limitWords(thesis.theseTitre, 30) }}
+				  {{ limitWords(getThesisTitle(thesis), 30) }}
 				</h3>
 			</div>
 		
 			<p class="fr-card__desc_type">
 				{{
 				thesis.typeProposition === 'proposition'
-				? 'Sujet de thèse'
+				? ('CARDS.SUJET' | translate)
 				: thesis.typeProposition === 'offre'
-				? "Offre d'accompagnement"
+				? ('CARDS.OFFRE' | translate)
 				: thesis.typeProposition
 				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
 			</p>
 		
 			<div>
 				<p class="fr-card__desc">
-					{{ getResumeOrFallback(thesis, 30) }}
+					{{ getLocalizedResume(thesis, 30) }}
 				</p>
 			</div>
 			<div class="fr-mt-2w">
 				<ng-container *ngIf="thesis.motsCles">
-					<strong>Mots clés :</strong>
+					<strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
 					<div class="fr-tags-group fr-tags-group--column">
-						<span class="fr-tag violet" *ngFor="let entry of getEntries(thesis.motsCles)">
+						<span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
 							{{ entry[1] }}
 						</span>
 					</div>
@@ -399,7 +417,7 @@
             <a [routerLink]="['/proposition']"
                [queryParams]="{ id: thesis.id }"
                class="arrow-link">
-              Voir détail
+              {{ 'CARDS.DETAIL' | translate }}
             </a>
           </div>
 
@@ -420,7 +438,7 @@
                       (click)="goToPage(currentPage - 1)"
                       [disabled]="currentPage === 0">
                 <span class="fr-icon-arrow-left-s-line"></span>
-                <span class="fr-mx-1w">Précédent</span>
+                <span class="fr-mx-1w">{{ 'PAGINATION.PREVIOUS' | translate }}</span>
               </button>
             </li>
 
@@ -456,7 +474,7 @@
               <button class="fr-pagination__link"
                       (click)="goToPage(currentPage + 1)"
                       [disabled]="currentPage === totalPages - 1">
-                <span class="fr-mx-1w">Suivant</span>
+                <span class="fr-mx-1w">{{ 'PAGINATION.NEXT' | translate }}</span>
                 <span class="fr-icon-arrow-right-s-line"></span>
               </button>
             </li>
@@ -471,7 +489,7 @@
   
   <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top"
           data-fr-back-to-top (click)="scrollToTop()">
-    Haut de page
+    {{ 'SEARCH.BACK_TO_TOP' | translate }}
   </button>
   
 <!--  <button class="fr-btn fr-btn--secondary fr-icon-arrow-up-s-line back-to-top"-->

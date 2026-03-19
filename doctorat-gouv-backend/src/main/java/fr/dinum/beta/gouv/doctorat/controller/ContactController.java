@@ -33,17 +33,17 @@ public class ContactController {
 	private static final Logger log = LoggerFactory.getLogger(ContactController.class);
 	
 	private static final Map<String, Integer> TEMPLATE_BY_PROFIL = Map.of(
-		    "Étudiant au sein d'un master français", 14,
-		    "Étudiant d'un master étranger", 19,
-		    "Élève d'une école d'ingénieur", 28,
-		    "Élève d'une autre grande école conférant le grade master", 20,
-		    "Chercheur en entreprise", 21,
-		    "Entreprise souhaitant établir un partenariat", 29,
-		    "Autre professionnel en activité", 22,
-		    "Autre organisation souhaitant établir un partenariat", 30,
-		    "Autre", 23
-		    // Les autres profils retomberont sur la valeur par défaut
+		    "CONTACT.PROFILS.MASTER_FR", 14,
+		    "CONTACT.PROFILS.MASTER_ETRANGER", 19,
+		    "CONTACT.PROFILS.INGENIEUR", 28,
+		    "CONTACT.PROFILS.GRANDE_ECOLE", 20,
+		    "CONTACT.PROFILS.CHERCHEUR_ENTREPRISE", 21,
+		    "CONTACT.PROFILS.ENTREPRISE_PARTENARIAT", 29,
+		    "CONTACT.PROFILS.PROFESSIONNEL", 22,
+		    "CONTACT.PROFILS.ORGA_PARTENARIAT", 30,
+		    "CONTACT.PROFILS.AUTRE", 23
 		);
+
 	
 	private static final Map<String, Integer> TEMPLATE_BY_TYPE_OFFRE = Map.of(
 		    "proposition", 24,
@@ -100,9 +100,9 @@ public class ContactController {
 	    Map<String, Object> params = new HashMap<>();
 	    params.put("nom", req.nom);
 	    params.put("prenom", req.prenom);
-	    params.put("civilite", req.civilite);
+	    params.put("civilite", req.civiliteLabel);
 	    params.put("titre_sujet", req.titreSujet);
-	    params.put("profil", req.profil);
+	    params.put("profil", req.profilLabel);
 	    params.put("email", req.email);
 	    params.put("motivation", req.message);
 	    params.put("url_ressources", req.urlVitrine);
