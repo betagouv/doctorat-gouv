@@ -136,7 +136,8 @@ public class PropositionTheseService {
 			    andPredicates.add(cb.equal(root.get("ecoleDoctoraleNumero"), value));
 				case "etablissementRor" ->
 			    andPredicates.add(cb.equal(root.get("etablissementRor"), value));
-
+				case "typeProposition" -> 
+			    andPredicates.add(cb.equal(root.get("typeProposition"), value));
 
 				// -------------------------------------------------
 				// Recherche texte libre (déjà existante)

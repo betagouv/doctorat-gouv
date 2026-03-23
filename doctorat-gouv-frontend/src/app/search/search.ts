@@ -57,6 +57,9 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./search.scss']
 })
 export class Search implements OnInit, OnDestroy {
+	
+  // --- Filtres actifs pour typeOffer ---
+  activeFilter: 'all' | 'thesis' | 'supervision' = 'all';
 
   /* ------------------- Pagination ------------------- */
   pageSize = 27;
@@ -207,6 +210,11 @@ export class Search implements OnInit, OnDestroy {
 	    this.defisSociete = saved.defisSociete || '';
 	    this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
 	    this.etablissementRor = saved.etablissementRor || '';
+		
+		if (saved.typeProposition) {
+		  this.activeFilter = saved.typeProposition;
+		}
+
 
 	    // Relancer la recherche avec les filtres restaurés
 	    this.onSearch(0);
@@ -276,7 +284,8 @@ export class Search implements OnInit, OnDestroy {
       ecole: this.ecole,
       defisSociete: this.defisSociete,
       ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
-      etablissementRor: this.etablissementRor
+      etablissementRor: this.etablissementRor,
+	  typeProposition: this.activeFilter 
     });
 
     this.filterChanges$.next();
@@ -313,6 +322,13 @@ export class Search implements OnInit, OnDestroy {
 
 
     if (this.query?.trim()) active['query'] = this.query.trim();
+	
+	// 🔥 AJOUT : filtre typeProposition
+	if (this.activeFilter === 'thesis') {
+	  active['typeProposition'] = 'proposition';
+	} else if (this.activeFilter === 'supervision') {
+	  active['typeProposition'] = 'offre';
+	}
 
     return active;
   }
@@ -621,6 +637,11 @@ export class Search implements OnInit, OnDestroy {
       return this.defisSocieteTranslations[opt] || opt;
     }
     return opt;
+  }
+  
+  setFilter(filter: 'all' | 'thesis' | 'supervision') {
+    this.activeFilter = filter;
+    this.onFilterChange();
   }
 
 
