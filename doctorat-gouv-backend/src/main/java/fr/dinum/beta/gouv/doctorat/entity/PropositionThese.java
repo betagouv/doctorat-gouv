@@ -246,6 +246,9 @@ public class PropositionThese {
 	@Column(length = 300)
 	private String urlCandidature;
 	
+	@Column(length = 3)
+	private String sujetAttribue;
+	
 	@Column(name = "active", nullable = true)
 	private Boolean active = true;
 
@@ -856,6 +859,14 @@ public class PropositionThese {
 
 	public void setUrlCandidature(String urlCandidature) {
 		this.urlCandidature = urlCandidature;
+	}
+
+	public String getSujetAttribue() {
+		return sujetAttribue;
+	}
+
+	public void setSujetAttribue(String sujetAttribue) {
+		this.sujetAttribue = sujetAttribue;
 	}
 
 }

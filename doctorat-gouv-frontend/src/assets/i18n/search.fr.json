@@ -9,8 +9,8 @@
 	"RESULTS_SUFIX": "de recherche",
     "BACK_TO_TOP": "Haut de page",
 	"ALL_OFFERS": "Toutes les offres",
-	"THESIS_OFFER": "Offre de thèse",
-	"SUPERVISION_OFFER": "Offre d'encadrement"
+	"THESIS_OFFER": "Offres de thèse",
+	"SUPERVISION_OFFER": "Offres d'accompagnement ou de partenariat"
   },
 
   "FILTERS": {
@@ -33,7 +33,8 @@
   },
 
   "INFO": {
-    "THESE": "En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez identifier des chercheuses et chercheurs avec qui construire votre propre projet doctoral. La candidature auprès d'une école doctorale ne se fait qu'après avoir défini ensemble le sujet de thèse."
+    "THESE": "En explorant les sujets de thèse et les offres d'accompagnement qui sont proposés sur cette plateforme, vous pourrez identifier des chercheuses et chercheurs avec qui construire votre propre projet doctoral. La candidature auprès d'une école doctorale ne se fait qu'après avoir défini ensemble le sujet de thèse.",
+	"SUPERVISION": "Avec une offre d'accompagnement, les chercheurs et chercheuses font savoir qu'ils sont intéressés par l'accompagnement de doctorants sur des projets doctoraux portant sur des thématiques ou questions particulières."
   },
 
   "PAGINATION": {

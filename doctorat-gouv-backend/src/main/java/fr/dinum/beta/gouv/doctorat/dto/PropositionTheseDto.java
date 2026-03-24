@@ -683,6 +683,7 @@ public class PropositionTheseDto {
 	private String candidatureEnLignePossible;
 	private String urlPdf;
 	private String urlCandidature;
+	private String sujetAttribue;
 	
 	public String getEcoleDoctoraleLibelle() {
 		return ecoleDoctoraleLibelle;
@@ -702,6 +703,14 @@ public class PropositionTheseDto {
 
 	public void setUrlCandidature(String urlCandidature) {
 		this.urlCandidature = urlCandidature;
+	}
+
+	public String getSujetAttribue() {
+		return sujetAttribue;
+	}
+
+	public void setSujetAttribue(String sujetAttribue) {
+		this.sujetAttribue = sujetAttribue;
 	}
 
 }

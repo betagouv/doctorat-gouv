@@ -120,7 +120,8 @@ export class PropositionDetail {
 	    this.thesisId,
 	    this.thesis.theseTitre ?? null,
 	    this.thesis.deposantEmail ?? null,
-	    this.thesis.typeProposition ?? null
+	    this.thesis.typeProposition ?? null,
+		this.thesis.sujetAttribue ?? null
 	  );
 
 	  // 3 - Navigation vers la page contact

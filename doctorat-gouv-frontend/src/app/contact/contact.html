@@ -26,6 +26,11 @@
 		
 		</div>
 		
+		
+		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w info-alert" *ngIf="sujetAttribue  === 'oui'">
+		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
+		</div>
+		
 		<!-- Message si aucun sujet valide -->
 		<div *ngIf="!sujetValide" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
 			<p>{{ sujetErreurMessage | translate }}</p>
