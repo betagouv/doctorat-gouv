@@ -93,5 +93,6 @@ export interface PropositionTheseDto{
   candidatureEnLignePossible: string | null;
   
   urlPdf: string | null;
+  sujetAttribue: string | null;
 }
 

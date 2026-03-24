@@ -285,6 +285,16 @@
 	}
 }
 
+.menu-margin {
+  margin-top: 0.0rem !important;
+  margin-bottom: 1rem;
+}
+
+.results-margin {
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.5rem;
+}
+
 .title-en {
   font-size: 2.1rem; // ou 1.5rem selon ton design
   line-height: 1.2;
@@ -435,7 +445,7 @@
 	display: flex;
 	align-items: flex-start;
 	gap: 1rem;
-	margin-top: 1.5rem;
+	// margin-top: 1.5rem;
 
 	/*  .info-bulle-icon {
     font-size: 2rem;
@@ -575,6 +585,36 @@
   }
 }
 
+/* ================================================================================	*/
+/*   Styles pour le switch d'offres (ex: "Offres de thèse" vs "Offres de post-doc") */
+/* ================================================================================	*/
+.offer-switch {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.switch-btn {
+  padding: 0.75rem 1.25rem;
+  background: #f6f6f6;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.switch-btn.active {
+  background: rgb(255, 255, 255); /* bleu DSFR */
+  border: 1px solid rgb(0, 0, 160); /* bleu DSFR plus soutenu */
+  color: rgb(0, 0, 160);
+  font-weight: 600;
+  z-index: 2;
+}
+
+
+
 /* ========================= */
 /*   ULTRA MOBILE (≤ 480px)  */
 /* ========================= */
@@ -594,5 +634,6 @@
     padding: 0.75rem;
   }
 }
+
 
 

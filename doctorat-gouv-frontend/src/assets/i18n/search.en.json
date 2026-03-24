@@ -9,8 +9,8 @@
 	"RESULTS_SUFIX": "results",
     "BACK_TO_TOP": "Back to top",
 	"ALL_OFFERS": "All offers",
-	"THESIS_OFFER": "Thesis offer",
-	"SUPERVISION_OFFER": "Supervision offer"
+	"THESIS_OFFER": "PhD offers",
+	"SUPERVISION_OFFER": "Mentoring or partnership offers"
   },
 
   "FILTERS": {
@@ -33,7 +33,8 @@
   },
 
   "INFO": {
-    "THESE": "By exploring the PhD opportunities, PhD projects and mentoring offers available on this platform, you can identify PhD supervisors to collaborate with in developing your own doctoral project. Applications to a doctoral school should only be submitted once the PhD project has been jointly defined."
+    "THESE": "By exploring the PhD opportunities, PhD projects and mentoring offers available on this platform, you can identify PhD supervisors to collaborate with in developing your own doctoral project. Applications to a doctoral school should only be submitted once the PhD project has been jointly defined.",
+	"SUPERVISION": "With a mentoring or partnership offer, researchers indicate that they are interested in supporting PhD candidates on doctoral projects related to specific themes or research questions."
   },
 
   "PAGINATION": {
