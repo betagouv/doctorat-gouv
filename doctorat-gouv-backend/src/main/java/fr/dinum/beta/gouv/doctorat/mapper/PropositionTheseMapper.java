@@ -103,6 +103,8 @@ public class PropositionTheseMapper {
         
         dto.setUrlPdf(entity.getUrlPdf());
         dto.setUrlCandidature(entity.getUrlCandidature());
+        
+        dto.setSujetAttribue(entity.getSujetAttribue());
 
         return dto;
     }
@@ -205,6 +207,8 @@ public class PropositionTheseMapper {
         
         entity.setUrlPdf(dto.getUrlPdf());
         entity.setUrlCandidature(dto.getUrlCandidature());
+        
+        entity.setSujetAttribue(dto.getSujetAttribue());
 
         return entity;
     }
