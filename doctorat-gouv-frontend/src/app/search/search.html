@@ -261,7 +261,58 @@
 </div>
 
 <main class="fr-container fr-py-4w search-main">
+	
+	<div class="offer-switch fr-mt-3w menu-margin">
+	  <button
+	    class="switch-btn"
+	    [class.active]="activeFilter === 'all'"
+	    (click)="setFilter('all')"
+	  >
+	    {{ 'SEARCH.ALL_OFFERS' | translate }}
+	  </button>
 
+	  <button
+	    class="switch-btn"
+	    [class.active]="activeFilter === 'thesis'"
+	    (click)="setFilter('thesis')"
+	  >
+	    {{ 'SEARCH.THESIS_OFFER' | translate }}
+	  </button>
+
+	  <button
+	    class="switch-btn"
+	    [class.active]="activeFilter === 'supervision'"
+	    (click)="setFilter('supervision')"
+	  >
+	    {{ 'SEARCH.SUPERVISION_OFFER' | translate }}
+	  </button>
+	</div>
+	
+	<div class="info-bulle-these" *ngIf="activeFilter === 'all' || activeFilter === 'thesis'">
+	  <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
+	  <p class="info-bulle-text">
+	    {{ 'INFO.THESE' | translate }}
+	  </p>
+	</div>
+
+	<div class="info-bulle-these" *ngIf="activeFilter === 'supervision'">
+	  <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
+	  <p class="info-bulle-text">
+	    {{ 'INFO.SUPERVISION' | translate }}
+	  </p>
+	</div>
+
+	
+	<!-- ===================== RÉSULTATS ===================== -->
+	<div class="menu-margin">
+		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+			</span>
+			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
+		</p>
+	</div>
+
+	<!-- ===================== FILTRES ACTIFS ===================== -->
   <section class="fr-tags-group fr-mt-4w"
            *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
     <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
@@ -323,22 +374,8 @@
     </ul>
   </section>
 
-  <!-- ===================== RÉSULTATS ===================== -->
-  <p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-    <span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
-</span>
-    {{ 'SEARCH.RESULTS_SUFIX' | translate }}
-  </p>
-  
   <section class="fr-mt-4w" *ngIf="results.length">
 
-	<div class="info-bulle-these">
-		<img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
-		<p class="info-bulle-text">
-	        {{ 'INFO.THESE' | translate }}
-		</p>
-	</div>
-	
 	<!-- Boutons DSFR -->
 <!--	<div class="fr-tabs fr-mt-3w">-->
 <!--	  <ul class="fr-tabs__list" role="tablist">-->
@@ -377,32 +414,6 @@
 <!--	  </ul>-->
 <!--	</div>-->
 	
-	<div class="offer-switch fr-mt-3w">
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'all'"
-	    (click)="setFilter('all')"
-	  >
-	    {{ 'SEARCH.ALL_OFFERS' | translate }}
-	  </button>
-
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'thesis'"
-	    (click)="setFilter('thesis')"
-	  >
-	    {{ 'SEARCH.THESIS_OFFER' | translate }}
-	  </button>
-
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'supervision'"
-	    (click)="setFilter('supervision')"
-	  >
-	    {{ 'SEARCH.SUPERVISION_OFFER' | translate }}
-	  </button>
-	</div>
-
 	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
