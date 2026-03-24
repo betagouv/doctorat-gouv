@@ -286,8 +286,13 @@
 }
 
 .menu-margin {
-  margin-top: 1rem !important;
-  margin-bottom: 2rem;
+  margin-top: 0.0rem !important;
+  margin-bottom: 1rem;
+}
+
+.results-margin {
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.5rem;
 }
 
 .title-en {
@@ -440,7 +445,7 @@
 	display: flex;
 	align-items: flex-start;
 	gap: 1rem;
-	margin-top: 1.5rem;
+	// margin-top: 1.5rem;
 
 	/*  .info-bulle-icon {
     font-size: 2rem;

@@ -260,8 +260,9 @@
   </div>
 </div>
 
-<main class="fr-container fr-py-4w search-main">
+<main class="fr-container fr-py-3w search-main">
 	
+	<! ===================== SWITCH OFFRES/SUJETS ===================== -->	
 	<div class="offer-switch fr-mt-3w menu-margin">
 	  <button
 	    class="switch-btn"
@@ -304,7 +305,7 @@
 
 	
 	<!-- ===================== RÉSULTATS ===================== -->
-	<div class="menu-margin">
+	<div class="results-margin">
 		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
 			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
 			</span>
@@ -313,7 +314,7 @@
 	</div>
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
-  <section class="fr-tags-group fr-mt-4w"
+  <section class="fr-tags-group fr-mt-2w"
            *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
     <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
     <ul class="fr-tags-group__list">
@@ -374,7 +375,7 @@
     </ul>
   </section>
 
-  <section class="fr-mt-4w" *ngIf="results.length">
+  <section class="fr-mt-2w" *ngIf="results.length">
 
 	<!-- Boutons DSFR -->
 <!--	<div class="fr-tabs fr-mt-3w">-->
