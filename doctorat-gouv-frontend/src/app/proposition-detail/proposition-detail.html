@@ -123,21 +123,31 @@
 		  {{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
 		</div>
 		
-<!--		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w" *ngIf="thesis?.sujetAttribue === 'oui'" >-->
-<!--		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}-->
-<!--		</div>-->
+		<!--		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w" *ngIf="thesis?.sujetAttribue === 'oui'" >-->
+		<!--		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}-->
+		<!--		</div>-->
 		
 		
-        <h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
-		<p class="paragraph fr-mb-12v">{{ getThesisResume(thesis) | defaultValue }}</p>
+		<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
+			<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
+			<p class="paragraph fr-mb-12v">{{ resume }}</p>
+		</ng-container>
+		
+		<ng-container *ngIf="(thesis?.objectif?.trim() || thesis?.contexte?.trim()) as _">
+		  <h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
 
+		  <p class="paragraph" *ngIf="thesis?.objectif?.trim()">
+		    {{ thesis.objectif }}
+		  </p>
 
-        <h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
-        <p class="paragraph">{{ thesis?.objectif }}</p>
-        <p class="paragraph">{{ thesis?.contexte }}</p>
-		
-		<hr class="separator">
-		
+		  <p class="paragraph" *ngIf="thesis?.contexte?.trim()">
+		    {{ thesis.contexte }}
+		  </p>
+		  
+		  <hr class="separator">
+		  
+		</ng-container>
+
 		<ng-container *ngIf="getProfilRecherche(thesis) as profil">
 		  <h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
 		  <p class="paragraph">{{ profil }}</p>

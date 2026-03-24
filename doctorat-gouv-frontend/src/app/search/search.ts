@@ -417,7 +417,7 @@ export class Search implements OnInit, OnDestroy {
 
   getResumeOrFallback(thesis: any, maxWords = 30): string {
     let text = thesis?.resume || thesis?.objectif || thesis?.context || '';
-    if (!text) return 'Résumé non disponible';
+    if (!text) return '';
 
     const words = text.split(/\s+/);
     return words.length > maxWords
