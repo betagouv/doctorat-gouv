@@ -186,3 +186,25 @@ a.orcid-link::after {
   margin-bottom: 1rem;
 }
 
+.fr-alert--grey {
+  background-color: #f6f6f6 !important;
+  border-color: #cecece !important;
+  color: #161616 !important;
+}
+
+.fr-alert--highlight {
+  border-left: 4px solid #0a76f6;
+  background-color: #e8f1ff;
+}
+
+.fr-alert--soft {
+  background-color: #fff7e6;
+  border-color: #ffcc80;
+}
+
+
+
+.bottom-space {
+  margin-bottom: 1rem;
+}
+

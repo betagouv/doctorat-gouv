@@ -5,15 +5,16 @@ import { Injectable } from '@angular/core';
 })
 export class ContactContextService {
 
-	private data: { id?: number; sujet?: string; email?: string, typeOffre?: string } = {};
+	private data: { id?: number; sujet?: string; email?: string, typeOffre?: string, sujetAttribue?: string } = {};
 	private storageKey = 'contactContext';
 
-	setContext(id: number | null, sujet: string | null, email: string | null, typeOffre: string | null) {
+	setContext(id: number | null, sujet: string | null, email: string | null, typeOffre: string | null, sujetAttribue: string | null) {
 		this.data = {
 			id: id ?? undefined,
 			sujet: sujet ?? undefined,
 			email: email ?? undefined,
-			typeOffre: typeOffre ?? undefined
+			typeOffre: typeOffre ?? undefined,
+			sujetAttribue: sujetAttribue ?? undefined
 		};
 		
 		// Sauvegarde en sessionStorage 

@@ -33,6 +33,7 @@ export class Contact {
 	
 	sujetValide = true; 
 	sujetErreurMessage = "";
+	sujetAttribue = "non";
 	
 	cvBase64: string | null = null; 
 	documentBase64: string | null = null;
@@ -144,7 +145,8 @@ export class Contact {
 	    confirmMasterControl?.updateValueAndValidity();
 	  });
 	  
-	  const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+	  const { id, sujet, email, typeOffre, sujetAttribue } = this.contactContextService.getContext();
+	  this.sujetAttribue = sujetAttribue === 'oui' ? 'oui' : 'non'; // Normalisation de la valeur
 
 	  // 🔥 Vérification du contexte dès l'initialisation 
 	  // const { id, sujet } = this.contactContextService.getContext(); 

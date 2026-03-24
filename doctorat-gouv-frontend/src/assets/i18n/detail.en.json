@@ -29,7 +29,8 @@
 	
 	"AT": "at",
 	
-	"INFO_TRADUCTION_MANQUANTE": "French content may be displayed where no English version is available yet."
+	"INFO_TRADUCTION_MANQUANTE": "French content may be displayed where no English version is available yet.",
+	"INFO_SUJET_ATTRIBUE": "A candidate has already been identified for this PhD topic. Nevertheless, you may contact the PhD supervisor to discuss similar topics or potential collaborations."
 
   }
 }
