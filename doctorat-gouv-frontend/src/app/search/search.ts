@@ -69,6 +69,8 @@ export class Search implements OnInit, OnDestroy {
   currentPage = 0;
   totalPages = 0;
   totalResults = 0;
+  isInitialLoad = true;
+
   
   /* ------------------- Tri ------------------- */
   sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
@@ -230,14 +232,15 @@ export class Search implements OnInit, OnDestroy {
 		if (saved.sortDirection) {
 		  this.sortDirection = saved.sortDirection;
 		}
+		
+        this.currentPage = saved.page ?? 0;
 
-	    // Relancer la recherche avec les filtres restaurés
-	    this.onSearch(0);
 	  }
 
 	
-	// Charger les résultats dès l'arrivée sur la page 
-	this.onSearch(0);
+	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
+	this.onSearch(this.currentPage);
+	this.isInitialLoad = false;
 
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
@@ -302,9 +305,14 @@ export class Search implements OnInit, OnDestroy {
 	  typeProposition: this.activeFilter,
 	  sortField: this.sortField,
 	  sortDirection: this.sortDirection
+	  // page: this.currentPage
     });
 
-    this.filterChanges$.next();
+	// ⚠️ Ne pas déclencher filterChanges$ pendant le chargement initial
+	if (!this.isInitialLoad) {
+	  this.filterChanges$.next();
+	}
+	
   }
 
 
@@ -362,6 +370,22 @@ export class Search implements OnInit, OnDestroy {
         this.currentPage = data.number;
         this.totalPages = data.totalPages;
         this.totalResults = data.totalElements;
+		
+		// 🔥 Mettre à jour la page dans le storage
+		this.searchFiltersService.save({
+		  query: this.query,
+		  discipline: this.discipline,
+		  localisation: this.localisation,
+		  laboratoire: this.laboratoire,
+		  ecole: this.ecole,
+		  defisSociete: this.defisSociete,
+		  ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+		  etablissementRor: this.etablissementRor,
+		  typeProposition: this.activeFilter,
+		  sortField: this.sortField,
+		  sortDirection: this.sortDirection,
+		  page: this.currentPage
+		});
 		
         // Après chargement des résultats, scroller vers le haut de la liste
         // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });

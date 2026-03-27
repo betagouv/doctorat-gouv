@@ -141,6 +141,25 @@
   transform: translateX(4px); /* petit effet de glissement */
 }
 
+.fr-pagination__link--current {
+  background-color: rgb(0, 0, 255); /* bleu DSFR soutenu */
+  color: white !important;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none; /* empêche de recliquer */
+}
+
+.fr-pagination__link {
+  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.fr-pagination__link:not(.fr-pagination__link--current):hover {
+  background-color: #f0f0f0;
+}
+
 .pagination-fixed {
   bottom: 0;          // toujours collé en bas
   left: 0;
@@ -678,9 +697,6 @@
 .arrow-btn:hover {
   color: #000091;
 }
-
-
-
 
 
 /* ========================= */
