@@ -585,6 +585,19 @@
   }
 }
 
+.fr-card__desc_date {
+  font-size: 0.85rem;          /* plus petit mais lisible */
+  color: #6a6a6a;              /* gris doux, parfait sur fond blanc */
+  line-height: 1.35;           /* aéré mais compact */
+  margin-top: 0.5rem;
+  margin-bottom: 0;            /* évite les espacements inutiles */
+}
+
+.fr-card__desc_date strong {
+  color: #555;                 /* si tu veux mettre en valeur un mot */
+}
+
+
 /* ================================================================================	*/
 /*   Styles pour le switch d'offres (ex: "Offres de thèse" vs "Offres de post-doc") */
 /* ================================================================================	*/
@@ -612,6 +625,61 @@
   font-weight: 600;
   z-index: 2;
 }
+
+.switch-and-sort {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sort-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.sort-label {
+ margin-right: 0.5rem;
+  font-weight: 600;
+  color: #3a3a3a;
+}
+
+.sort-select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 0px;
+  background: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sort-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.arrow-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.1rem 0.25rem;
+  font-size: 0.85rem;
+  line-height: 0.45rem;
+  cursor: pointer;
+  color: #999; /* flèche inactive */
+}
+
+.arrow-btn.active {
+  // color: #000091; /* bleu DSFR */
+  color: rgb(0, 0, 255); /* bleu DSFR plus soutenu */
+  font-weight: 100;
+}
+
+.arrow-btn:hover {
+  color: #000091;
+}
+
+
 
 
 

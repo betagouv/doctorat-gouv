@@ -39,6 +39,8 @@ import { Header } from '../header/header';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -51,7 +53,8 @@ import { TranslateService } from '@ngx-translate/core';
     DsfrTagModule,
     DsfrFooterModule,
     DsfrButtonModule,
-	TranslateModule
+	TranslateModule,
+	DynamicDatePipe
   ],
   templateUrl: './search.html',
   styleUrls: ['./search.scss']
@@ -66,6 +69,11 @@ export class Search implements OnInit, OnDestroy {
   currentPage = 0;
   totalPages = 0;
   totalResults = 0;
+  
+  /* ------------------- Tri ------------------- */
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
+
 
   /* ------------------- Modèle de recherche ------------------- */
   query = '';
@@ -329,6 +337,9 @@ export class Search implements OnInit, OnDestroy {
 	} else if (this.activeFilter === 'supervision') {
 	  active['typeProposition'] = 'offre';
 	}
+	
+	active['sortField'] = this.sortField;
+	active['sortDirection'] = this.sortDirection;
 
     return active;
   }
@@ -643,6 +654,16 @@ export class Search implements OnInit, OnDestroy {
     this.activeFilter = filter;
     this.onFilterChange();
   }
+  
+  setSortDirection(dir: 'ASC' | 'DESC') {
+    this.sortDirection = dir;
+    this.onFilterChange();
+  }
 
+  
+  toggleSortDirection() {
+    this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    this.onFilterChange();
+  }
 
 }

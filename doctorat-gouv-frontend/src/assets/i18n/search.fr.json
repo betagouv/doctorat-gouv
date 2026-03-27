@@ -10,7 +10,10 @@
     "BACK_TO_TOP": "Haut de page",
 	"ALL_OFFERS": "Toutes les offres",
 	"THESIS_OFFER": "Offres de thèse",
-	"SUPERVISION_OFFER": "Offres d'accompagnement ou de partenariat"
+	"SUPERVISION_OFFER": "Offres d'accompagnement ou de partenariat",
+	"SORT_BY": "Trier par :",
+	"SORT_POSTING_DATE": "Date de mise en ligne",
+	"SORT_DEADLINE": "Date limite de candidature"
   },
 
   "FILTERS": {

@@ -70,8 +70,15 @@ public class PropositionTheseService {
                                             int page,
                                             int size) {
         Specification<PropositionThese> spec = buildSpecification(filters);
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.DESC, "dateCreation"));
+        
+        String sortField = filters.getOrDefault("sortField", "dateMiseEnLigne");
+        String sortDirection = filters.getOrDefault("sortDirection", "DESC");
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortDirection)
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
         Page<PropositionThese> entities = repo.findAll(spec, pageable);
         return entities.map(PropositionTheseMapper::toDto);
