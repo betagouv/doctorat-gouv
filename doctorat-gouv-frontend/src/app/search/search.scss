@@ -453,7 +453,28 @@
     max-height: 45vh !important;
   }
   
+  .offer-switch {
+      width: 100%;
+      display: flex;
+      flex-direction: column; /* empile les boutons */
+    }
+
+    .switch-btn {
+      width: 100%;            /* chaque bouton prend toute la largeur */
+      text-align: center;
+      border-radius: 0;       /* optionnel : style plus DSFR */
+      border-bottom: 1px solid #ddd;
+    }
+
+    .switch-btn:last-child {
+      border-bottom: none;    /* évite la double bordure */
+    } 
+  
   .sort-menu {
+    display: none !important;
+  }
+  
+  .info-bulle-these {
     display: none !important;
   }
   
