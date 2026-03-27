@@ -222,7 +222,14 @@ export class Search implements OnInit, OnDestroy {
 		if (saved.typeProposition) {
 		  this.activeFilter = saved.typeProposition;
 		}
+		
+		if (saved.sortField) {
+		  this.sortField = saved.sortField;
+		}
 
+		if (saved.sortDirection) {
+		  this.sortDirection = saved.sortDirection;
+		}
 
 	    // Relancer la recherche avec les filtres restaurés
 	    this.onSearch(0);
@@ -282,7 +289,6 @@ export class Search implements OnInit, OnDestroy {
 
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
-
     // Sauvegarder les filtres
     this.searchFiltersService.save({
       query: this.query,
@@ -293,7 +299,9 @@ export class Search implements OnInit, OnDestroy {
       defisSociete: this.defisSociete,
       ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
       etablissementRor: this.etablissementRor,
-	  typeProposition: this.activeFilter 
+	  typeProposition: this.activeFilter,
+	  sortField: this.sortField,
+	  sortDirection: this.sortDirection
     });
 
     this.filterChanges$.next();
