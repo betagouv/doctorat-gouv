@@ -75,6 +75,7 @@ export class Search implements OnInit, OnDestroy {
   /* ------------------- Tri ------------------- */
   sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
+  sortOpen = false;
 
 
   /* ------------------- Modèle de recherche ------------------- */
@@ -582,6 +583,8 @@ export class Search implements OnInit, OnDestroy {
     this.localisationOpen = false;
     this.laboratoireOpen = false;
     this.ecoleOpen = false;
+	this.sortOpen = false;
+
   }
   
 /*  goToDetail(id: number): void {
@@ -689,6 +692,12 @@ export class Search implements OnInit, OnDestroy {
   
   setSortDirection(dir: 'ASC' | 'DESC') {
     this.sortDirection = dir;
+    this.onFilterChange();
+  }
+  
+  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature') {
+    this.sortField = field;
+    this.sortOpen = false;
     this.onFilterChange();
   }
 

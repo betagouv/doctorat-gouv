@@ -65,9 +65,26 @@
 .fr-card__footer {
   padding: 0.5rem 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Sépare gauche/droite */
   align-items: center;
-  margin-right: 0.7rem;
+  margin-right: 0; /* On supprime ce qui poussait à droite */
+  margin-top: auto;
+  margin-bottom: 0.5rem; /* espace à gauche pour aligner avec le contenu */
+}
+
+.fr-card__desc_date {
+  flex: 1; /* prend l'espace disponible */
+  font-size: 0.85rem;          /* plus petit mais lisible */
+  font-style: italic;
+  color: #6a6a6a;              /* gris doux, parfait sur fond blanc */
+  line-height: 1.35;           /* aéré mais compact */
+  margin-top: 0.5rem;
+  margin-bottom: 0;            /* évite les espacements inutiles */
+  margin-left: 1.7rem;
+}
+
+.fr-card__desc_date strong {
+  color: #555;                 /* si tu veux mettre en valeur un mot */
 }
 
 .fr-tag.violet {
@@ -515,6 +532,22 @@
 	}
 }
 
+.fade-switch {
+  animation: fadeSlide 0.85s ease-out;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 /* Optionnel : responsive */
 @media (max-width: 600px) {
   .info-bulle-these {
@@ -630,18 +663,6 @@
   }
 }
 
-.fr-card__desc_date {
-  font-size: 0.85rem;          /* plus petit mais lisible */
-  color: #6a6a6a;              /* gris doux, parfait sur fond blanc */
-  line-height: 1.35;           /* aéré mais compact */
-  margin-top: 0.5rem;
-  margin-bottom: 0;            /* évite les espacements inutiles */
-}
-
-.fr-card__desc_date strong {
-  color: #555;                 /* si tu veux mettre en valeur un mot */
-}
-
 
 /* ================================================================================	*/
 /*   Styles pour le switch d'offres (ex: "Offres de thèse" vs "Offres de post-doc") */
@@ -684,7 +705,7 @@
 }
 
 .sort-label {
- margin-right: 0.5rem;
+  margin-right: 0.5rem;
   font-weight: 600;
   color: #3a3a3a;
 }
@@ -694,8 +715,9 @@
   border: 1px solid #d0d0d0;
   border-radius: 0px;
   background: white;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
+  margin-bottom: 0.35rem; /* espace entre le select et le menu natif */
 }
 
 .sort-arrows {
@@ -703,6 +725,14 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.sort-dropdown .dropdown-btn {
+	width: 16rem; /* ajuste selon ton design */
+  white-space: nowrap;        /* empêche le retour à la ligne */
+  overflow: hidden;           /* évite les débordements */
+  text-overflow: ellipsis;    /* ajoute "…" si le texte est trop long */
+}
+
 
 .arrow-btn {
   border: 1px solid transparent;
