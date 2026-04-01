@@ -57,5 +57,27 @@ public class AdumScheduler {
 	    log.info("Fin de récupération des sujets de thèse depuis ADUM pour l'année {}", previousYear);
 	    log.trace("Résultat de l’export N-1 : " + result);
 	}
+	
+	/**
+	 * Méthode planifiée pour exécuter l'import des sujets de thèse depuis ADUM pour l'année n+1. 
+	 */
+	@Scheduled(cron = "${adum.scheduler.next-year.cron}")
+	public void runImportNextYear() {
+	    int originalYear = adumApiService.getProperties().getYear();
+	    int nextYear = originalYear + 1 ;
+
+	    log.info("Début récupération des sujets de thèse depuis ADUM pour l'année {}", nextYear);
+
+	    // On change temporairement l'année
+	    adumApiService.getProperties().setYear(nextYear);
+
+	    String result = adumApiService.importAndSavePropositionsFromAdum();
+
+	    // On remet l'année d'origine
+	    adumApiService.getProperties().setYear(originalYear);
+
+	    log.info("Fin de récupération des sujets de thèse depuis ADUM pour l'année {}", nextYear);
+	    log.trace("Résultat de l’export N-1 : " + result);
+	}
 
 }
