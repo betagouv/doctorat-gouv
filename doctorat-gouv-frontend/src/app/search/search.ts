@@ -242,11 +242,28 @@ export class Search implements OnInit, OnDestroy {
 	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
 	this.onSearch(this.currentPage);
 	this.isInitialLoad = false;
-
+	
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
       .subscribe(() => this.onSearch(0));
   }
+  
+  ngAfterViewInit(): void {
+    const saved = this.searchFiltersService.load();
+
+    if (saved?.scrollPosition) {
+      const target = saved.scrollPosition;
+
+      const interval = setInterval(() => {
+        const cards = document.querySelectorAll('.fr-card');
+        if (cards.length > 0) {
+          window.scrollTo({ top: target, behavior: 'auto' });
+          clearInterval(interval);
+        }
+      }, 20);
+    }
+  }
+
 
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();
@@ -305,7 +322,8 @@ export class Search implements OnInit, OnDestroy {
       etablissementRor: this.etablissementRor,
 	  typeProposition: this.activeFilter,
 	  sortField: this.sortField,
-	  sortDirection: this.sortDirection
+	  sortDirection: this.sortDirection,
+	  scrollPosition: 0
 	  // page: this.currentPage
     });
 
@@ -587,15 +605,16 @@ export class Search implements OnInit, OnDestroy {
 
   }
   
-/*  goToDetail(id: number): void {
-    this.router.navigate(['/proposition'], { queryParams: { id } });
-  }*/
-  
   goToDetail(id: number): void {
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0) {
       return; // l'utilisateur sélectionne du texte → ne pas naviguer
     }
+	
+	// 🔥 Sauvegarder la position actuelle du scroll pour pouvoir y revenir après consultation du détail
+	const pos = window.scrollY;
+	console.log("Saving scroll position:", pos);
+	this.searchFiltersService.save({ scrollPosition: pos });
 
     this.router.navigate(['/proposition'], { queryParams: { id } });
   }
