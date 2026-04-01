@@ -248,7 +248,7 @@
 	  <div class="fr-col-12 fr-col-md-4">
 	    <div class="dropdown-filter">
 	      <button class="dropdown-btn" (click)="toggleDropdown('anneeOpen')">
-	        {{ annee || ('FILTERS.ANNEE' | translate) }}
+			{{ annee ? formatAcademicYear(annee) : ('FILTERS.ANNEE' | translate) }}
 	        <span class="fr-icon-arrow-down-s-line"></span>
 	      </button>
 
@@ -269,7 +269,7 @@
 	                   [id]="'annee_' + y"
 	                   [checked]="annee === y"
 	                   (change)="selectSingle('annee', y)">
-	            <label [for]="'annee_' + y">{{ y }}</label>
+				<label [for]="'annee_' + y">{{ formatAcademicYear(y) }}</label>
 	          </div>
 	        </div>
 
@@ -459,7 +459,7 @@
 	  
 	  <li *ngIf="annee">
 	    <span class="fr-tag">
-	      {{ 'FILTERS.ANNEE' | translate }} : {{ annee }}
+	      {{ 'FILTERS.ANNEE' | translate }} : {{ formatAcademicYear(annee) }}
 	      <button class="fr-tag__btn" (click)="removeFilter('annee')" title="Supprimer">×</button>
 	    </span>
 	  </li>

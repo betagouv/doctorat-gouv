@@ -762,6 +762,12 @@ export class Search implements OnInit, OnDestroy {
 
     return years.map(y => String(y));
   }
+  
+  formatAcademicYear(year: string): string {
+    const y = Number(year);
+    return `${y}/${y + 1}`;
+  }
+
 
 
 }
