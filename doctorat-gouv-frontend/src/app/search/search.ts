@@ -88,6 +88,7 @@ export class Search implements OnInit, OnDestroy {
   defisSociete = '';
   ecoleDoctoraleNumero = '';
   etablissementRor = '';
+  annee = '';
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -95,6 +96,7 @@ export class Search implements OnInit, OnDestroy {
   laboratoireOpts: string[] = [];
   ecoleOpts: string[] = [];
   defisSocieteOpts: string[] = [];
+  anneeOpts: string[] = [];
 
   /* ------------------- Dropdown states ------------------- */
   disciplineOpen = false;
@@ -102,6 +104,7 @@ export class Search implements OnInit, OnDestroy {
   laboratoireOpen = false;
   ecoleOpen = false;
   defisSocieteOpen = false;
+  anneeOpen = false;
 
   /* ------------------- Search inside dropdown ------------------- */
   disciplineSearch = '';
@@ -207,10 +210,13 @@ export class Search implements OnInit, OnDestroy {
 			this.etablissementRor = params['etablissementror'];
 		  }
 	  });
+	  
+	  this.anneeOpts = this.generateYears();
+
 
 	  this.loadFilterOptions();
 	  
-	  // 🔥 Restaurer les filtres sauvegardés
+	  // Restaurer les filtres sauvegardés
 	  const saved = this.searchFiltersService.load();
 	  if (saved) {
 	    this.query = saved.query || '';
@@ -221,6 +227,8 @@ export class Search implements OnInit, OnDestroy {
 	    this.defisSociete = saved.defisSociete || '';
 	    this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
 	    this.etablissementRor = saved.etablissementRor || '';
+		this.annee = saved.annee || '';
+		this.showMoreFilters = saved.showMoreFilters ?? false;
 		
 		if (saved.typeProposition) {
 		  this.activeFilter = saved.typeProposition;
@@ -323,6 +331,8 @@ export class Search implements OnInit, OnDestroy {
 	  typeProposition: this.activeFilter,
 	  sortField: this.sortField,
 	  sortDirection: this.sortDirection,
+	  annee: this.annee,
+	  showMoreFilters: this.showMoreFilters,
 	  scrollPosition: 0
 	  // page: this.currentPage
     });
@@ -366,12 +376,14 @@ export class Search implements OnInit, OnDestroy {
 
     if (this.query?.trim()) active['query'] = this.query.trim();
 	
-	// 🔥 AJOUT : filtre typeProposition
+	// AJOUT : filtre typeProposition
 	if (this.activeFilter === 'thesis') {
 	  active['typeProposition'] = 'proposition';
 	} else if (this.activeFilter === 'supervision') {
 	  active['typeProposition'] = 'offre';
 	}
+	
+	if (this.annee) active['annee'] = this.annee;
 	
 	active['sortField'] = this.sortField;
 	active['sortDirection'] = this.sortDirection;
@@ -390,7 +402,7 @@ export class Search implements OnInit, OnDestroy {
         this.totalPages = data.totalPages;
         this.totalResults = data.totalElements;
 		
-		// 🔥 Mettre à jour la page dans le storage
+		// Mettre à jour la page dans le storage
 		this.searchFiltersService.save({
 		  query: this.query,
 		  discipline: this.discipline,
@@ -403,6 +415,7 @@ export class Search implements OnInit, OnDestroy {
 		  typeProposition: this.activeFilter,
 		  sortField: this.sortField,
 		  sortDirection: this.sortDirection,
+		  annee: this.annee,
 		  page: this.currentPage
 		});
 		
@@ -601,6 +614,7 @@ export class Search implements OnInit, OnDestroy {
     this.localisationOpen = false;
     this.laboratoireOpen = false;
     this.ecoleOpen = false;
+	this.anneeOpen = false;
 	this.sortOpen = false;
 
   }
@@ -611,10 +625,15 @@ export class Search implements OnInit, OnDestroy {
       return; // l'utilisateur sélectionne du texte → ne pas naviguer
     }
 	
-	// 🔥 Sauvegarder la position actuelle du scroll pour pouvoir y revenir après consultation du détail
+	// Sauvegarder la position actuelle du scroll pour pouvoir y revenir après consultation du détail
 	const pos = window.scrollY;
-	console.log("Saving scroll position:", pos);
-	this.searchFiltersService.save({ scrollPosition: pos });
+	const saved = this.searchFiltersService.load() || {};
+
+	this.searchFiltersService.save({
+	  ...saved,
+	  scrollPosition: pos,
+	  showMoreFilters: this.showMoreFilters
+	});
 
     this.router.navigate(['/proposition'], { queryParams: { id } });
   }
@@ -725,5 +744,24 @@ export class Search implements OnInit, OnDestroy {
     this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     this.onFilterChange();
   }
+  
+  generateYearsOld(): string[] {
+    const current = new Date().getFullYear();
+    const years: string[] = [];
+    for (let y = current; y >= current - 1; y--) {
+      years.push(String(y));
+    }
+    return years;
+  }
+  
+  generateYears(): string[] {
+    const current = new Date().getFullYear();
+
+    // On veut N-1, N, N+1
+    const years = [current - 1, current, current + 1];
+
+    return years.map(y => String(y));
+  }
+
 
 }

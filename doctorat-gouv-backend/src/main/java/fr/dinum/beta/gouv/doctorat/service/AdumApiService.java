@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -102,6 +103,7 @@ public class AdumApiService {
 			if (existingOpt.isPresent()) {
 				// Mise à jour nécessaire
 				p.setId(existingOpt.get().getId());
+				p.setDateIntegration(existingOpt.get().getDateIntegration()); // On conserve l’ancienne date d’intégration
 				p.setActive(true); // réactivation si besoin
 				toSave.add(p);
 				log.info("Proposition {} mise à jour (dateMaj plus récente)", p.getMatricule());
@@ -111,6 +113,7 @@ public class AdumApiService {
 
 			    if (existing.isEmpty()) {
 			        // Nouvelle proposition, il faut l'insérer
+			    	p.setDateIntegration(LocalDateTime.now());
 			        p.setActive(true);
 			        toSave.add(p);
 			        log.info("Nouvelle proposition {} insérée", p.getMatricule());
@@ -118,6 +121,7 @@ public class AdumApiService {
 			    } else if (Boolean.FALSE.equals(existing.get().getActive())) {
 			        // Réactivation
 			        p.setId(existing.get().getId());
+			        p.setDateIntegration(existing.get().getDateIntegration()); //  on conserve l’ancienne date
 			        p.setActive(true);
 			        toSave.add(p);
 			        log.info("Proposition {} réactivée (était désactivée)", p.getMatricule());
@@ -171,11 +175,13 @@ public class AdumApiService {
 	        if (existingOpt.isPresent()) {
 	            // Mise à jour systématique
 	            p.setId(existingOpt.get().getId());
+	            p.setDateIntegration(existingOpt.get().getDateIntegration()); // On conserve l’ancienne date d’intégration même en rattrapage
 	            p.setActive(true);
 	            toSave.add(p);
 	            log.info("Proposition {} mise à jour (rattrapage)", p.getMatricule());
 	        } else {
 	            // Nouvelle proposition
+	        	p.setDateIntegration(LocalDateTime.now()); // Nouvelle intégration pour les nouvelles propositions même en rattrapage
 	            p.setActive(true);
 	            toSave.add(p);
 	            log.info("Nouvelle proposition {} insérée (rattrapage)", p.getMatricule());

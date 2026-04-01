@@ -243,6 +243,40 @@
           </div>
         </div>
       </div>
+	  
+	  <!-- ANNÉE -->
+	  <div class="fr-col-12 fr-col-md-4">
+	    <div class="dropdown-filter">
+	      <button class="dropdown-btn" (click)="toggleDropdown('anneeOpen')">
+	        {{ annee || ('FILTERS.ANNEE' | translate) }}
+	        <span class="fr-icon-arrow-down-s-line"></span>
+	      </button>
+
+	      <div class="dropdown-panel" *ngIf="anneeOpen">
+
+	        <div class="fr-checkbox-group fr-mb-2w">
+	          <input type="checkbox"
+	                 id="annee_all"
+	                 [checked]="!annee"
+	                 (change)="resetFilter('annee')">
+	          <label for="annee_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
+	        </div>
+
+	        <div class="checkbox-list">
+	          <div class="fr-checkbox-group"
+	               *ngFor="let y of anneeOpts">
+	            <input type="checkbox"
+	                   [id]="'annee_' + y"
+	                   [checked]="annee === y"
+	                   (change)="selectSingle('annee', y)">
+	            <label [for]="'annee_' + y">{{ y }}</label>
+	          </div>
+	        </div>
+
+	      </div>
+	    </div>
+	  </div>
+
 
     </div>
 
@@ -366,7 +400,7 @@
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
   <section class="fr-tags-group fr-mt-2w"
-           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor || annee">
     <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
     <ul class="fr-tags-group__list">
 
@@ -420,6 +454,13 @@
 	      <button class="fr-tag__btn"
 	              (click)="removeFilter('etablissementRor')"
 	              title="Supprimer">×</button>
+	    </span>
+	  </li>
+	  
+	  <li *ngIf="annee">
+	    <span class="fr-tag">
+	      {{ 'FILTERS.ANNEE' | translate }} : {{ annee }}
+	      <button class="fr-tag__btn" (click)="removeFilter('annee')" title="Supprimer">×</button>
 	    </span>
 	  </li>
 

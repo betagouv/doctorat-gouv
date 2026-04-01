@@ -251,6 +251,9 @@ public class PropositionThese {
 	
     @Column(name = "annee")
     private Integer annee;
+    
+    @Column(name = "date_integration")
+    private LocalDateTime dateIntegration;
 	
 	@Column(name = "active", nullable = true)
 	private Boolean active = true;
@@ -878,6 +881,14 @@ public class PropositionThese {
 
 	public void setAnnee(Integer annee) {
 		this.annee = annee;
+	}
+
+	public LocalDateTime getDateIntegration() {
+		return dateIntegration;
+	}
+
+	public void setDateIntegration(LocalDateTime dateIntegration) {
+		this.dateIntegration = dateIntegration;
 	}
 
 }
