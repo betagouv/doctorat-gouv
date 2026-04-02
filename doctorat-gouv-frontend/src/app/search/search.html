@@ -36,10 +36,10 @@
       <!-- DISCIPLINE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
-			{{ discipline ? getDisciplineLabel(discipline) : ('FILTERS.DISCIPLINE' | translate) }}
-            <span class="fr-icon-arrow-down-s-line"></span>
-          </button>
+			<button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
+			  {{ discipline.length > 0 ? getFilterLabelList(discipline, 'discipline') : ('FILTERS.DISCIPLINE' | translate) }}
+			  <span class="fr-icon-arrow-down-s-line"></span>
+			</button>
 
           <div class="dropdown-panel" *ngIf="disciplineOpen">
 
@@ -64,8 +64,8 @@
                    *ngFor="let opt of filteredOptions(disciplineOpts, disciplineSearch)">
                 <input type="checkbox"
                        [id]="'discipline_' + opt"
-                       [checked]="discipline === opt"
-                       (change)="selectSingle('discipline', opt)">
+                       [checked]="discipline.includes(opt)"
+                       (change)="toggleMulti('discipline', opt)">
                 <label [for]="'discipline_' + opt">{{ getDisciplineLabel(opt) }}</label>
               </div>
             </div>
@@ -78,7 +78,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
-			{{ defisSociete ? getDefisSocieteLabel(defisSociete) : ('FILTERS.DEFIS' | translate) }}
+			{{ defisSociete.length > 0 ? getFilterLabelList(defisSociete, 'defisSociete') : ('FILTERS.DEFIS' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -105,8 +105,8 @@
                    *ngFor="let opt of filteredOptions(defisSocieteOpts, defisSocieteSearch)">
                 <input type="checkbox"
                        [id]="'defisSociete_' + opt"
-                       [checked]="defisSociete === opt"
-                       (change)="selectSingle('defisSociete', opt)">
+                       [checked]="defisSociete.includes(opt)"
+                       (change)="toggleMulti('defisSociete', opt)">
                 <label [for]="'defisSociete_' + opt">{{ getDefisSocieteLabel(opt) }}</label>
               </div>
             </div>
@@ -119,7 +119,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('localisationOpen')">
-            {{ localisation || 'FILTERS.LOCALISATION' | translate }}
+			{{ localisation.length > 0 ? getFilterLabelList(localisation, 'localisation') : ('FILTERS.LOCALISATION' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -146,8 +146,8 @@
                    *ngFor="let opt of filteredOptions(localisationOpts, localisationSearch)">
                 <input type="checkbox"
                        [id]="'localisation_' + opt"
-                       [checked]="localisation === opt"
-                       (change)="selectSingle('localisation', opt)">
+                       [checked]="localisation.includes(opt)"
+                       (change)="toggleMulti('localisation', opt)">
                 <label [for]="'localisation_' + opt">{{ opt }}</label>
               </div>
             </div>
@@ -166,7 +166,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('laboratoireOpen')">
-            {{ laboratoire || 'FILTERS.LABO' | translate }}
+			{{ laboratoire.length > 0 ? getFilterLabelList(laboratoire, 'laboratoire') : ('FILTERS.LABO' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -193,8 +193,8 @@
                    *ngFor="let opt of filteredOptions(laboratoireOpts, laboratoireSearch)">
                 <input type="checkbox"
                        [id]="'laboratoire_' + opt"
-                       [checked]="laboratoire === opt"
-                       (change)="selectSingle('laboratoire', opt)">
+                       [checked]="laboratoire.includes(opt)"
+                       (change)="toggleMulti('laboratoire', opt)">
                 <label [for]="'laboratoire_' + opt">{{ opt }}</label>
               </div>
             </div>
@@ -207,7 +207,7 @@
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
           <button class="dropdown-btn" (click)="toggleDropdown('ecoleOpen')">
-            {{ ecole || 'FILTERS.ECOLE' | translate }}
+			{{ ecole.length > 0 ? getFilterLabelList(ecole, 'ecole') : ('FILTERS.ECOLE' | translate) }}
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
@@ -234,8 +234,8 @@
                    *ngFor="let opt of filteredOptions(ecoleOpts, ecoleSearch)">
                 <input type="checkbox"
                        [id]="'ecole_' + opt"
-                       [checked]="ecole === opt"
-                       (change)="selectSingle('ecole', opt)">
+                       [checked]="ecole.includes(opt)"
+                       (change)="toggleMulti('ecole', opt)">
                 <label [for]="'ecole_' + opt">{{ opt }}</label>
               </div>
             </div>
@@ -248,7 +248,7 @@
 	  <div class="fr-col-12 fr-col-md-4">
 	    <div class="dropdown-filter">
 	      <button class="dropdown-btn" (click)="toggleDropdown('anneeOpen')">
-			{{ annee ? formatAcademicYear(annee) : ('FILTERS.ANNEE' | translate) }}
+			{{ annee.length > 0 ? getFilterLabelList(annee, 'annee') : ('FILTERS.ANNEE' | translate) }}
 	        <span class="fr-icon-arrow-down-s-line"></span>
 	      </button>
 
@@ -267,8 +267,8 @@
 	               *ngFor="let y of anneeOpts">
 	            <input type="checkbox"
 	                   [id]="'annee_' + y"
-	                   [checked]="annee === y"
-	                   (change)="selectSingle('annee', y)">
+	                   [checked]="annee.includes(y)"
+	                   (change)="toggleMulti('annee', y)">
 				<label [for]="'annee_' + y">{{ formatAcademicYear(y) }}</label>
 	          </div>
 	        </div>
@@ -399,73 +399,80 @@
 	</div>
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
-  <section class="fr-tags-group fr-mt-2w"
-           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor || annee">
-    <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
-    <ul class="fr-tags-group__list">
+	<section class="fr-tags-group fr-mt-2w"
+	         *ngIf="discipline.length || defisSociete.length || localisation.length || laboratoire.length || ecole.length || ecoleDoctoraleNumero || etablissementRor || annee.length">
 
-      <li *ngIf="discipline">
-        <span class="fr-tag">
-			{{ 'FILTERS.DISCIPLINE' | translate }} : {{ getDisciplineLabel(discipline) }}
-          <button class="fr-tag__btn" (click)="removeFilter('discipline')" title="Supprimer">×</button>
-        </span>
-      </li>
+	  <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
 
-      <li *ngIf="defisSociete">
-        <span class="fr-tag">
-			{{ 'FILTERS.DEFIS' | translate }} : {{ getDefisSocieteLabel(defisSociete) }}
-          <button class="fr-tag__btn" (click)="removeFilter('defisSociete')" title="Supprimer">×</button>
-        </span>
-      </li>
+	  <ul class="fr-tags-group__list">
 
-      <li *ngIf="localisation">
-        <span class="fr-tag">
-          {{ 'FILTERS.LOCALISATION' | translate }} : {{ localisation }}
-          <button class="fr-tag__btn" (click)="removeFilter('localisation')" title="Supprimer">×</button>
-        </span>
-      </li>
+	    <!-- DISCIPLINE -->
+	    <li *ngFor="let d of discipline">
+	      <span class="fr-tag">
+	        {{ getDisciplineLabel(d) }}
+	        <button class="fr-tag__btn" (click)="removeValue('discipline', d)" title="Supprimer">×</button>
+	      </span>
+	    </li>
 
-      <li *ngIf="laboratoire">
-        <span class="fr-tag">
-          {{ 'FILTERS.LABO' | translate }} : {{ laboratoire }}
-          <button class="fr-tag__btn" (click)="removeFilter('laboratoire')" title="Supprimer">×</button>
-        </span>
-      </li>
+	    <!-- DEFIS DE SOCIETE -->
+	    <li *ngFor="let d of defisSociete">
+	      <span class="fr-tag">
+	        {{ getDefisSocieteLabel(d) }}
+	        <button class="fr-tag__btn" (click)="removeValue('defisSociete', d)" title="Supprimer">×</button>
+	      </span>
+	    </li>
 
-      <li *ngIf="ecole">
-        <span class="fr-tag">
-          {{ 'FILTERS.ECOLE' | translate }} : {{ ecole }}
-          <button class="fr-tag__btn" (click)="removeFilter('ecole')" title="Supprimer">×</button>
-        </span>
-      </li>
-	  
-	  <li *ngIf="ecoleDoctoraleNumero">
-	    <span class="fr-tag">
-	      École doctorale : {{ ecoleDoctoraleNumero }}
-	      <button class="fr-tag__btn"
-	              (click)="removeFilter('ecoleDoctoraleNumero')"
-	              title="Supprimer">×</button>
-	    </span>
-	  </li>
+	    <!-- LOCALISATION -->
+	    <li *ngFor="let loc of localisation">
+	      <span class="fr-tag">
+	        {{ loc }}
+	        <button class="fr-tag__btn" (click)="removeValue('localisation', loc)" title="Supprimer">×</button>
+	      </span>
+	    </li>
 
-	  <li *ngIf="etablissementRor">
-	    <span class="fr-tag">
-	      Établissement ROR : {{ etablissementRor }}
-	      <button class="fr-tag__btn"
-	              (click)="removeFilter('etablissementRor')"
-	              title="Supprimer">×</button>
-	    </span>
-	  </li>
-	  
-	  <li *ngIf="annee">
-	    <span class="fr-tag">
-	      {{ 'FILTERS.ANNEE' | translate }} : {{ formatAcademicYear(annee) }}
-	      <button class="fr-tag__btn" (click)="removeFilter('annee')" title="Supprimer">×</button>
-	    </span>
-	  </li>
+	    <!-- LABORATOIRE -->
+	    <li *ngFor="let lab of laboratoire">
+	      <span class="fr-tag">
+	        {{ lab }}
+	        <button class="fr-tag__btn" (click)="removeValue('laboratoire', lab)" title="Supprimer">×</button>
+	      </span>
+	    </li>
 
-    </ul>
-  </section>
+	    <!-- ECOLE -->
+	    <li *ngFor="let e of ecole">
+	      <span class="fr-tag">
+	        {{ e }}
+	        <button class="fr-tag__btn" (click)="removeValue('ecole', e)" title="Supprimer">×</button>
+	      </span>
+	    </li>
+
+	    <!-- ECOLE DOCTORALE (mono) -->
+	    <li *ngIf="ecoleDoctoraleNumero">
+	      <span class="fr-tag">
+	        École doctorale : {{ ecoleDoctoraleNumero }}
+	        <button class="fr-tag__btn" (click)="removeFilter('ecoleDoctoraleNumero')" title="Supprimer">×</button>
+	      </span>
+	    </li>
+
+	    <!-- ETABLISSEMENT ROR (mono) -->
+	    <li *ngIf="etablissementRor">
+	      <span class="fr-tag">
+	        Établissement ROR : {{ etablissementRor }}
+	        <button class="fr-tag__btn" (click)="removeFilter('etablissementRor')" title="Supprimer">×</button>
+	      </span>
+	    </li>
+
+	    <!-- ANNEE -->
+	    <li *ngFor="let y of annee">
+	      <span class="fr-tag">
+	        {{ formatAcademicYear(y) }}
+	        <button class="fr-tag__btn" (click)="removeValue('annee', y)" title="Supprimer">×</button>
+	      </span>
+	    </li>
+
+	  </ul>
+	</section>
+
 
   <section class="fr-mt-2w" *ngIf="results.length">
 

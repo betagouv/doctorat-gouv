@@ -41,6 +41,14 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 
+type MultiFilterKey =
+  'discipline' |
+  'localisation' |
+  'laboratoire' |
+  'ecole' |
+  'defisSociete' |
+  'annee';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -81,14 +89,14 @@ export class Search implements OnInit, OnDestroy {
   /* ------------------- Modèle de recherche ------------------- */
   query = '';
 
-  discipline = '';
-  localisation = '';
-  laboratoire = '';
-  ecole = '';
-  defisSociete = '';
+  discipline: string[] = [];
+  localisation: string[] = [];
+  laboratoire: string[] = [];
+  ecole: string[] = [];
+  defisSociete: string[] = [];
   ecoleDoctoraleNumero = '';
   etablissementRor = '';
-  annee = '';
+  annee: string[] = [];
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -187,11 +195,12 @@ export class Search implements OnInit, OnDestroy {
 		  if (params['ecoledoctorale']) {
 
 			  // Initialiser les filtres
-			  this.discipline = ''; 
-			  this.localisation = ''; 
-			  this.laboratoire = ''; 
-			  this.ecole = ''; 
-			  this.defisSociete = ''; 
+			  this.discipline = saved.discipline || []; 
+			  this.localisation = saved.localisation || [];
+			  this.laboratoire = saved.laboratoire || [];
+			  this.ecole = saved.ecole || [];
+			  this.defisSociete = saved.defisSociete || [];
+			  this.annee = saved.annee || [];
 			  this.query = '';
 
 			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
@@ -200,11 +209,12 @@ export class Search implements OnInit, OnDestroy {
 		  if (params['etablissementror']) { 
 			
 			// Initialiser les filtres
-			this.discipline = ''; 
-			this.localisation = ''; 
-			this.laboratoire = ''; 
-			this.ecole = ''; 
-			this.defisSociete = ''; 
+			this.discipline = saved.discipline || []; 
+			this.localisation = saved.localisation || [];
+			this.laboratoire = saved.laboratoire || [];
+			this.ecole = saved.ecole || [];
+			this.defisSociete = saved.defisSociete || [];
+			this.annee = saved.annee || [];
 			this.query = '';
 			
 			this.etablissementRor = params['etablissementror'];
@@ -306,15 +316,15 @@ export class Search implements OnInit, OnDestroy {
     );
   }
 
-  selectSingle(filterName: string, value: string): void {
-    (this as any)[filterName] = value;
-    this.onFilterChange();
-  }
+//  selectSingle(filterName: string, value: string): void {
+//    (this as any)[filterName] = value;
+//    this.onFilterChange();
+//  }
 
-  resetFilter(filterName: string): void {
-    (this as any)[filterName] = '';
-    this.onFilterChange();
-  }
+resetFilter(filterName: MultiFilterKey) {
+  this[filterName] = [] as any;
+  this.onFilterChange();
+}
 
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
@@ -361,11 +371,12 @@ export class Search implements OnInit, OnDestroy {
   private buildActiveFilters(): Record<string, string> {
     const active: Record<string, string> = {};
 
-    if (this.discipline) active['discipline'] = this.discipline;
-    if (this.localisation) active['localisation'] = this.localisation;
-    if (this.laboratoire) active['laboratoire'] = this.laboratoire;
-    if (this.ecole) active['ecole'] = this.ecole;
-    if (this.defisSociete) active['defisSociete'] = this.defisSociete;
+	if (this.discipline.length > 0) active['discipline'] = this.discipline.join(';');
+    if (this.localisation.length > 0) active['localisation'] = this.localisation.join(';');
+    if (this.laboratoire.length > 0) active['laboratoire'] = this.laboratoire.join(';');
+    if (this.ecole.length > 0) active['ecole'] = this.ecole.join(';');
+    if (this.defisSociete.length > 0) active['defisSociete'] = this.defisSociete.join(';');
+	if (this.annee.length > 0) active['annee'] = this.annee.join(';');
 	if (this.ecoleDoctoraleNumero) {
 	  active['ecoleDoctoraleNumero'] = this.ecoleDoctoraleNumero;
 	}
@@ -382,8 +393,6 @@ export class Search implements OnInit, OnDestroy {
 	} else if (this.activeFilter === 'supervision') {
 	  active['typeProposition'] = 'offre';
 	}
-	
-	if (this.annee) active['annee'] = this.annee;
 	
 	active['sortField'] = this.sortField;
 	active['sortDirection'] = this.sortDirection;
@@ -767,7 +776,40 @@ export class Search implements OnInit, OnDestroy {
     const y = Number(year);
     return `${y}/${y + 1}`;
   }
+  
+  toggleMulti(filterName: MultiFilterKey, value: string) {
+	const list = this[filterName] as string[];
 
+	if (list.includes(value)) {
+	  this[filterName] = list.filter(v => v !== value) as any;
+	} else {
+	  this[filterName] = [...list, value] as any;
+	}
+
+	this.onFilterChange();
+
+  }
+  
+  getFilterLabelList(list: string[], type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'): string {
+    if (!list || list.length === 0) return '';
+
+    switch (type) {
+      case 'discipline':
+        return list.map(d => this.getDisciplineLabel(d)).join('; ');
+      case 'defisSociete':
+        return list.map(d => this.getDefisSocieteLabel(d)).join('; ');
+      case 'annee':
+        return list.map(y => this.formatAcademicYear(y)).join('; ');
+      default:
+        return list.join('; ');
+    }
+  }
+
+  removeValue(filterName: MultiFilterKey, value: string) {
+    const list = this[filterName] as string[];
+    this[filterName] = list.filter(v => v !== value) as any;
+    this.onFilterChange();
+  }
 
 
 }
