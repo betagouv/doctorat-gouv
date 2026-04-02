@@ -39,6 +39,8 @@ import { Header } from '../header/header';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -51,7 +53,8 @@ import { TranslateService } from '@ngx-translate/core';
     DsfrTagModule,
     DsfrFooterModule,
     DsfrButtonModule,
-	TranslateModule
+	TranslateModule,
+	DynamicDatePipe
   ],
   templateUrl: './search.html',
   styleUrls: ['./search.scss']
@@ -66,6 +69,14 @@ export class Search implements OnInit, OnDestroy {
   currentPage = 0;
   totalPages = 0;
   totalResults = 0;
+  isInitialLoad = true;
+
+  
+  /* ------------------- Tri ------------------- */
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
+  sortOpen = false;
+
 
   /* ------------------- Modèle de recherche ------------------- */
   query = '';
@@ -77,6 +88,7 @@ export class Search implements OnInit, OnDestroy {
   defisSociete = '';
   ecoleDoctoraleNumero = '';
   etablissementRor = '';
+  annee = '';
 
   /* ------------------- Options ------------------- */
   disciplineOpts: string[] = [];
@@ -84,6 +96,7 @@ export class Search implements OnInit, OnDestroy {
   laboratoireOpts: string[] = [];
   ecoleOpts: string[] = [];
   defisSocieteOpts: string[] = [];
+  anneeOpts: string[] = [];
 
   /* ------------------- Dropdown states ------------------- */
   disciplineOpen = false;
@@ -91,6 +104,7 @@ export class Search implements OnInit, OnDestroy {
   laboratoireOpen = false;
   ecoleOpen = false;
   defisSocieteOpen = false;
+  anneeOpen = false;
 
   /* ------------------- Search inside dropdown ------------------- */
   disciplineSearch = '';
@@ -196,10 +210,13 @@ export class Search implements OnInit, OnDestroy {
 			this.etablissementRor = params['etablissementror'];
 		  }
 	  });
+	  
+	  this.anneeOpts = this.generateYears();
+
 
 	  this.loadFilterOptions();
 	  
-	  // 🔥 Restaurer les filtres sauvegardés
+	  // Restaurer les filtres sauvegardés
 	  const saved = this.searchFiltersService.load();
 	  if (saved) {
 	    this.query = saved.query || '';
@@ -210,24 +227,51 @@ export class Search implements OnInit, OnDestroy {
 	    this.defisSociete = saved.defisSociete || '';
 	    this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
 	    this.etablissementRor = saved.etablissementRor || '';
+		this.annee = saved.annee || '';
+		this.showMoreFilters = saved.showMoreFilters ?? false;
 		
 		if (saved.typeProposition) {
 		  this.activeFilter = saved.typeProposition;
 		}
+		
+		if (saved.sortField) {
+		  this.sortField = saved.sortField;
+		}
 
+		if (saved.sortDirection) {
+		  this.sortDirection = saved.sortDirection;
+		}
+		
+        this.currentPage = saved.page ?? 0;
 
-	    // Relancer la recherche avec les filtres restaurés
-	    this.onSearch(0);
 	  }
 
 	
-	// Charger les résultats dès l'arrivée sur la page 
-	this.onSearch(0);
-
+	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
+	this.onSearch(this.currentPage);
+	this.isInitialLoad = false;
+	
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
       .subscribe(() => this.onSearch(0));
   }
+  
+  ngAfterViewInit(): void {
+    const saved = this.searchFiltersService.load();
+
+    if (saved?.scrollPosition) {
+      const target = saved.scrollPosition;
+
+      const interval = setInterval(() => {
+        const cards = document.querySelectorAll('.fr-card');
+        if (cards.length > 0) {
+          window.scrollTo({ top: target, behavior: 'auto' });
+          clearInterval(interval);
+        }
+      }, 20);
+    }
+  }
+
 
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();
@@ -274,7 +318,6 @@ export class Search implements OnInit, OnDestroy {
 
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
-
     // Sauvegarder les filtres
     this.searchFiltersService.save({
       query: this.query,
@@ -285,10 +328,20 @@ export class Search implements OnInit, OnDestroy {
       defisSociete: this.defisSociete,
       ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
       etablissementRor: this.etablissementRor,
-	  typeProposition: this.activeFilter 
+	  typeProposition: this.activeFilter,
+	  sortField: this.sortField,
+	  sortDirection: this.sortDirection,
+	  annee: this.annee,
+	  showMoreFilters: this.showMoreFilters,
+	  scrollPosition: 0
+	  // page: this.currentPage
     });
 
-    this.filterChanges$.next();
+	// ⚠️ Ne pas déclencher filterChanges$ pendant le chargement initial
+	if (!this.isInitialLoad) {
+	  this.filterChanges$.next();
+	}
+	
   }
 
 
@@ -323,12 +376,17 @@ export class Search implements OnInit, OnDestroy {
 
     if (this.query?.trim()) active['query'] = this.query.trim();
 	
-	// 🔥 AJOUT : filtre typeProposition
+	// AJOUT : filtre typeProposition
 	if (this.activeFilter === 'thesis') {
 	  active['typeProposition'] = 'proposition';
 	} else if (this.activeFilter === 'supervision') {
 	  active['typeProposition'] = 'offre';
 	}
+	
+	if (this.annee) active['annee'] = this.annee;
+	
+	active['sortField'] = this.sortField;
+	active['sortDirection'] = this.sortDirection;
 
     return active;
   }
@@ -343,6 +401,23 @@ export class Search implements OnInit, OnDestroy {
         this.currentPage = data.number;
         this.totalPages = data.totalPages;
         this.totalResults = data.totalElements;
+		
+		// Mettre à jour la page dans le storage
+		this.searchFiltersService.save({
+		  query: this.query,
+		  discipline: this.discipline,
+		  localisation: this.localisation,
+		  laboratoire: this.laboratoire,
+		  ecole: this.ecole,
+		  defisSociete: this.defisSociete,
+		  ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+		  etablissementRor: this.etablissementRor,
+		  typeProposition: this.activeFilter,
+		  sortField: this.sortField,
+		  sortDirection: this.sortDirection,
+		  annee: this.annee,
+		  page: this.currentPage
+		});
 		
         // Après chargement des résultats, scroller vers le haut de la liste
         // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
@@ -539,17 +614,26 @@ export class Search implements OnInit, OnDestroy {
     this.localisationOpen = false;
     this.laboratoireOpen = false;
     this.ecoleOpen = false;
+	this.anneeOpen = false;
+	this.sortOpen = false;
+
   }
-  
-/*  goToDetail(id: number): void {
-    this.router.navigate(['/proposition'], { queryParams: { id } });
-  }*/
   
   goToDetail(id: number): void {
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0) {
       return; // l'utilisateur sélectionne du texte → ne pas naviguer
     }
+	
+	// Sauvegarder la position actuelle du scroll pour pouvoir y revenir après consultation du détail
+	const pos = window.scrollY;
+	const saved = this.searchFiltersService.load() || {};
+
+	this.searchFiltersService.save({
+	  ...saved,
+	  scrollPosition: pos,
+	  showMoreFilters: this.showMoreFilters
+	});
 
     this.router.navigate(['/proposition'], { queryParams: { id } });
   }
@@ -643,6 +727,47 @@ export class Search implements OnInit, OnDestroy {
     this.activeFilter = filter;
     this.onFilterChange();
   }
+  
+  setSortDirection(dir: 'ASC' | 'DESC') {
+    this.sortDirection = dir;
+    this.onFilterChange();
+  }
+  
+  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature') {
+    this.sortField = field;
+    this.sortOpen = false;
+    this.onFilterChange();
+  }
+
+  
+  toggleSortDirection() {
+    this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    this.onFilterChange();
+  }
+  
+  generateYearsOld(): string[] {
+    const current = new Date().getFullYear();
+    const years: string[] = [];
+    for (let y = current; y >= current - 1; y--) {
+      years.push(String(y));
+    }
+    return years;
+  }
+  
+  generateYears(): string[] {
+    const current = new Date().getFullYear();
+
+    // On veut N-1, N, N+1
+    const years = [current - 1, current, current + 1];
+
+    return years.map(y => String(y));
+  }
+  
+  formatAcademicYear(year: string): string {
+    const y = Number(year);
+    return `${y}/${y + 1}`;
+  }
+
 
 
 }

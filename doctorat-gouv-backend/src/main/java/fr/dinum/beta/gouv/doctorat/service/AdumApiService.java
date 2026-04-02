@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public class AdumApiService {
 	public String importAndSavePropositionsFromAdum() {
 		log.info("Import des propositions de thèses depuis ADUM pour l'année {}", properties.getYear());
 		String url = String.format("%s?annee=%d", properties.getBaseUrl(), properties.getYear());
+		log.info("URL de l'API ADUM : {}", url);
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 		log.info("Import terminé avec le statut HTTP : {}", response.getStatusCode());
 		String responseBody = response.getBody();
@@ -94,25 +96,39 @@ public class AdumApiService {
 		List<PropositionThese> toSave = new ArrayList<>();
 
 		for (PropositionThese p : propositions) {
+			p.setAnnee(properties.getYear());
 			// Vérifie si la proposition doit être insérée ou mise à jour
 			Optional<PropositionThese> existingOpt = propositionTheseRepository.findForUpdate(p.getMatricule(), p.getDateMaj());
 
 			if (existingOpt.isPresent()) {
 				// Mise à jour nécessaire
 				p.setId(existingOpt.get().getId());
+				p.setDateIntegration(existingOpt.get().getDateIntegration()); // On conserve l’ancienne date d’intégration
 				p.setActive(true); // réactivation si besoin
 				toSave.add(p);
 				log.info("Proposition {} mise à jour (dateMaj plus récente)", p.getMatricule());
 			} else {
 				// Vérifie si elle existe déjà sans besoin de mise à jour
-				if (propositionTheseRepository.findByMatricule(p.getMatricule()).isEmpty()) {
-					// Nouvelle proposition
-					p.setActive(true);
-					toSave.add(p);
-					log.info("Nouvelle proposition {} insérée", p.getMatricule());
-				} else {
-					log.debug("Proposition {} ignorée (déjà à jour)", p.getMatricule());
-				}
+				Optional<PropositionThese> existing = propositionTheseRepository.findByMatricule(p.getMatricule());
+
+			    if (existing.isEmpty()) {
+			        // Nouvelle proposition, il faut l'insérer
+			    	p.setDateIntegration(LocalDateTime.now());
+			        p.setActive(true);
+			        toSave.add(p);
+			        log.info("Nouvelle proposition {} insérée", p.getMatricule());
+
+			    } else if (Boolean.FALSE.equals(existing.get().getActive())) {
+			        // Réactivation
+			        p.setId(existing.get().getId());
+			        p.setDateIntegration(existing.get().getDateIntegration()); //  on conserve l’ancienne date
+			        p.setActive(true);
+			        toSave.add(p);
+			        log.info("Proposition {} réactivée (était désactivée)", p.getMatricule());
+
+			    } else {
+			        log.debug("Proposition {} ignorée (déjà à jour)", p.getMatricule());
+			    }
 			}
 		}
 
@@ -150,6 +166,8 @@ public class AdumApiService {
 	    for (PropositionThese p : propositions) {
 	    	
 	    	log.info("Traitement de la proposition (matricule {}) en mode RATTRAPAGE", p.getMatricule());
+	    	
+	    	p.setAnnee(properties.getYear());
 
 	        Optional<PropositionThese> existingOpt =
 	                propositionTheseRepository.findByMatricule(p.getMatricule());
@@ -157,11 +175,13 @@ public class AdumApiService {
 	        if (existingOpt.isPresent()) {
 	            // Mise à jour systématique
 	            p.setId(existingOpt.get().getId());
+	            p.setDateIntegration(existingOpt.get().getDateIntegration()); // On conserve l’ancienne date d’intégration même en rattrapage
 	            p.setActive(true);
 	            toSave.add(p);
 	            log.info("Proposition {} mise à jour (rattrapage)", p.getMatricule());
 	        } else {
 	            // Nouvelle proposition
+	        	p.setDateIntegration(LocalDateTime.now()); // Nouvelle intégration pour les nouvelles propositions même en rattrapage
 	            p.setActive(true);
 	            toSave.add(p);
 	            log.info("Nouvelle proposition {} insérée (rattrapage)", p.getMatricule());
@@ -184,6 +204,8 @@ public class AdumApiService {
 	private void deactivateMissingPropositions(List<PropositionThese> propositionsAdum) {
 		
 		log.info("Début de la désactivation des propositions absentes d'ADUM");
+		
+	    int currentYear = properties.getYear();
 
 	    // 1. Matricules présents dans ADUM
 	    Set<String> matriculesAdum = propositionsAdum.stream()
@@ -194,23 +216,30 @@ public class AdumApiService {
 	    List<PropositionThese> allLocal = propositionTheseRepository.findAll();
 
 	    // 3. Désactivation des propositions absentes d'ADUM
-	    List<PropositionThese> toDeactivate = allLocal.stream()
+	    List<PropositionThese> toDesactivate = allLocal.stream()
 	            // On considère NULL comme actif
 	            //.filter(p -> p.getActive() == null || p.getActive() == true)
 	    		.filter(p -> !Boolean.FALSE.equals(p.getActive()))
+	    		// On ne désactive que les propositions de l'année en cours
+	            .filter(p -> p.getAnnee() != null && p.getAnnee() == currentYear)
 	            // Si ADUM ne renvoie plus ce matricule → désactivation
 	            .filter(p -> !matriculesAdum.contains(p.getMatricule()))
 	            .peek(p -> p.setActive(false))
 	            .collect(Collectors.toList());
 
-	    if (!toDeactivate.isEmpty()) {
-	        log.info("Désactivation de {} propositions absentes d'ADUM", toDeactivate.size());
-	        propositionTheseRepository.saveAll(toDeactivate);
+	    if (!toDesactivate.isEmpty()) {
+	        log.info("Désactivation de {} propositions absentes d'ADUM", toDesactivate.size());
+	        propositionTheseRepository.saveAll(toDesactivate);
 	    } else {
 	        log.info("Aucune désactivation nécessaire");
 	    }
 	    
 	    log.info("Fin de la désactivation des propositions absentes d'ADUM");
 	}
+	
+	public AdumApiProperties getProperties() {
+	    return properties;
+	}
+
 	
 }

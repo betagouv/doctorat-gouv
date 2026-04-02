@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,8 @@ import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class PropositionTheseService {
+	
+	private static final Logger log = LoggerFactory.getLogger(PropositionTheseService.class);
 
     private final PropositionTheseRepository repo;
 
@@ -70,8 +74,15 @@ public class PropositionTheseService {
                                             int page,
                                             int size) {
         Specification<PropositionThese> spec = buildSpecification(filters);
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.DESC, "dateCreation"));
+        
+        String sortField = filters.getOrDefault("sortField", "dateMiseEnLigne");
+        String sortDirection = filters.getOrDefault("sortDirection", "DESC");
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortDirection)
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
         Page<PropositionThese> entities = repo.findAll(spec, pageable);
         return entities.map(PropositionTheseMapper::toDto);
@@ -138,6 +149,15 @@ public class PropositionTheseService {
 			    andPredicates.add(cb.equal(root.get("etablissementRor"), value));
 				case "typeProposition" -> 
 			    andPredicates.add(cb.equal(root.get("typeProposition"), value));
+				case "annee" -> {
+				    try {
+				        Integer year = Integer.valueOf(value);
+				        andPredicates.add(cb.equal(root.get("annee"), year));
+				    } catch (NumberFormatException e) {
+				        // ignorer si la valeur n'est pas un entier
+				    	log.warn("Valeur d'année invalide pour le filtre 'annee' : {}", value);
+				    }
+				}
 
 				// -------------------------------------------------
 				// Recherche texte libre (déjà existante)
