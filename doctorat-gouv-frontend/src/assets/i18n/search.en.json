@@ -10,7 +10,11 @@
     "BACK_TO_TOP": "Back to top",
 	"ALL_OFFERS": "All offers",
 	"THESIS_OFFER": "PhD offers",
-	"SUPERVISION_OFFER": "Mentoring or partnership offers"
+	"SUPERVISION_OFFER": "Mentoring or partnership offers",
+	"SORT_BY": "Sort by :",
+	"SORT_POSTING_DATE": "Posting date",
+	"SORT_DEADLINE": "Application deadline",
+	"DATE_MISE_EN_LIGNE": "Publication date :"
   },
 
   "FILTERS": {
@@ -21,6 +25,7 @@
     "ECOLE": "University or institution",
     "ED": "Doctoral school",
     "ROR": "ROR institution",
+	"ANNEE": "Academic year",
     "SELECT_ALL": "Select all",
     "SEARCH": "Search"
   },

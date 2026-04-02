@@ -243,6 +243,40 @@
           </div>
         </div>
       </div>
+	  
+	  <!-- ANNÉE -->
+	  <div class="fr-col-12 fr-col-md-4">
+	    <div class="dropdown-filter">
+	      <button class="dropdown-btn" (click)="toggleDropdown('anneeOpen')">
+			{{ annee ? formatAcademicYear(annee) : ('FILTERS.ANNEE' | translate) }}
+	        <span class="fr-icon-arrow-down-s-line"></span>
+	      </button>
+
+	      <div class="dropdown-panel" *ngIf="anneeOpen">
+
+	        <div class="fr-checkbox-group fr-mb-2w">
+	          <input type="checkbox"
+	                 id="annee_all"
+	                 [checked]="!annee"
+	                 (change)="resetFilter('annee')">
+	          <label for="annee_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
+	        </div>
+
+	        <div class="checkbox-list">
+	          <div class="fr-checkbox-group"
+	               *ngFor="let y of anneeOpts">
+	            <input type="checkbox"
+	                   [id]="'annee_' + y"
+	                   [checked]="annee === y"
+	                   (change)="selectSingle('annee', y)">
+				<label [for]="'annee_' + y">{{ formatAcademicYear(y) }}</label>
+	          </div>
+	        </div>
+
+	      </div>
+	    </div>
+	  </div>
+
 
     </div>
 
@@ -261,49 +295,100 @@
 </div>
 
 <main class="fr-container fr-py-3w search-main">
+
+	<div class="switch-and-sort fr-mt-3w menu-margin">
 	
-	<! ===================== SWITCH OFFRES/SUJETS ===================== -->	
-	<div class="offer-switch fr-mt-3w menu-margin">
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'all'"
-	    (click)="setFilter('all')"
-	  >
-	    {{ 'SEARCH.ALL_OFFERS' | translate }}
-	  </button>
-
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'thesis'"
-	    (click)="setFilter('thesis')"
-	  >
-	    {{ 'SEARCH.THESIS_OFFER' | translate }}
-	  </button>
-
-	  <button
-	    class="switch-btn"
-	    [class.active]="activeFilter === 'supervision'"
-	    (click)="setFilter('supervision')"
-	  >
-	    {{ 'SEARCH.SUPERVISION_OFFER' | translate }}
-	  </button>
+		<!-- =====================SWITCH OFFRES/SUJETS=====================-->
+		<div class="offer-switch fr-mt-3w menu-margin">
+			<button class="switch-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+				{{ 'SEARCH.ALL_OFFERS' | translate }}
+			</button>
+	
+			<button class="switch-btn" [class.active]="activeFilter === 'thesis'" (click)="setFilter('thesis')">
+				{{ 'SEARCH.THESIS_OFFER' | translate }}
+			</button>
+	
+			<button class="switch-btn" [class.active]="activeFilter === 'supervision'" (click)="setFilter('supervision')">
+				{{ 'SEARCH.SUPERVISION_OFFER' | translate }}
+			</button>
+		</div>
+	
+		<!-- TRI PAR DATE Style 1 -->
+		<!--			<div class="sort-menu">-->
+		<!--			  <label>{{ 'SEARCH.SORT_BY' | translate }}</label>-->
+	
+		<!--			  <select [(ngModel)]="sortField" (change)="onFilterChange()">-->
+		<!--			    <option value="dateMiseEnLigne">{{ 'SEARCH.SORT_POSTING_DATE' | translate }}</option>-->
+		<!--			    <option value="dateLimiteCandidature">{{ 'SEARCH.SORT_DEADLINE' | translate }}</option>-->
+		<!--			  </select>-->
+	
+		<!--			  <button class="sort-arrow" (click)="toggleSortDirection()">-->
+		<!--			    <span *ngIf="sortDirection === 'DESC'">⬇️⬆️</span>-->
+		<!--			    <span *ngIf="sortDirection === 'ASC'">⬇️⬆️</span>-->
+		<!--			  </button>-->
+		<!--			</div>-->
+	
+		<!-- TRI PAR DATE Style 2 -->
+		<div class="sort-menu">
+	
+			<label class="sort-label">{{ 'SEARCH.SORT_BY' | translate }}</label>
+	
+			<!-- DROPDOWN CUSTOM POUR LE CHAMP -->
+			<div class="dropdown-filter sort-dropdown">
+				<button class="dropdown-btn" (click)="toggleDropdown('sortOpen')">
+					{{ sortField === 'dateMiseEnLigne'
+					? ('SEARCH.SORT_POSTING_DATE' | translate)
+					: ('SEARCH.SORT_DEADLINE' | translate) }}
+					<span class="fr-icon-arrow-down-s-line"></span>
+				</button>
+	
+				<div class="dropdown-panel" *ngIf="sortOpen">
+	
+					<div class="fr-checkbox-group fr-mb-2w">
+						<input type="checkbox" id="sort_posting" [checked]="sortField === 'dateMiseEnLigne'"
+							(change)="setSortField('dateMiseEnLigne')">
+						<label for="sort_posting">{{ 'SEARCH.SORT_POSTING_DATE' | translate }}</label>
+					</div>
+	
+					<div class="fr-checkbox-group fr-mb-2w">
+						<input type="checkbox" id="sort_deadline" [checked]="sortField === 'dateLimiteCandidature'"
+							(change)="setSortField('dateLimiteCandidature')">
+						<label for="sort_deadline">{{ 'SEARCH.SORT_DEADLINE' | translate }}</label>
+					</div>
+	
+				</div>
+			</div>
+	
+			<!-- FLÈCHES ASC / DESC À L’EXTÉRIEUR -->
+			<div class="sort-arrows">
+				<button class="arrow-btn" [class.active]="sortDirection === 'ASC'" (click)="setSortDirection('ASC')">
+					▲
+				</button>
+	
+				<button class="arrow-btn" [class.active]="sortDirection === 'DESC'" (click)="setSortDirection('DESC')">
+					▼
+				</button>
+			</div>
+	
+		</div>
+	
 	</div>
 	
-	<div class="info-bulle-these" *ngIf="activeFilter === 'all' || activeFilter === 'thesis'">
-	  <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
-	  <p class="info-bulle-text">
-	    {{ 'INFO.THESE' | translate }}
-	  </p>
+	<div class="info-bulle-these fade-switch" *ngIf="activeFilter === 'all' || activeFilter === 'thesis'">
+	    <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
+	    <p class="info-bulle-text">
+	        {{ 'INFO.THESE' | translate }}
+	    </p>
 	</div>
 
-	<div class="info-bulle-these" *ngIf="activeFilter === 'supervision'">
-	  <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
-	  <p class="info-bulle-text">
-	    {{ 'INFO.SUPERVISION' | translate }}
-	  </p>
+	<div class="info-bulle-these fade-switch" *ngIf="activeFilter === 'supervision'">
+	    <img src="assets/info-bulle.png" alt="Information" class="info-bulle-icon" />
+	    <p class="info-bulle-text">
+	        {{ 'INFO.SUPERVISION' | translate }}
+	    </p>
 	</div>
 
-	
+
 	<!-- ===================== RÉSULTATS ===================== -->
 	<div class="results-margin">
 		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
@@ -315,7 +400,7 @@
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
   <section class="fr-tags-group fr-mt-2w"
-           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor">
+           *ngIf="discipline || defisSociete || localisation || laboratoire || ecole|| ecoleDoctoraleNumero || etablissementRor || annee">
     <p class="fr-text--bold">{{ 'SEARCH.ACTIVE_FILTERS' | translate }}</p>
     <ul class="fr-tags-group__list">
 
@@ -369,6 +454,13 @@
 	      <button class="fr-tag__btn"
 	              (click)="removeFilter('etablissementRor')"
 	              title="Supprimer">×</button>
+	    </span>
+	  </li>
+	  
+	  <li *ngIf="annee">
+	    <span class="fr-tag">
+	      {{ 'FILTERS.ANNEE' | translate }} : {{ formatAcademicYear(annee) }}
+	      <button class="fr-tag__btn" (click)="removeFilter('annee')" title="Supprimer">×</button>
 	    </span>
 	  </li>
 
@@ -439,6 +531,7 @@
           </div>
 
 		<div class="fr-card__body">
+			
 			<div>
 				<h3 class="fr-card__title custom-blue">
 				  {{ limitWords(getThesisTitle(thesis), 30) }}
@@ -454,12 +547,21 @@
 				: thesis.typeProposition
 				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
 			</p>
-		
+			
 			<div>
 				<p class="fr-card__desc">
 					{{ getLocalizedResume(thesis, 30) }}
 				</p>
 			</div>
+			
+			<!--			<div>-->
+			<!--				<p class="fr-card__desc_date">-->
+			<!--					Date de mise en ligne : {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}<br />-->
+			<!--					Date limite de candidature : {{ thesis.dateLimiteCandidature | dynamicDate:'d MMMM y' }}<br/>-->
+			<!--					 Matricule : {{ thesis.matricule }}-->
+			<!--				</p>-->
+			<!--			</div>-->
+			
 			<div class="fr-mt-2w">
 				<ng-container *ngIf="thesis.motsCles">
 					<strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
@@ -473,13 +575,17 @@
 		
 		</div>
 
-          <div class="fr-card__footer">
-            <a [routerLink]="['/proposition']"
-               [queryParams]="{ id: thesis.id }"
-               class="arrow-link">
-              {{ 'CARDS.DETAIL' | translate }}
-            </a>
-          </div>
+		<div class="fr-card__footer">
+		
+			<p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
+				<em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
+			  {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
+			</p>
+		
+			<a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+				{{ 'CARDS.DETAIL' | translate }}
+			</a>
+		</div>
 
         </div>
       </div>

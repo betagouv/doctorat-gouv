@@ -471,14 +471,21 @@
   }
   
   .offer-switch {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr; /* 2 colonnes */
-      width: 100% !important;
+      width: 100%;
+      display: flex;
+      flex-direction: column; /* empile les boutons */
     }
 
-    .offer-switch .switch-btn:nth-child(3) {
-      grid-column: 1 / -1; /* occupe toute la ligne */
+    .switch-btn {
+      width: 100%;            /* chaque bouton prend toute la largeur */
+      text-align: center;
+      border-radius: 0;       /* optionnel : style plus DSFR */
+      border-bottom: 1px solid #ddd;
     }
+
+    .switch-btn:last-child {
+      border-bottom: none;    /* évite la double bordure */
+    } 
   
   .sort-menu {
     display: none !important;
@@ -710,6 +717,7 @@
   background: white;
   font-size: 0.9rem;
   cursor: pointer;
+  //padding-bottom: 0.45rem !important; /* pour compenser la hauteur de la flèche */
   margin-bottom: 0.35rem; /* espace entre le select et le menu natif */
 }
 
@@ -718,14 +726,6 @@
   flex-direction: column;
   gap: 2px;
 }
-
-.sort-dropdown .dropdown-btn {
-	width: 16rem; /* ajuste selon ton design */
-  white-space: nowrap;        /* empêche le retour à la ligne */
-  overflow: hidden;           /* évite les débordements */
-  text-overflow: ellipsis;    /* ajoute "…" si le texte est trop long */
-}
-
 
 .arrow-btn {
   border: 1px solid transparent;
@@ -746,6 +746,15 @@
 .arrow-btn:hover {
   color: #000091;
 }
+
+/*.sort-dropdown {
+  width: 220px;  ajuste selon ton design 
+}
+
+.sort-dropdown .dropdown-btn {
+  margin-left: 1rem;  optionnel 
+}
+*/
 
 
 /* ========================= */
