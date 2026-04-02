@@ -471,21 +471,14 @@
   }
   
   .offer-switch {
-      width: 100%;
-      display: flex;
-      flex-direction: column; /* empile les boutons */
+      display: grid !important;
+      grid-template-columns: 1fr 1fr; /* 2 colonnes */
+      width: 100% !important;
     }
 
-    .switch-btn {
-      width: 100%;            /* chaque bouton prend toute la largeur */
-      text-align: center;
-      border-radius: 0;       /* optionnel : style plus DSFR */
-      border-bottom: 1px solid #ddd;
+    .offer-switch .switch-btn:nth-child(3) {
+      grid-column: 1 / -1; /* occupe toute la ligne */
     }
-
-    .switch-btn:last-child {
-      border-bottom: none;    /* évite la double bordure */
-    } 
   
   .sort-menu {
     display: none !important;
