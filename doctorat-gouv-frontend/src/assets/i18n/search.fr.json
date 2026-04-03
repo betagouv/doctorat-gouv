@@ -27,7 +27,9 @@
     "ROR": "Établissement ROR",
 	"ANNEE": "Année universitaire",
     "SELECT_ALL": "Tout sélectionner",
-    "SEARCH": "Rechercher"
+    "SEARCH": "Rechercher",
+	"SELECTED_ONE": "sélectionné",
+	"SELECTED_MANY": "sélectionnés"
   },
 
   "CARDS": {

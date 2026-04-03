@@ -790,7 +790,7 @@ resetFilter(filterName: MultiFilterKey) {
 
   }
   
-  getFilterLabelList(list: string[], type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'): string {
+  getFilterLabelListOld0(list: string[], type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'): string {
     if (!list || list.length === 0) return '';
 
     switch (type) {
@@ -804,6 +804,79 @@ resetFilter(filterName: MultiFilterKey) {
         return list.join('; ');
     }
   }
+  
+  getFilterLabelListOld1(
+    list: string[],
+    type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'
+  ): string {
+
+    if (!list || list.length === 0) return '';
+
+    // 1 seul → afficher le libellé complet
+    if (list.length === 1) {
+      return this.getSingleLabel(list[0], type);
+    }
+
+    // 2 éléments → afficher les deux
+    //if (list.length === 2) {
+    //  return this.getSingleLabel(list[0], type) + ', ' + this.getSingleLabel(list[1], type);
+    //}
+
+    // 3+ éléments → afficher "X sélectionnés"
+    return `${list.length} sélectionnés`;
+  }
+  
+  getFilterLabelList(
+    list: string[],
+    type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'
+  ): string {
+
+    if (!list || list.length === 0) return '';
+
+    const label = this.getFilterTitle(type);
+
+    // 1 seul élément → afficher l’élément
+    if (list.length === 1) {
+      const first = this.getSingleLabel(list[0], type);
+      return `${label} (${first})`;
+    }
+
+    // Plusieurs éléments → afficher "X sélectionnés"
+    const word = this.translate.instant(
+      list.length === 1 ? 'FILTERS.SELECTED_ONE' : 'FILTERS.SELECTED_MANY'
+    );
+
+    return `${label} (${list.length} ${word})`;
+  }
+
+
+  getFilterTitle(type: string): string {
+    switch (type) {
+      case 'discipline': return this.translate.instant('FILTERS.DISCIPLINE');
+      case 'defisSociete': return this.translate.instant('FILTERS.DEFIS');
+      case 'localisation': return this.translate.instant('FILTERS.LOCALISATION');
+      case 'laboratoire': return this.translate.instant('FILTERS.LABO');
+      case 'ecole': return this.translate.instant('FILTERS.ECOLE');
+      case 'annee': return this.translate.instant('FILTERS.ANNEE');
+      default: return '';
+    }
+  }
+
+
+
+  private getSingleLabel(value: string, type: string): string {
+    switch (type) {
+      case 'discipline':
+        return this.getDisciplineLabel(value);
+      case 'defisSociete':
+        return this.getDefisSocieteLabel(value);
+      case 'annee':
+        return this.formatAcademicYear(value);
+      default:
+        return value;
+    }
+  }
+
 
   removeValue(filterName: MultiFilterKey, value: string) {
     const list = this[filterName] as string[];
