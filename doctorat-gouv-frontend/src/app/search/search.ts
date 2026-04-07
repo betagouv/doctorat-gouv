@@ -862,21 +862,14 @@ resetFilter(filterName: MultiFilterKey) {
     }
   }
 
-
-
   private getSingleLabel(value: string, type: string): string {
     switch (type) {
-      case 'discipline':
-        return this.getDisciplineLabel(value);
-      case 'defisSociete':
-        return this.getDefisSocieteLabel(value);
-      case 'annee':
-        return this.formatAcademicYear(value);
-      default:
-        return value;
+      case 'discipline': return this.getDisciplineLabel(value);
+      case 'defisSociete': return this.getDefisSocieteLabel(value);
+      case 'annee': return this.formatAcademicYear(value);
+      default: return value;
     }
   }
-
 
   removeValue(filterName: MultiFilterKey, value: string) {
     const list = this[filterName] as string[];
