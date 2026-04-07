@@ -281,15 +281,36 @@
     </div>
 
     <!-- ===================== ACTIONS ===================== -->
-    <div class="fr-grid-row fr-mt-2w actions-row">
-      <div class="fr-col-12 fr-col-md-6 fr-text--left">
-        <a href="javascript:void(0)"
-           class="fr-link toggle-filters"
-           (click)="toggleFilters()">
-		   {{ showMoreFilters ? ('SEARCH.LESS_FILTERS' | translate) : ('SEARCH.MORE_FILTERS' | translate) }}
-        </a>
-      </div>
-    </div>
+	<div class="fr-grid-row fr-mt-2w actions-row">
+
+	  <!-- Lien Plus/Moins de filtres -->
+	  <div class="fr-col-12 fr-col-md-6 fr-text--left">
+	    <a href="javascript:void(0)"
+	       class="fr-link toggle-filters"
+	       (click)="toggleFilters()">
+	       {{ showMoreFilters ? ('SEARCH.LESS_FILTERS' | translate) : ('SEARCH.MORE_FILTERS' | translate) }}
+	    </a>
+	  </div>
+
+	  <!-- Bouton Réinitialiser -->
+	  <div class="fr-col-12 fr-col-md-6 fr-text--right reset-all-container">
+		<button class="fr-btn fr-btn--secondary reset-all-btn"
+		        [disabled]="activeFiltersCount === 0"
+		        (click)="resetAllFilters()">
+
+		  <span class="reset-text">
+		    {{ 'FILTERS.RESET_ALL' | translate }}
+		  </span>
+
+		  <span class="reset-badge">
+		    {{ activeFiltersCount }}
+		  </span>
+
+		</button>
+
+	  </div>
+
+	</div>
 
   </div>
 </div>

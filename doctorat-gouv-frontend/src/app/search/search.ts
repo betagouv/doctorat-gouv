@@ -891,6 +891,69 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.onFilterChange();
   }
+  
+  resetAllFilters(): void {
+    this.query = '';
+
+    this.discipline = [];
+    this.localisation = [];
+    this.laboratoire = [];
+    this.ecole = [];
+    this.defisSociete = [];
+    this.annee = [];
+
+    this.ecoleDoctoraleNumero = '';
+    this.etablissementRor = '';
+
+    this.activeFilter = 'all';
+    this.sortField = 'dateMiseEnLigne';
+    this.sortDirection = 'DESC';
+
+    this.showMoreFilters = false;
+
+    this.currentPage = 0;
+
+    // Fermer tous les dropdowns
+    this.closeAllDropdowns();
+
+    // Sauvegarder l’état vide
+    this.searchFiltersService.save({
+      query: '',
+      discipline: [],
+      localisation: [],
+      laboratoire: [],
+      ecole: [],
+      defisSociete: [],
+      annee: [],
+      ecoleDoctoraleNumero: '',
+      etablissementRor: '',
+      typeProposition: 'all',
+      sortField: 'dateMiseEnLigne',
+      sortDirection: 'DESC',
+      showMoreFilters: false,
+      page: 0,
+      scrollPosition: 0
+    });
+
+    // Relancer la recherche
+    this.onSearch(0);
+  }
+  
+  get activeFiltersCount(): number {
+    return (
+      this.discipline.length +
+      this.localisation.length +
+      this.laboratoire.length +
+      this.ecole.length +
+      this.defisSociete.length +
+      this.annee.length +
+      (this.ecoleDoctoraleNumero ? 1 : 0) +
+      (this.etablissementRor ? 1 : 0) +
+      (this.query.trim() ? 1 : 0)
+    );
+  }
+
+
 
 
 

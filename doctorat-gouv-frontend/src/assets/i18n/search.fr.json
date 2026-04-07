@@ -28,6 +28,7 @@
 	"ANNEE": "Année universitaire",
     "SELECT_ALL": "Tout sélectionner",
     "SEARCH": "Rechercher",
+	"RESET_ALL": "Réinitialiser les filtres",
 	"SELECTED_ONE": "sélectionné",
 	"SELECTED_MANY": "sélectionnés"
   },
