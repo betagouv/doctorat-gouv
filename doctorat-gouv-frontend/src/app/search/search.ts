@@ -876,6 +876,22 @@ resetFilter(filterName: MultiFilterKey) {
     this[filterName] = list.filter(v => v !== value) as any;
     this.onFilterChange();
   }
+  
+  toggleSelectAll(filterName: MultiFilterKey, options: string[]) {
+    const current = this[filterName] as string[];
+
+    // Si tout est déjà sélectionné → on vide
+    if (current.length === options.length) {
+      this[filterName] = [] as any;
+    } 
+    // Sinon → on sélectionne tout
+    else {
+      this[filterName] = [...options] as any;
+    }
+
+    this.onFilterChange();
+  }
+
 
 
 }

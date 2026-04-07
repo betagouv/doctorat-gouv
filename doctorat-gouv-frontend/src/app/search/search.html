@@ -54,8 +54,8 @@
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox"
                      id="discipline_all"
-                     [checked]="!discipline"
-                     (change)="resetFilter('discipline')">
+                     [checked]="discipline.length === disciplineOpts.length"
+                     (change)="toggleSelectAll('discipline', disciplineOpts)">
               <label for="discipline_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
@@ -95,8 +95,8 @@
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox"
                      id="defisSociete_all"
-                     [checked]="!defisSociete"
-                     (change)="resetFilter('defisSociete')">
+                     [checked]="defisSociete.length === defisSocieteOpts.length"
+                     (change)="toggleSelectAll('defisSociete', defisSocieteOpts)">
               <label for="defisSociete_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
@@ -136,8 +136,8 @@
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox"
                      id="localisation_all"
-                     [checked]="!localisation"
-                     (change)="resetFilter('localisation')">
+                     [checked]="localisation.length === localisationOpts.length"
+                     (change)="toggleSelectAll('localisation', localisationOpts)">
               <label for="localisation_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
@@ -183,8 +183,8 @@
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox"
                      id="laboratoire_all"
-                     [checked]="!laboratoire"
-                     (change)="resetFilter('laboratoire')">
+                     [checked]="laboratoire.length === laboratoireOpts.length"
+                     (change)="toggleSelectAll('laboratoire', laboratoireOpts)">
               <label for="laboratoire_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
@@ -224,8 +224,8 @@
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox"
                      id="ecole_all"
-                     [checked]="!ecole"
-                     (change)="resetFilter('ecole')">
+                     [checked]="ecole.length === ecoleOpts.length"
+                     (change)="toggleSelectAll('ecole', ecoleOpts)">
               <label for="ecole_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
             </div>
 
@@ -257,8 +257,8 @@
 	        <div class="fr-checkbox-group fr-mb-2w">
 	          <input type="checkbox"
 	                 id="annee_all"
-	                 [checked]="!annee"
-	                 (change)="resetFilter('annee')">
+	                 [checked]="annee.length === anneeOpts.length"
+	                 (change)="toggleSelectAll('annee', anneeOpts)">
 	          <label for="annee_all">{{ 'FILTERS.SELECT_ALL' | translate }}</label>
 	        </div>
 
