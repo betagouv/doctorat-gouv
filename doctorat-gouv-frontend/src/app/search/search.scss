@@ -87,6 +87,41 @@
   color: #555;                 /* si tu veux mettre en valeur un mot */
 }
 
+
+
+/* Conteneur horizontal fluide */
+.fr-tags-group__list {
+  display: flex;
+  flex-wrap: wrap;          /* retour à la ligne automatique */
+  gap: 0.5rem;              /* espace entre les tags */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-height: 25rem;         /* limite visuelle */
+  overflow-y: auto;         /* scroll vertical si trop de tags */
+  overflow-x: hidden;       /* pas de scroll horizontal */
+}
+
+/* Chaque tag */
+.fr-tag {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;      /* empêche les retours à la ligne dans un tag */
+  max-width: 250px;         /* limite la largeur d’un tag */
+  overflow: hidden;
+  text-overflow: ellipsis;  /* coupe proprement */
+}
+
+/* Le bouton × */
+.fr-tag__btn {
+  margin-left: 0.35rem;
+  flex-shrink: 0;
+}
+
+
+
+
+
 .fr-tag.violet {
   color: rgb(0, 50, 100) !important; /* bleu DSFR plus clair */
   background-color: rgb(209, 206, 238);   /* violet */
