@@ -107,9 +107,10 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;      /* empêche les retours à la ligne dans un tag */
-  max-width: 250px;         /* limite la largeur d’un tag */
+  // max-width: 250px;         /* limite la largeur d’un tag */
   overflow: hidden;
   text-overflow: ellipsis;  /* coupe proprement */
+  cursor: pointer;
 }
 
 /* Le bouton × */

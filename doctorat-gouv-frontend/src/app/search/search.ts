@@ -12,10 +12,6 @@
  *  
  *****************************************************************************************/
 
-/*****************************************************************************************
- *  SEARCH COMPONENT – version dropdown custom (mono‑sélection)
- *****************************************************************************************/
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -809,7 +805,7 @@ resetFilter(filterName: MultiFilterKey) {
     };
 
     // 1 seul élément → badge avec libellé tronqué
-    if (list.length === 1) {
+    if (list.length === 0) {
       const first = this.getSingleLabel(list[0], type);
       const truncated = truncateWords(first, 4);
       return `
