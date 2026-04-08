@@ -40,6 +40,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
+import { ViewEncapsulation } from '@angular/core';
 
 type MultiFilterKey =
   'discipline' |
@@ -65,7 +66,8 @@ type MultiFilterKey =
 	DynamicDatePipe
   ],
   templateUrl: './search.html',
-  styleUrls: ['./search.scss']
+  styleUrls: ['./search.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class Search implements OnInit, OnDestroy {
 	
@@ -790,42 +792,6 @@ resetFilter(filterName: MultiFilterKey) {
 
   }
   
-  getFilterLabelListOld0(list: string[], type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'): string {
-    if (!list || list.length === 0) return '';
-
-    switch (type) {
-      case 'discipline':
-        return list.map(d => this.getDisciplineLabel(d)).join('; ');
-      case 'defisSociete':
-        return list.map(d => this.getDefisSocieteLabel(d)).join('; ');
-      case 'annee':
-        return list.map(y => this.formatAcademicYear(y)).join('; ');
-      default:
-        return list.join('; ');
-    }
-  }
-  
-  getFilterLabelListOld1(
-    list: string[],
-    type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'
-  ): string {
-
-    if (!list || list.length === 0) return '';
-
-    // 1 seul → afficher le libellé complet
-    if (list.length === 1) {
-      return this.getSingleLabel(list[0], type);
-    }
-
-    // 2 éléments → afficher les deux
-    //if (list.length === 2) {
-    //  return this.getSingleLabel(list[0], type) + ', ' + this.getSingleLabel(list[1], type);
-    //}
-
-    // 3+ éléments → afficher "X sélectionnés"
-    return `${list.length} sélectionnés`;
-  }
-  
   getFilterLabelList(
     list: string[],
     type: 'discipline' | 'defisSociete' | 'localisation' | 'laboratoire' | 'ecole' | 'annee'
@@ -835,18 +801,28 @@ resetFilter(filterName: MultiFilterKey) {
 
     const label = this.getFilterTitle(type);
 
-    // 1 seul élément → afficher l’élément
+    // Fonction utilitaire : limite à 4 mots
+    const truncateWords = (text: string, maxWords = 4): string => {
+      const words = text.split(/\s+/);
+      if (words.length <= maxWords) return text;
+      return words.slice(0, maxWords).join(' ') + '…';
+    };
+
+    // 1 seul élément → badge avec libellé tronqué
     if (list.length === 1) {
       const first = this.getSingleLabel(list[0], type);
-      return `${label} (${first})`;
+      const truncated = truncateWords(first, 4);
+      return `
+        ${label}
+        <span class="filter-count-badge filter-single-badge">${truncated}</span>
+      `;
     }
 
-    // Plusieurs éléments → afficher "X sélectionnés"
-    const word = this.translate.instant(
-      list.length === 1 ? 'FILTERS.SELECTED_ONE' : 'FILTERS.SELECTED_MANY'
-    );
-
-    return `${label} (${list.length} ${word})`;
+    // Plusieurs éléments → badge +X
+    return `
+      ${label}
+      <span class="filter-count-badge">+${list.length}</span>
+    `;
   }
 
 
