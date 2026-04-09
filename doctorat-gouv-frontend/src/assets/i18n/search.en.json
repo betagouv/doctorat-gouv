@@ -27,7 +27,10 @@
     "ROR": "ROR institution",
 	"ANNEE": "Academic year",
     "SELECT_ALL": "Select all",
-    "SEARCH": "Search"
+    "SEARCH": "Search",
+	"RESET_ALL": "Reset filters",
+	"SELECTED_ONE": "selected",
+	"SELECTED_MANY": "selected"
   },
 
   "CARDS": {
