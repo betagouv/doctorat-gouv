@@ -109,89 +109,123 @@ public class PropositionTheseService {
 					JoinType.LEFT);
 
 			filters.forEach((key, value) -> {
-				if (value == null || value.isBlank())
-					return;
-				String lowered = value.toLowerCase();
-				String pattern = "%" + lowered + "%";
+			    if (value == null || value.isBlank()) return;
 
-				switch (key) {
-				case "discipline" -> {
-					String code = DomaineScientifique.codeFromLabel(value);
-					if (code != null) {
-						andPredicates.add(cb.equal(root.get("domaineScientifique"), code));
-					}
-				}
-				case "localisation" -> {
-					List<String> depts = RegionsFrance.departementsFromRegion(value);
+			    // Découper les valeurs multi-select
+			    List<String> values = Stream.of(value.split(";"))
+			            .map(String::trim)
+			            .filter(v -> !v.isEmpty())
+			            .toList();
 
-					List<Predicate> deptPredicates = depts.stream()
-							.map(dept -> cb.like(root.get("uniteRechercheCodePostal"), dept + "%")).toList();
+			    switch (key) {
 
-					andPredicates.add(cb.or(deptPredicates.toArray(Predicate[]::new)));
-				}
-				case "laboratoire" -> andPredicates.add(cb.like(cb.lower(root.get("uniteRechercheLibelle")), pattern));
-				case "ecole" -> andPredicates.add(cb.equal(root.get("etablissementLibelle"), value));
+			        /* ---------------------- DISCIPLINE (multi) ---------------------- */
+			        case "discipline" -> {
+			            List<String> codes = values.stream()
+			                    .map(DomaineScientifique::codeFromLabel)
+			                    .filter(Objects::nonNull)
+			                    .toList();
 
-				// -------------------------------------------------
-				// Nouveau filtre « Défis de société »
-				// -------------------------------------------------
-				case "defisSociete" -> {
-					// Le défi peut être présent soit dans domainesImpactListe,
-					// soit dans objectifsDeveloppementDurableListe.
-					Predicate pDomaines = cb.like(cb.lower(joinDomainesImpact), pattern);
-					Predicate pObjectifs = cb.like(cb.lower(joinObjectifsDurables), pattern);
-					andPredicates.add(cb.or(pDomaines, pObjectifs));
-				}
-				
-				case "ecoleDoctoraleNumero" -> 
-			    andPredicates.add(cb.equal(root.get("ecoleDoctoraleNumero"), value));
-				case "etablissementRor" ->
-			    andPredicates.add(cb.equal(root.get("etablissementRor"), value));
-				case "typeProposition" -> 
-			    andPredicates.add(cb.equal(root.get("typeProposition"), value));
-				case "annee" -> {
-				    try {
-				        Integer year = Integer.valueOf(value);
-				        andPredicates.add(cb.equal(root.get("annee"), year));
-				    } catch (NumberFormatException e) {
-				        // ignorer si la valeur n'est pas un entier
-				    	log.warn("Valeur d'année invalide pour le filtre 'annee' : {}", value);
-				    }
-				}
+			            if (!codes.isEmpty()) {
+			                andPredicates.add(root.get("domaineScientifique").in(codes));
+			            }
+			        }
 
-				// -------------------------------------------------
-				// Recherche texte libre (déjà existante)
-				// -------------------------------------------------
-				case "query" -> {
-					String[] tokens = value.trim().toLowerCase().split("\\s+");
-					List<Predicate> tokenPredicates = new ArrayList<>();
+			        /* ---------------------- LOCALISATION (multi) ---------------------- */
+			        case "localisation" -> {
+			            List<Predicate> regionPredicates = new ArrayList<>();
 
-					for (String token : tokens) {
-						if (token.isBlank())
-							continue;
-						String tokenPattern = "%" + token + "%";
+			            for (String region : values) {
+			                List<String> depts = RegionsFrance.departementsFromRegion(region);
 
-						// OR entre les différents champs pour le même token
-						Predicate tokenInAnyField = cb.or(cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
-								cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
-								cb.like(cb.lower(root.get("resume")), tokenPattern),
-								cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
-						// les maps de mots‑clés sont déjà traitées dans le filtre « defisSociete »,
-						// mais on les garde aussi ici dans le cas où ont veut les rechercher
-						// directement via le champ libre.
-						);
-						tokenPredicates.add(tokenInAnyField);
-					}
-					if (!tokenPredicates.isEmpty()) {
-						andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
-					}
-				}
+			                List<Predicate> deptPreds = depts.stream()
+			                        .map(d -> cb.like(root.get("uniteRechercheCodePostal"), d + "%"))
+			                        .toList();
 
-				default -> {
-					/* ignore unknown keys */ }
-				}
+			                regionPredicates.add(cb.or(deptPreds.toArray(Predicate[]::new)));
+			            }
+
+			            if (!regionPredicates.isEmpty()) {
+			                andPredicates.add(cb.or(regionPredicates.toArray(Predicate[]::new)));
+			            }
+			        }
+
+			        /* ---------------------- LABORATOIRE (multi) ---------------------- */
+			        case "laboratoire" -> {
+			            List<Predicate> labPreds = values.stream()
+			                    .map(v -> cb.like(cb.lower(root.get("uniteRechercheLibelle")), "%" + v.toLowerCase() + "%"))
+			                    .toList();
+
+			            andPredicates.add(cb.or(labPreds.toArray(Predicate[]::new)));
+			        }
+
+			        /* ---------------------- ECOLE (multi) ---------------------- */
+			        case "ecole" -> {
+			            andPredicates.add(root.get("etablissementLibelle").in(values));
+			        }
+
+			        /* ---------------------- DEFIS DE SOCIETE (multi) ---------------------- */
+			        case "defisSociete" -> {
+			            List<Predicate> all = new ArrayList<>();
+
+			            for (String v : values) {
+			                String pattern = "%" + v.toLowerCase() + "%";
+
+			                all.add(cb.like(cb.lower(joinDomainesImpact), pattern));
+			                all.add(cb.like(cb.lower(joinObjectifsDurables), pattern));
+			            }
+
+			            andPredicates.add(cb.or(all.toArray(Predicate[]::new)));
+			        }
+
+			        /* ---------------------- ECOLE DOCTORALE (mono) ---------------------- */
+			        case "ecoleDoctoraleNumero" ->
+			                andPredicates.add(root.get("ecoleDoctoraleNumero").in(values));
+
+			        /* ---------------------- ETABLISSEMENT ROR (mono) ---------------------- */
+			        case "etablissementRor" ->
+			                andPredicates.add(root.get("etablissementRor").in(values));
+
+			        /* ---------------------- TYPE PROPOSITION (mono) ---------------------- */
+			        case "typeProposition" ->
+			                andPredicates.add(root.get("typeProposition").in(values));
+
+			        /* ---------------------- ANNEE (multi) ---------------------- */
+			        case "annee" -> {
+			            List<Integer> years = values.stream()
+			                    .map(Integer::valueOf)
+			                    .toList();
+
+			            andPredicates.add(root.get("annee").in(years));
+			        }
+
+			        /* ---------------------- QUERY (inchangé) ---------------------- */
+			        case "query" -> {
+			            String[] tokens = value.trim().toLowerCase().split("\\s+");
+			            List<Predicate> tokenPredicates = new ArrayList<>();
+
+			            for (String token : tokens) {
+			                if (token.isBlank()) continue;
+			                String tokenPattern = "%" + token + "%";
+
+			                Predicate tokenInAnyField = cb.or(
+			                        cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
+			                        cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
+			                        cb.like(cb.lower(root.get("resume")), tokenPattern),
+			                        cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
+			                );
+			                tokenPredicates.add(tokenInAnyField);
+			            }
+
+			            if (!tokenPredicates.isEmpty()) {
+			                andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
+			            }
+			        }
+
+			        default -> { /* ignore */ }
+			    }
 			});
-			
+
 			return andPredicates.isEmpty() ? cb.conjunction() : cb.and(andPredicates.toArray(Predicate[]::new));
 		};
 	}
