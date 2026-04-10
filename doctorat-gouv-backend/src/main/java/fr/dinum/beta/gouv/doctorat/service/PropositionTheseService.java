@@ -96,7 +96,7 @@ public class PropositionTheseService {
 			List<Predicate> andPredicates = new ArrayList<>();
 			
 			// 🔥 BOUCHON TEMPORAIRE : ne garder que les sujets AMETHIS
-			andPredicates.add(cb.equal(root.get("source"), SourceThese.AMETHIS));
+			// andPredicates.add(cb.equal(root.get("source"), SourceThese.AMETHIS));
 			
 			// Ne garder que les sujets non désactivés (active = true ou null)
 			andPredicates.add(
