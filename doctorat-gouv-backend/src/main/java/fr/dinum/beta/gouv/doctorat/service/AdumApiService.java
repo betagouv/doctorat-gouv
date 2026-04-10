@@ -22,6 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import fr.dinum.beta.gouv.doctorat.config.AdumApiProperties;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.model.AdumResponse;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 /**
@@ -97,6 +98,7 @@ public class AdumApiService {
 
 		for (PropositionThese p : propositions) {
 			p.setAnnee(properties.getYear());
+			p.setSource(SourceThese.ADUM);
 			// Vérifie si la proposition doit être insérée ou mise à jour
 			Optional<PropositionThese> existingOpt = propositionTheseRepository.findForUpdate(p.getMatricule(), p.getDateMaj());
 
@@ -137,7 +139,7 @@ public class AdumApiService {
 		
 		// Désactivation des sujets absents d'ADUM
 		log.info("Vérification des propositions locales absentes d'ADUM pour désactivation");
-		deactivateMissingPropositions(propositions);
+		desactivateMissingPropositions(propositions);
 
 	}
 	
@@ -168,6 +170,7 @@ public class AdumApiService {
 	    	log.info("Traitement de la proposition (matricule {}) en mode RATTRAPAGE", p.getMatricule());
 	    	
 	    	p.setAnnee(properties.getYear());
+	    	p.setSource(SourceThese.ADUM);
 
 	        Optional<PropositionThese> existingOpt =
 	                propositionTheseRepository.findByMatricule(p.getMatricule());
@@ -192,7 +195,7 @@ public class AdumApiService {
 	    propositionTheseRepository.saveAll(toSave);
 
 	    // Désactivation des sujets absents d'ADUM
-	    deactivateMissingPropositions(propositions);
+	    desactivateMissingPropositions(propositions);
 	}
 
 	
@@ -201,41 +204,37 @@ public class AdumApiService {
 	 *
 	 * @param propositionsAdum liste des propositions renvoyées par ADUM
 	 */
-	private void deactivateMissingPropositions(List<PropositionThese> propositionsAdum) {
-		
-		log.info("Début de la désactivation des propositions absentes d'ADUM");
-		
+	private void desactivateMissingPropositions(List<PropositionThese> propositionsAdum) {
+
+	    log.info("Début de la désactivation des propositions ADUM manquantes");
+
 	    int currentYear = properties.getYear();
 
-	    // 1. Matricules présents dans ADUM
+	    // 1. Matricules renvoyés par ADUM aujourd’hui
 	    Set<String> matriculesAdum = propositionsAdum.stream()
 	            .map(PropositionThese::getMatricule)
 	            .collect(Collectors.toSet());
 
-	    // 2. Toutes les propositions locales
-	    List<PropositionThese> allLocal = propositionTheseRepository.findAll();
+	    // 2. On récupère uniquement les sujets ADUM actifs de l’année courante
+	    List<PropositionThese> localAdum =
+	            propositionTheseRepository.findActiveBySourceAndAnnee(SourceThese.ADUM, currentYear);
 
-	    // 3. Désactivation des propositions absentes d'ADUM
-	    List<PropositionThese> toDesactivate = allLocal.stream()
-	            // On considère NULL comme actif
-	            //.filter(p -> p.getActive() == null || p.getActive() == true)
-	    		.filter(p -> !Boolean.FALSE.equals(p.getActive()))
-	    		// On ne désactive que les propositions de l'année en cours
-	            .filter(p -> p.getAnnee() != null && p.getAnnee() == currentYear)
-	            // Si ADUM ne renvoie plus ce matricule → désactivation
+	    // 3. Désactivation des sujets ADUM absents du flux
+	    List<PropositionThese> toDesactivate = localAdum.stream()
 	            .filter(p -> !matriculesAdum.contains(p.getMatricule()))
 	            .peek(p -> p.setActive(false))
 	            .collect(Collectors.toList());
 
-	    if (!toDesactivate.isEmpty()) {
-	        log.info("Désactivation de {} propositions absentes d'ADUM", toDesactivate.size());
-	        propositionTheseRepository.saveAll(toDesactivate);
+	    if (toDesactivate.isEmpty()) {
+	        log.info("Aucune désactivation ADUM nécessaire");
 	    } else {
-	        log.info("Aucune désactivation nécessaire");
+	        log.info("Désactivation de {} propositions ADUM", toDesactivate.size());
+	        propositionTheseRepository.saveAll(toDesactivate);
 	    }
-	    
-	    log.info("Fin de la désactivation des propositions absentes d'ADUM");
+
+	    log.info("Fin de la désactivation des propositions ADUM manquantes");
 	}
+
 	
 	public AdumApiProperties getProperties() {
 	    return properties;

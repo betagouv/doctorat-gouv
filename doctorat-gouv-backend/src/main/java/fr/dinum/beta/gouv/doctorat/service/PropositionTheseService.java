@@ -22,6 +22,7 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -93,6 +94,9 @@ public class PropositionTheseService {
 		return (root, query, cb) -> {
 			query.distinct(true); // éviter les doublons liés aux JOIN
 			List<Predicate> andPredicates = new ArrayList<>();
+			
+			// 🔥 BOUCHON TEMPORAIRE : ne garder que les sujets AMETHIS
+			andPredicates.add(cb.equal(root.get("source"), SourceThese.AMETHIS));
 			
 			// Ne garder que les sujets non désactivés (active = true ou null)
 			andPredicates.add(
