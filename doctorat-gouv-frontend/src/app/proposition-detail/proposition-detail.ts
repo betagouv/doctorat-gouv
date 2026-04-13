@@ -7,6 +7,7 @@ import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
+import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Header } from '../header/header';
 
@@ -17,6 +18,7 @@ import { Header } from '../header/header';
 		CommonModule,
 		RouterModule,
 		DefaultValuePipe,
+		Nl2brPipe,
 		TranslateModule,
 		DynamicDatePipe,
 		Header
