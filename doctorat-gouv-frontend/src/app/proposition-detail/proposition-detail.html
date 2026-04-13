@@ -173,9 +173,42 @@
 		</ng-container>
 		
 		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
-		<p class="paragraph fr-mb-12v" *ngIf="thesis?.financementDetails; else noFinancement">
-		  {{ thesis.financementDetails }}
-		</p>
+
+		<ng-container *ngIf="
+		      thesis?.financementEtat ||
+		      thesis?.financementTypes?.length ||
+		      thesis?.financementEmployeur ||
+		      thesis?.financementDetails;
+		    else noFinancement">
+
+		  <!-- Précisions sur le financement -->
+		  <p class="paragraph" *ngIf="thesis?.financementDetails">
+			<strong>{{ 'DETAIL.FINANCEMENT_PRECISIONS' | translate }}</strong><br>
+		    {{ thesis.financementDetails }}
+		  </p>
+
+		  <!-- Type(s) de financement -->
+		  <p class="paragraph" *ngIf="thesis?.financementTypes?.length">
+			<strong>{{ 'DETAIL.FINANCEMENT_TYPE' | translate }}</strong><br>
+			{{ (thesis.financementTypes || []).join(', ') }}
+		  </p>
+
+		  <!-- Employeur -->
+		  <p class="paragraph" *ngIf="thesis?.financementEmployeur">
+			<strong>{{ 'DETAIL.FINANCEMENT_EMPLOYEUR' | translate }}</strong><br>
+		    {{ thesis.financementEmployeur }}
+		  </p>
+		
+		<!-- État du financement -->
+		<!--		  <p class="paragraph" *ngIf="thesis?.financementEtat">-->
+		<!--		    <strong>État du financement :</strong><br>-->
+		<!--		    {{ thesis.financementEtat }}-->
+		<!--		  </p>-->
+		
+		<!-- Phrase de conclusion -->
+		<p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
+
+		</ng-container>
 
 		<ng-template #noFinancement>
 		  <p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>

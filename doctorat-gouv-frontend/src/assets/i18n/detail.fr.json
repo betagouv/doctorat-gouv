@@ -30,7 +30,11 @@
 	"AT": "à",
 	
 	"INFO_TRADUCTION_MANQUANTE": "Certains champs peuvent apparaître en français si la direction de thèse n’a pas fourni de version anglaise.",
-	"INFO_SUJET_ATTRIBUE": "Un candidat a déjà été identifié pour ce sujet de thèse. Vous pouvez néanmoins contacter la direction de thèse pour discuter d'autres sujets similaires ou potentielles collaborations."
+	"INFO_SUJET_ATTRIBUE": "Un candidat a déjà été identifié pour ce sujet de thèse. Vous pouvez néanmoins contacter la direction de thèse pour discuter d'autres sujets similaires ou potentielles collaborations.",
+	
+	"FINANCEMENT_PRECISIONS": "Précisions sur le financement :",
+	"FINANCEMENT_TYPE": "Type de financement du projet doctoral :",
+	"FINANCEMENT_EMPLOYEUR": "Employeur :"
 
   }
 }
