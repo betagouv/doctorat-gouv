@@ -130,18 +130,20 @@
 		
 		<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
 			<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
-			<p class="paragraph fr-mb-12v">{{ resume }}</p>
+			<p class="paragraph fr-mb-12v" [innerHTML]="resume | nl2br"></p>
 		</ng-container>
 		
 		<ng-container *ngIf="(thesis?.objectif?.trim() || thesis?.contexte?.trim()) as _">
 		  <h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
 
-		  <p class="paragraph" *ngIf="thesis?.objectif?.trim()">
-		    {{ thesis.objectif }}
+		  <p class="paragraph"
+		     *ngIf="thesis?.objectif?.trim()"
+		     [innerHTML]="thesis.objectif | nl2br">
 		  </p>
 
-		  <p class="paragraph" *ngIf="thesis?.contexte?.trim()">
-		    {{ thesis.contexte }}
+		  <p class="paragraph"
+		     *ngIf="thesis?.contexte?.trim()"
+		     [innerHTML]="thesis.contexte | nl2br">
 		  </p>
 		  
 		  <hr class="separator">
@@ -150,24 +152,24 @@
 
 		<ng-container *ngIf="getProfilRecherche(thesis) as profil">
 		  <h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
-		  <p class="paragraph">{{ profil }}</p>
+		  <p class="paragraph" [innerHTML]="profil | nl2br"></p>
 		</ng-container>
 		
 		<hr class="separator">
 		
 		<ng-container *ngIf="thesis?.modalitesEncadrement as encadrement">
 		  <h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v">{{ encadrement }}</p>
+		  <p class="paragraph fr-mb-12v" [innerHTML]="encadrement | nl2br"></p>
 		</ng-container>
 
 		<ng-container *ngIf="thesis?.resultatsAttendus as resultats">
 		  <h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v">{{ resultats }}</p>
+		  <p class="paragraph fr-mb-12v" [innerHTML]="resultats | nl2br"></p>
 		</ng-container>
 		
 		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
 		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v">{{ valorisation }}</p>
+		  <p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>
 		</ng-container>
 		
 		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
@@ -178,16 +180,16 @@
 		<ng-template #noFinancement>
 		  <p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
 		</ng-template>
-
-		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
-		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v">{{ valorisation }}</p>
-		</ng-container>
-
-
+		
+		<!--		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">-->
+		<!--		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>-->
+		<!--		  <p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>-->
+		<!--		</ng-container>-->
+		
+		
 		<ng-container *ngIf="thesis?.referencesBibliographiques as references">
 		  <h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v">{{ references }}</p>
+		  <p class="paragraph fr-mb-12v" [innerHTML]="references | nl2br"></p>
 		</ng-container>
 
 		
