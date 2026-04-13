@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 
 @Repository
 public interface PropositionTheseRepository extends JpaRepository<PropositionThese, Long>, JpaSpecificationExecutor<PropositionThese> {
@@ -48,5 +49,20 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
     
     @Query("SELECT DISTINCT p.domaineScientifique FROM PropositionThese p")
 	List<String> findDistinctDomainesScientifiques();
+    
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    WHERE p.source = :source
+		      AND (p.active IS NULL OR p.active = TRUE)
+		""")
+	List<PropositionThese> findActiveBySource(@Param("source") SourceThese source);
+	
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    WHERE p.source = :source
+		      AND p.annee = :annee
+		      AND (p.active IS NULL OR p.active = TRUE)
+		""")
+	List<PropositionThese> findActiveBySourceAndAnnee(@Param("source") SourceThese source, @Param("annee") Integer annee);
 
 }
