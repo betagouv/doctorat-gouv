@@ -197,5 +197,10 @@ export class PropositionDetail {
 	get currentLang(): string {
 	  return this.translate.currentLang;
 	}
+	
+	openUrl(url: string) {
+	  window.open(url, '_blank');
+	}
+
 
 }

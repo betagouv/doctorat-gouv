@@ -63,6 +63,77 @@
   margin-bottom: 1.1rem;    // espace en bas
 }
 
+/* --- Layout des boutons --- */
+.buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-wrapper {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+/* --- Boutons pixel-perfect --- */
+.full-btn {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  padding: 0.9rem 1.2rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover harmonisé */
+/*.full-btn.fr-btn--primary:hover {
+  background-color: #003a92;
+}*/
+
+.full-btn.fr-btn--secondary {
+  background-color: #ffffff;
+  border: 2px solid #000091;
+  color: #000091;
+}
+
+.full-btn.fr-btn--secondary:hover {
+  background-color: rgb(227, 227, 227);
+}
+
+/* --- Tooltip au survol du bouton entier --- */
+.tooltip-container {
+  position: relative;
+}
+
+.tooltip-content {
+  display: none;
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  background: white;
+  border: 1px solid #ddd;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  font-size: 0.85rem;
+  width: 260px;
+  z-index: 10;
+}
+
+/* Affichage du tooltip au survol du bouton */
+.tooltip-container:hover .tooltip-content {
+  display: block;
+}
+
+
+
+
 .badge {
   display: inline-block;
   background: rgb(200, 200, 255);
