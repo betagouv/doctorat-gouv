@@ -595,8 +595,8 @@
 			</p>
 			
 			<div>
-				<p class="fr-card__desc">
-					{{ getLocalizedResume(thesis, 30) }}
+				<p class="fr-card__desc"
+				   [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
 				</p>
 			</div>
 			
