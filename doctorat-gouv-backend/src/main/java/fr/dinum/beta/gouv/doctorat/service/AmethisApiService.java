@@ -83,7 +83,7 @@ public class AmethisApiService {
         // 🔥 BOUCHON DIAGNOSTIC : détecter les doublons AMETHIS
         detectDuplicateMatricules(propositions);
         int currentYear = Year.now().getValue();
-        int compteur = 1; // Compteur pour garantir l'unicité du matricule en cas de réimport rapide
+        // int compteur = 1; // Compteur pour garantir l'unicité du matricule en cas de réimport rapide
 
         List<PropositionThese> toSave = new ArrayList<>();
 
@@ -93,7 +93,7 @@ public class AmethisApiService {
             p.setAnnee(currentYear);
             
             // Bouchon pour éviter les doublons en cas de réimport rapide : on ajoute un suffixe temporel au matricule pour garantir son unicité
-            p.setMatricule(buildUniqueMatricule(p, compteur++));
+            // p.setMatricule(buildUniqueMatricule(p, compteur++));
 
 
             Optional<PropositionThese> existingOpt =
@@ -147,7 +147,7 @@ public class AmethisApiService {
             p.setAnnee(currentYear);
             
             // Bouchon pour éviter les doublons en cas de réimport rapide : on ajoute un suffixe temporel au matricule pour garantir son unicité
-            p.setMatricule(buildUniqueMatricule(p, compteur++));
+            // p.setMatricule(buildUniqueMatricule(p, compteur++));
 
             Optional<PropositionThese> existingOpt = repository.findByMatricule(p.getMatricule());
 

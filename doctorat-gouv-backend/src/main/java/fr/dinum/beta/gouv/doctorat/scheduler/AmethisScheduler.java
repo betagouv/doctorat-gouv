@@ -18,7 +18,7 @@ public class AmethisScheduler {
         this.amethisApiService = amethisApiService;
     }
 
-    // @Scheduled(cron = "${amethis.scheduler.cron}")
+    @Scheduled(cron = "${amethis.scheduler.cron}")
     public void runImport() {
         log.info("Début récupération des sujets de thèse depuis AMETHIS");
         String result = amethisApiService.importAndSavePropositionsFromAmethis();
