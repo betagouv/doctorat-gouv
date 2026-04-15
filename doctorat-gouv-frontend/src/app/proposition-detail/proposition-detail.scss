@@ -86,7 +86,7 @@
   align-items: center;
   font-weight: 600;
   padding: 0.9rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 0px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
@@ -105,9 +105,11 @@
   background-color: rgb(227, 227, 227);
 }
 
-/* --- Tooltip au survol du bouton entier --- */
-.tooltip-container {
-  position: relative;
+/* ========================= */
+/* TOOLTIP DESKTOP (survol) */
+/* ========================= */
+.tooltip-container:hover .tooltip-content {
+  display: block;
 }
 
 .tooltip-content {
@@ -122,15 +124,19 @@
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   font-size: 0.85rem;
-  width: 260px;
-  z-index: 10;
+  max-width: 320px;
+  z-index: 20;
 }
 
-/* Affichage du tooltip au survol du bouton */
-.tooltip-container:hover .tooltip-content {
-  display: block;
+/* Desktop only */
+.desktop-only {
+  display: flex;
 }
 
+/* Mobile only */
+.mobile-only {
+  display: none;
+}
 
 
 
@@ -279,19 +285,25 @@ a.orcid-link::after {
 
 /* --- Mobile version  --- */
 @media (max-width: 768px) {
-  .btn-wrapper {
-    width: 100%;          /* chaque bouton prend toute la ligne */
-    margin-bottom: 1rem;  /* espace entre les deux boutons */
-  }
+	.btn-wrapper {
+	    width: 100%;
+	    margin-bottom: 1rem;
+	  }
 
-  .buttons-row {
-    gap: 0;               /* on laisse le margin-bottom gérer l’espace */
-  }
+	  /* Inversion : mobile visible, desktop caché */
+	  .desktop-only {
+	    display: none;
+	  }
 
-  .fr-tooltip {
-    left: 50%;
-    transform: translate(-50%, 100%);
-    width: 90%;           /* tooltip bien lisible sur mobile */
-  }
+	  .mobile-only {
+	    display: flex;
+	    gap: 0.4rem;
+	  }
+
+	  .fr-tooltip {
+	    width: 90%;
+	    left: 50%;
+	    transform: translate(-50%, 100%);
+	  }
 }
 

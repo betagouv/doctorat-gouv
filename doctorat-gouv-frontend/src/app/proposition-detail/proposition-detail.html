@@ -75,10 +75,10 @@
 				<!--		  <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}-->
 				<!--		</p>-->
 
-				<p>
+				<p *ngIf="thesis?.dateDebutThese">
 					<img src="/assets/icons/date_debut.png" class="icon-img" alt="">
 					<strong>{{ 'DETAIL.DEBUT' | translate }} :</strong>
-					{{ thesis?.dateDebutThese | dynamicDate:'d MMMM y' }}
+					{{ thesis.dateDebutThese | dynamicDate:'d MMMM y' }}
 				</p>
 
 				<p class="fr-mb-9v">
@@ -101,69 +101,13 @@
 					</span>
 				</div>
 
-				<!-- Boutons d'action et de prise en contact Version sans tooltip -->
-				<!--		<div class="fr-mt-4v fr-grid-row fr-grid-row--center buttons-row">-->
-				<!--		  <div class="btn-wrapper">-->
-				<!--		    <button-->
-				<!--		      class="fr-btn fr-btn--lg fr-btn--primary full-btn"-->
-				<!--		      (click)="goToContact()">-->
-				<!--		      {{ 'DETAIL.CONTACT' | translate }}-->
-				<!--		    </button>-->
-				<!--		  </div>-->
-
-				<!--		  <div-->
-				<!--		    *ngIf="thesis?.source === 'AMETHIS' && thesis?.urlCandidature"-->
-				<!--		    class="btn-wrapper">-->
-				<!--		    <button-->
-				<!--		      class="fr-btn fr-btn--lg fr-btn--secondary full-btn"-->
-				<!--		      (click)="openUrl(thesis.urlCandidature || '')">-->
-				<!--		      {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}-->
-				<!--		    </button>-->
-				<!--		  </div>-->
-				<!--		</div>-->
-
 				<!-- Boutons d'action et de prise en contact Version avec tooltip 1 -->
-				<!--		<div class="buttons-row">-->
-
-				<!--			 Bouton Contact -->
-				<!--			<div class="btn-wrapper">-->
-				<!--				<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">-->
-				<!--					{{ 'DETAIL.CONTACT' | translate }}-->
-				<!--				</button>-->
-
-				<!--				<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn" aria-describedby="tooltip-contact">-->
-				<!--					i-->
-				<!--				</button>-->
-
-				<!--				<span class="fr-tooltip fr-placement" id="tooltip-contact">-->
-				<!--					{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}-->
-				<!--				</span>-->
-				<!--			</div>-->
-
-				<!--			 Bouton AMETHIS -->
-				<!--			<div *ngIf="thesis?.source === 'AMETHIS' && thesis?.urlCandidature" class="btn-wrapper">-->
-
-				<!--				<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn" (click)="openUrl(thesis.urlCandidature || '')">-->
-				<!--					{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}-->
-				<!--				</button>-->
-
-				<!--				<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn" aria-describedby="tooltip-amethis">-->
-				<!--					i-->
-				<!--				</button>-->
-
-				<!--				<span class="fr-tooltip fr-placement" id="tooltip-amethis">-->
-				<!--					{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}-->
-				<!--				</span>-->
-				<!--			</div>-->
-
-				<!--		</div>-->
-				
-
-				<!-- Boutons d'action et de prise en contact Version avec tooltip 2 -->
 				<div class="buttons-row">
 
-					<!-- Bouton Contact -->
-					<div class="btn-wrapper tooltip-container">
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - DESKTOP -->
+					<!-- ========================= -->
+					<div class="btn-wrapper tooltip-container desktop-only">
 						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
 							{{ 'DETAIL.CONTACT' | translate }}
 						</button>
@@ -173,9 +117,28 @@
 						</div>
 					</div>
 
-					<!-- Bouton AMETHIS -->
-					<div *ngIf="thesis?.source === 'AMETHIS' && thesis?.urlCandidature"
-						class="btn-wrapper tooltip-container">
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - MOBILE -->
+					<!-- ========================= -->
+					<div class="btn-wrapper mobile-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-contact">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-contact">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</span>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - DESKTOP -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper tooltip-container desktop-only">
 
 						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
 							(click)="openUrl(thesis.urlCandidature || '')">
@@ -187,7 +150,28 @@
 						</div>
 					</div>
 
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - MOBILE -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-amethis">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-amethis">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</span>
+					</div>
+
 				</div>
+
 
 			</div>
 		</div>
@@ -199,11 +183,6 @@
 				<div class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w" *ngIf="translate.currentLang !== 'fr'">
 					{{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
 				</div>
-
-				<!--		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w" *ngIf="thesis?.sujetAttribue === 'oui'" >-->
-				<!--		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}-->
-				<!--		</div>-->
-
 
 				<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
 					<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
@@ -255,19 +234,19 @@
 
 					<!-- Précisions sur le financement -->
 					<p class="paragraph" *ngIf="thesis?.financementDetails">
-						<strong>{{ 'DETAIL.FINANCEMENT_PRECISIONS' | translate }}</strong><br>
+						<strong>{{ 'DETAIL.FINANCEMENT_PRECISIONS' | translate }}</strong>
 						{{ thesis.financementDetails }}
 					</p>
 
 					<!-- Type(s) de financement -->
 					<p class="paragraph" *ngIf="thesis?.financementTypes?.length">
-						<strong>{{ 'DETAIL.FINANCEMENT_TYPE' | translate }}</strong><br>
+						<strong>{{ 'DETAIL.FINANCEMENT_TYPE' | translate }}</strong>
 						{{ (thesis.financementTypes || []).join(', ') }}
 					</p>
 
 					<!-- Employeur -->
 					<p class="paragraph" *ngIf="thesis?.financementEmployeur">
-						<strong>{{ 'DETAIL.FINANCEMENT_EMPLOYEUR' | translate }}</strong><br>
+						<strong>{{ 'DETAIL.FINANCEMENT_EMPLOYEUR' | translate }}</strong>
 						{{ thesis.financementEmployeur }}
 					</p>
 
@@ -307,31 +286,81 @@
 					</a>
 				</div>
 
-				<div class="fr-mt-4v fr-grid-row fr-grid-row--center">
-					<button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn"
-						(click)="goToContact()"> {{ 'DETAIL.CONTACT' | translate }} </button>
+				<!-- Boutons d'action et de prise en contact Version avec tooltip 1 -->
+				<br />
+				<div class="buttons-row">
+
+
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - DESKTOP -->
+					<!-- ========================= -->
+					<div class="btn-wrapper tooltip-container desktop-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - MOBILE -->
+					<!-- ========================= -->
+					<div class="btn-wrapper mobile-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-contact">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-contact">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</span>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - DESKTOP -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper tooltip-container desktop-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - MOBILE -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-amethis">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-amethis">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</span>
+					</div>
+
+
+
 				</div>
-
-				<!--<div class="fr-mt-4v fr-grid-row fr-grid-row--center buttons-row">-->
-				<!--  <div class="btn-wrapper">-->
-				<!--    <button-->
-				<!--      class="fr-btn fr-btn--lg fr-btn--primary full-btn"-->
-				<!--      (click)="goToContact()">-->
-				<!--      {{ 'DETAIL.CONTACT' | translate }}-->
-				<!--    </button>-->
-				<!--  </div>-->
-
-				<!--  <div-->
-				<!--    *ngIf="thesis?.source === 'AMETHIS' && thesis?.urlCandidature"-->
-				<!--    class="btn-wrapper">-->
-				<!--    <button-->
-				<!--      class="fr-btn fr-btn--lg fr-btn--secondary full-btn"-->
-				<!--      (click)="openUrl(thesis.urlCandidature || '')">-->
-				<!--      {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}-->
-				<!--    </button>-->
-				<!--  </div>-->
-				<!--</div>-->
-
 
 			</div>
 		</div>
