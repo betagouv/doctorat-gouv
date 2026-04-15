@@ -273,9 +273,25 @@ a.orcid-link::after {
   border-color: #ffcc80;
 }
 
-
-
 .bottom-space {
   margin-bottom: 1rem;
+}
+
+/* --- Mobile version  --- */
+@media (max-width: 768px) {
+  .btn-wrapper {
+    width: 100%;          /* chaque bouton prend toute la ligne */
+    margin-bottom: 1rem;  /* espace entre les deux boutons */
+  }
+
+  .buttons-row {
+    gap: 0;               /* on laisse le margin-bottom gérer l’espace */
+  }
+
+  .fr-tooltip {
+    left: 50%;
+    transform: translate(-50%, 100%);
+    width: 90%;           /* tooltip bien lisible sur mobile */
+  }
 }
 
