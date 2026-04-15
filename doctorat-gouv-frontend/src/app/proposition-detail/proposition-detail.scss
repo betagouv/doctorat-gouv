@@ -108,25 +108,54 @@
 /* ========================= */
 /* TOOLTIP DESKTOP (survol) */
 /* ========================= */
+/* --- Tooltip Desktop (survol du bouton entier) --- */
 .tooltip-container:hover .tooltip-content {
-  display: block;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .tooltip-content {
-  display: none;
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translate(-50%, 100%);
-  background: white;
-  border: 1px solid #ddd;
-  padding: 0.8rem 1rem;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  padding: 0.9rem 1.1rem;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   font-size: 0.85rem;
-  max-width: 320px;
+  // max-width: 320px;
+  width: 30rem;
   z-index: 20;
+
+  /* Animation douce */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  /* Pour éviter que le tooltip ne casse la mise en page */
+  pointer-events: none;
 }
+
+/* --- Flèche du tooltip (triangle) --- */
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: -6px; /* position de la flèche */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+
+  /* Triangle vers le haut */
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+
+  /* Bordure autour de la flèche */
+  filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.1));
+}
+
 
 /* Desktop only */
 .desktop-only {
@@ -285,25 +314,44 @@ a.orcid-link::after {
 
 /* --- Mobile version  --- */
 @media (max-width: 768px) {
-	.btn-wrapper {
-	    width: 100%;
-	    margin-bottom: 1rem;
-	  }
 
-	  /* Inversion : mobile visible, desktop caché */
-	  .desktop-only {
-	    display: none;
-	  }
+  .btn-wrapper {
+    width: 100%;
+    margin-bottom: 1rem;
+    display: flex;          /* ← tu avais oublié ça */
+    justify-content: center;
+    position: relative;     /* ← nécessaire pour le tooltip */
+  }
 
-	  .mobile-only {
-	    display: flex;
-	    gap: 0.4rem;
-	  }
+  .desktop-only {
+    display: none;
+  }
 
-	  .fr-tooltip {
-	    width: 90%;
-	    left: 50%;
-	    transform: translate(-50%, 100%);
-	  }
+  .mobile-only {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  /* Tooltip mobile */
+  .mobile-only .fr-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: none;
+    width: 100%;
+    margin-top: 0.5rem;
+    z-index: 50;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+  }
+
+  .tooltip-btn:focus + .fr-tooltip,
+  .tooltip-btn:active + .fr-tooltip {
+    display: block;
+  }
 }
+
 
