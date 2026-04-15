@@ -33,8 +33,8 @@
 	"INFO_TRADUCTION_MANQUANTE": "Certains champs peuvent apparaître en français si la direction de thèse n’a pas fourni de version anglaise.",
 	"INFO_SUJET_ATTRIBUE": "Un candidat a déjà été identifié pour ce sujet de thèse. Vous pouvez néanmoins contacter la direction de thèse pour discuter d'autres sujets similaires ou potentielles collaborations.",
 	
-	"TOOLTIP_CONTACT": "Choisissez cette option si vous souhaitez échanger avec cette directrice ou ce directeur de thèse en amont d’une éventuelle candidature ou dans le cadre d’un partenariat.",
-	 "TOOLTIP_AMETHIS": "Choisissez cette option si vous souhaitez candidater directement via le système de l’école doctorale, sans échange préalable avec la direction de thèse. Si vous préférez contacter la directrice ou le directeur de thèse — par exemple pour préciser le sujet, en proposer une variante ou envisager un partenariat — merci de sélectionner plutôt l’option « prendre contact ».",
+	"TOOLTIP_CONTACT": "Choisissez cette option si vous souhaitez échanger avec cette directrice ou ce directeur de thèse en amont d’une éventuelle candidature pour discuter d'un éventuel partenariat.",
+	"TOOLTIP_AMETHIS": "Choisissez cette option si vous souhaitez candidater directement via le système de l’école doctorale, sans échange préalable avec la direction de thèse. Si vous préférez contacter la directrice ou le directeur de thèse — par exemple pour préciser le sujet, en proposer une variante ou envisager un partenariat — merci de sélectionner plutôt l’option « prendre contact ».",
 	
 	"FINANCEMENT_PRECISIONS": "Précisions sur le financement :",
 	"FINANCEMENT_TYPE": "Type de financement du projet doctoral :",

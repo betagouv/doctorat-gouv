@@ -33,8 +33,8 @@
 	"INFO_TRADUCTION_MANQUANTE": "French content may be displayed where no English version is available yet.",
 	"INFO_SUJET_ATTRIBUE": "A candidate has already been identified for this PhD topic. Nevertheless, you may contact the PhD supervisor to discuss similar topics or potential collaborations.",
 	
-	"TOOLTIP_CONTACT": "Choose this option if you wish to discuss with the thesis supervisor before applying or as part of a partnership.",
-	    "TOOLTIP_AMETHIS": "Choose this option if you want to apply directly via the doctoral school's system, without prior discussion with the thesis supervisor. If you prefer to contact the supervisor first — for example to refine the topic, propose a variant or explore a partnership — please select the 'Get in touch' option instead.",
+	"TOOLTIP_CONTACT": "Choose this option if you wish to discuss with the thesis supervisor before applying, for example to explore or clarify a potential partnership.",
+	"TOOLTIP_AMETHIS": "Choose this option if you want to apply directly via the doctoral school's system, without prior discussion with the thesis supervisor. If you prefer to contact the supervisor first — for example to refine the topic, propose a variant or explore a partnership — please select the 'Get in touch' option instead.",
 	
 	"FINANCEMENT_PRECISIONS": "Funding details :",
 	"FINANCEMENT_TYPE": "Type of PhD project funding :",
