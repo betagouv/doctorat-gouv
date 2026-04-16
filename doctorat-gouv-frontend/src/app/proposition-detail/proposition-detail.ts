@@ -31,6 +31,8 @@ export class PropositionDetail {
 	thesisId!: number;
 	thesis: PropositionTheseDto | null = null;
 	
+	openTooltip: string | null = null;
+	
 	errorMessage: string | null = null;
 	
 	defisSocieteTranslations: Record<string, string> = {
@@ -201,6 +203,9 @@ export class PropositionDetail {
 	openUrl(url: string) {
 	  window.open(url, '_blank');
 	}
-
+	
+	toggleTooltip(id: string) {
+	  this.openTooltip = this.openTooltip === id ? null : id;
+	}
 
 }

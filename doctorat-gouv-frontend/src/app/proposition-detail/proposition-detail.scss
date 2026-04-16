@@ -88,6 +88,7 @@
   padding: 0.9rem 1.2rem;
   border-radius: 0px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  margin-bottom: 1rem;
 }
 
 /* Hover harmonisé */
@@ -97,7 +98,7 @@
 
 .full-btn.fr-btn--secondary {
   background-color: #ffffff;
-  border: 2px solid #000091;
+  border: 1px solid #000091;
   color: #000091;
 }
 
@@ -116,7 +117,7 @@
 
 .tooltip-content {
   position: absolute;
-  bottom: -10px;
+  bottom: 0.2rem;
   left: 50%;
   transform: translate(-50%, 100%);
   background: #ffffff;
@@ -315,31 +316,36 @@ a.orcid-link::after {
 /* --- Mobile version  --- */
 @media (max-width: 768px) {
 
-  .btn-wrapper {
-    width: 100%;
-    margin-bottom: 1rem;
-    display: flex;          /* ← tu avais oublié ça */
-    justify-content: center;
-    position: relative;     /* ← nécessaire pour le tooltip */
-  }
-
-  .desktop-only {
-    display: none;
-  }
-
   .mobile-only {
     display: flex;
-    gap: 0.4rem;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    position: relative;
   }
 
-  /* Tooltip mobile */
+  .mobile-only .full-btn {
+    flex: 1;
+  }
+
+  .tooltip-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
   .mobile-only .fr-tooltip {
+    display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.4rem);
     left: 0;
-    transform: none;
     width: 100%;
-    margin-top: 0.5rem;
     z-index: 50;
     background: white;
     border: 1px solid #ddd;
@@ -348,10 +354,16 @@ a.orcid-link::after {
     padding: 0.8rem 1rem;
   }
 
-  .tooltip-btn:focus + .fr-tooltip,
-  .tooltip-btn:active + .fr-tooltip {
-    display: block;
+  /* Tooltip visible quand Angular dit "open" */
+  .mobile-only .fr-tooltip.open {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none;
   }
 }
+
+
 
 

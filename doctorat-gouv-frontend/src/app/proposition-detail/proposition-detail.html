@@ -121,19 +121,23 @@
 					<!-- BOUTON CONTACT - MOBILE -->
 					<!-- ========================= -->
 					<div class="btn-wrapper mobile-only">
-						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
-							{{ 'DETAIL.CONTACT' | translate }}
-						</button>
+					  <button class="fr-btn fr-btn--lg fr-btn--primary full-btn"
+					          (click)="goToContact()">
+					    {{ 'DETAIL.CONTACT' | translate }}
+					  </button>
 
-						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
-							aria-describedby="tooltip-contact">
-							i
-						</button>
+					  <button class="tooltip-btn"
+					          (click)="toggleTooltip('contact')">
+					    <span class="fr-icon-information-line" aria-hidden="true"></span>
+					  </button>
 
-						<span class="fr-tooltip fr-placement" id="tooltip-contact">
-							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
-						</span>
+					  <span class="fr-tooltip"
+					        id="tooltip-contact"
+					        [class.open]="openTooltip === 'contact'">
+					    {{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+					  </span>
 					</div>
+
 
 					<!-- ========================= -->
 					<!-- BOUTON REDIRECTION - DESKTOP -->
@@ -154,24 +158,24 @@
 					<!-- BOUTON REDIRECTION - MOBILE -->
 					<!-- ========================= -->
 					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+					  <button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+					          (click)="openUrl(thesis.urlCandidature || '')">
+					    {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+					  </button>
 
-						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
-							(click)="openUrl(thesis.urlCandidature || '')">
-							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
-						</button>
+					  <button class="tooltip-btn"
+					          (click)="toggleTooltip('amethis')">
+					    <span class="fr-icon-information-line" aria-hidden="true"></span>
+					  </button>
 
-						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
-							aria-describedby="tooltip-amethis">
-							i
-						</button>
-
-						<span class="fr-tooltip fr-placement" id="tooltip-amethis">
-							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
-						</span>
+					  <span class="fr-tooltip"
+					        id="tooltip-amethis"
+					        [class.open]="openTooltip === 'amethis'">
+					    {{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+					  </span>
 					</div>
 
 				</div>
-
 
 			</div>
 		</div>
