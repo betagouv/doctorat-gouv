@@ -319,7 +319,7 @@ a.orcid-link::after {
   .mobile-only {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.3rem;
     width: 100%;
     position: relative;
   }
@@ -344,7 +344,7 @@ a.orcid-link::after {
     display: none;
     position: absolute;
     top: calc(100% + 0.4rem);
-    left: 0;
+    // left: 10;
     width: 100%;
     z-index: 50;
     background: white;
@@ -362,6 +362,23 @@ a.orcid-link::after {
   .desktop-only {
     display: none;
   }
+  
+  /* Patch anti-DSFR + anti-styles globaux */
+    .mobile-only .fr-tooltip,
+    .mobile-tooltip,
+    .fr-tooltip {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: none !important;
+      bottom: auto !important;
+      display: none !important;
+    }
+
+    .mobile-only .fr-tooltip.open,
+    .mobile-tooltip.open,
+    .fr-tooltip.open {
+      display: block !important;
+    }
 }
 
 
