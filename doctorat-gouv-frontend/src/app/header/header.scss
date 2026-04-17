@@ -10,10 +10,12 @@
 }
 
 .fr-header__body-row {
-  margin-top: 0.1rem;
-  margin-left: 11rem;
-  display: flex;
-  justify-content: flex-start;
+	max-width: 100% !important;
+	width: 100% !important;
+	margin-top: 0.1rem;
+	margin-left: 0rem;
+	display: flex;
+	justify-content: flex-start;
 }
 
 /* Marianne */
@@ -24,6 +26,7 @@
   box-shadow: none !important;
   display: flex;
   align-items: center;
+  margin-left: 11rem;
 }
 
 .fr-logo {
@@ -165,22 +168,6 @@
 }
 
 
-/*.fr-header__brand a,
-.fr-header__brand a *,
-.fr-logo {
-  background: none !important; 
-  background-image: none !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
-  border: none !important;
-}
-
-.fr-header__brand a {
-  --underline-img: none !important;
-  --underline-thickness: 0 !important;
-  --underline-color: transparent !important;
-}*/
-
 /* ========================================================= */
 /*   DESKTOP (>700px)                                         */
 /* ========================================================= */
@@ -217,8 +204,13 @@
 	 display: none !important;
   }
   
+  /* Cacher desktop */
+  .desktop-header-line {
+    display: none !important;
+  }
+  
+  /* Afficher mobile */
   .mobile-lang {
-    margin-top: 2rem;
     padding-top: 1rem;
     border-top: 1px solid #e5e5e5;
 	width: 100%;
@@ -245,7 +237,6 @@
     margin-top: 0.5rem;
   }
 
-
   .mobile-lang .fr-translate__list,
   .mobile-lang .fr-translate__link {
     text-align: left !important;
@@ -253,15 +244,6 @@
 	margin-left: 1.5rem;
   }
 
-  
-  
-
-
-  /* Cacher desktop */
-  .desktop-header-line {
-    display: none !important;
-  }
-  
   .fr-header {
     max-width: 100% !important;
     width: 100%;
@@ -273,7 +255,7 @@
   
   .fr-header__body-row { 
 	flex-direction: column !important; 
-	width: 90% !important; 
+	width: 95% !important; 
 	border: none !important;
 	box-shadow: none !important;
 	margin-left: 0.5rem !important;
@@ -292,6 +274,7 @@
 	margin-bottom: 0.5rem !important;
   }
   
+  /* Barre header Marianne mobile */
   .fr-header__brand {
 	background: none !important;
 	display: flex;
@@ -299,9 +282,10 @@
     box-shadow: none !important;
     align-items: center;
 	width: 25%;
+	margin-left: 0rem !important;
   }
 
-  /* Marianne mobile */
+  /* Marianne logo mobile */
   .mobile-header-top .fr-logo {
 	border: none !important;
 	box-shadow: none !important;
@@ -313,7 +297,7 @@
   /* Logo Doctorat mobile */
   .mobile-header-top .fr-header__service img {
     height: 2.6rem;
-    width: 80%;
+    width: 100%;
 	margin-left: 0rem;
   }
 
@@ -343,7 +327,6 @@
   /* ========================================================= */
   /*   INFO-BANNER — VERSION MOBILE                             */
   /* ========================================================= */
-
 
     .info-banner {
       flex-direction: column !important;
