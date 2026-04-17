@@ -10,6 +10,7 @@ import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Header } from '../header/header';
+import { HostListener } from '@angular/core';
 
 @Component({
 	selector: 'app-proposition-detail',
@@ -207,5 +208,28 @@ export class PropositionDetail {
 	toggleTooltip(id: string) {
 	  this.openTooltip = this.openTooltip === id ? null : id;
 	}
+	
+	closeTooltip() {
+	  this.openTooltip = null;
+	}
+	
+	@HostListener('document:click', ['$event'])
+	onDocumentClick(event: Event) {
+	  const target = event.target as HTMLElement;
+
+	  // Si on clique sur un bouton tooltip → ne pas fermer
+	  if (target.closest('.tooltip-btn')) {
+	    return;
+	  }
+
+	  // Si on clique dans un tooltip → ne pas fermer
+	  if (target.closest('.fr-tooltip')) {
+	    return;
+	  }
+
+	  // Sinon → fermer
+	  this.closeTooltip();
+	}
+
 
 }
