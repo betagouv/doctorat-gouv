@@ -466,3 +466,8 @@
 .fr-nav__link {
   font-size: 1.0rem;
 }
+
+.fr-header__service::before {
+  display: none !important;
+}
+
