@@ -30,8 +30,6 @@ import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrFooterModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
-import { Header } from '../header/header';
-
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
@@ -54,7 +52,6 @@ type MultiFilterKey =
     CommonModule,
     RouterModule,
     FormsModule,
-    Header,
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,

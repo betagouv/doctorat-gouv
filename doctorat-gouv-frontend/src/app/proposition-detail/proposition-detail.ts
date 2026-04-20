@@ -9,7 +9,6 @@ import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
-import { Header } from '../header/header';
 import { HostListener } from '@angular/core';
 
 @Component({
@@ -21,8 +20,7 @@ import { HostListener } from '@angular/core';
 		DefaultValuePipe,
 		Nl2brPipe,
 		TranslateModule,
-		DynamicDatePipe,
-		Header
+		DynamicDatePipe
 	],
 	templateUrl: './proposition-detail.html',
 	styleUrl: './proposition-detail.scss',
