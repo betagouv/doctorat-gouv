@@ -139,6 +139,54 @@
 <!-- ===================================================== -->
 <div class="mobile-menu">
   <button class="mobile-menu-close" aria-label="Fermer le menu">{{ 'MOBILE.CLOSE' | translate }} ×</button>
+  
+  
+  <!-- Menu langue mobile -->
+  <div class="mobile-lang fr-translate" [class.fr-translate--expanded]="langMenuOpenMobile">
+
+    <button
+      class="fr-translate__btn"
+      type="button"
+      aria-haspopup="listbox"
+      [attr.aria-expanded]="langMenuOpenMobile"
+      (click)="langMenuOpenMobile = !langMenuOpenMobile">
+      <span class="fr-translate__lang">
+        {{ currentLang === 'fr' ? ('LANG.FR' | translate) : ('LANG.EN' | translate) }}
+      </span>
+    </button>
+
+    <div class="fr-collapse" [class.fr-collapse--expanded]="langMenuOpenMobile">
+      <ul class="fr-translate__list" role="listbox">
+
+        <li>
+          <button
+            type="button"
+            class="fr-translate__link"
+            role="option"
+            [attr.aria-selected]="currentLang === 'fr'"
+            (click)="changeLang('fr'); langMenuOpenMobile = false">
+            {{ 'LANG.FR' | translate }}
+          </button>
+        </li>
+
+        <li>
+          <button
+            type="button"
+            class="fr-translate__link"
+            role="option"
+            [attr.aria-selected]="currentLang === 'en'"
+            (click)="changeLang('en'); langMenuOpenMobile = false">
+            {{ 'LANG.EN' | translate }}
+          </button>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+
+
+
 
   <nav class="mobile-nav">
     <a href="/">

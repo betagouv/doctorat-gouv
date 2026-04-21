@@ -20,6 +20,8 @@ export class Header implements AfterViewInit {
   showBanner = true;
   currentLang: 'fr' | 'en' = (localStorage.getItem('lang') as 'fr' | 'en') || 'fr';
   langMenuOpen = false;
+  langMenuOpenMobile = false;
+
 
   constructor(private i18n: I18nService) { }
 

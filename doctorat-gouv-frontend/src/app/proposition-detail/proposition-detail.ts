@@ -9,7 +9,7 @@ import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
-import { Header } from '../header/header';
+import { HostListener } from '@angular/core';
 
 @Component({
 	selector: 'app-proposition-detail',
@@ -20,8 +20,7 @@ import { Header } from '../header/header';
 		DefaultValuePipe,
 		Nl2brPipe,
 		TranslateModule,
-		DynamicDatePipe,
-		Header
+		DynamicDatePipe
 	],
 	templateUrl: './proposition-detail.html',
 	styleUrl: './proposition-detail.scss',
@@ -30,6 +29,8 @@ export class PropositionDetail {
 
 	thesisId!: number;
 	thesis: PropositionTheseDto | null = null;
+	
+	openTooltip: string | null = null;
 	
 	errorMessage: string | null = null;
 	
@@ -197,5 +198,36 @@ export class PropositionDetail {
 	get currentLang(): string {
 	  return this.translate.currentLang;
 	}
+	
+	openUrl(url: string) {
+	  window.open(url, '_blank');
+	}
+	
+	toggleTooltip(id: string) {
+	  this.openTooltip = this.openTooltip === id ? null : id;
+	}
+	
+	closeTooltip() {
+	  this.openTooltip = null;
+	}
+	
+	@HostListener('document:click', ['$event'])
+	onDocumentClick(event: Event) {
+	  const target = event.target as HTMLElement;
+
+	  // Si on clique sur un bouton tooltip → ne pas fermer
+	  if (target.closest('.tooltip-btn')) {
+	    return;
+	  }
+
+	  // Si on clique dans un tooltip → ne pas fermer
+	  if (target.closest('.fr-tooltip')) {
+	    return;
+	  }
+
+	  // Sinon → fermer
+	  this.closeTooltip();
+	}
+
 
 }

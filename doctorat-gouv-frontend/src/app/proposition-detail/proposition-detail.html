@@ -1,213 +1,371 @@
-<app-header></app-header>
-
 <div class="page-background" *ngIf="thesis">
-	
-  <div class="container">
-	
-	<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
-	  <p>{{ errorMessage }}</p>
+
+	<div class="container">
+
+		<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
+			<p>{{ errorMessage }}</p>
+		</div>
+
+		<!-- Première card -->
+		<div class="card shadow mb-4">
+			<div class="card-body">
+
+				<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w bottom-space"
+					*ngIf="thesis?.sujetAttribue === 'oui'">
+					{{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
+				</div>
+
+				<div class="fr-mb-4v badges-container">
+					<span class="badge-green" *ngIf="getFirstDomaine(thesis)">
+						{{ getFirstDomaineWithMaxLength(thesis, 60) }}
+					</span>
+
+					<span class="badge-pink" *ngIf="thesis?.specialite">
+						{{ thesis.specialite }}
+					</span>
+				</div>
+
+
+				<h2 class="card-title fr-mb-10v">
+					{{ getThesisTitle(thesis) }}
+				</h2>
+
+				<p><img src="/assets/icons/type_proposition.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.TYPE_OFFRE' | translate }} :</strong>
+					{{ thesis.typeProposition === 'proposition'
+					? ('DETAIL.SUJET' | translate)
+					: thesis.typeProposition === 'offre'
+					? ('DETAIL.OFFRE' | translate)
+					: thesis.typeProposition }}
+				</p>
+
+				<p><img src="/assets/icons/building.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.ETABLISSEMENT' | translate }} :</strong> {{ thesis?.etablissementLibelle |
+					defaultValue }}
+				</p>
+
+				<p>
+					<img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.ED' | translate }} :</strong> {{ thesis?.ecoleDoctoraleLibelle | defaultValue }}
+				</p>
+
+				<p>
+					<img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.LABO' | translate }} :</strong> {{ thesis?.uniteRechercheLibelle | defaultValue
+					}}
+				</p>
+
+				<p>
+					<img src="/assets/icons/direction.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.DIRECTION' | translate }} :</strong>
+					{{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
+
+					<ng-container *ngIf="thesis?.deposantOrcid">
+						<a [href]="'https://orcid.org/' + thesis.deposantOrcid" target="_blank" rel="noopener"
+							class="orcid-link">
+							<img src="assets/orcid.logo.icon.svg" alt="ORCID" class="orcid-icon">
+						</a>
+					</ng-container>
+				</p>
+
+				<!--		<p>-->
+				<!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
+				<!--		  <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}-->
+				<!--		</p>-->
+
+				<p *ngIf="thesis?.dateDebutThese">
+					<img src="/assets/icons/date_debut.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.DEBUT' | translate }} :</strong>
+					{{ thesis.dateDebutThese | dynamicDate:'d MMMM y' }}
+				</p>
+
+				<p class="fr-mb-9v">
+					<img src="/assets/icons/date_fin.png" class="icon-img" alt="">
+					<strong>{{ 'DETAIL.DATE_LIMITE' | translate }} :</strong>
+					{{ thesis?.dateLimiteCandidature
+					? (thesis.dateLimiteCandidature | dynamicDate:("d MMMM y '" + ('DETAIL.AT' | translate) + "'
+					HH:mm"))
+					: ('DETAIL.NON_RENSEIGNE' | translate) }}
+				</p>
+
+				<div class="keywords-title">
+					{{ 'DETAIL.KEYWORDS' | translate }}
+					<span class="line"></span>
+				</div>
+
+				<div class="mt-3 fr-mb-9v">
+					<span *ngFor="let mot of getMotsCles(thesis) | keyvalue" class="badge">
+						{{ mot.value }}
+					</span>
+				</div>
+
+				<!-- Boutons d'action et de prise en contact Version avec tooltip 1 -->
+				<div class="buttons-row">
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - DESKTOP -->
+					<!-- ========================= -->
+					<div class="btn-wrapper tooltip-container desktop-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - MOBILE -->
+					<!-- ========================= -->
+					<div class="btn-wrapper mobile-only">
+					  <button class="fr-btn fr-btn--lg fr-btn--primary full-btn"
+					          (click)="goToContact()">
+					    {{ 'DETAIL.CONTACT' | translate }}
+					  </button>
+
+					  <button class="tooltip-btn"
+					          (click)="toggleTooltip('contact')">
+					    <span class="fr-icon-information-line" aria-hidden="true"></span>
+					  </button>
+
+					  <span class="fr-tooltip"
+					        id="tooltip-contact"
+					        [class.open]="openTooltip === 'contact'">
+					    {{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+					  </span>
+					</div>
+
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - DESKTOP -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper tooltip-container desktop-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - MOBILE -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+					  <button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+					          (click)="openUrl(thesis.urlCandidature || '')">
+					    {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+					  </button>
+
+					  <button class="tooltip-btn"
+					          (click)="toggleTooltip('amethis')">
+					    <span class="fr-icon-information-line" aria-hidden="true"></span>
+					  </button>
+
+					  <span class="fr-tooltip"
+					        id="tooltip-amethis"
+					        [class.open]="openTooltip === 'amethis'">
+					    {{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+					  </span>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Deuxième card -->
+		<div class="card shadow">
+			<div class="card-body">
+
+				<div class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w" *ngIf="translate.currentLang !== 'fr'">
+					{{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
+				</div>
+
+				<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
+					<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
+					<p class="paragraph fr-mb-12v" [innerHTML]="resume | nl2br"></p>
+				</ng-container>
+
+				<ng-container *ngIf="(thesis?.objectif?.trim() || thesis?.contexte?.trim()) as _">
+					<h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
+
+					<p class="paragraph" *ngIf="thesis?.objectif?.trim()" [innerHTML]="thesis.objectif | nl2br">
+					</p>
+
+					<p class="paragraph" *ngIf="thesis?.contexte?.trim()" [innerHTML]="thesis.contexte | nl2br">
+					</p>
+
+					<hr class="separator">
+
+				</ng-container>
+
+				<ng-container *ngIf="getProfilRecherche(thesis) as profil">
+					<h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
+					<p class="paragraph" [innerHTML]="profil | nl2br"></p>
+				</ng-container>
+
+				<ng-container *ngIf="thesis?.modalitesEncadrement as encadrement">
+					<hr class="separator">
+					<h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
+					<p class="paragraph fr-mb-12v" [innerHTML]="encadrement | nl2br"></p>
+				</ng-container>
+
+				<ng-container *ngIf="thesis?.resultatsAttendus as resultats">
+					<h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
+					<p class="paragraph fr-mb-12v" [innerHTML]="resultats | nl2br"></p>
+				</ng-container>
+
+				<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
+					<h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
+					<p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>
+				</ng-container>
+
+				<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
+
+				<ng-container *ngIf="
+		      thesis?.financementEtat ||
+		      thesis?.financementTypes?.length ||
+		      thesis?.financementEmployeur ||
+		      thesis?.financementDetails;
+		    else noFinancement">
+
+					<!-- Précisions sur le financement -->
+					<p class="paragraph" *ngIf="thesis?.financementDetails">
+						<strong>{{ 'DETAIL.FINANCEMENT_PRECISIONS' | translate }}</strong>
+						{{ thesis.financementDetails }}
+					</p>
+
+					<!-- Type(s) de financement -->
+					<p class="paragraph" *ngIf="thesis?.financementTypes?.length">
+						<strong>{{ 'DETAIL.FINANCEMENT_TYPE' | translate }}</strong>
+						{{ (thesis.financementTypes || []).join(', ') }}
+					</p>
+
+					<!-- Employeur -->
+					<p class="paragraph" *ngIf="thesis?.financementEmployeur">
+						<strong>{{ 'DETAIL.FINANCEMENT_EMPLOYEUR' | translate }}</strong>
+						{{ thesis.financementEmployeur }}
+					</p>
+
+					<!-- État du financement -->
+					<!--		  <p class="paragraph" *ngIf="thesis?.financementEtat">-->
+					<!--		    <strong>État du financement :</strong><br>-->
+					<!--		    {{ thesis.financementEtat }}-->
+					<!--		  </p>-->
+
+					<!-- Phrase de conclusion -->
+					<p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
+
+				</ng-container>
+
+				<ng-template #noFinancement>
+					<p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
+				</ng-template>
+
+				<!--		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">-->
+				<!--		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>-->
+				<!--		  <p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>-->
+				<!--		</ng-container>-->
+
+
+				<ng-container *ngIf="thesis?.referencesBibliographiques as references">
+					<h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
+					<p class="paragraph fr-mb-12v" [innerHTML]="references | nl2br"></p>
+				</ng-container>
+
+
+				<div *ngIf="thesis?.urlPdf">
+					<h3 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h3>
+
+					<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download
+						target="_blank" rel="noopener noreferrer">
+						{{ 'DETAIL.DOWNLOAD_PDF' | translate }}
+					</a>
+				</div>
+
+				<!-- Boutons d'action et de prise en contact Version avec tooltip 1 -->
+				<br />
+				<div class="buttons-row">
+
+
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - DESKTOP -->
+					<!-- ========================= -->
+					<div class="btn-wrapper tooltip-container desktop-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON CONTACT - MOBILE -->
+					<!-- ========================= -->
+					<div class="btn-wrapper mobile-only">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn" (click)="goToContact()">
+							{{ 'DETAIL.CONTACT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-contact">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-contact">
+							{{ 'DETAIL.TOOLTIP_CONTACT' | translate }}
+						</span>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - DESKTOP -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper tooltip-container desktop-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<div class="tooltip-content">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</div>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON REDIRECTION - MOBILE -->
+					<!-- ========================= -->
+					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+
+						<button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+							(click)="openUrl(thesis.urlCandidature || '')">
+							{{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+						</button>
+
+						<button class="fr-btn fr-btn--tooltip fr-btn--sm tooltip-btn"
+							aria-describedby="tooltip-amethis">
+							i
+						</button>
+
+						<span class="fr-tooltip fr-placement" id="tooltip-amethis">
+							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+						</span>
+					</div>
+
+
+
+				</div>
+
+			</div>
+		</div>
+
 	</div>
-
-    <!-- Première card -->
-    <div class="card shadow mb-4">
-      <div class="card-body">
-		
-		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w bottom-space" *ngIf="thesis?.sujetAttribue === 'oui'">
-		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
-		</div>
-		
-		<div class="fr-mb-4v badges-container">
-		  <span class="badge-green" *ngIf="getFirstDomaine(thesis)">
-		    {{ getFirstDomaineWithMaxLength(thesis, 60) }}
-		  </span>
-
-		  <span class="badge-pink" *ngIf="thesis?.specialite">
-		    {{ thesis.specialite }}
-		  </span>
-		</div>
-
-		
-        <h2 class="card-title fr-mb-10v">
-          {{ getThesisTitle(thesis) }}
-        </h2>
-		
-		<p><img src="/assets/icons/type_proposition.png" class="icon-img" alt="">
-			<strong>{{ 'DETAIL.TYPE_OFFRE' | translate }} :</strong>
-			{{ thesis.typeProposition === 'proposition'
-			    ? ('DETAIL.SUJET' | translate)
-			    : thesis.typeProposition === 'offre'
-			      ? ('DETAIL.OFFRE' | translate)
-			      : thesis.typeProposition }}
-		</p>
-
-		<p><img src="/assets/icons/building.png" class="icon-img" alt="">
-			<strong>{{ 'DETAIL.ETABLISSEMENT' | translate }} :</strong> {{ thesis?.etablissementLibelle | defaultValue }}
-		</p>
-
-		<p>
-		  <img src="/assets/icons/graduation-cap.png" class="icon-img" alt="">
-		  <strong>{{ 'DETAIL.ED' | translate }} :</strong> {{ thesis?.ecoleDoctoraleLibelle | defaultValue }}
-		</p>
-
-		<p>
-		  <img src="/assets/icons/graduation-lab.png" class="icon-img" alt="">
-		  <strong>{{ 'DETAIL.LABO' | translate }} :</strong> {{ thesis?.uniteRechercheLibelle | defaultValue }}
-		</p>
-
-		<p>
-		  <img src="/assets/icons/direction.png" class="icon-img" alt="">
-		  <strong>{{ 'DETAIL.DIRECTION' | translate }} :</strong>
-		  {{ thesis?.directionThesePrenom }} {{ thesis?.directionTheseNom }}
-
-		  <ng-container *ngIf="thesis?.deposantOrcid">
-		    <a 
-		      [href]="'https://orcid.org/' + thesis.deposantOrcid"
-		      target="_blank"
-		      rel="noopener"
-		      class="orcid-link"
-		    >
-		      <img 
-		        src="assets/orcid.logo.icon.svg"
-		        alt="ORCID"
-		        class="orcid-icon"
-		      >
-		    </a>
-		  </ng-container>
-		</p>
-
-<!--		<p>-->
-<!--		  <img src="/assets/icons/x.png" class="icon-img" alt="">-->
-<!--		  <strong>Financement :</strong> {{ thesis?.financementEtat || 'Non précisé' }}-->
-<!--		</p>-->
-
-		<p>
-		  <img src="/assets/icons/date_debut.png" class="icon-img" alt="">
-		  <strong>{{ 'DETAIL.DEBUT' | translate }} :</strong>
-		  {{ thesis?.dateDebutThese | dynamicDate:'d MMMM y' }}
-		</p>
-
-		<p class="fr-mb-9v">
-		  <img src="/assets/icons/date_fin.png" class="icon-img" alt="">
-		  <strong>{{ 'DETAIL.DATE_LIMITE' | translate }} :</strong>
-		  {{ thesis?.dateLimiteCandidature
-		      ? (thesis.dateLimiteCandidature | dynamicDate:("d MMMM y '" + ('DETAIL.AT' | translate) + "' HH:mm"))
-		      : ('DETAIL.NON_RENSEIGNE' | translate) }}
-		</p>
-
-
-		<div class="keywords-title">
-		  {{ 'DETAIL.KEYWORDS' | translate }}
-		  <span class="line"></span>
-		</div>
-
-		<div class="mt-3 fr-mb-9v">
-		  <span *ngFor="let mot of getMotsCles(thesis) | keyvalue" class="badge">
-		    {{ mot.value }}
-		  </span>
-		</div>
-		
-       <div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
-	       <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> {{ 'DETAIL.CONTACT' | translate }} </button> 
-	   </div>
-
-      </div>
-    </div>
-
-    <!-- Deuxième card -->
-    <div class="card shadow">
-      <div class="card-body">
-		
-		<div 
-		  class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w"
-		  *ngIf="translate.currentLang !== 'fr'">
-		  {{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
-		</div>
-		
-		<!--		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w" *ngIf="thesis?.sujetAttribue === 'oui'" >-->
-		<!--		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}-->
-		<!--		</div>-->
-		
-		
-		<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
-			<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
-			<p class="paragraph fr-mb-12v" [innerHTML]="resume | nl2br"></p>
-		</ng-container>
-		
-		<ng-container *ngIf="(thesis?.objectif?.trim() || thesis?.contexte?.trim()) as _">
-		  <h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
-
-		  <p class="paragraph"
-		     *ngIf="thesis?.objectif?.trim()"
-		     [innerHTML]="thesis.objectif | nl2br">
-		  </p>
-
-		  <p class="paragraph"
-		     *ngIf="thesis?.contexte?.trim()"
-		     [innerHTML]="thesis.contexte | nl2br">
-		  </p>
-		  
-		  <hr class="separator">
-		  
-		</ng-container>
-
-		<ng-container *ngIf="getProfilRecherche(thesis) as profil">
-		  <h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
-		  <p class="paragraph" [innerHTML]="profil | nl2br"></p>
-		</ng-container>
-		
-		<hr class="separator">
-		
-		<ng-container *ngIf="thesis?.modalitesEncadrement as encadrement">
-		  <h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v" [innerHTML]="encadrement | nl2br"></p>
-		</ng-container>
-
-		<ng-container *ngIf="thesis?.resultatsAttendus as resultats">
-		  <h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v" [innerHTML]="resultats | nl2br"></p>
-		</ng-container>
-		
-		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
-		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>
-		</ng-container>
-		
-		<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
-		<p class="paragraph fr-mb-12v" *ngIf="thesis?.financementDetails; else noFinancement">
-		  {{ thesis.financementDetails }}
-		</p>
-
-		<ng-template #noFinancement>
-		  <p class="paragraph fr-mb-12v" [innerHTML]="'DETAIL.NO_FINANCEMENT' | translate"></p>
-		</ng-template>
-		
-		<!--		<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">-->
-		<!--		  <h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>-->
-		<!--		  <p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>-->
-		<!--		</ng-container>-->
-		
-		
-		<ng-container *ngIf="thesis?.referencesBibliographiques as references">
-		  <h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
-		  <p class="paragraph fr-mb-12v" [innerHTML]="references | nl2br"></p>
-		</ng-container>
-
-		
-		<div *ngIf="thesis?.urlPdf">
-			<h3 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h3>
-		
-			<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download target="_blank"
-				rel="noopener noreferrer">
-				{{ 'DETAIL.DOWNLOAD_PDF' | translate }}
-			</a>
-		</div>
-		
-		<div class="fr-mt-4v fr-grid-row fr-grid-row--center"> 
-		    <button class="fr-btn fr-btn--lg fr-btn--primary fr-col-12 fr-col-md-6 custom-btn" (click)="goToContact()"> {{ 'DETAIL.CONTACT' | translate }} </button> 
-		</div>
-				
-      </div>
-    </div>
-
-  </div>
 </div>

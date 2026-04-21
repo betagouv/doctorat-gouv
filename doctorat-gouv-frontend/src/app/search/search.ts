@@ -30,10 +30,9 @@ import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrFooterModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrButtonModule } from '@edugouvfr/ngx-dsfr';
 
-import { Header } from '../header/header';
-
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Nl2brPipe } from '../pipes/nl2br-pipe';
 
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { ViewEncapsulation } from '@angular/core';
@@ -53,13 +52,13 @@ type MultiFilterKey =
     CommonModule,
     RouterModule,
     FormsModule,
-    Header,
     DsfrHeaderModule,
     DsfrTagModule,
     DsfrFooterModule,
     DsfrButtonModule,
 	TranslateModule,
-	DynamicDatePipe
+	DynamicDatePipe,
+	Nl2brPipe
   ],
   templateUrl: './search.html',
   styleUrls: ['./search.scss'],

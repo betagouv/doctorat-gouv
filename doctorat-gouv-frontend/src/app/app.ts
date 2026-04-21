@@ -1,13 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { I18nService } from './services/i18n-service';
+import { Header } from './header/header';
 import { Footer } from './footer/footer';
 import { MatomoTrackingService } from './services/matomo-tracking-service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Footer],
+  imports: [RouterOutlet, Header, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

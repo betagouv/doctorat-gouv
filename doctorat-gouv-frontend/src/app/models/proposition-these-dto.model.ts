@@ -94,5 +94,9 @@ export interface PropositionTheseDto{
   
   urlPdf: string | null;
   sujetAttribue: string | null;
+  urlCandidature: string | null;
+  
+  source: string | null;
+  
 }
 
