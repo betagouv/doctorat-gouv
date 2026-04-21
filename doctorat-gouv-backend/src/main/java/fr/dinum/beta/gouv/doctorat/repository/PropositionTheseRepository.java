@@ -64,5 +64,12 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 		      AND (p.active IS NULL OR p.active = TRUE)
 		""")
 	List<PropositionThese> findActiveBySourceAndAnnee(@Param("source") SourceThese source, @Param("annee") Integer annee);
+	
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    WHERE p.active IS NULL 
+		    OR p.active = TRUE
+		""")
+	List<PropositionThese> findActivePropositions();
 
 }

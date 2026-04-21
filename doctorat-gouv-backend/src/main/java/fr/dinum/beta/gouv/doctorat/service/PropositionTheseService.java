@@ -22,7 +22,6 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
-import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
