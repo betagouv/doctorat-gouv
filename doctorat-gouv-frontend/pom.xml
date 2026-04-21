@@ -5,7 +5,7 @@
 
 	<groupId>fr.beta.gouv.doctorat</groupId>
 	<artifactId>doctorat-gouv-frontend</artifactId>
-	<version>0.2.9</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<build>

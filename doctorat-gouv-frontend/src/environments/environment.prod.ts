@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  version: '0.2.9',
+  version: '0.3.0-beta',
   matomoSiteId: 249,
   apiUrl: '/api'
   
