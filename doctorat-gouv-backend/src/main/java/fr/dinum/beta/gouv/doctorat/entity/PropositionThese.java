@@ -262,6 +262,14 @@ public class PropositionThese {
 	
 	@Enumerated(EnumType.STRING)
 	private SourceThese source;
+	
+	@Column(name = "albert_document_id")
+	private String albertDocumentId;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "date_indexation_albert")
+	private LocalDateTime dateIndexationAlbert;
+
 
 	public Long getId() {
 		return id;
@@ -901,6 +909,22 @@ public class PropositionThese {
 
 	public void setSource(SourceThese source) {
 		this.source = source;
+	}
+
+	public String getAlbertDocumentId() {
+		return albertDocumentId;
+	}
+
+	public void setAlbertDocumentId(String albertDocumentId) {
+		this.albertDocumentId = albertDocumentId;
+	}
+
+	public LocalDateTime getDateIndexationAlbert() {
+		return dateIndexationAlbert;
+	}
+
+	public void setDateIndexationAlbert(LocalDateTime dateIndexationAlbert) {
+		this.dateIndexationAlbert = dateIndexationAlbert;
 	}
 
 }
