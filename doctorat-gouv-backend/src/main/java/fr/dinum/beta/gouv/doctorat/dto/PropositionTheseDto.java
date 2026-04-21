@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -684,6 +685,7 @@ public class PropositionTheseDto {
 	private String urlPdf;
 	private String urlCandidature;
 	private String sujetAttribue;
+	private SourceThese source;
 	
 	public String getEcoleDoctoraleLibelle() {
 		return ecoleDoctoraleLibelle;
@@ -711,6 +713,14 @@ public class PropositionTheseDto {
 
 	public void setSujetAttribue(String sujetAttribue) {
 		this.sujetAttribue = sujetAttribue;
+	}
+
+	public SourceThese getSource() {
+		return source;
+	}
+
+	public void setSource(SourceThese source) {
+		this.source = source;
 	}
 
 }

@@ -63,6 +63,113 @@
   margin-bottom: 1.1rem;    // espace en bas
 }
 
+/* --- Layout des boutons --- */
+.buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-wrapper {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+/* --- Boutons pixel-perfect --- */
+.full-btn {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  padding: 0.9rem 1.2rem;
+  border-radius: 0px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+/* Hover harmonisé */
+/*.full-btn.fr-btn--primary:hover {
+  background-color: #003a92;
+}*/
+
+.full-btn.fr-btn--secondary {
+  background-color: #ffffff;
+  border: 1px solid #000091;
+  color: #000091;
+}
+
+.full-btn.fr-btn--secondary:hover {
+  background-color: rgb(227, 227, 227);
+}
+
+/* ========================= */
+/* TOOLTIP DESKTOP (survol) */
+/* ========================= */
+/* --- Tooltip Desktop (survol du bouton entier) --- */
+.tooltip-container:hover .tooltip-content {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  padding: 0.9rem 1.1rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  font-size: 0.85rem;
+  // max-width: 320px;
+  width: 30rem;
+  z-index: 20;
+
+  /* Animation douce */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  /* Pour éviter que le tooltip ne casse la mise en page */
+  pointer-events: none;
+}
+
+/* --- Flèche du tooltip (triangle) --- */
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: -6px; /* position de la flèche */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+
+  /* Triangle vers le haut */
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+
+  /* Bordure autour de la flèche */
+  filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.1));
+}
+
+
+/* Desktop only */
+.desktop-only {
+  display: flex;
+}
+
+/* Mobile only */
+.mobile-only {
+  display: none;
+}
+
+
+
 .badge {
   display: inline-block;
   background: rgb(200, 200, 255);
@@ -202,9 +309,79 @@ a.orcid-link::after {
   border-color: #ffcc80;
 }
 
-
-
 .bottom-space {
   margin-bottom: 1rem;
 }
+
+/* --- Mobile version  --- */
+@media (max-width: 768px) {
+
+  .mobile-only {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    width: 100%;
+    position: relative;
+  }
+
+  .mobile-only .full-btn {
+    flex: 1;
+	margin-bottom: 0rem;
+  }
+  
+  .tooltip-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .mobile-only .fr-tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    // left: 10;
+    width: 100%;
+    z-index: 50;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+  }
+
+  /* Tooltip visible quand Angular dit "open" */
+  .mobile-only .fr-tooltip.open {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+  
+  
+    .mobile-only .fr-tooltip,
+    .mobile-tooltip,
+    .fr-tooltip {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: none !important;
+      bottom: auto !important;
+      display: none !important;
+    }
+
+    .mobile-only .fr-tooltip.open,
+    .mobile-tooltip.open,
+    .fr-tooltip.open {
+      display: block !important;
+    }
+}
+
+
+
 

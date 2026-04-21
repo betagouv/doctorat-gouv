@@ -7,16 +7,13 @@ import { environment } from '../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Header } from '../header/header';
-
 @Component({
   selector: 'app-contact',
   standalone: true,
   imports: [
 	CommonModule,
 	ReactiveFormsModule,
-	TranslateModule,
-	Header
+	TranslateModule
   ],
   templateUrl: './contact.html',
   styleUrls: ['./contact.scss']

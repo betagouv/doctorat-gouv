@@ -32,7 +32,7 @@ public class PropositionThese {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 25, nullable = false, unique = true)
+	@Column(length = 50, nullable = false, unique = true)
 	private String matricule;
 
 	@Column(length = 12, nullable = false)
