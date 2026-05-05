@@ -186,6 +186,12 @@ export class Search implements OnInit, OnDestroy {
   /* ------------------- Lifecycle ------------------- */
   ngOnInit(): void {
 	  document.addEventListener('click', this.handleClickOutside.bind(this));
+	  
+	  // Restaurer les filtres sauvegardés
+	  const saved = this.searchFiltersService.load();
+	  
+	  let urlHasEtablissementRor = false;
+	  let urlHasEcoleDoctorale = false;
 
 	  // Lire les paramètres d’URL 
 	  this.route.queryParams.subscribe(params => {
@@ -198,9 +204,11 @@ export class Search implements OnInit, OnDestroy {
 			  this.ecole = saved.ecole || [];
 			  this.defisSociete = saved.defisSociete || [];
 			  this.annee = saved.annee || [];
+			  this.etablissementRor = '';
 			  this.query = '';
 
 			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
+			  urlHasEcoleDoctorale = true;   // 🔥 On note que l’URL contient le filtre école doctorale pour éviter de l’écraser plus tard
 		  };
 		  
 		  if (params['etablissementror']) { 
@@ -212,9 +220,11 @@ export class Search implements OnInit, OnDestroy {
 			this.ecole = saved.ecole || [];
 			this.defisSociete = saved.defisSociete || [];
 			this.annee = saved.annee || [];
+			this.ecoleDoctoraleNumero = '';
 			this.query = '';
 			
 			this.etablissementRor = params['etablissementror'];
+			urlHasEtablissementRor = true;   // 🔥 On note que l’URL contient le filtre ROR pour éviter de l’écraser plus tard
 		  }
 	  });
 	  
@@ -223,8 +233,6 @@ export class Search implements OnInit, OnDestroy {
 
 	  this.loadFilterOptions();
 	  
-	  // Restaurer les filtres sauvegardés
-	  const saved = this.searchFiltersService.load();
 	  if (saved) {
 	    this.query = saved.query || '';
 	    this.discipline = saved.discipline || '';
@@ -232,10 +240,18 @@ export class Search implements OnInit, OnDestroy {
 	    this.laboratoire = saved.laboratoire || '';
 	    this.ecole = saved.ecole || '';
 	    this.defisSociete = saved.defisSociete || '';
-	    this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
-	    this.etablissementRor = saved.etablissementRor || '';
 		this.annee = saved.annee || '';
 		this.showMoreFilters = saved.showMoreFilters ?? false;
+		
+		// Ne PAS écraser la valeur venant de l’URL
+		if (!urlHasEtablissementRor) {
+		    this.etablissementRor = saved.etablissementRor || '';
+		}
+		
+		// Ne PAS écraser la valeur venant de l’URL
+		if (!urlHasEcoleDoctorale) {
+			this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
+		}
 		
 		if (saved.typeProposition) {
 		  this.activeFilter = saved.typeProposition;
@@ -253,7 +269,6 @@ export class Search implements OnInit, OnDestroy {
 
 	  }
 
-	
 	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
 	this.onSearch(this.currentPage);
 	this.isInitialLoad = false;
@@ -923,9 +938,5 @@ resetFilter(filterName: MultiFilterKey) {
       (this.query.trim() ? 1 : 0)
     );
   }
-
-
-
-
 
 }
