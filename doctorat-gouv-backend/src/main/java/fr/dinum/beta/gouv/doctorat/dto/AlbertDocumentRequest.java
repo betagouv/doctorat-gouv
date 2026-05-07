@@ -11,14 +11,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AlbertDocumentRequest {
 
 	@JsonProperty("collection_id")
-	private Integer collectionId;
+	private String collectionId;
 
 	private Map<String, Object> metadata;
 
 	public AlbertDocumentRequest() {
 	}
 	
-	public AlbertDocumentRequest(Integer collectionId, Map<String, Object> metadata) {
+	public AlbertDocumentRequest(String collectionId, Map<String, Object> metadata) {
 		super();
 		this.collectionId = collectionId;
 		this.metadata = metadata;
@@ -36,11 +36,11 @@ public class AlbertDocumentRequest {
 		this.metadata = metadata;
 	}
 	
-	public Integer getCollectionId() {
+	public String getCollectionId() {
 		return collectionId;
 	}
 
-	public void setCollectionId(Integer collectionId) {
+	public void setCollectionId(String collectionId) {
 		this.collectionId = collectionId;
 	}
 	
