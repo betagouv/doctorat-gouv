@@ -46,7 +46,7 @@ public class AlbertIndexationScheduler {
     /**
      * Tâche planifiée qui s’exécute toutes les 60 minutes pour indexer les sujets de thèse actifs dans Albert.
      */
-    @Scheduled(fixedDelay = 60 * 60 * 1000)
+    // @Scheduled(fixedDelay = 60 * 60 * 1000)
     public void indexerSujets() {
 
         int page = 0;

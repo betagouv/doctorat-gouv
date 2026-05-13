@@ -13,7 +13,7 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.service.TheseIndexationService;
 
 @Component
-@Profile("test") // Ce runner ne s'exécutera que dans le profil "test"
+@Profile("dev") // Ce runner ne s'exécutera que dans le profil "test"
 public class AlbertDocumentTestRunner implements ApplicationRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(AlbertDocumentTestRunner.class);
@@ -30,7 +30,7 @@ public class AlbertDocumentTestRunner implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) {
 		log.info("Lancement du test d'indexation Albert...");
-		var sujets = repository.findActivePropositions().stream().limit(3).toList();
+		var sujets = repository.findActivePropositions().stream().limit(10).toList();
 
 		for (PropositionThese sujet : sujets) {
 			indexationService.indexerDocumentSiNecessaire(sujet);

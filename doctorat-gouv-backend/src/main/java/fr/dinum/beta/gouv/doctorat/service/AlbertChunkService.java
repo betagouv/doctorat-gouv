@@ -38,7 +38,7 @@ public class AlbertChunkService {
      * @param documentId
      * @param chunkText
      */
-    public void uploadChunk(Long documentId, String chunkText) {
+    public void uploadChunk(Long documentId, String chunkText, String chunkType) {
     	
     	log.info("Upload chunk vers Albert (documentId={}, chunkText={})", documentId, chunkText);
 
@@ -51,7 +51,10 @@ public class AlbertChunkService {
         // Chunk conforme à l’API Albert
         Map<String, Object> chunkObject = new HashMap<>();
         chunkObject.put("content", chunkText); // <-- obligatoire
-        chunkObject.put("metadata", Map.of("source", "these")); // <-- au moins 1 champ
+        chunkObject.put("metadata", Map.of(
+        	    "source", "these",
+        	    "type", chunkType   // ← nouveau
+        	));
 
         Map<String, Object> body = new HashMap<>();
         body.put("chunks", List.of(chunkObject));

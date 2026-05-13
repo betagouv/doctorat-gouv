@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class TheseSemanticBuilder {
 
         // 🇫🇷 Français
         appendSection(sb, "Titre", these.getTheseTitre());
-        appendSection(sb, "Mots-clés", joinMotsCles(these.getMotsCles()));
+        appendMotsCles(sb, these);
         appendSection(sb, "Résumé", these.getResume());
         appendSection(sb, "Objectif", these.getObjectif());
         appendSection(sb, "Contexte", these.getContexte());
@@ -48,6 +49,29 @@ public class TheseSemanticBuilder {
                 texteComplet
         );
     }
+    
+    private void appendMotsCles(StringBuilder sb, PropositionThese sujet) {
+
+        if (sujet.getMotsCles() == null || sujet.getMotsCles().isEmpty()) {
+            return;
+        }
+
+        sb.append("### Mots-clés\n");
+
+        // Liste des mots-clés
+        sujet.getMotsCles().forEach((key, value) -> {
+            sb.append("- ").append(value).append("\n");
+        });
+
+        // Phrase récapitulative
+        sb.append("\nLes mots-clés principaux de ce sujet sont : ");
+        sb.append(
+            sujet.getMotsCles().values().stream()
+                .collect(Collectors.joining(", "))
+        );
+        sb.append(".\n\n");
+    }
+
     
     /**
      * Sanitize le texte en remplaçant les balises HTML par des retours à la ligne et en supprimant les espaces superflus.

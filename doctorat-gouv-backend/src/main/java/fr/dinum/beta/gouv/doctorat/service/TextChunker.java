@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChunkWithType;
+import fr.dinum.beta.gouv.doctorat.dto.TheseSemanticDocument;
+
 /**
  * Ce service est responsable de découper un texte en chunks de taille maximale définie, en évitant de couper au milieu d’un mot.
  */
@@ -55,4 +58,26 @@ public class TextChunker {
 
 		return chunks;
 	}
+	
+	public List<ChunkWithType> chunkWithTypes(String texteComplet) {
+
+	    List<String> rawChunks = chunk(texteComplet); // ta méthode existante
+	    List<ChunkWithType> result = new ArrayList<>();
+
+	    for (String c : rawChunks) {
+	        String type = detectType(c);
+	        result.add(new ChunkWithType(c, type));
+	    }
+
+	    return result;
+	}
+	
+	private String detectType(String chunk) {
+	    if (chunk.contains("### Mots-clés")) return "mots_cles";
+	    if (chunk.contains("### Résumé")) return "resume";
+	    if (chunk.contains("### Contexte")) return "contexte";
+	    if (chunk.contains("### Objectif")) return "objectif";
+	    return "general";
+	}
+
 }

@@ -37,6 +37,8 @@ import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { ViewEncapsulation } from '@angular/core';
 
+import { environment } from '../../environments/environment';
+
 type MultiFilterKey =
   'discipline' |
   'localisation' |
@@ -128,6 +130,13 @@ export class Search implements OnInit, OnDestroy {
   private filterChanges$ = new Subject<void>();
   private filterSub!: Subscription;
   
+  
+  // --- Recherche IA Albert ---
+  useAlbert = false;              // case à cocher
+  albertQuery = '';               // texte saisi par l’utilisateur
+  albertResult: string | null = null; // résultat affiché
+  isAlbertLoading = false;        // spinner éventuel
+
   
   /* ------------------- Translations pour les filtres ------------------- */
   disciplineTranslations: Record<string, string> = {
@@ -938,5 +947,39 @@ resetFilter(filterName: MultiFilterKey) {
       (this.query.trim() ? 1 : 0)
     );
   }
+  
+	onAlbertSearch(): void {
+		if (!this.albertQuery.trim()) {
+			this.albertResult = "Veuillez saisir une question.";
+			return;
+		}
+
+		this.isAlbertLoading = true;
+		this.albertResult = null;
+
+		fetch(`${environment.apiUrl}/albert/search?query=${encodeURIComponent(this.albertQuery)}`)
+			.then(res => {
+				if (!res.ok) {
+					throw new Error("Erreur HTTP " + res.status);
+				}
+				return res.json();
+			})
+			.then(data => {
+				this.isAlbertLoading = false;
+
+				if (!data || !data.answer) {
+					this.albertResult = "Aucun résultat trouvé dans les sujets de thèse.";
+					return;
+				}
+
+				this.albertResult = data.answer;
+			})
+			.catch(err => {
+				console.error(err);
+				this.isAlbertLoading = false;
+				this.albertResult = "Erreur lors de l’interrogation d’Albert.";
+			});
+	}
+
 
 }

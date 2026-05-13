@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChunkWithType;
 import fr.dinum.beta.gouv.doctorat.dto.TheseSemanticDocument;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -104,17 +105,19 @@ public class TheseIndexationService {
 		log.info("Indexation des chunks pour le sujet ID {} dans Albert (document ID {})...", sujet.getId(),
 				documentId);
 
-		// 1. Construire le texte FR/EN
+		// 1. Construire le texte FR/EN à partir du sujet avec TheseSemanticBuilder
 		TheseSemanticDocument semantic = semanticBuilder.build(sujet);
 
-		// 2. Chunker avec TON TextChunker
-		List<String> chunks = textChunker.chunk(semantic.texteComplet());
+		// 2. Chunker avec TextChunker
+		List<ChunkWithType> chunks = textChunker.chunkWithTypes(semantic.texteComplet());
 
 		// 3. Envoyer chaque chunk à Albert
-		for (String chunk : chunks) {
-			chunkService.uploadChunk(documentId, chunk);
+		for (ChunkWithType c : chunks) {
+		    chunkService.uploadChunk(documentId, c.content(), c.type());
 		}
 		
 		log.info("Indexation des chunks terminée pour le sujet ID {} dans Albert (document ID {})", sujet.getId(), documentId);
 	}
+	
+
 }
