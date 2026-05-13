@@ -58,7 +58,7 @@ public class AlbertSearchService {
         body.put("collection_ids", List.of(collectionId));
         body.put("limit", 5);
         body.put("method", "semantic");
-        body.put("score_threshold", 0.75);
+        body.put("score_threshold", 0.4);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 

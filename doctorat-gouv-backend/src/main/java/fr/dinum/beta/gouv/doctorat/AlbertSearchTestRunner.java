@@ -27,9 +27,10 @@ public class AlbertSearchTestRunner implements CommandLineRunner {
 
         log.info("=== Test SEARCH Albert ===");
 
-        // String question = "Quels sont les objectifs de la thèse ?";
         // String question = "Donne moi le résultat du dernier match de foot entre le PSG et l'OM";
-        String question = "Quels sont les les thèses liées à la technologies ?";
+        // String question = "Quels sont les thèses liées à l'intelligence artificelle ?";
+        String question = "Quels sont les thèses liées à la technologie et la santé ?";
+        
         Map response = searchService.search(question);
 
         log.info("Réponse brute : {}", response);
