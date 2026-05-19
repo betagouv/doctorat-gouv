@@ -6,6 +6,7 @@
   max-width: 79% !important;
   width: 79%;
   padding-left: 0;
+  margin-left: 0;
   border: none !important;
 }
 
@@ -14,6 +15,7 @@
 	width: 100% !important;
 	margin-top: 0.1rem;
 	margin-left: 0rem;
+	padding-left: 11rem;
 	display: flex;
 	justify-content: flex-start;
 }
@@ -21,12 +23,11 @@
 /* Marianne */
 .fr-header__brand {
   border: none !important;
-  border-bottom: none !important; /* DSFR met parfois un border-bottom */
-  border-top: none !important; /* DSFR met parfois un border-top */
+  border-bottom: none !important;
+  border-top: none !important;
   box-shadow: none !important;
   display: flex;
   align-items: center;
-  margin-left: 11rem;
 }
 
 .fr-logo {
@@ -114,7 +115,7 @@
 .info-banner {
   background-color: rgb(232, 232, 255);
   border-bottom: 1px solid #d5d5f0;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1rem 0.75rem 11rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -126,7 +127,6 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-left: 4rem;
 }
 
 .info-icon {
@@ -258,8 +258,9 @@
 	width: 95% !important; 
 	border: none !important;
 	box-shadow: none !important;
-	margin-left: 0.5rem !important;
+	margin-left: 0 !important;
 	margin-bottom: 0.5rem !important;
+	padding-left: 1rem !important;
 }
 
   /* Ligne 1 : Marianne + logo Doctorat + burger */
@@ -459,8 +460,8 @@
 
 .menu-desktop {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: flex-start;
+  padding-left: 11rem;
 }
 
 .fr-nav__link {
