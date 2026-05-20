@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -242,8 +243,27 @@ public class PropositionTheseService {
      */
     public PropositionTheseDto findById(Long id) {
         Optional<PropositionThese> opt = repo.findById(id);
-        return opt.map(PropositionTheseMapper::toDto)               // mapper entité → DTO
+        return opt.map(PropositionTheseMapper::toDto)
                   .orElseThrow(() -> new ResourceNotFoundException(
                           "Proposition de thèse avec l’id " + id + " introuvable"));
+    }
+
+    /**
+     * Retourne les propositions de thèse correspondant aux identifiants fournis.
+     * Utilisé par la recherche Albert pour enrichir les résultats avec les données complètes.
+     */
+    public List<PropositionTheseDto> findByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        return repo.findByIdIn(ids).stream()
+                .map(PropositionTheseMapper::toDto)
+                .toList();
+    }
+
+    /**
+     * Retourne une map id -> PropositionTheseDto pour un ensemble d'IDs.
+     */
+    public Map<Long, PropositionTheseDto> findByIdInAsMap(List<Long> ids) {
+        return findByIdIn(ids).stream()
+                .collect(Collectors.toMap(PropositionTheseDto::getId, dto -> dto));
     }
 }

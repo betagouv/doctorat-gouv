@@ -1,9 +1,11 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -16,6 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import fr.dinum.beta.gouv.doctorat.dto.AlbertSearchHit;
+import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 
 /**
  * Service dédié à la recherche sémantique dans Albert.
@@ -36,14 +41,16 @@ public class AlbertSearchService {
     @Value("${albert.base-url:https://albert.api.etalab.gouv.fr/v1}")
     private String baseUrl;
 
+    @Value("${albert.search.api-limit:50}")
+    private int apiSearchLimit;
+
     public AlbertSearchService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     /**
-     * Effectue une recherche sémantique dans Albert à partir d’une question.
-     * @param question
-     * @return
+     * Effectue une recherche sémantique dans Albert à partir d'une question.
+     * Retourne la réponse brute (utilisé pour la compatibilité).
      */
     public Map search(String question) {
     	
@@ -54,21 +61,13 @@ public class AlbertSearchService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        Map<String, Object> metadataFilter = Map.of(
-        	    "key", "type",
-        	    "type", "eq",
-        	    "value", "mots_cles"
-        );
 
         Map<String, Object> body = new HashMap<>();
         body.put("query", question);
         body.put("collection_ids", List.of(collectionId));
-        body.put("limit", 10);
+        body.put("limit", apiSearchLimit);
         body.put("method", "semantic");
-        body.put("score_threshold", 0.4);
-        //body.put("metadata_filters", metadataFilter);
-
+        body.put("score_threshold", 0.3);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
@@ -79,7 +78,85 @@ public class AlbertSearchService {
 
         return response.getBody();
     }
-    
+
+    /**
+     * Effectue une recherche sémantique et retourne des hits structurés.
+     * Chaque hit contient l'ID de la proposition, le score, le type de chunk et le contenu.
+     */
+    public List<AlbertSearchHit> searchHits(String question) {
+    	log.info("Recherche structurée dans Albert (question={})", question);
+
+        Map rawResponse = search(question);
+        List<Map<String, Object>> data = (List<Map<String, Object>>) rawResponse.get("data");
+
+        if (data == null || data.isEmpty()) {
+            return List.of();
+        }
+
+        List<AlbertSearchHit> hits = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+
+        for (Map<String, Object> item : data) {
+            double score = ((Number) item.get("score")).doubleValue();
+
+            Map<String, Object> chunk = (Map<String, Object>) item.get("chunk");
+            if (chunk == null) continue;
+
+            String content = (String) chunk.get("content");
+            if (content == null || content.isBlank()) continue;
+
+            Map<String, Object> chunkMetadata = (Map<String, Object>) chunk.get("metadata");
+            String chunkType = chunkMetadata != null && chunkMetadata.get("type") instanceof String
+                    ? (String) chunkMetadata.get("type") : "general";
+
+            // Les métadonnées (id_interne, matricule) sont dans chunk.metadata
+            Long propositionTheseId = null;
+            String matricule = null;
+
+            if (chunkMetadata != null) {
+                Object idObj = chunkMetadata.get("id_interne");
+                if (idObj instanceof Number) {
+                    propositionTheseId = ((Number) idObj).longValue();
+                }
+                matricule = (String) chunkMetadata.get("matricule");
+            }
+
+            Object docIdObj = chunk.get("document_id");
+            Long albertDocumentId = (docIdObj instanceof Number) ? ((Number) docIdObj).longValue() : null;
+
+            // Déduplication par (propositionTheseId, chunkType) pour éviter les doublons
+            String dedupKey = propositionTheseId + "_" + chunkType + "_" + content.hashCode();
+            if (propositionTheseId == null || seen.contains(dedupKey)) continue;
+            seen.add(dedupKey);
+
+            AlbertSearchHit hit = new AlbertSearchHit(
+                propositionTheseId, matricule, score, chunkType, content, albertDocumentId
+            );
+            hits.add(hit);
+        }
+
+        // Trier par score décroissant
+        hits.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
+
+        log.info("{} hits structurés trouvés", hits.size());
+        return hits;
+    }
+
+    /**
+     * Extrait les mots-clés suggérés depuis les données complètes des thèses (champ motsCles en BDD).
+     * Utilise les mots-clés des résultats de recherche plutôt que le contenu des chunks
+     * (car les chunks retournés par Albert sont extraits du PDF et ne contiennent pas les mots-clés).
+     */
+    public List<String> extractKeywordsFromResults(Map<Long, PropositionTheseDto> theseMap) {
+        return theseMap.values().stream()
+            .filter(dto -> dto.getMotsCles() != null && !dto.getMotsCles().isEmpty())
+            .flatMap(dto -> dto.getMotsCles().values().stream())
+            .filter(k -> k != null && !k.isBlank())
+            .distinct()
+            .limit(20)
+            .collect(Collectors.toList());
+    }
+
     public String buildAnswerFromSearchResult(Map response, int maxChunks) {
 
         List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
@@ -87,7 +164,6 @@ public class AlbertSearchService {
             return null;
         }
 
-        // trier par score décroissant
         data.sort((a, b) -> {
             double sa = ((Number) a.get("score")).doubleValue();
             double sb = ((Number) b.get("score")).doubleValue();
@@ -104,7 +180,6 @@ public class AlbertSearchService {
             String content = (String) chunk.get("content");
             if (content == null || content.isBlank()) continue;
 
-            // éviter les répétitions grossières
             String trimmed = content.trim();
             if (sb.indexOf(trimmed) >= 0) continue;
 
@@ -121,7 +196,7 @@ public class AlbertSearchService {
     public String extractKeywords(String mergedContent) {
         if (mergedContent == null || mergedContent.isBlank()) return null;
 
-        return Arrays.stream(mergedContent.split("\\R"))
+        return java.util.Arrays.stream(mergedContent.split("\\R"))
                 .map(String::trim)
                 .filter(l -> l.startsWith("- "))
                 .map(l -> l.substring(2))

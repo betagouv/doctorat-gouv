@@ -18,7 +18,7 @@ public class TextChunker {
 	
 	private static final Logger log = LoggerFactory.getLogger(TextChunker.class);
 
-	private static final int CHUNK_SIZE = 500;
+	private static final int CHUNK_SIZE = 1000;
 
 	/**
 	 * Découpe le texte en chunks de taille maximale CHUNK_SIZE
@@ -73,10 +73,12 @@ public class TextChunker {
 	}
 	
 	private String detectType(String chunk) {
-	    if (chunk.contains("### Mots-clés")) return "mots_cles";
-	    if (chunk.contains("### Résumé")) return "resume";
+	    if (chunk.contains("### Mots-clés") || chunk.contains("### Keywords")) return "mots_cles";
+	    if (chunk.contains("### Résumé") || chunk.contains("### Summary")) return "resume";
 	    if (chunk.contains("### Contexte")) return "contexte";
 	    if (chunk.contains("### Objectif")) return "objectif";
+	    if (chunk.contains("### Titre") || chunk.contains("### Title")) return "titre";
+	    if (chunk.contains("### Profil") || chunk.contains("### Profile")) return "profil";
 	    return "general";
 	}
 

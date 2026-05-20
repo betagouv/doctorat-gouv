@@ -109,8 +109,8 @@ public class AlbertDocumentService {
 	    Map<String, Object> metadata = new HashMap<>();
 	    metadata.put("id_interne", sujet.getId());
 	    metadata.put("matricule", sujet.getMatricule());
-	    metadata.put("titre", sujet.getTheseTitre());
-	    metadata.put("etablissement", sujet.getEtablissementLibelle());
+	    metadata.put("titre", sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre");
+	    metadata.put("etablissement", sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : "");
 
 	    // Génération d’un vrai PDF textuel
 	    byte[] pdfBytes = generatePdfForSujet(sujet);
@@ -142,19 +142,19 @@ public class AlbertDocumentService {
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 720);
-	        content.showText("Titre : " + sujet.getTheseTitre());
+	        content.showText("Titre : " + (sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre"));
 	        content.endText();
 
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 700);
-	        content.showText("Matricule : " + sujet.getMatricule());
+	        content.showText("Matricule : " + (sujet.getMatricule() != null ? sujet.getMatricule() : ""));
 	        content.endText();
 
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 680);
-	        content.showText("Établissement : " + sujet.getEtablissementLibelle());
+	        content.showText("Établissement : " + (sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : ""));
 	        content.endText();
 
 	        content.close();

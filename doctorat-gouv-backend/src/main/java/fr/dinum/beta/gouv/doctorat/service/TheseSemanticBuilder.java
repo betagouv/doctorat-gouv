@@ -28,18 +28,18 @@ public class TheseSemanticBuilder {
         StringBuilder sb = new StringBuilder();
 
         // 🇫🇷 Français
-        appendSection(sb, "Titre", these.getTheseTitre());
+        appendSectionWithHeader(sb, "Titre", these.getTheseTitre());
         appendMotsCles(sb, these);
-        appendSection(sb, "Résumé", these.getResume());
-        appendSection(sb, "Objectif", these.getObjectif());
-        appendSection(sb, "Contexte", these.getContexte());
-        appendSection(sb, "Profil recherché", these.getProfilRecherche());
+        appendSectionWithHeader(sb, "Résumé", these.getResume());
+        appendSectionWithHeader(sb, "Objectif", these.getObjectif());
+        appendSectionWithHeader(sb, "Contexte", these.getContexte());
+        appendSectionWithHeader(sb, "Profil recherché", these.getProfilRecherche());
 
         // 🇬🇧 Anglais
-        appendSection(sb, "Title (EN)", these.getTheseTitreAnglais());
-        appendSection(sb, "Keywords (EN)", joinMotsCles(these.getMotsClesAnglais()));
-        appendSection(sb, "Summary (EN)", these.getResumeAnglais());
-        appendSection(sb, "Profile (EN)", these.getProfilRechercheAnglais());
+        appendSectionWithHeader(sb, "Title (EN)", these.getTheseTitreAnglais());
+        appendSectionWithHeader(sb, "Keywords (EN)", joinMotsCles(these.getMotsClesAnglais()));
+        appendSectionWithHeader(sb, "Summary (EN)", these.getResumeAnglais());
+        appendSectionWithHeader(sb, "Profile (EN)", these.getProfilRechercheAnglais());
 
         String texteComplet = sb.toString().trim();
 
@@ -64,12 +64,23 @@ public class TheseSemanticBuilder {
         });
 
         // Phrase récapitulative
-        sb.append("\nLes mots-clés principaux de ce sujet sont : ");
+        sb.append("Les mots-clés principaux de ce sujet sont : ");
         sb.append(
             sujet.getMotsCles().values().stream()
                 .collect(Collectors.joining(", "))
         );
         sb.append(".\n\n");
+    }
+
+    /**
+     * Ajoute une section avec un header ### pour que TextChunker puisse détecter le type.
+     */
+    private void appendSectionWithHeader(StringBuilder sb, String label, String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        sb.append("### ").append(label).append("\n");
+        sb.append(sanitize(value)).append("\n\n");
     }
 
     
