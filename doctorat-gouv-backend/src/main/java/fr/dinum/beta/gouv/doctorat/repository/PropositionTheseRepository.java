@@ -83,4 +83,20 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 		""")
 	Page<PropositionThese> findByActiveTrue(Pageable pageable);
 
+    List<PropositionThese> findByIdIn(List<Long> ids);
+    
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE p.albertDocumentId IS NOT NULL
+        """)
+    List<PropositionThese> findIndexedInAlbert();
+    
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE (p.active IS NULL OR p.active = TRUE)
+            AND (p.albertDocumentId IS NULL 
+                 OR p.dateMaj IS NOT NULL AND p.dateIndexationAlbert IS NOT NULL AND p.dateMaj > p.dateIndexationAlbert)
+        """)
+    List<PropositionThese> findNeedingIndexation();
+
 }
