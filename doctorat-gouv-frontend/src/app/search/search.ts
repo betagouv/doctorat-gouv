@@ -80,7 +80,7 @@ export class Search implements OnInit, OnDestroy {
 
   
   /* ------------------- Tri ------------------- */
-  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'dateMiseEnLigne';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
   sortOpen = false;
 
@@ -132,10 +132,20 @@ export class Search implements OnInit, OnDestroy {
   
   
   // --- Recherche IA Albert ---
-  useAlbert = false;              // case à cocher
-  albertQuery = '';               // texte saisi par l’utilisateur
-  albertResult: string | null = null; // résultat affiché
-  isAlbertLoading = false;        // spinner éventuel
+  useAlbert = false;                  // case à cocher
+  albertQuery = '';                   // texte saisi (mode legacy)
+  albertSearchQuery = '';             // texte saisi pour la recherche structurée
+  albertResult: string | null = null; // résultat texte (mode legacy)
+  isAlbertLoading = false;            // spinner
+  isAlbertSearchActive = false;       // vrai quand on est en mode Albert enrichi
+
+  // Données structurées retournées par /api/albert/propositions
+  albertScores: Record<number, number> = {};
+  albertMatchedTypes: Record<number, string> = {};
+  albertSuggestedKeywords: string[] = [];
+
+  // Interface pour la réponse Albert enrichie
+  private albertResponseData: any = null;
 
   
   /* ------------------- Translations pour les filtres ------------------- */
@@ -242,44 +252,55 @@ export class Search implements OnInit, OnDestroy {
 
 	  this.loadFilterOptions();
 	  
-	  if (saved) {
-	    this.query = saved.query || '';
-	    this.discipline = saved.discipline || '';
-	    this.localisation = saved.localisation || '';
-	    this.laboratoire = saved.laboratoire || '';
-	    this.ecole = saved.ecole || '';
-	    this.defisSociete = saved.defisSociete || '';
-		this.annee = saved.annee || '';
-		this.showMoreFilters = saved.showMoreFilters ?? false;
-		
-		// Ne PAS écraser la valeur venant de l’URL
-		if (!urlHasEtablissementRor) {
-		    this.etablissementRor = saved.etablissementRor || '';
-		}
-		
-		// Ne PAS écraser la valeur venant de l’URL
-		if (!urlHasEcoleDoctorale) {
-			this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
-		}
-		
-		if (saved.typeProposition) {
-		  this.activeFilter = saved.typeProposition;
-		}
-		
-		if (saved.sortField) {
-		  this.sortField = saved.sortField;
-		}
+ 	  if (saved) {
+ 	    this.query = saved.query || '';
+ 	    this.discipline = Array.isArray(saved.discipline) ? saved.discipline : [];
+ 	    this.localisation = Array.isArray(saved.localisation) ? saved.localisation : [];
+ 	    this.laboratoire = Array.isArray(saved.laboratoire) ? saved.laboratoire : [];
+ 	    this.ecole = Array.isArray(saved.ecole) ? saved.ecole : [];
+ 	    this.defisSociete = Array.isArray(saved.defisSociete) ? saved.defisSociete : [];
+ 		this.annee = Array.isArray(saved.annee) ? saved.annee : [];
+ 		this.showMoreFilters = saved.showMoreFilters ?? false;
+ 		
+ 		// Ne PAS écraser la valeur venant de l’URL
+ 		if (!urlHasEtablissementRor) {
+ 		    this.etablissementRor = saved.etablissementRor || '';
+ 		}
+ 		
+ 		// Ne PAS écraser la valeur venant de l’URL
+ 		if (!urlHasEcoleDoctorale) {
+ 			this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
+ 		}
+ 		
+ 		if (saved.typeProposition) {
+ 		  this.activeFilter = saved.typeProposition;
+ 		}
+ 		
+ 		if (saved.sortField) {
+ 		  this.sortField = saved.sortField;
+ 		}
 
-		if (saved.sortDirection) {
-		  this.sortDirection = saved.sortDirection;
-		}
-		
-        this.currentPage = saved.page ?? 0;
+ 		if (saved.sortDirection) {
+ 		  this.sortDirection = saved.sortDirection;
+ 		}
+ 		
+         this.currentPage = saved.page ?? 0;
 
-	  }
+ 		this.albertSearchQuery = saved.albertSearchQuery || '';
+ 		this.useAlbert = saved.useAlbert || false;
+ 		this.isAlbertSearchActive = saved.isAlbertSearchActive || false;
+ 		this.albertScores = saved.albertScores || {};
+ 		this.albertMatchedTypes = saved.albertMatchedTypes || {};
+ 		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
 
-	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
-	this.onSearch(this.currentPage);
+ 	  }
+
+	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page
+	if (this.isAlbertSearchActive && this.albertSearchQuery.trim()) {
+	  this.onAlbertSearchPropositions();
+	} else {
+	  this.onSearch(this.currentPage);
+	}
 	this.isInitialLoad = false;
 	
     this.filterSub = this.filterChanges$
@@ -350,23 +371,28 @@ resetFilter(filterName: MultiFilterKey) {
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
     // Sauvegarder les filtres
-    this.searchFiltersService.save({
-      query: this.query,
-      discipline: this.discipline,
-      localisation: this.localisation,
-      laboratoire: this.laboratoire,
-      ecole: this.ecole,
-      defisSociete: this.defisSociete,
-      ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
-      etablissementRor: this.etablissementRor,
-	  typeProposition: this.activeFilter,
-	  sortField: this.sortField,
-	  sortDirection: this.sortDirection,
-	  annee: this.annee,
-	  showMoreFilters: this.showMoreFilters,
-	  scrollPosition: 0
-	  // page: this.currentPage
-    });
+		this.searchFiltersService.save({
+		  query: this.query,
+		  discipline: this.discipline,
+		  localisation: this.localisation,
+		  laboratoire: this.laboratoire,
+		  ecole: this.ecole,
+		  defisSociete: this.defisSociete,
+		  ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+		  etablissementRor: this.etablissementRor,
+		  typeProposition: this.activeFilter,
+		  sortField: this.sortField,
+		  sortDirection: this.sortDirection,
+		  annee: this.annee,
+		  showMoreFilters: this.showMoreFilters,
+		  albertSearchQuery: this.albertSearchQuery,
+		  useAlbert: this.useAlbert,
+		  isAlbertSearchActive: this.isAlbertSearchActive,
+		  albertScores: this.albertScores,
+		  albertMatchedTypes: this.albertMatchedTypes,
+		  albertSuggestedKeywords: this.albertSuggestedKeywords,
+		  page: this.currentPage
+		});
 
 	// ⚠️ Ne pas déclencher filterChanges$ pendant le chargement initial
 	if (!this.isInitialLoad) {
@@ -425,6 +451,7 @@ resetFilter(filterName: MultiFilterKey) {
   onSearch(page: number = 0): void {
     const activeFilters = this.buildActiveFilters();
 
+    this.isAlbertSearchActive = false;
     this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: data => {
         this.results = data.content;
@@ -448,12 +475,100 @@ resetFilter(filterName: MultiFilterKey) {
 		  annee: this.annee,
 		  page: this.currentPage
 		});
-		
-        // Après chargement des résultats, scroller vers le haut de la liste
-        // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
       error: err => console.error('❌ Erreur lors de la recherche :', err)
     });
+  }
+
+  /** Active/désactive la recherche IA */
+  toggleAlbert(): void {
+    if (!this.useAlbert) {
+      this.isAlbertSearchActive = false;
+      this.albertSearchQuery = '';
+      this.albertScores = {};
+      this.albertMatchedTypes = {};
+      this.albertSuggestedKeywords = [];
+      this.results = [];
+      this.totalResults = 0;
+    }
+    this.onFilterChange();
+  }
+
+  /**
+   * Recherche sémantique via Albert, retourne les sujets sous forme de cards enrichies
+   * avec scores, types d'intention et mots-clés suggérés.
+   */
+  onAlbertSearchPropositions(): void {
+    const q = this.albertSearchQuery.trim();
+    if (!q) return;
+
+    this.isAlbertLoading = true;
+    this.isAlbertSearchActive = true;
+    this.albertSuggestedKeywords = [];
+    this.albertScores = {};
+    this.albertMatchedTypes = {};
+
+    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}&limit=27`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        this.isAlbertLoading = false;
+
+        // Stocker la réponse brute
+        this.albertResponseData = data;
+
+        // Résultats
+        this.results = data.results || [];
+        this.totalResults = data.totalResults || 0;
+        this.totalPages = 1; // Albert ne gère pas la pagination
+        this.currentPage = 0;
+
+        // Scores et types d'intention
+        if (data.scores) {
+          this.albertScores = data.scores;
+        }
+        if (data.matchedTypes) {
+          this.albertMatchedTypes = data.matchedTypes;
+        }
+
+        // Mots-clés suggérés
+        this.albertSuggestedKeywords = data.suggestedKeywords || [];
+
+        // Sauvegarder l'état Albert dans la session
+        this.searchFiltersService.save({
+          query: '',
+          discipline: this.discipline,
+          localisation: this.localisation,
+          laboratoire: this.laboratoire,
+          ecole: this.ecole,
+          defisSociete: this.defisSociete,
+          annee: this.annee,
+          ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+          etablissementRor: this.etablissementRor,
+          typeProposition: this.activeFilter,
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
+          showMoreFilters: this.showMoreFilters,
+          albertSearchQuery: this.albertSearchQuery,
+          useAlbert: this.useAlbert,
+          isAlbertSearchActive: this.isAlbertSearchActive,
+          albertScores: this.albertScores,
+          albertMatchedTypes: this.albertMatchedTypes,
+          albertSuggestedKeywords: this.albertSuggestedKeywords,
+          scrollPosition: 0
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.isAlbertLoading = false;
+        this.isAlbertSearchActive = false;
+        this.results = [];
+        this.totalResults = 0;
+      });
   }
 
   /* ------------------- Pagination ------------------- */
@@ -763,9 +878,12 @@ resetFilter(filterName: MultiFilterKey) {
     this.onFilterChange();
   }
   
-  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature') {
-    this.sortField = field;
+  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance') {
+    this.sortField = field as any;
     this.sortOpen = false;
+    if (field === 'relevance') {
+      this.sortDirection = 'DESC';
+    }
     this.onFilterChange();
   }
 
@@ -828,7 +946,7 @@ resetFilter(filterName: MultiFilterKey) {
     };
 
     // 1 seul élément → badge avec libellé tronqué
-    if (list.length === 0) {
+    if (list.length === 1) {
       const first = this.getSingleLabel(list[0], type);
       const truncated = truncateWords(first, 4);
       return `
@@ -908,6 +1026,13 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.currentPage = 0;
 
+    this.albertSearchQuery = '';
+    this.useAlbert = false;
+    this.isAlbertSearchActive = false;
+    this.albertScores = {};
+    this.albertMatchedTypes = {};
+    this.albertSuggestedKeywords = [];
+
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
 
@@ -926,6 +1051,9 @@ resetFilter(filterName: MultiFilterKey) {
       sortField: 'dateMiseEnLigne',
       sortDirection: 'DESC',
       showMoreFilters: false,
+      albertSearchQuery: '',
+      useAlbert: false,
+      isAlbertSearchActive: false,
       page: 0,
       scrollPosition: 0
     });
@@ -935,20 +1063,21 @@ resetFilter(filterName: MultiFilterKey) {
   }
   
   get activeFiltersCount(): number {
-    return (
-      this.discipline.length +
-      this.localisation.length +
-      this.laboratoire.length +
-      this.ecole.length +
-      this.defisSociete.length +
-      this.annee.length +
-      (this.ecoleDoctoraleNumero ? 1 : 0) +
-      (this.etablissementRor ? 1 : 0) +
-      (this.query.trim() ? 1 : 0)
-    );
+    let count = 0;
+    count += this.discipline.length;
+    count += this.localisation.length;
+    count += this.laboratoire.length;
+    count += this.ecole.length;
+    count += this.defisSociete.length;
+    count += this.annee.length;
+    if (this.ecoleDoctoraleNumero) count++;
+    if (this.etablissementRor) count++;
+    if (this.query.trim()) count++;
+    if (this.albertSearchQuery.trim()) count++;
+    return count;
   }
   
-	onAlbertSearch(): void {
+  onAlbertSearch(): void {
 		if (!this.albertQuery.trim()) {
 			this.albertResult = "Veuillez saisir une question.";
 			return;
@@ -966,20 +1095,85 @@ resetFilter(filterName: MultiFilterKey) {
 			})
 			.then(data => {
 				this.isAlbertLoading = false;
-
-				if (!data || !data.answer) {
-					this.albertResult = "Aucun résultat trouvé dans les sujets de thèse.";
-					return;
-				}
-
-				this.albertResult = data.answer;
+				this.albertResult = data.answer || "Aucun résultat trouvé dans les sujets de thèse.";
 			})
 			.catch(err => {
 				console.error(err);
 				this.isAlbertLoading = false;
-				this.albertResult = "Erreur lors de l’interrogation d’Albert.";
+				this.albertResult = "Erreur lors de l'interrogation d'Albert.";
 			});
 	}
 
+  /** Formate le score en pourcentage lisible */
+  formatScore(score: number): string {
+    return Math.round(score * 100) + '%';
+  }
+
+  /** Retourne la classe CSS pour la couleur du badge de score */
+  getScoreColor(score: number): string {
+    if (score >= 0.8) return 'score-high';
+    if (score >= 0.6) return 'score-medium';
+    return 'score-low';
+  }
+
+  /** Libellé lisible du type d'intention */
+  getMatchedTypeLabel(type: string | null): string {
+    if (!type) return '';
+    const labels: Record<string, string> = {
+      'mots_cles': 'Mots-clés',
+      'resume': 'Résumé',
+      'contexte': 'Contexte',
+      'objectif': 'Objectif',
+      'titre': 'Titre',
+      'profil': 'Profil recherché',
+      'general': 'Contenu général'
+    };
+    return labels[type] || type;
+  }
+
+  getMatchedTypeIcon(type: string | null): string {
+    if (!type) return 'fr-icon-information-line';
+    const icons: Record<string, string> = {
+      'mots_cles': 'fr-icon-price-tag-line',
+      'resume': 'fr-icon-draft-line',
+      'contexte': 'fr-icon-folder-2-line',
+      'objectif': 'fr-icon-target-line',
+      'titre': 'fr-icon-article-line',
+      'profil': 'fr-icon-user-line',
+      'general': 'fr-icon-information-line'
+    };
+    return icons[type] || 'fr-icon-information-line';
+  }
+
+  /** Wrapper helpers that handle null thesis.id for strict template type checking */
+  hasAlbertScore(thesis: any): boolean {
+    return thesis.id != null && this.albertScores[thesis.id] !== undefined;
+  }
+  getAlbertScore(thesis: any): number {
+    return thesis.id != null ? (this.albertScores[thesis.id] ?? 0) : 0;
+  }
+  hasAlbertMatchedType(thesis: any): boolean {
+    return thesis.id != null && this.albertMatchedTypes[thesis.id] != null;
+  }
+  getAlbertMatchedType(thesis: any): string | null {
+    return thesis.id != null ? this.albertMatchedTypes[thesis.id] : null;
+  }
+
+  /** Ajoute un mot-clé suggéré à la recherche */
+  addSuggestedKeyword(keyword: string): void {
+    const currentQuery = this.query.trim();
+    this.query = currentQuery ? currentQuery + ' ' + keyword : keyword;
+    this.onFilterChange();
+  }
+
+  /** Appliquer un mot-clé suggest comme requête de recherche Albert */
+  searchByKeyword(keyword: string): void {
+    this.query = keyword;
+    if (this.useAlbert) {
+      this.onFilterChange();
+    } else {
+      this.onSearch(0);
+    }
+  }
 
 }
