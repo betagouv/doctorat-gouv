@@ -65,11 +65,11 @@
 .fr-card__footer {
   padding: 0.5rem 1rem;
   display: flex;
-  justify-content: space-between; /* Sépare gauche/droite */
+  justify-content: space-between;
   align-items: center;
-  margin-right: 0; /* On supprime ce qui poussait à droite */
+  margin-right: 0;
   margin-top: auto;
-  margin-bottom: 0.5rem; /* espace à gauche pour aligner avec le contenu */
+  margin-bottom: 0.5rem;
 }
 
 .fr-card__desc_date {
@@ -157,20 +157,79 @@
   bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
 }
 
+/* Badge de score Albert */
+.albert-score-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.albert-score-badge.score-high {
+  background-color: #28a745;
+  color: white;
+}
+
+.albert-score-badge.score-medium {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.albert-score-badge.score-low {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Type d'intention matché (Albert) */
+.albert-matched-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #666;
+  background: #f0f0f5;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.albert-matched-type .fr-icon {
+  font-size: 0.85rem;
+}
+
+/* Mot-clé suggéré (Albert) cliquable */
+.fr-tag.fr-tag--sm {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.fr-tag.fr-tag--sm:hover {
+  filter: brightness(0.95);
+}
+
+/* Barre info mode Albert */
+.fr-badge.fr-badge--info {
+  vertical-align: middle;
+}
+
+/* Conteneur Albert activé */
+.albert-active {
+  border-color: #000091 !important;
+  background-color: #f5f5ff;
+}
+
 /* Second badge (rose fluorescent, texte noir) */
 .fr-card__img .badge-pink {
   margin-top: 1.5rem;
   bottom: 0.5rem; /* placé en bas */
   background-color: rgb(254, 242, 163); /* rose flashy */
   color: #000;
-}
-
-.fr-card__footer {
-  padding: 0.5rem 1rem;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top:auto; /* pousse le footer en bas */
 }
 
 /* Flèche custom sans DSFR icons */
@@ -284,11 +343,11 @@
 		  	  pointer-events: none;
 		  	}
 
-		  	.custom-input {
+			.custom-input {
 		  	  width: 100%;
 		  	  padding: 0.75rem 1rem 0.75rem 2.5rem; // espace pour la loupe
 		  	  border: none;
-		  	  border-bottom: 2px solid rgb(0, 0, 74); // 🔹 trait bleu en bas
+		  	  border-bottom: 2px solid rgb(0, 0, 74);
 		  	  font-size: 1rem;
 		  	  transition: border-color 0.2s ease-in-out;
 
@@ -297,6 +356,15 @@
 		  	    outline: none;
 		  	  }
 		  	}
+
+	  	#albertSearchQuery {
+	  	  color: #666;
+	  	  background: #f0f0f0;
+	  	}
+
+	  	#albertSearchQuery::placeholder {
+	  	  font-style: italic;
+	  	}
 
 		  	.custom-hint {
 		  	  font-size: 0.875rem;
@@ -471,7 +539,6 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   max-height: 1000px;
   overflow-y: auto;
-  position: absolute;
   z-index: 5000 !important;
 }
 

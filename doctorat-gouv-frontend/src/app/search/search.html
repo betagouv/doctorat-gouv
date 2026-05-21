@@ -32,41 +32,69 @@
 	
 	
 	<!-- ===================== RECHERCHE IA ALBERT ===================== -->
-	<div class="fr-mt-4w fr-p-2w fr-border fr-border--grey-200 fr-radius-2w">
+	<div class="fr-mt-4w fr-p-2w fr-border fr-border--grey-200 fr-radius-2w"
+	     [ngClass]="{'albert-active': useAlbert}">
 
 	  <div class="fr-checkbox-group">
-	    <input type="checkbox" id="useAlbert" [(ngModel)]="useAlbert">
-	    <label for="useAlbert">Activer la recherche intelligente (IA Albert)</label>
+	    <input type="checkbox" id="useAlbert" [(ngModel)]="useAlbert" (ngModelChange)="toggleAlbert()">
+	    <label for="useAlbert">
+	    <strong>{{ 'SEARCH.AI_LABEL' | translate }}</strong>
+	      <span class="fr-hint-text" *ngIf="!useAlbert">{{ 'SEARCH.AI_HINT_DISABLED' | translate }}</span>
+	      <span class="fr-hint-text" *ngIf="useAlbert" [innerHTML]="'SEARCH.AI_HINT_ENABLED' | translate"></span>
+	    </label>
 	  </div>
 
 	  <div *ngIf="useAlbert" class="fr-mt-2w">
-		
-		<div *ngIf="isAlbertLoading" class="fr-mt-2w">
-		  <span class="fr-spinner" aria-hidden="true"></span>
-		  <span class="fr-sr-only">Recherche en cours…</span>
-		</div>
 
+	    <!-- Champ de recherche dédié Albert avec bouton -->
+	    <div class="custom-search-bar fr-mt-2w">
+	      <div class="custom-input-wrapper">
+	        <span class="custom-icon">
+	          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+	            <circle cx="11" cy="11" r="8"></circle>
+	            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+	          </svg>
+	        </span>
+	        <input type="search"
+	               id="albertSearchQuery"
+	               class="custom-input"
+	               placeholder="{{ 'SEARCH.AI_PLACEHOLDER' | translate }}"
+	               [(ngModel)]="albertSearchQuery"
+	               (keyup.enter)="onAlbertSearchPropositions()">
+	      </div>
+	    </div>
 
-	    <label class="fr-label" for="albertQuery">Votre question</label>
-	    <textarea id="albertQuery"
-	              class="fr-input"
-	              rows="3"
-	              [(ngModel)]="albertQuery"
-	              placeholder="Ex : Donne-moi les mots-clés liés à l’intelligence artificielle"></textarea>
-
-	    <button class="fr-btn fr-mt-2w" (click)="onAlbertSearch()">
-	      Interroger Albert
+	    <button class="fr-btn fr-mt-2w" (click)="onAlbertSearchPropositions()" [disabled]="!albertSearchQuery.trim()">
+	      {{ 'SEARCH.AI_SEARCH_BUTTON' | translate }}
 	    </button>
 
-	    <!-- Résultat -->
-		<div *ngIf="albertResult" class="fr-alert fr-alert--info fr-mt-3w">
-		  <p [innerHTML]="albertResult | nl2br"></p>
-		</div>
+	    <div *ngIf="isAlbertLoading" class="fr-mt-2w">
+	      <span class="fr-spinner" aria-hidden="true"></span>
+	      <span class="fr-sr-only">Recherche en cours…</span>
+	    </div>
 
+	    <!-- Mode question libre (texte) - caché par défaut -->
+	    <!--
+	    <details class="fr-mt-2w">
+	      <summary class="fr-link">{{ 'SEARCH.AI_RAW_QUESTION' | translate }}</summary>
+	      <div class="fr-mt-2w">
+	        <label class="fr-label" for="albertQuery">Posez votre question en langage naturel</label>
+	        <textarea id="albertQuery"
+	                  class="fr-input"
+	                  rows="3"
+	                  [(ngModel)]="albertQuery"
+	                  placeholder="Ex : Quels sont les sujets liés à l'intelligence artificielle et la santé ?"></textarea>
+	        <button class="fr-btn fr-btn--secondary fr-mt-2w" (click)="onAlbertSearch()">
+	          Interroger (réponse texte)
+	        </button>
+	        <div *ngIf="albertResult" class="fr-alert fr-alert--info fr-mt-3w">
+	          <p [innerHTML]="albertResult | nl2br"></p>
+	        </div>
+	      </div>
+	    </details>
+		-->
 	  </div>
 	</div>
-
-	
 
     <!-- ===================== LIGNE 1 : 3 DROPDOWNS ===================== -->
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
@@ -405,7 +433,7 @@
 		<!--			  </button>-->
 		<!--			</div>-->
 	
-		<!-- TRI PAR DATE Style 2 -->
+		<!-- TRI PAR DATE / PERTINENCE Style 2 -->
 		<div class="sort-menu">
 	
 			<label class="sort-label">{{ 'SEARCH.SORT_BY' | translate }}</label>
@@ -415,11 +443,20 @@
 				<button class="dropdown-btn" (click)="toggleDropdown('sortOpen')">
 					{{ sortField === 'dateMiseEnLigne'
 					? ('SEARCH.SORT_POSTING_DATE' | translate)
-					: ('SEARCH.SORT_DEADLINE' | translate) }}
+					: sortField === 'dateLimiteCandidature'
+					? ('SEARCH.SORT_DEADLINE' | translate)
+					: 'Pertinence' }}
 					<span class="fr-icon-arrow-down-s-line"></span>
 				</button>
 	
 				<div class="dropdown-panel" *ngIf="sortOpen">
+	
+					<!-- Option Pertinence (visible uniquement en mode Albert) -->
+					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive">
+						<input type="checkbox" id="sort_relevance" [checked]="sortField === 'relevance'"
+							(change)="setSortField('relevance')">
+						<label for="sort_relevance">Pertinence</label>
+					</div>
 	
 					<div class="fr-checkbox-group fr-mb-2w">
 						<input type="checkbox" id="sort_posting" [checked]="sortField === 'dateMiseEnLigne'"
@@ -436,8 +473,8 @@
 				</div>
 			</div>
 	
-			<!-- FLÈCHES ASC / DESC À L’EXTÉRIEUR -->
-			<div class="sort-arrows">
+			<!-- FLÈCHES ASC / DESC À L'EXTÉRIEUR -->
+			<div class="sort-arrows" *ngIf="!isAlbertSearchActive">
 				<button class="arrow-btn" [class.active]="sortDirection === 'ASC'" (click)="setSortDirection('ASC')">
 					▲
 				</button>
@@ -445,9 +482,9 @@
 				<button class="arrow-btn" [class.active]="sortDirection === 'DESC'" (click)="setSortDirection('DESC')">
 					▼
 				</button>
-			</div>
-	
 		</div>
+	
+	</div>
 	
 	</div>
 	
@@ -472,8 +509,21 @@
 			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
 			</span>
 			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
+			<span *ngIf="isAlbertSearchActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
 		</p>
 	</div>
+
+	<!-- ===================== MOTS-CLÉS SUGGÉRÉS (Albert) ===================== -->
+	<section class="fr-mt-2w" *ngIf="isAlbertSearchActive && albertSuggestedKeywords.length > 0">
+		<p class="fr-text--bold fr-mb-1v">{{ 'SEARCH.AI_SUGGESTED_KEYWORDS' | translate }}</p>
+		<div class="fr-tags-group">
+			<button class="fr-tag fr-tag--sm"
+			        *ngFor="let keyword of albertSuggestedKeywords"
+			        (click)="searchByKeyword(keyword)">
+				{{ keyword }}
+			</button>
+		</div>
+	</section>
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
 	<section class="fr-tags-group fr-mt-2w"
@@ -602,6 +652,13 @@
             <img [src]="getImageForThesis(thesis)"
                  alt="Illustration de la thèse" />
 
+            <!-- Badge de score Albert -->
+            <span class="albert-score-badge"
+                  *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
+                  [ngClass]="getScoreColor(getAlbertScore(thesis))">
+              {{ formatScore(getAlbertScore(thesis)) }}
+            </span>
+
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
               {{ getFirstDomaineWithMaxLength(thesis, 60) }}
@@ -620,6 +677,12 @@
 				<h3 class="fr-card__title custom-blue">
 				  {{ limitWords(getThesisTitle(thesis), 30) }}
 				</h3>
+				<!-- Type d'intention matché (Albert) -->
+				<span class="albert-matched-type fr-mt-1v"
+				      *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
+				  <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
+				  {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+				</span>
 			</div>
 		
 			<p class="fr-card__desc_type">
