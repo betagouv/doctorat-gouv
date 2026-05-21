@@ -34,7 +34,7 @@ public class AlbertIndexationScheduler {
         this.indexationService = indexationService;
     }
 
-    //@Scheduled(fixedDelay = 60 * 60 * 1000)
+    @Scheduled(cron = "${albert.scheduler.cron}")
     public void indexerSujets() {
         List<PropositionThese> sujets = repository.findNeedingIndexation();
         log.info("Indexation planifiée : {} sujets nécessitent une mise à jour dans Albert", sujets.size());
