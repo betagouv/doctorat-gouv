@@ -24,6 +24,14 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 
 /**
  * Service dédié à la recherche sémantique dans Albert.
+ *
+ * CONFORMITÉ RGPD :
+ * - Les requêtes de recherche (question) ne sont pas loggées : elles pourraient contenir
+ *   des données personnelles saisies par l'utilisateur (ex. nom, email).
+ * - Le contenu des chunks renvoyés par Albert n'est pas loggé : il peut contenir des
+ *   données à caractère personnel (ex. matricule du doctorant, informations nominatives).
+ * - Seules les métadonnées techniques sont tracées : nombre de résultats, identifiants
+ *   internes de proposition (ID technique, non nominatif).
  */
 @Service
 public class AlbertSearchService {
@@ -51,10 +59,12 @@ public class AlbertSearchService {
     /**
      * Effectue une recherche sémantique dans Albert à partir d'une question.
      * Retourne la réponse brute (utilisé pour la compatibilité).
+     *
+     * RGPD : la question et la réponse ne sont pas loggées (données potentiellement personnelles).
      */
     public Map search(String question) {
     	
-    	log.info("Recherche dans Albert (question={})", question);
+    	log.info("Appel à l'API Albert search");
 
         String url = baseUrl + "/search";
 
@@ -73,8 +83,8 @@ public class AlbertSearchService {
 
         ResponseEntity<Map> response =
                 restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-        
-        log.info("Réponse de Albert : {}", response);
+
+        log.debug("Statut HTTP de la réponse Albert : {}", response.getStatusCode());
 
         return response.getBody();
     }
@@ -82,14 +92,18 @@ public class AlbertSearchService {
     /**
      * Effectue une recherche sémantique et retourne des hits structurés.
      * Chaque hit contient l'ID de la proposition, le score, le type de chunk et le contenu.
+     *
+     * RGPD : le matricule (identifiant personnel) n'est pas loggé. Le contenu des chunks
+     * (pouvant contenir des données personnelles) n'est pas loggé non plus.
      */
     public List<AlbertSearchHit> searchHits(String question) {
-    	log.info("Recherche structurée dans Albert (question={})", question);
+    	log.debug("Recherche sémantique via Albert");
 
         Map rawResponse = search(question);
         List<Map<String, Object>> data = (List<Map<String, Object>>) rawResponse.get("data");
 
         if (data == null || data.isEmpty()) {
+            log.info("Aucun résultat trouvé via Albert");
             return List.of();
         }
 
@@ -138,7 +152,7 @@ public class AlbertSearchService {
         // Trier par score décroissant
         hits.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
-        log.info("{} hits structurés trouvés", hits.size());
+        log.info("{} résultat(s) trouvé(s) via Albert pour l'ID collection {}", hits.size(), collectionId);
         return hits;
     }
 
