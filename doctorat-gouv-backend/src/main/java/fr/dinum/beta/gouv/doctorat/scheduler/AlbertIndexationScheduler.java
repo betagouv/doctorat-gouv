@@ -17,6 +17,14 @@ import fr.dinum.beta.gouv.doctorat.service.TheseIndexationService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+/**
+ * Planificateur d'indexation des sujets de thèse dans Albert.
+ * S'exécute selon la cron configurée (albert.scheduler.cron).
+ *
+ * CONFORMITÉ RGPD :
+ * - Les logs se limitent à des compteurs et des identifiants techniques.
+ * - Aucune donnée à caractère personnel n'est tracée dans les logs du scheduler.
+ */
 @Component
 public class AlbertIndexationScheduler {
 

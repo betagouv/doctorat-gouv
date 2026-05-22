@@ -14,6 +14,10 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 /**
  * Service responsable de la réindexation complète des sujets de thèse dans Albert.
  * Supprime les anciens documents et chunks, puis ré-indexe avec les données à jour.
+ *
+ * CONFORMITÉ RGPD :
+ * - Les logs se limitent aux identifiants techniques (ID proposition, ID document Albert) et aux compteurs.
+ * - Aucune donnée à caractère personnel (matricule, titre, établissement) n'est loggée.
  */
 @Service
 public class AlbertReindexService {
