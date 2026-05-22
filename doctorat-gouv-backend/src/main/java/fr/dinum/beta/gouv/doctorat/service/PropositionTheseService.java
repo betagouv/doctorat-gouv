@@ -28,6 +28,7 @@ import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Predicate;
 
 @Service
@@ -203,10 +204,13 @@ public class PropositionTheseService {
 			            andPredicates.add(root.get("annee").in(years));
 			        }
 
-			        /* ---------------------- QUERY (inchangé) ---------------------- */
+			        /* ---------------------- QUERY (recherche FR + EN) ---------------------- */
 			        case "query" -> {
 			            String[] tokens = value.trim().toLowerCase().split("\\s+");
 			            List<Predicate> tokenPredicates = new ArrayList<>();
+
+			            MapJoin<PropositionThese, String, String> motsClesJoin = root.joinMap("motsCles", JoinType.LEFT);
+			            MapJoin<PropositionThese, String, String> motsClesAnglaisJoin = root.joinMap("motsClesAnglais", JoinType.LEFT);
 
 			            for (String token : tokens) {
 			                if (token.isBlank()) continue;
@@ -216,7 +220,9 @@ public class PropositionTheseService {
 			                        cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
 			                        cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
 			                        cb.like(cb.lower(root.get("resume")), tokenPattern),
-			                        cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
+			                        cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern),
+			                        cb.like(cb.lower(motsClesJoin.value()), tokenPattern),
+			                        cb.like(cb.lower(motsClesAnglaisJoin.value()), tokenPattern)
 			                );
 			                tokenPredicates.add(tokenInAnyField);
 			            }
