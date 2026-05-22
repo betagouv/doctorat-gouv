@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Ce service est responsable de la suppression des documents dans Albert. 
- * Il est utilisé lorsque un sujet de thèse est désactivé ou supprimé, 
- * afin de garantir que les données obtenues par les utilisateurs via Albert restent à jour et pertinentes. 
- * La suppression d’un document dans Albert est une opération critique qui doit être effectuée avec soin pour éviter toute incohérence 
- * dans les résultats de recherche.
+ * Service responsable de la suppression des documents dans Albert.
+ * Utilisé lorsqu'un sujet de thèse est désactivé ou supprimé.
+ *
+ * CONFORMITÉ RGPD :
+ * - Seul l'identifiant technique du document Albert est loggé.
+ * - Aucune donnée à caractère personnel (matricule, titre, etc.) n'est tracée.
  */
 @Service
 public class AlbertDocumentDeletionService {

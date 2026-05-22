@@ -1,5 +1,12 @@
 package fr.dinum.beta.gouv.doctorat.dto;
 
+/**
+ * DTO représentant un résultat de recherche individuel depuis l'API Albert.
+ *
+ * RGPD : le champ matricule est un identifiant personnel (personne physique)
+ * et ne doit PAS être loggué. Le champ content peut contenir des données
+ * personnelles extraites du sujet de thèse.
+ */
 public class AlbertSearchHit {
     private Long propositionTheseId;
     private String matricule;

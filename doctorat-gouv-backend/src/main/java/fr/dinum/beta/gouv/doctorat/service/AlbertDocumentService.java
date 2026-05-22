@@ -28,6 +28,11 @@ import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 
 /**
  * Service dédié à la création de documents Albert à partir de sujets de thèse.
+ *
+ * CONFORMITÉ RGPD :
+ * - Les métadonnées envoyées à Albert (matricule, titre, établissement) sont nécessaires
+ *   au fonctionnement de la recherche sémantique mais ne sont pas loggées.
+ * - Le contenu du PDF généré (reprenant les données du sujet de thèse) n'est pas loggé.
  */
 @Service
 public class AlbertDocumentService {

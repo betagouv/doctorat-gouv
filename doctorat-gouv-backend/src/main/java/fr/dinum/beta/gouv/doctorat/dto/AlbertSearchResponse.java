@@ -3,6 +3,12 @@ package fr.dinum.beta.gouv.doctorat.dto;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DTO de réponse pour la recherche sémantique via Albert.
+ *
+ * RGPD : ne pas logguer le contenu des champs results, matchedContent ou query
+ * car ils peuvent contenir des données à caractère personnel.
+ */
 public class AlbertSearchResponse {
 
     private String query;

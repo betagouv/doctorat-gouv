@@ -14,9 +14,15 @@ import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 
 /**
- * Service centralisé pour gérer l’indexation des sujets de thèse dans Albert.
- * Il encapsule toute la logique nécessaire pour déterminer si un sujet doit être indexé, ré-indexé ou supprimé d’Albert,
- * ainsi que pour construire le texte à indexer et interagir avec les services d’Albert pour la création de documents et de chunks.
+ * Service centralisé pour gérer l'indexation des sujets de thèse dans Albert.
+ * Il encapsule toute la logique nécessaire pour déterminer si un sujet doit être indexé, ré-indexé ou supprimé d'Albert,
+ * ainsi que pour construire le texte à indexer et interagir avec les services d'Albert pour la création de documents et de chunks.
+ *
+ * CONFORMITÉ RGPD :
+ * - Les logs se limitent aux identifiants techniques (ID proposition, ID document Albert).
+ * - Le contenu textuel des sujets (titre, résumé, mots-clés, etc.) n'est pas loggé car il peut
+ *   contenir des données à caractère personnel.
+ * - Le matricule (identifiant personnel du doctorant) n'est jamais loggé.
  */
 @Service
 public class TheseIndexationService {

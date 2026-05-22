@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- *  Ce service est responsable de la suppression des chunks associés à un document dans Albert.
- *  Il est utilisé lorsque les chunks d’un document doivent être mis à jour ou supprimés,
- *  afin de garantir que les données obtenues par les utilisateurs via Albert restent à jour et pertinentes.
+ * Service responsable de la suppression des chunks associés à un document dans Albert.
+ *
+ * CONFORMITÉ RGPD :
+ * - Seul l'identifiant technique du document Albert est loggé.
+ * - Aucune donnée à caractère personnel n'est tracée.
  */
 @Service
 public class AlbertChunkDeletionService {
