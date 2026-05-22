@@ -113,7 +113,7 @@
           <div class="dropdown-panel" *ngIf="disciplineOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -157,7 +157,7 @@
           <div class="dropdown-panel" *ngIf="defisSocieteOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -201,7 +201,7 @@
           <div class="dropdown-panel" *ngIf="localisationOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -251,7 +251,7 @@
           <div class="dropdown-panel" *ngIf="laboratoireOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -295,7 +295,7 @@
           <div class="dropdown-panel" *ngIf="ecoleOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -369,11 +369,11 @@
 
 	  <!-- Lien Plus/Moins de filtres -->
 	  <div class="fr-col-12 fr-col-md-6 fr-text--left">
-	    <a href="javascript:void(0)"
+	    <button
 	       class="fr-link toggle-filters"
 	       (click)="toggleFilters()">
 	       {{ showMoreFilters ? ('SEARCH.LESS_FILTERS' | translate) : ('SEARCH.MORE_FILTERS' | translate) }}
-	    </a>
+	    </button>
 	  </div>
 
 	  <!-- Bouton Réinitialiser -->
@@ -646,7 +646,7 @@
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
            *ngFor="let thesis of results">
 
-        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
+        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
 
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
@@ -740,7 +740,6 @@
       <!-- PAGINATION -->
       <div class="fr-container fr-my-4w pagination-fixed">
         <nav class="fr-pagination"
-             role="navigation"
              aria-label="Pagination"
              *ngIf="totalPages > 1">
 
