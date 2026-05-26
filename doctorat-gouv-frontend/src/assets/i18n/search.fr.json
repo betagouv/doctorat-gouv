@@ -20,7 +20,7 @@
 	"AI_HINT_ENABLED": "Interrogez l'IA en langage naturel. Exemples : <em>\"intelligence artificielle santé\"</em>, <em>\"thèses sur le climat\"</em>.",
 	"AI_PLACEHOLDER": "Ex : Quels sont les sujets liés à l'intelligence artificielle et la santé ?",
 	"AI_SEARCH_BUTTON": "Rechercher avec l'IA",
-	"AI_SEARCHING": "Recherche en cours…"
+	"AI_SEARCHING": "Recherche en cours…",
 	"AI_RAW_QUESTION": "Question libre experte (texte brut)",
 	"AI_SUGGESTED_KEYWORDS": "Mots-clés pertinents pour votre recherche :",
 	"AI_BADGE": "Recherche IA"
