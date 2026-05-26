@@ -20,6 +20,7 @@
 	"AI_HINT_ENABLED": "Ask the AI in natural language. Examples: <em>\"artificial intelligence health\"</em>, <em>\"theses on climate\"</em>.",
 	"AI_PLACEHOLDER": "e.g. What are the PhD topics related to artificial intelligence and health?",
 	"AI_SEARCH_BUTTON": "Search with AI",
+	"AI_SEARCHING": "Searching…"
 	"AI_RAW_QUESTION": "Expert free-form question (raw text)",
 	"AI_SUGGESTED_KEYWORDS": "Relevant keywords for your search:",
 	"AI_BADGE": "AI search"
