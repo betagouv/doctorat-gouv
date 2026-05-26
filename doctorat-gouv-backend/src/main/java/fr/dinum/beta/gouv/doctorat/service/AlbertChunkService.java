@@ -47,8 +47,11 @@ public class AlbertChunkService {
      * @param documentId identifiant du document Albert
      * @param chunkText  contenu textuel du chunk (non loggé pour conformité RGPD)
      * @param chunkType  type sémantique du chunk (titre, resume, etc.)
+     * @param propositionTheseId identifiant interne du sujet de thèse (id_interne)
+     * @param matricule  matricule du sujet de thèse
      */
-    public void uploadChunk(Long documentId, String chunkText, String chunkType) {
+    public void uploadChunk(Long documentId, String chunkText, String chunkType,
+                            Long propositionTheseId, String matricule) {
 
     	log.debug("Upload d'un chunk de type '{}' vers le document Albert {}", chunkType, documentId);
 
@@ -58,12 +61,19 @@ public class AlbertChunkService {
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("source", "these");
+        metadata.put("type", chunkType);
+        if (propositionTheseId != null) {
+            metadata.put("id_interne", propositionTheseId);
+        }
+        if (matricule != null) {
+            metadata.put("matricule", matricule);
+        }
+
         Map<String, Object> chunkObject = new HashMap<>();
         chunkObject.put("content", chunkText);
-        chunkObject.put("metadata", Map.of(
-        	    "source", "these",
-        	    "type", chunkType
-        	));
+        chunkObject.put("metadata", metadata);
 
         Map<String, Object> body = new HashMap<>();
         body.put("chunks", List.of(chunkObject));

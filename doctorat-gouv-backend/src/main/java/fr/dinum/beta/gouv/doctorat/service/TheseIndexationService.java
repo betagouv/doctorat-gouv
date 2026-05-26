@@ -119,9 +119,10 @@ public class TheseIndexationService {
 
 		// 3. Envoyer chaque chunk à Albert
 		for (ChunkWithType c : chunks) {
-		    chunkService.uploadChunk(documentId, c.content(), c.type());
+		    chunkService.uploadChunk(documentId, c.content(), c.type(),
+		            sujet.getId(), sujet.getMatricule());
 		}
-		
+
 		log.info("Indexation des chunks terminée pour le sujet ID {} dans Albert (document ID {})", sujet.getId(), documentId);
 	}
 	
