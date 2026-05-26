@@ -64,12 +64,14 @@
 	      </div>
 	    </div>
 
-	    <button class="fr-btn fr-mt-2w" (click)="onAlbertSearchPropositions()" [disabled]="!albertSearchQuery.trim()">
-	      {{ 'SEARCH.AI_SEARCH_BUTTON' | translate }}
+	    <button class="fr-btn fr-mt-2w" (click)="onAlbertSearchPropositions()"
+	            [disabled]="!albertSearchQuery.trim() || isAlbertLoading">
+	      <span *ngIf="isAlbertLoading" class="fr-spinner fr-spinner--sm" aria-hidden="true"></span>
+	      <span *ngIf="isAlbertLoading" class="fr-ml-1w">Recherche en cours…</span>
+	      <span *ngIf="!isAlbertLoading">{{ 'SEARCH.AI_SEARCH_BUTTON' | translate }}</span>
 	    </button>
 
-	    <div *ngIf="isAlbertLoading" class="fr-mt-2w">
-	      <span class="fr-spinner" aria-hidden="true"></span>
+	    <div *ngIf="isAlbertLoading" class="fr-mt-1w">
 	      <span class="fr-sr-only">Recherche en cours…</span>
 	    </div>
 
