@@ -112,11 +112,11 @@ public class TheseIndexationService {
 				documentId);
 
 		// Re-fetch pour attacher l'entité à la session Hibernate active (évite LazyInitializationException sur les collections)
-		sujet = repository.findById(sujet.getId())
+		PropositionThese managedSujet = repository.findById(sujet.getId())
 		        .orElseThrow(() -> new RuntimeException("Sujet introuvable : " + sujet.getId()));
 
 		// 1. Construire le texte FR/EN à partir du sujet avec TheseSemanticBuilder
-		TheseSemanticDocument semantic = semanticBuilder.build(sujet);
+		TheseSemanticDocument semantic = semanticBuilder.build(managedSujet);
 
 		// 2. Chunker avec TextChunker
 		List<ChunkWithType> chunks = textChunker.chunkWithTypes(semantic.texteComplet());
@@ -124,7 +124,7 @@ public class TheseIndexationService {
 		// 3. Envoyer chaque chunk à Albert
 		for (ChunkWithType c : chunks) {
 		    chunkService.uploadChunk(documentId, c.content(), c.type(),
-		            sujet.getId(), sujet.getMatricule());
+		            managedSujet.getId(), managedSujet.getMatricule());
 		}
 
 		log.info("Indexation des chunks terminée pour le sujet ID {} dans Albert (document ID {})", sujet.getId(), documentId);
