@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChunkWithType;
+
 /**
  * Service dédié à l’upload de chunks vers Albert.
  *
  * CONFORMITÉ RGPD :
- * - Le contenu textuel des chunks (chunkText) n'est pas loggé : il est extrait du sujet de thèse
+ * - Le contenu textuel des chunks n'est pas loggé : il est extrait du sujet de thèse
  *   et peut contenir des données à caractère personnel (nom du doctorant, établissement, etc.).
  * - Seul l'identifiant technique du document Albert est tracé.
  */
@@ -39,21 +42,20 @@ public class AlbertChunkService {
     }
 
     /**
-     * Upload d’un chunk de texte vers un document Albert déjà créé.
+     * Upload de tous les chunks d'un document Albert en une seule requête HTTP.
      *
-     * RGPD : le contenu du chunk (chunkText) n'est pas loggé car il peut contenir
+     * RGPD : le contenu des chunks n'est pas loggé car il peut contenir
      * des données personnelles. Seul l'ID technique du document est tracé.
      *
      * @param documentId identifiant du document Albert
-     * @param chunkText  contenu textuel du chunk (non loggé pour conformité RGPD)
-     * @param chunkType  type sémantique du chunk (titre, resume, etc.)
+     * @param chunks     liste des chunks à uploader (contenu + type)
      * @param propositionTheseId identifiant interne du sujet de thèse (id_interne)
      * @param matricule  matricule du sujet de thèse
      */
-    public void uploadChunk(Long documentId, String chunkText, String chunkType,
-                            Long propositionTheseId, String matricule) {
+    public void uploadChunks(Long documentId, List<ChunkWithType> chunks,
+                             Long propositionTheseId, String matricule) {
 
-    	log.debug("Upload d'un chunk de type '{}' vers le document Albert {}", chunkType, documentId);
+    	log.debug("Upload de {} chunk(s) vers le document Albert {}", chunks.size(), documentId);
 
         String url = baseUrl + "/documents/" + documentId + "/chunks";
 
@@ -61,28 +63,32 @@ public class AlbertChunkService {
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("source", "these");
-        metadata.put("type", chunkType);
-        if (propositionTheseId != null) {
-            metadata.put("id_interne", propositionTheseId);
-        }
-        if (matricule != null) {
-            metadata.put("matricule", matricule);
-        }
+        List<Map<String, Object>> chunkObjects = new ArrayList<>();
+        for (ChunkWithType c : chunks) {
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("source", "these");
+            metadata.put("type", c.type());
+            if (propositionTheseId != null) {
+                metadata.put("id_interne", propositionTheseId);
+            }
+            if (matricule != null) {
+                metadata.put("matricule", matricule);
+            }
 
-        Map<String, Object> chunkObject = new HashMap<>();
-        chunkObject.put("content", chunkText);
-        chunkObject.put("metadata", metadata);
+            Map<String, Object> chunkObject = new HashMap<>();
+            chunkObject.put("content", c.content());
+            chunkObject.put("metadata", metadata);
+            chunkObjects.add(chunkObject);
+        }
 
         Map<String, Object> body = new HashMap<>();
-        body.put("chunks", List.of(chunkObject));
+        body.put("chunks", chunkObjects);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         restTemplate.postForEntity(url, request, Void.class);
 
-        log.info("Chunk de type '{}' uploadé avec succès vers le document Albert {}", chunkType, documentId);
+        log.info("{} chunk(s) uploadé(s) avec succès vers le document Albert {}", chunks.size(), documentId);
     }
 }
 

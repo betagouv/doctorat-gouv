@@ -121,11 +121,9 @@ public class TheseIndexationService {
 		// 2. Chunker avec TextChunker
 		List<ChunkWithType> chunks = textChunker.chunkWithTypes(semantic.texteComplet());
 
-		// 3. Envoyer chaque chunk à Albert
-		for (ChunkWithType c : chunks) {
-		    chunkService.uploadChunk(documentId, c.content(), c.type(),
-		            managedSujet.getId(), managedSujet.getMatricule());
-		}
+		// 3. Envoyer tous les chunks en une seule requête
+		chunkService.uploadChunks(documentId, chunks,
+		        managedSujet.getId(), managedSujet.getMatricule());
 
 		log.info("Indexation des chunks terminée pour le sujet ID {} dans Albert (document ID {})", sujet.getId(), documentId);
 	}
