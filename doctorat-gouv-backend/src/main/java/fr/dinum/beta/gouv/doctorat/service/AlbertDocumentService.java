@@ -1,6 +1,8 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,7 +117,7 @@ public class AlbertDocumentService {
 	    metadata.put("id_interne", sujet.getId());
 	    metadata.put("matricule", sujet.getMatricule());
 	    metadata.put("titre", sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre");
-	    metadata.put("etablissement", sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : "");
+	    metadata.put("etablissement", sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : "Non renseigné");
 
 	    // Génération d’un vrai PDF textuel
 	    byte[] pdfBytes = generatePdfForSujet(sujet);
@@ -174,19 +176,16 @@ public class AlbertDocumentService {
 
 	private static String sanitizePdfText(String text) {
 	    if (text == null) return "";
+	    CharsetEncoder encoder = CHARSET.newEncoder();
 	    StringBuilder sb = new StringBuilder(text.length());
 	    for (int i = 0; i < text.length(); i++) {
-	        int cp = text.codePointAt(i);
-	        if (Character.isBmpCodePoint(cp) && (
-	                (cp >= 0x20 && cp <= 0x7E) || (cp >= 0xA0 && cp <= 0xFF))) {
-	            sb.append((char) cp);
-	        } else {
-	            sb.append(' ');
-	        }
-	        if (cp >= 0x10000) i++; // surrogate pair, already handled
+	        char c = text.charAt(i);
+	        sb.append(encoder.canEncode(c) ? c : ' ');
 	    }
 	    return sb.toString();
 	}
+
+	private static final Charset CHARSET = Charset.forName("windows-1252");
 
 
 
