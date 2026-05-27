@@ -95,7 +95,7 @@ public class AlbertReindexService {
                 indexationService.indexerDocumentSiNecessaire(sujet);
                 reindexed++;
             } catch (Exception e) {
-                log.error("Erreur lors de la réindexation du sujet {} : {}", sujet.getId(), e.getMessage());
+                log.error("Erreur lors de la réindexation du sujet {}", sujet.getId(), e);
             }
         }
 

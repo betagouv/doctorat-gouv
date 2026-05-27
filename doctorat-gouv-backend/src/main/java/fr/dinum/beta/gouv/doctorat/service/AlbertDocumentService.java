@@ -147,19 +147,19 @@ public class AlbertDocumentService {
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 720);
-	        content.showText("Titre : " + (sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre"));
+	        content.showText("Titre : " + sanitizePdfText(sujet.getTheseTitre()));
 	        content.endText();
 
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 700);
-	        content.showText("Matricule : " + (sujet.getMatricule() != null ? sujet.getMatricule() : ""));
+	        content.showText("Matricule : " + sanitizePdfText(sujet.getMatricule()));
 	        content.endText();
 
 	        content.beginText();
 	        content.setFont(PDType1Font.HELVETICA, 12);
 	        content.newLineAtOffset(50, 680);
-	        content.showText("Établissement : " + (sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : ""));
+	        content.showText("Établissement : " + sanitizePdfText(sujet.getEtablissementLibelle()));
 	        content.endText();
 
 	        content.close();
@@ -170,6 +170,22 @@ public class AlbertDocumentService {
 	    } catch (Exception e) {
 	        throw new RuntimeException("Erreur lors de la génération du PDF", e);
 	    }
+	}
+
+	private static String sanitizePdfText(String text) {
+	    if (text == null) return "";
+	    StringBuilder sb = new StringBuilder(text.length());
+	    for (int i = 0; i < text.length(); i++) {
+	        int cp = text.codePointAt(i);
+	        if (Character.isBmpCodePoint(cp) && (
+	                (cp >= 0x20 && cp <= 0x7E) || (cp >= 0xA0 && cp <= 0xFF))) {
+	            sb.append((char) cp);
+	        } else {
+	            sb.append(' ');
+	        }
+	        if (cp >= 0x10000) i++; // surrogate pair, already handled
+	    }
+	    return sb.toString();
 	}
 
 
