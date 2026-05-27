@@ -49,8 +49,14 @@ public class AlbertSearchService {
     @Value("${albert.base-url:https://albert.api.etalab.gouv.fr/v1}")
     private String baseUrl;
 
-    @Value("${albert.search.api-limit:50}")
+    @Value("${albert.search.api-limit:100}")
     private int apiSearchLimit;
+
+    @Value("${albert.search.score-threshold:0.1}")
+    private double scoreThreshold;
+
+    @Value("${albert.search.method:hybrid}")
+    private String searchMethod;
 
     public AlbertSearchService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -76,8 +82,10 @@ public class AlbertSearchService {
         body.put("query", question);
         body.put("collection_ids", List.of(collectionId));
         body.put("limit", apiSearchLimit);
-        body.put("method", "semantic");
-        body.put("score_threshold", 0.3);
+        body.put("method", searchMethod);
+        if ("semantic".equals(searchMethod)) {
+            body.put("score_threshold", scoreThreshold);
+        }
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
