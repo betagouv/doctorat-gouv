@@ -1,15 +1,14 @@
 package fr.dinum.beta.gouv.doctorat.scheduler;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -32,14 +31,17 @@ public class AlbertIndexationScheduler {
 
     private final PropositionTheseRepository repository;
     private final TheseIndexationService indexationService;
+    private final Executor executor;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     public AlbertIndexationScheduler(PropositionTheseRepository repository,
-                                     TheseIndexationService indexationService) {
+                                     TheseIndexationService indexationService,
+                                     @Qualifier("indexationTaskExecutor") Executor executor) {
         this.repository = repository;
         this.indexationService = indexationService;
+        this.executor = executor;
     }
 
     @Scheduled(cron = "${albert.scheduler.cron}")
@@ -49,15 +51,19 @@ public class AlbertIndexationScheduler {
         indexerLot(sujets);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void indexerLot(List<PropositionThese> sujets) {
-        for (PropositionThese sujet : sujets) {
-            try {
-                indexationService.indexerDocumentSiNecessaire(sujet);
-            } catch (Exception e) {
-                log.error("Erreur lors de l'indexation du sujet {} : {}", sujet.getId(), e.getMessage(), e);
-            }
-        }
+        List<CompletableFuture<Void>> futures = sujets.stream()
+            .map(sujet -> CompletableFuture.runAsync(() -> {
+                try {
+                    indexationService.indexerDocumentSiNecessaire(sujet);
+                } catch (Exception e) {
+                    log.error("Erreur lors de l'indexation du sujet {} : {}",
+                            sujet.getId(), e.getMessage(), e);
+                }
+            }, executor))
+            .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
 }

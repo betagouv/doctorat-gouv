@@ -1,10 +1,13 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +31,18 @@ public class AlbertReindexService {
     private final AlbertDocumentDeletionService documentDeletionService;
     private final AlbertChunkDeletionService chunkDeletionService;
     private final TheseIndexationService indexationService;
+    private final Executor executor;
 
     public AlbertReindexService(PropositionTheseRepository repository,
                                  AlbertDocumentDeletionService documentDeletionService,
                                  AlbertChunkDeletionService chunkDeletionService,
-                                 TheseIndexationService indexationService) {
+                                 TheseIndexationService indexationService,
+                                 @Qualifier("indexationTaskExecutor") Executor executor) {
         this.repository = repository;
         this.documentDeletionService = documentDeletionService;
         this.chunkDeletionService = chunkDeletionService;
         this.indexationService = indexationService;
+        this.executor = executor;
     }
 
     /**
@@ -81,25 +87,28 @@ public class AlbertReindexService {
      * Supprime tous les documents Albert puis ré-indexe tous les sujets actifs.
      * @return nombre de sujets ré-indexés
      */
-    @Transactional
     public int reindexAll() {
         log.info("Début de la réindexation complète Albert...");
 
         int deleted = deleteAllAlbertDocuments();
 
         List<PropositionThese> actives = repository.findActivePropositions();
-        int reindexed = 0;
+        AtomicInteger reindexed = new AtomicInteger(0);
 
-        for (PropositionThese sujet : actives) {
-            try {
-                indexationService.indexerDocumentSiNecessaire(sujet);
-                reindexed++;
-            } catch (Exception e) {
-                log.error("Erreur lors de la réindexation du sujet {}", sujet.getId(), e);
-            }
-        }
+        List<CompletableFuture<Void>> futures = actives.stream()
+            .map(sujet -> CompletableFuture.runAsync(() -> {
+                try {
+                    indexationService.indexerDocumentSiNecessaire(sujet);
+                    reindexed.incrementAndGet();
+                } catch (Exception e) {
+                    log.error("Erreur lors de la réindexation du sujet {}", sujet.getId(), e);
+                }
+            }, executor))
+            .toList();
 
-        log.info("Réindexation terminée : {} supprimés, {} ré-indexés", deleted, reindexed);
-        return reindexed;
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        log.info("Réindexation terminée : {} supprimés, {} ré-indexés", deleted, reindexed.get());
+        return reindexed.get();
     }
 }
