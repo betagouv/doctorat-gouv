@@ -111,6 +111,10 @@ public class TheseIndexationService {
 		log.info("Indexation des chunks pour le sujet ID {} dans Albert (document ID {})...", sujet.getId(),
 				documentId);
 
+		// Re-fetch pour attacher l'entité à la session Hibernate active (évite LazyInitializationException sur les collections)
+		sujet = repository.findById(sujet.getId())
+		        .orElseThrow(() -> new RuntimeException("Sujet introuvable : " + sujet.getId()));
+
 		// 1. Construire le texte FR/EN à partir du sujet avec TheseSemanticBuilder
 		TheseSemanticDocument semantic = semanticBuilder.build(sujet);
 
