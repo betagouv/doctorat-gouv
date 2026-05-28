@@ -34,6 +34,12 @@ public class TheseSemanticBuilder {
         appendSectionWithHeader(sb, "Objectif", these.getObjectif());
         appendSectionWithHeader(sb, "Contexte", these.getContexte());
         appendSectionWithHeader(sb, "Profil recherché", these.getProfilRecherche());
+        appendSectionWithHeader(sb, "Discipline", these.getDomaineScientifique());
+        appendSectionWithHeader(sb, "Spécialité", these.getSpecialite());
+        appendSectionWithHeader(sb, "Établissement", buildEtablissement(these));
+        appendSectionWithHeader(sb, "Laboratoire", these.getUniteRechercheLibelle());
+        appendSectionWithHeader(sb, "École doctorale", these.getEcoleDoctoraleLibelle());
+        appendSectionWithHeader(sb, "Domaine", these.getDomaine());
 
         // 🇬🇧 Anglais
         appendSectionWithHeader(sb, "Title (EN)", these.getTheseTitreAnglais());
@@ -126,6 +132,20 @@ public class TheseSemanticBuilder {
             return null;
         }
         return String.join(", ", motsCles.values());
+    }
+
+    private String buildEtablissement(PropositionThese sujet) {
+        StringBuilder sb = new StringBuilder();
+        if (sujet.getEtablissementLibelle() != null) {
+            sb.append(sujet.getEtablissementLibelle());
+        }
+        if (sujet.getEtablissementVille() != null) {
+            sb.append(" — ").append(sujet.getEtablissementVille());
+        }
+        if (sujet.getEtablissementCodePostal() != null) {
+            sb.append(" (").append(sujet.getEtablissementCodePostal()).append(")");
+        }
+        return sb.length() > 0 ? sb.toString() : null;
     }
 }
 

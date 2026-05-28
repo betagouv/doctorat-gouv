@@ -508,7 +508,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.albertScores = {};
     this.albertMatchedTypes = {};
 
-    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}&limit=27`;
+    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}`;
 
     fetch(url)
       .then(res => {
@@ -518,14 +518,15 @@ resetFilter(filterName: MultiFilterKey) {
       .then(data => {
         this.isAlbertLoading = false;
 
-        // Stocker la réponse brute
+        // Stocker la réponse brute complète
         this.albertResponseData = data;
 
-        // Résultats
-        this.results = data.results || [];
-        this.totalResults = data.totalResults || 0;
-        this.totalPages = 1; // Albert ne gère pas la pagination
+        // Pagination côté frontend sur les résultats Albert
+        const allResults = data.results || [];
+        this.totalResults = data.totalResults || allResults.length;
+        this.totalPages = Math.max(1, Math.ceil(allResults.length / this.pageSize));
         this.currentPage = 0;
+        this.results = allResults.slice(0, this.pageSize);
 
         // Scores et types d'intention
         if (data.scores) {
@@ -574,7 +575,13 @@ resetFilter(filterName: MultiFilterKey) {
   /* ------------------- Pagination ------------------- */
   goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages) {
-      this.onSearch(page);
+      if (this.isAlbertSearchActive && this.albertResponseData) {
+        const allResults = this.albertResponseData.results || [];
+        this.currentPage = page;
+        this.results = allResults.slice(page * this.pageSize, (page + 1) * this.pageSize);
+      } else {
+        this.onSearch(page);
+      }
       const el = document.getElementById('results-count');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });

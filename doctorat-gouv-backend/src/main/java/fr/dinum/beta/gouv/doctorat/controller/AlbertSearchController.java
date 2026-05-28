@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,9 +41,6 @@ public class AlbertSearchController {
     private final PropositionTheseService propositionService;
     private final AlbertReindexService reindexService;
 
-    @Value("${albert.search.limit:27}")
-    private int searchLimit;
-
     public AlbertSearchController(AlbertSearchService searchService, PropositionTheseService propositionService,
                                    AlbertReindexService reindexService) {
         this.searchService = searchService;
@@ -63,11 +59,9 @@ public class AlbertSearchController {
      */
     @GetMapping("/propositions")
     public ResponseEntity<AlbertSearchResponse> searchPropositions(
-            @RequestParam("query") String query,
-            @RequestParam(value = "limit", required = false) Integer limit) {
-        if (limit == null) limit = searchLimit;
+            @RequestParam("query") String query) {
 
-        log.info("Recherche sémantique via /api/albert/propositions (limit={})", limit);
+        log.info("Recherche sémantique via /api/albert/propositions");
 
         // 1. Recherche sémantique dans Albert → hits structurés
         List<AlbertSearchHit> hits = searchService.searchHits(query);
@@ -81,7 +75,6 @@ public class AlbertSearchController {
         List<Long> theseIds = hits.stream()
                 .map(AlbertSearchHit::getPropositionTheseId)
                 .distinct()
-                .limit(limit)
                 .collect(Collectors.toList());
 
         log.debug("{} ID(s) de proposition extraits des résultats Albert", theseIds.size());
