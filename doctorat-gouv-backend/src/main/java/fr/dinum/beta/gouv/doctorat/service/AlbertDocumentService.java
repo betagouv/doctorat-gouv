@@ -116,7 +116,11 @@ public class AlbertDocumentService {
 	    Map<String, Object> metadata = new HashMap<>();
 	    metadata.put("id_interne", sujet.getId());
 	    metadata.put("matricule", sujet.getMatricule());
-	    metadata.put("titre", sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre");
+	    String titre = sujet.getTheseTitre() != null ? sujet.getTheseTitre() : "Sans titre";
+	    if (titre.length() > 255) {
+	        titre = titre.substring(0, 252) + "...";
+	    }
+	    metadata.put("titre", titre);
 	    metadata.put("etablissement", sujet.getEtablissementLibelle() != null ? sujet.getEtablissementLibelle() : "Non renseigné");
 
 	    // Génération d’un vrai PDF textuel
@@ -180,7 +184,13 @@ public class AlbertDocumentService {
 	    StringBuilder sb = new StringBuilder(text.length());
 	    for (int i = 0; i < text.length(); i++) {
 	        char c = text.charAt(i);
-	        sb.append(encoder.canEncode(c) ? c : ' ');
+	        if (c < 0x20) {
+	            sb.append(' ');
+	        } else if (encoder.canEncode(c)) {
+	            sb.append(c);
+	        } else {
+	            sb.append(' ');
+	        }
 	    }
 	    return sb.toString();
 	}
