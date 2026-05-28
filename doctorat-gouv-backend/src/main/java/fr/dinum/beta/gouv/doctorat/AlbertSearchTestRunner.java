@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import fr.dinum.beta.gouv.doctorat.service.AlbertSearchService;
 
 @Component
-@Profile("dev") // Ce runner ne s'exécutera que dans le profil "test"
+@Profile("test") // Ce runner ne s'exécutera que dans le profil "test"
 public class AlbertSearchTestRunner implements CommandLineRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(AlbertSearchTestRunner.class);
