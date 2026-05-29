@@ -193,40 +193,40 @@ export class Search implements OnInit, OnDestroy {
 	  let urlHasEtablissementRor = false;
 	  let urlHasEcoleDoctorale = false;
 
-	  // Lire les paramètres d’URL 
-	  this.route.queryParams.subscribe(params => {
-		  if (params['ecoledoctorale']) {
+	  // Lecture synchrone des paramètres d'URL via le snapshot
+	  // (évite le problème de timing asynchrone de queryParams.subscribe)
+	  const urlParams = this.route.snapshot.queryParams;
+	  if (urlParams['ecoledoctorale']) {
 
-			  // Initialiser les filtres
-			  this.discipline = saved.discipline || []; 
-			  this.localisation = saved.localisation || [];
-			  this.laboratoire = saved.laboratoire || [];
-			  this.ecole = saved.ecole || [];
-			  this.defisSociete = saved.defisSociete || [];
-			  this.annee = saved.annee || [];
-			  this.etablissementRor = '';
-			  this.query = '';
+		  // Initialiser les filtres
+		  this.discipline = saved?.discipline || [];
+		  this.localisation = saved?.localisation || [];
+		  this.laboratoire = saved?.laboratoire || [];
+		  this.ecole = saved?.ecole || [];
+		  this.defisSociete = saved?.defisSociete || [];
+		  this.annee = saved?.annee || [];
+		  this.etablissementRor = '';
+		  this.query = '';
 
-			  this.ecoleDoctoraleNumero = params['ecoledoctorale'];
-			  urlHasEcoleDoctorale = true;   // 🔥 On note que l’URL contient le filtre école doctorale pour éviter de l’écraser plus tard
-		  };
-		  
-		  if (params['etablissementror']) { 
-			
-			// Initialiser les filtres
-			this.discipline = saved.discipline || []; 
-			this.localisation = saved.localisation || [];
-			this.laboratoire = saved.laboratoire || [];
-			this.ecole = saved.ecole || [];
-			this.defisSociete = saved.defisSociete || [];
-			this.annee = saved.annee || [];
-			this.ecoleDoctoraleNumero = '';
-			this.query = '';
-			
-			this.etablissementRor = params['etablissementror'];
-			urlHasEtablissementRor = true;   // 🔥 On note que l’URL contient le filtre ROR pour éviter de l’écraser plus tard
-		  }
-	  });
+		  this.ecoleDoctoraleNumero = urlParams['ecoledoctorale'];
+		  urlHasEcoleDoctorale = true;
+	  }
+
+	  if (urlParams['etablissementror']) {
+
+		  // Initialiser les filtres
+		  this.discipline = saved?.discipline || [];
+		  this.localisation = saved?.localisation || [];
+		  this.laboratoire = saved?.laboratoire || [];
+		  this.ecole = saved?.ecole || [];
+		  this.defisSociete = saved?.defisSociete || [];
+		  this.annee = saved?.annee || [];
+		  this.ecoleDoctoraleNumero = '';
+		  this.query = '';
+
+		  this.etablissementRor = urlParams['etablissementror'];
+		  urlHasEtablissementRor = true;
+	  }
 	  
 	  this.anneeOpts = this.generateYears();
 
@@ -235,12 +235,12 @@ export class Search implements OnInit, OnDestroy {
 	  
 	  if (saved) {
 	    this.query = saved.query || '';
-	    this.discipline = saved.discipline || '';
-	    this.localisation = saved.localisation || '';
-	    this.laboratoire = saved.laboratoire || '';
-	    this.ecole = saved.ecole || '';
-	    this.defisSociete = saved.defisSociete || '';
-		this.annee = saved.annee || '';
+	    this.discipline = Array.isArray(saved.discipline) ? saved.discipline : [];
+	    this.localisation = Array.isArray(saved.localisation) ? saved.localisation : [];
+	    this.laboratoire = Array.isArray(saved.laboratoire) ? saved.laboratoire : [];
+	    this.ecole = Array.isArray(saved.ecole) ? saved.ecole : [];
+	    this.defisSociete = Array.isArray(saved.defisSociete) ? saved.defisSociete : [];
+		this.annee = Array.isArray(saved.annee) ? saved.annee : [];
 		this.showMoreFilters = saved.showMoreFilters ?? false;
 		
 		// Ne PAS écraser la valeur venant de l’URL
