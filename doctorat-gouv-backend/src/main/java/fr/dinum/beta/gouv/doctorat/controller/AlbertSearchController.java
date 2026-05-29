@@ -2,8 +2,11 @@ package fr.dinum.beta.gouv.doctorat.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.service.AlbertReindexService;
 import fr.dinum.beta.gouv.doctorat.service.AlbertSearchService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
+import fr.dinum.beta.gouv.doctorat.service.SearchRerankerService;
 
 /**
  * Contrôleur REST exposant les endpoints de recherche et d'indexation via l'API Albert.
@@ -40,12 +44,14 @@ public class AlbertSearchController {
     private final AlbertSearchService searchService;
     private final PropositionTheseService propositionService;
     private final AlbertReindexService reindexService;
+    private final SearchRerankerService rerankerService;
 
     public AlbertSearchController(AlbertSearchService searchService, PropositionTheseService propositionService,
-                                   AlbertReindexService reindexService) {
+                                   AlbertReindexService reindexService, SearchRerankerService rerankerService) {
         this.searchService = searchService;
         this.propositionService = propositionService;
         this.reindexService = reindexService;
+        this.rerankerService = rerankerService;
     }
 
     /**
@@ -59,48 +65,127 @@ public class AlbertSearchController {
      */
     @GetMapping("/propositions")
     public ResponseEntity<AlbertSearchResponse> searchPropositions(
-            @RequestParam("query") String query) {
+            @RequestParam("query") String query,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        if (limit == null) limit = 100;
 
-        log.info("Recherche sémantique via /api/albert/propositions");
+        log.info("Recherche sémantique via /api/albert/propositions (limit={})", limit);
 
-        // 1. Recherche sémantique dans Albert → hits structurés
-        List<AlbertSearchHit> hits = searchService.searchHits(query);
-        if (hits.isEmpty()) {
-            log.info("Aucun résultat trouvé pour la recherche sémantique");
+        // 1. Extraire les tokens significatifs
+        List<String> tokens = rerankerService.extractTokens(query);
+
+        // 2. Générer des variantes de requête pour le multi-appel Albert
+        List<String> queryVariants = rerankerService.generateQueryVariants(tokens);
+        if (queryVariants.isEmpty()) {
+            queryVariants = List.of(query);
+        }
+
+        // 3. Recherche multi-requêtes dans Albert (en parallèle)
+        List<AlbertSearchHit> mergedHits = searchInParallel(queryVariants);
+
+        // 4. Recherche SQL (LIKE) pour compléter le rappel
+        String sqlQuery = String.join(" ", tokens);
+        Map<Long, PropositionTheseDto> sqlResults;
+        if (!tokens.isEmpty()) {
+            sqlResults = propositionService.searchByQueryAsMap(sqlQuery);
+        } else {
+            sqlResults = Map.of();
+        }
+
+        // 5. Fusion : les résultats Albert (multi-requêtes) sont priorisés,
+        //    complétés par les résultats SQL-only
+        Map<Long, PropositionTheseDto> sourceResults = new HashMap<>();
+        if (!mergedHits.isEmpty()) {
+            List<Long> albertIds = mergedHits.stream()
+                .map(AlbertSearchHit::getPropositionTheseId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+            sourceResults.putAll(propositionService.findByIdInAsMap(albertIds));
+        }
+        // Ajouter les résultats SQL qui ne seraient pas déjà dans Albert
+        sqlResults.forEach(sourceResults::putIfAbsent);
+
+        log.info("Albert ({} variantes): {} hit(s) uniques, SQL: {} résultat(s), fusion: {}",
+            queryVariants.size(), mergedHits.size(), sqlResults.size(), sourceResults.size());
+
+        if (sourceResults.isEmpty()) {
             return ResponseEntity.ok(new AlbertSearchResponse(query, List.of(), List.of(),
                     Map.of(), Map.of(), Map.of(), 0));
         }
 
-        // 2. Extraire les IDs uniques des propositions de thèse
-        List<Long> theseIds = hits.stream()
+        // 5. IDs uniques depuis Albert (présents dans SQL)
+        List<Long> albertIds = mergedHits.stream()
                 .map(AlbertSearchHit::getPropositionTheseId)
+                .filter(id -> id != null && sourceResults.containsKey(id))
                 .distinct()
                 .collect(Collectors.toList());
 
-        log.debug("{} ID(s) de proposition extraits des résultats Albert", theseIds.size());
+        // 6. Reranker les résultats Albert (score composite)
+        List<Long> rerankedAlbertIds = rerankerService.rerank(mergedHits, query, sourceResults);
 
-        // 3. Récupérer les données complètes depuis la BDD
-        Map<Long, PropositionTheseDto> theseMap = propositionService.findByIdInAsMap(theseIds);
+        // 7. Appliquer le mode AND (présence de "et" dans la requête)
+        List<Long> rerankedFiltered;
+        if (!tokens.isEmpty() && query.toLowerCase().matches(".*\\bet\\b.*")) {
+            List<Long> allTokensMatch = rerankedAlbertIds.stream()
+                .filter(id -> {
+                    PropositionTheseDto dto = sourceResults.get(id);
+                    return dto != null && rerankerService.computeKeywordScore(tokens, dto) >= 1.0;
+                })
+                .collect(Collectors.toList());
+            if (allTokensMatch.size() >= 5) {
+                rerankedFiltered = allTokensMatch;
+                log.info("Mode AND : {} résultat(s) contenant tous les tokens", allTokensMatch.size());
+            } else {
+                rerankedFiltered = rerankedAlbertIds;
+                log.info("Mode AND : seulement {} résultat(s) avec tous les tokens, fallback vers non filtré", allTokensMatch.size());
+            }
+        } else {
+            rerankedFiltered = rerankedAlbertIds;
+        }
 
-        // 4. Construire les résultats dans l'ordre des scores
+        // 8. IDs SQL-only (pas trouvés par Albert)
+        List<Long> sqlOnlyIds = sourceResults.keySet().stream()
+                .filter(id -> !albertIds.contains(id))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        // 9. Fusion : Albert rankés d'abord, puis SQL-only
+        List<Long> mergedIds = new ArrayList<>();
+        mergedIds.addAll(rerankedFiltered);
+        mergedIds.addAll(sqlOnlyIds);
+        if (mergedIds.size() > limit) mergedIds = mergedIds.subList(0, limit);
+
+        // 7. Construire les résultats dans l'ordre fusionné
         List<PropositionTheseDto> results = new ArrayList<>();
         Map<Long, Double> scores = new HashMap<>();
         Map<Long, String> matchedTypes = new HashMap<>();
         Map<Long, String> matchedContent = new HashMap<>();
 
-        for (AlbertSearchHit hit : hits) {
-            Long propId = hit.getPropositionTheseId();
-            if (!theseMap.containsKey(propId)) continue;
-            if (scores.containsKey(propId)) continue; // déjà ajouté (meilleur score gardé)
+        for (Long propId : mergedIds) {
+            if (!sourceResults.containsKey(propId)) continue;
+            results.add(sourceResults.get(propId));
 
-            results.add(theseMap.get(propId));
-            scores.put(propId, hit.getScore());
-            matchedTypes.put(propId, hit.getChunkType());
-            matchedContent.put(propId, hit.getContent());
+            // Score Albert si disponible, sinon 0
+            double maxScore = mergedHits.stream()
+                .filter(h -> propId.equals(h.getPropositionTheseId()))
+                .mapToDouble(AlbertSearchHit::getScore)
+                .max()
+                .orElse(0.0);
+            scores.put(propId, maxScore);
+
+            // Type et contenu du meilleur chunk Albert (si disponible)
+            mergedHits.stream()
+                .filter(h -> propId.equals(h.getPropositionTheseId()))
+                .findFirst()
+                .ifPresent(bestHit -> {
+                    matchedTypes.put(propId, bestHit.getChunkType());
+                    matchedContent.put(propId, bestHit.getContent());
+                });
         }
 
-        // 5. Extraire les mots-clés suggérés depuis les données BDD (motsCles des thèses)
-        List<String> suggestedKeywords = searchService.extractKeywordsFromResults(theseMap);
+        // 8. Extraire les mots-clés suggérés depuis les données BDD (motsCles des thèses)
+        List<String> suggestedKeywords = searchService.extractKeywordsFromResults(sourceResults);
 
         log.info("{} résultat(s) retourné(s) pour la recherche sémantique", results.size());
 
@@ -196,12 +281,45 @@ public class AlbertSearchController {
             "answer", answer.toString(),
             "empty", false,
             "hits", hits.stream().limit(5).map(h -> Map.of(
-                "propositionId", h.getPropositionTheseId(),
+                    "propositionId", h.getPropositionTheseId(),
                 "score", h.getScore(),
                 "chunkType", h.getChunkType(),
                 "matricule", h.getMatricule()
             )).toList()
         );
+    }
+
+    /**
+     * Exécute plusieurs requêtes Albert en parallèle et fusionne les résultats
+     * en gardant pour chaque sujet le chunk avec le meilleur score.
+     */
+    private List<AlbertSearchHit> searchInParallel(List<String> queries) {
+        if (queries.size() == 1) {
+            return searchService.searchHits(queries.get(0));
+        }
+
+        List<CompletableFuture<List<AlbertSearchHit>>> futures = queries.stream()
+            .map(q -> CompletableFuture.supplyAsync(() -> searchService.searchHits(q)))
+            .collect(Collectors.toList());
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // Fusion : garder le meilleur hit par sujet (score le plus haut)
+        Map<Long, AlbertSearchHit> bestHitBySubject = new LinkedHashMap<>();
+        for (CompletableFuture<List<AlbertSearchHit>> future : futures) {
+            for (AlbertSearchHit hit : future.join()) {
+                Long id = hit.getPropositionTheseId();
+                if (id == null) continue;
+                AlbertSearchHit existing = bestHitBySubject.get(id);
+                if (existing == null || hit.getScore() > existing.getScore()) {
+                    bestHitBySubject.put(id, hit);
+                }
+            }
+        }
+
+        List<AlbertSearchHit> merged = new ArrayList<>(bestHitBySubject.values());
+        merged.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
+        return merged;
     }
 
 }

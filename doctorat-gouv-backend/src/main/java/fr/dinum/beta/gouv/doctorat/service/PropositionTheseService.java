@@ -272,4 +272,17 @@ public class PropositionTheseService {
         return findByIdIn(ids).stream()
                 .collect(Collectors.toMap(PropositionTheseDto::getId, dto -> dto));
     }
+
+    /**
+     * Recherche SQL (LIKE) sans pagination et retourne une map id -> DTO.
+     * Utilisé par la recherche Albert pour enrichir les résultats avec un rappel maximal.
+     */
+    public Map<Long, PropositionTheseDto> searchByQueryAsMap(String query) {
+        Map<String, String> filters = new HashMap<>();
+        filters.put("query", query);
+        Specification<PropositionThese> spec = buildSpecification(filters);
+        return repo.findAll(spec).stream()
+                .map(PropositionTheseMapper::toDto)
+                .collect(Collectors.toMap(PropositionTheseDto::getId, dto -> dto));
+    }
 }
