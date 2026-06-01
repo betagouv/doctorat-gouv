@@ -76,6 +76,19 @@ public class SearchRerankerService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Calcule le score composite pour un hit Albert et son DTO associé.
+     * Réutilise la même formule que le reranking.
+     */
+    public double computeScoreForHit(AlbertSearchHit hit, String query, PropositionTheseDto dto) {
+        List<String> tokens = extractTokens(query);
+        if (tokens.isEmpty()) return hit.getScore();
+        double keywordScore = computeKeywordScore(tokens, dto);
+        double titleBonus = computeTitleBonus(tokens, dto);
+        double chunkWeight = getChunkWeight(hit.getChunkType());
+        return (hit.getScore() * 0.5 + keywordScore * 0.3 + titleBonus * 0.1) * chunkWeight;
+    }
+
     public List<String> extractTokens(String query) {
         if (query == null || query.isBlank()) return List.of();
 
@@ -153,7 +166,7 @@ public class SearchRerankerService {
         return (double) found / tokens.size();
     }
 
-    double computeTitleBonus(List<String> tokens, PropositionTheseDto dto) {
+    public double computeTitleBonus(List<String> tokens, PropositionTheseDto dto) {
         String titre = dto.getTheseTitre() != null ? dto.getTheseTitre().toLowerCase() : "";
         String titreEn = dto.getTheseTitreAnglais() != null ? dto.getTheseTitreAnglais().toLowerCase() : "";
         String combined = titre + " " + titreEn;
@@ -166,7 +179,7 @@ public class SearchRerankerService {
         return 0.0;
     }
 
-    double getChunkWeight(String chunkType) {
+    public double getChunkWeight(String chunkType) {
         if (chunkType == null) return 1.0;
         return switch (chunkType) {
             case "titre" -> 1.2;

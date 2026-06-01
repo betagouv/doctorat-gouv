@@ -25,6 +25,7 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.service.AlbertReindexService;
 import fr.dinum.beta.gouv.doctorat.service.AlbertSearchService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
+import fr.dinum.beta.gouv.doctorat.service.SearchCriteriaExtractor;
 import fr.dinum.beta.gouv.doctorat.service.SearchRerankerService;
 
 /**
@@ -76,18 +77,26 @@ public class AlbertSearchController {
 
         log.info("Recherche sémantique via /api/albert/propositions (limit={})", limit);
 
-        // 1. Extraire les tokens significatifs
-        List<String> tokens = rerankerService.extractTokens(query);
+        // Phase 1 : Extraction des critères structurés depuis la requête
+        // (financement, localisation, etc.) pour nettoyer la requête Albert
+        // et appliquer des filtres SQL précis en post-traitement.
+        SearchCriteriaExtractor.Criteria criteria = SearchCriteriaExtractor.extract(query);
+        String albertQuery = criteria.cleanedQuery();
+        String financementType = criteria.financementType();
+        String localisation = criteria.localisation();
+
+        // 1. Extraire les tokens significatifs (depuis la requête nettoyée)
+        List<String> tokens = rerankerService.extractTokens(albertQuery);
 
         // 2. Générer des variantes de requête pour le multi-appel Albert
         // Solution 2 : toujours envoyer la phrase originale en premier (compréhension sémantique),
         // complétée par les variantes basées sur tokens pour le rappel.
         List<String> tokenVariants = rerankerService.generateQueryVariants(tokens);
         List<String> queryVariants = new ArrayList<>();
-        queryVariants.add(query);
+        queryVariants.add(albertQuery);
         if (!tokenVariants.isEmpty()) {
             for (String v : tokenVariants) {
-                if (!v.equals(query)) queryVariants.add(v);
+                if (!v.equals(albertQuery)) queryVariants.add(v);
             }
         }
 
@@ -128,6 +137,49 @@ public class AlbertSearchController {
                     Map.of(), Map.of(), Map.of(), 0));
         }
 
+        // Phase 2 : Filtrage par critères extraits (financement, localisation)
+        if (financementType != null) {
+            int before = sourceResults.size();
+            sourceResults.entrySet().removeIf(e -> {
+                PropositionTheseDto dto = e.getValue();
+                List<String> types = dto.getFinancementTypes();
+                return types == null || types.stream().noneMatch(t ->
+                    t.toLowerCase().contains(financementType));
+            });
+            log.info("Filtre financement '{}' : {} résultat(s) avant, {} après",
+                financementType, before, sourceResults.size());
+        }
+
+        if (localisation != null) {
+            int before = sourceResults.size();
+            sourceResults.entrySet().removeIf(e -> {
+                PropositionTheseDto dto = e.getValue();
+                String ville = dto.getEtablissementVille();
+                String codePostal = dto.getEtablissementCodePostal();
+                return (ville == null || !ville.toLowerCase().contains(localisation))
+                    && (codePostal == null || !codePostal.contains(localisation));
+            });
+            log.info("Filtre localisation '{}' : {} résultat(s) avant, {} après",
+                localisation, before, sourceResults.size());
+        }
+
+        // Fallback : si un filtre supprime tous les résultats, on récupère les résultats non filtrés
+        if (sourceResults.isEmpty()) {
+            log.warn("Les filtres ont tout supprimé, fallback vers les résultats non filtrés");
+            Map<Long, PropositionTheseDto> backup = new HashMap<>();
+            if (!mergedHits.isEmpty()) {
+                List<Long> ids = mergedHits.stream()
+                    .map(AlbertSearchHit::getPropositionTheseId)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+                backup.putAll(propositionService.findByIdInAsMap(ids));
+            }
+            sqlResults.forEach(backup::putIfAbsent);
+            sourceResults.clear();
+            sourceResults.putAll(backup);
+        }
+
         // 5. IDs uniques depuis Albert (présents dans SQL)
         List<Long> albertIds = mergedHits.stream()
                 .map(AlbertSearchHit::getPropositionTheseId)
@@ -136,11 +188,11 @@ public class AlbertSearchController {
                 .collect(Collectors.toList());
 
         // 6. Reranker les résultats Albert (score composite)
-        List<Long> rerankedAlbertIds = rerankerService.rerank(mergedHits, query, sourceResults);
+        List<Long> rerankedAlbertIds = rerankerService.rerank(mergedHits, albertQuery, sourceResults);
 
         // 7. Appliquer le mode AND (présence de "et" dans la requête)
         List<Long> rerankedFiltered;
-        if (!tokens.isEmpty() && query.toLowerCase().matches(".*\\bet\\b.*")) {
+        if (!tokens.isEmpty() && albertQuery.toLowerCase().matches(".*\\bet\\b.*")) {
             List<Long> allTokensMatch = rerankedAlbertIds.stream()
                 .filter(id -> {
                     PropositionTheseDto dto = sourceResults.get(id);
@@ -180,13 +232,14 @@ public class AlbertSearchController {
             if (!sourceResults.containsKey(propId)) continue;
             results.add(sourceResults.get(propId));
 
-            // Score Albert si disponible, sinon 0
-            double maxScore = mergedHits.stream()
+            // Score composite (Albert + keyword + titre) si disponible, score Albert brut sinon
+            PropositionTheseDto dto = sourceResults.get(propId);
+            double compositeScore = mergedHits.stream()
                 .filter(h -> propId.equals(h.getPropositionTheseId()))
-                .mapToDouble(AlbertSearchHit::getScore)
+                .mapToDouble(h -> rerankerService.computeScoreForHit(h, albertQuery, dto))
                 .max()
                 .orElse(0.0);
-            scores.put(propId, maxScore);
+            scores.put(propId, compositeScore);
 
             // Type et contenu du meilleur chunk Albert (si disponible)
             mergedHits.stream()
