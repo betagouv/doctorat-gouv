@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,9 @@ public class AlbertSearchController {
     private final AlbertReindexService reindexService;
     private final SearchRerankerService rerankerService;
 
+    @Value("${albert.search.offset-pages:1}")
+    private int offsetPages;
+
     public AlbertSearchController(AlbertSearchService searchService, PropositionTheseService propositionService,
                                    AlbertReindexService reindexService, SearchRerankerService rerankerService) {
         this.searchService = searchService;
@@ -68,6 +72,7 @@ public class AlbertSearchController {
             @RequestParam("query") String query,
             @RequestParam(value = "limit", required = false) Integer limit) {
         if (limit == null) limit = 100;
+        long startTime = System.currentTimeMillis();
 
         log.info("Recherche sémantique via /api/albert/propositions (limit={})", limit);
 
@@ -80,8 +85,11 @@ public class AlbertSearchController {
             queryVariants = List.of(query);
         }
 
-        // 3. Recherche multi-requêtes dans Albert (en parallèle)
+        // 3. Recherche multi-requêtes dans Albert (en parallèle avec offset)
         List<AlbertSearchHit> mergedHits = searchInParallel(queryVariants);
+        int totalAlbertCalls = queryVariants.size() * offsetPages;
+        log.info("Requêtes Albert : {} variante(s) × {} page(s) offset = {} appel(s)",
+            queryVariants.size(), offsetPages, totalAlbertCalls);
 
         // 4. Recherche SQL (LIKE) pour compléter le rappel
         String sqlQuery = String.join(" ", tokens);
@@ -106,8 +114,8 @@ public class AlbertSearchController {
         // Ajouter les résultats SQL qui ne seraient pas déjà dans Albert
         sqlResults.forEach(sourceResults::putIfAbsent);
 
-        log.info("Albert ({} variantes): {} hit(s) uniques, SQL: {} résultat(s), fusion: {}",
-            queryVariants.size(), mergedHits.size(), sqlResults.size(), sourceResults.size());
+        log.info("Albert ({} variantes × {} pages): {} hit(s) uniques, SQL: {} résultat(s), fusion: {}",
+            queryVariants.size(), offsetPages, mergedHits.size(), sqlResults.size(), sourceResults.size());
 
         if (sourceResults.isEmpty()) {
             return ResponseEntity.ok(new AlbertSearchResponse(query, List.of(), List.of(),
@@ -187,7 +195,8 @@ public class AlbertSearchController {
         // 8. Extraire les mots-clés suggérés depuis les données BDD (motsCles des thèses)
         List<String> suggestedKeywords = searchService.extractKeywordsFromResults(sourceResults);
 
-        log.info("{} résultat(s) retourné(s) pour la recherche sémantique", results.size());
+        long duration = System.currentTimeMillis() - startTime;
+        log.info("{} résultat(s) retourné(s) pour la recherche sémantique (durée={}ms)", results.size(), duration);
 
         AlbertSearchResponse response = new AlbertSearchResponse(
                 query, results, suggestedKeywords,
@@ -290,17 +299,19 @@ public class AlbertSearchController {
     }
 
     /**
-     * Exécute plusieurs requêtes Albert en parallèle et fusionne les résultats
-     * en gardant pour chaque sujet le chunk avec le meilleur score.
+     * Exécute plusieurs requêtes Albert en parallèle (variantes × offsets)
+     * et fusionne les résultats en gardant pour chaque sujet le chunk avec le meilleur score.
      */
     private List<AlbertSearchHit> searchInParallel(List<String> queries) {
-        if (queries.size() == 1) {
-            return searchService.searchHits(queries.get(0));
-        }
+        int step = 100; // correspond à apiSearchLimit
+        List<CompletableFuture<List<AlbertSearchHit>>> futures = new ArrayList<>();
 
-        List<CompletableFuture<List<AlbertSearchHit>>> futures = queries.stream()
-            .map(q -> CompletableFuture.supplyAsync(() -> searchService.searchHits(q)))
-            .collect(Collectors.toList());
+        for (String query : queries) {
+            for (int page = 0; page < offsetPages; page++) {
+                int offset = page * step;
+                futures.add(CompletableFuture.supplyAsync(() -> searchService.searchHits(query, offset)));
+            }
+        }
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
@@ -316,6 +327,8 @@ public class AlbertSearchController {
                 }
             }
         }
+
+        log.debug("Fusion offset : {} appel(s) → {} sujets uniques", futures.size(), bestHitBySubject.size());
 
         List<AlbertSearchHit> merged = new ArrayList<>(bestHitBySubject.values());
         merged.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));

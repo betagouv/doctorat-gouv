@@ -63,14 +63,14 @@ public class AlbertSearchService {
     }
 
     /**
-     * Effectue une recherche sémantique dans Albert à partir d'une question.
-     * Retourne la réponse brute (utilisé pour la compatibilité).
+     * Effectue une recherche sémantique dans Albert à partir d'une question
+     * avec un offset optionnel (permet de paginer les résultats au-delà de 100 chunks).
      *
      * RGPD : la question et la réponse ne sont pas loggées (données potentiellement personnelles).
      */
-    public Map search(String question) {
+    public Map search(String question, int offset) {
     	
-    	log.info("Appel à l'API Albert search");
+    	log.info("Appel à l'API Albert search{}", offset > 0 ? " (offset=" + offset + ")" : "");
 
         String url = baseUrl + "/search";
 
@@ -86,6 +86,9 @@ public class AlbertSearchService {
         if ("semantic".equals(searchMethod)) {
             body.put("score_threshold", scoreThreshold);
         }
+        if (offset > 0) {
+            body.put("offset", offset);
+        }
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
@@ -97,17 +100,24 @@ public class AlbertSearchService {
         return response.getBody();
     }
 
+    public Map search(String question) {
+        return search(question, 0);
+    }
+
     /**
      * Effectue une recherche sémantique et retourne des hits structurés.
      * Chaque hit contient l'ID de la proposition, le score, le type de chunk et le contenu.
      *
+     * @param question la requête de recherche
+     * @param offset   décalage pour pagination (0 = première page)
+     *
      * RGPD : le matricule (identifiant personnel) n'est pas loggé. Le contenu des chunks
      * (pouvant contenir des données personnelles) n'est pas loggé non plus.
      */
-    public List<AlbertSearchHit> searchHits(String question) {
-    	log.debug("Recherche sémantique via Albert");
+    public List<AlbertSearchHit> searchHits(String question, int offset) {
+    	log.debug("Recherche sémantique via Albert (offset={})", offset);
 
-        Map rawResponse = search(question);
+        Map rawResponse = search(question, offset);
         List<Map<String, Object>> data = (List<Map<String, Object>>) rawResponse.get("data");
 
         if (data == null || data.isEmpty()) {
@@ -160,8 +170,12 @@ public class AlbertSearchService {
         // Trier par score décroissant
         hits.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
-        log.info("{} résultat(s) trouvé(s) via Albert pour l'ID collection {}", hits.size(), collectionId);
+        log.info("{} résultat(s) trouvé(s) via Albert pour l'ID collection {} (offset={})", hits.size(), collectionId, offset);
         return hits;
+    }
+
+    public List<AlbertSearchHit> searchHits(String question) {
+        return searchHits(question, 0);
     }
 
     /**
