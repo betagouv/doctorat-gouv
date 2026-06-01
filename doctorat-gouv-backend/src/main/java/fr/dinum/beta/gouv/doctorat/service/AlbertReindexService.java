@@ -1,5 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -9,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -50,37 +51,43 @@ public class AlbertReindexService {
      * albertDocumentId / dateIndexationAlbert dans la BDD.
      * @return nombre de documents supprimés
      */
-    @Transactional
     public int deleteAllAlbertDocuments() {
         List<PropositionThese> indexed = repository.findIndexedInAlbert();
-        int count = 0;
+        AtomicInteger count = new AtomicInteger(0);
+        List<PropositionThese> modified = Collections.synchronizedList(new ArrayList<>());
 
-        for (PropositionThese sujet : indexed) {
-            try {
-                String docId = sujet.getAlbertDocumentId();
-                if (docId != null) {
-                    try {
-                        chunkDeletionService.deleteChunks(Long.valueOf(docId));
-                    } catch (Exception e) {
-                        log.warn("Impossible de supprimer les chunks du document {} : {}", docId, e.getMessage());
+        List<CompletableFuture<Void>> futures = indexed.stream()
+            .map(sujet -> CompletableFuture.runAsync(() -> {
+                try {
+                    String docId = sujet.getAlbertDocumentId();
+                    if (docId != null) {
+                        try {
+                            chunkDeletionService.deleteChunks(Long.valueOf(docId));
+                        } catch (Exception e) {
+                            log.warn("Impossible de supprimer les chunks du document {} : {}", docId, e.getMessage());
+                        }
+                        try {
+                            documentDeletionService.deleteDocument(Long.valueOf(docId));
+                        } catch (Exception e) {
+                            log.warn("Impossible de supprimer le document {} : {}", docId, e.getMessage());
+                        }
                     }
-                    try {
-                        documentDeletionService.deleteDocument(Long.valueOf(docId));
-                    } catch (Exception e) {
-                        log.warn("Impossible de supprimer le document {} : {}", docId, e.getMessage());
-                    }
+                    sujet.setAlbertDocumentId(null);
+                    sujet.setDateIndexationAlbert(null);
+                    modified.add(sujet);
+                    count.incrementAndGet();
+                } catch (Exception e) {
+                    log.error("Erreur lors de la suppression du document Albert pour le sujet {} : {}", sujet.getId(), e.getMessage());
                 }
-                sujet.setAlbertDocumentId(null);
-                sujet.setDateIndexationAlbert(null);
-                repository.save(sujet);
-                count++;
-            } catch (Exception e) {
-                log.error("Erreur lors de la suppression du document Albert pour le sujet {} : {}", sujet.getId(), e.getMessage());
-            }
-        }
+            }, executor))
+            .toList();
 
-        log.info("{} documents Albert supprimés", count);
-        return count;
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        repository.saveAll(modified);
+
+        log.info("{} documents Albert supprimés", count.get());
+        return count.get();
     }
 
     /**

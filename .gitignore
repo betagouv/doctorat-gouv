@@ -37,3 +37,6 @@ Thumbs.db
 *.key
 *.pem
 *.crt
+
+# Documentation interne
+/docs/
