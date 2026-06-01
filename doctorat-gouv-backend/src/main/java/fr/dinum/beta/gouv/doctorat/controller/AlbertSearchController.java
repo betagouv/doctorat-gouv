@@ -80,9 +80,15 @@ public class AlbertSearchController {
         List<String> tokens = rerankerService.extractTokens(query);
 
         // 2. Générer des variantes de requête pour le multi-appel Albert
-        List<String> queryVariants = rerankerService.generateQueryVariants(tokens);
-        if (queryVariants.isEmpty()) {
-            queryVariants = List.of(query);
+        // Solution 2 : toujours envoyer la phrase originale en premier (compréhension sémantique),
+        // complétée par les variantes basées sur tokens pour le rappel.
+        List<String> tokenVariants = rerankerService.generateQueryVariants(tokens);
+        List<String> queryVariants = new ArrayList<>();
+        queryVariants.add(query);
+        if (!tokenVariants.isEmpty()) {
+            for (String v : tokenVariants) {
+                if (!v.equals(query)) queryVariants.add(v);
+            }
         }
 
         // 3. Recherche multi-requêtes dans Albert (en parallèle avec offset)
