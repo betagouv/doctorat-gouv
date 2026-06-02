@@ -18,6 +18,7 @@ public class AlbertSearchResponse {
     private Map<Long, String> matchedTypes;
     private Map<Long, String> matchedContent;
     private int totalResults;
+    private String aiMessage;
 
     public AlbertSearchResponse() {}
 
@@ -53,4 +54,7 @@ public class AlbertSearchResponse {
 
     public int getTotalResults() { return totalResults; }
     public void setTotalResults(int totalResults) { this.totalResults = totalResults; }
+
+    public String getAiMessage() { return aiMessage; }
+    public void setAiMessage(String aiMessage) { this.aiMessage = aiMessage; }
 }

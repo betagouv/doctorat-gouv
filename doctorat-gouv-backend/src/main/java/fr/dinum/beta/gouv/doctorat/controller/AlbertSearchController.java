@@ -100,6 +100,8 @@ public class AlbertSearchController {
             }
         }
 
+        log.info("Tokens extraits ({}): {}, variantes: {}", tokens.size(), tokens, queryVariants);
+
         // 3. Recherche multi-requêtes dans Albert (en parallèle avec offset)
         List<AlbertSearchHit> mergedHits = searchInParallel(queryVariants);
         int totalAlbertCalls = queryVariants.size() * offsetPages;
@@ -196,7 +198,7 @@ public class AlbertSearchController {
             List<Long> allTokensMatch = rerankedAlbertIds.stream()
                 .filter(id -> {
                     PropositionTheseDto dto = sourceResults.get(id);
-                    return dto != null && rerankerService.computeKeywordScore(tokens, dto) >= 1.0;
+                    return dto != null && rerankerService.allTokensFound(tokens, dto);
                 })
                 .collect(Collectors.toList());
             if (allTokensMatch.size() >= 5) {
@@ -232,13 +234,13 @@ public class AlbertSearchController {
             if (!sourceResults.containsKey(propId)) continue;
             results.add(sourceResults.get(propId));
 
-            // Score composite (Albert + keyword + titre) si disponible, score Albert brut sinon
+            // Score composite (Albert + keyword) si disponible, sinon score keyword seul
             PropositionTheseDto dto = sourceResults.get(propId);
             double compositeScore = mergedHits.stream()
                 .filter(h -> propId.equals(h.getPropositionTheseId()))
                 .mapToDouble(h -> rerankerService.computeScoreForHit(h, albertQuery, dto))
                 .max()
-                .orElse(0.0);
+                .orElseGet(() -> rerankerService.computeKeywordScore(tokens, dto));
             scores.put(propId, compositeScore);
 
             // Type et contenu du meilleur chunk Albert (si disponible)
@@ -260,6 +262,11 @@ public class AlbertSearchController {
         AlbertSearchResponse response = new AlbertSearchResponse(
                 query, results, suggestedKeywords,
                 scores, matchedTypes, matchedContent, results.size());
+
+        if (mergedHits.isEmpty() && !sqlResults.isEmpty()) {
+            response.setAiMessage("Le service d'intelligence artificielle est temporairement indisponible. " +
+                "Les résultats ci-dessous proviennent de la recherche classique par mots-clés.");
+        }
 
         return ResponseEntity.ok(response);
     }
@@ -368,16 +375,35 @@ public class AlbertSearchController {
         for (String query : queries) {
             for (int page = 0; page < offsetPages; page++) {
                 int offset = page * step;
-                futures.add(CompletableFuture.supplyAsync(() -> searchService.searchHits(query, offset)));
+                CompletableFuture<List<AlbertSearchHit>> f = CompletableFuture.supplyAsync(() ->
+                    searchService.searchHits(query, offset));
+                futures.add(f);
             }
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        // Attendre que tous les appels terminent (ou abandonnent)
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+            .exceptionally(ex -> {
+                log.warn("Un ou plusieurs appels Albert ont échoué, poursuite avec les résultats disponibles");
+                return null;
+            })
+            .join();
 
         // Fusion : garder le meilleur hit par sujet (score le plus haut)
+        int successCount = 0;
+        int failCount = 0;
         Map<Long, AlbertSearchHit> bestHitBySubject = new LinkedHashMap<>();
         for (CompletableFuture<List<AlbertSearchHit>> future : futures) {
-            for (AlbertSearchHit hit : future.join()) {
+            List<AlbertSearchHit> hits;
+            try {
+                hits = future.get();
+                successCount++;
+            } catch (Exception e) {
+                failCount++;
+                log.warn("Appel Albert ignoré (timeout ou erreur): {}", e.getMessage());
+                continue;
+            }
+            for (AlbertSearchHit hit : hits) {
                 Long id = hit.getPropositionTheseId();
                 if (id == null) continue;
                 AlbertSearchHit existing = bestHitBySubject.get(id);
@@ -387,7 +413,8 @@ public class AlbertSearchController {
             }
         }
 
-        log.debug("Fusion offset : {} appel(s) → {} sujets uniques", futures.size(), bestHitBySubject.size());
+        log.info("Fusion offset : {} succès, {} échecs sur {} appel(s) → {} sujets uniques",
+            successCount, failCount, futures.size(), bestHitBySubject.size());
 
         List<AlbertSearchHit> merged = new ArrayList<>(bestHitBySubject.values());
         merged.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
