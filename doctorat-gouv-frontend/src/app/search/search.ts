@@ -1041,6 +1041,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.albertSearchQuery = '';
     this.useAlbert = false;
     this.isAlbertSearchActive = false;
+    this.isAlbertLoading = false;
     this.albertScores = {};
     this.albertMatchedTypes = {};
     this.albertSuggestedKeywords = [];
