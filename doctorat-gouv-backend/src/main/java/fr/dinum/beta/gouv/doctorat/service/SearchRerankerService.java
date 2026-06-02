@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -133,56 +134,59 @@ public class SearchRerankerService {
     public double computeKeywordScore(List<String> tokens, PropositionTheseDto dto) {
         if (tokens.isEmpty()) return 0.0;
 
+        double tokenMax = 0.85 / tokens.size();
         double score = 0.0;
 
         for (String token : tokens) {
-            boolean foundInTitle = false;
-            boolean foundInResume = false;
-            boolean foundInMotsCles = false;
+            double tokenScore = 0.0;
 
-            // Titre français : poids fort
-            if (contains(dto.getTheseTitre(), token)) {
-                score += 0.40;
-                foundInTitle = true;
-            }
-            // Titre anglais : bonus
-            if (contains(dto.getTheseTitreAnglais(), token)) {
-                score += 0.20;
-                foundInTitle = true;
-            }
+            tokenScore += countOccurrences(dto.getTheseTitre(), token) * 0.08;
+            tokenScore += countOccurrences(dto.getTheseTitreAnglais(), token) * 0.04;
+            tokenScore += countOccurrences(dto.getResume(), token) * 0.05;
+            tokenScore += countOccurrences(dto.getResumeAnglais(), token) * 0.025;
+            tokenScore += countOccurrencesInMap(dto.getMotsCles(), token) * 0.05;
+            tokenScore += countOccurrencesInMap(dto.getMotsClesAnglais(), token) * 0.025;
+            tokenScore += countOccurrences(dto.getObjectif(), token) * 0.03;
+            tokenScore += countOccurrences(dto.getContexte(), token) * 0.02;
 
-            // Résumé français : poids important
-            if (contains(dto.getResume(), token)) {
-                score += 0.30;
-                foundInResume = true;
-            }
-            if (contains(dto.getResumeAnglais(), token)) {
-                score += 0.15;
-                foundInResume = true;
-            }
-
-            // Mots-clés : poids important
-            if (containsInMap(dto.getMotsCles(), token)) {
-                score += 0.30;
-                foundInMotsCles = true;
-            }
-            if (containsInMap(dto.getMotsClesAnglais(), token)) {
-                score += 0.15;
-                foundInMotsCles = true;
-            }
-
-            // Objectif et contexte : poids moyen
-            if (contains(dto.getObjectif(), token)) score += 0.20;
-            if (contains(dto.getContexte(), token)) score += 0.15;
-
-            // Bonus de répétition : si le token est dans 2+ champs différents
-            int fieldsFound = (foundInTitle ? 1 : 0) + (foundInResume ? 1 : 0) + (foundInMotsCles ? 1 : 0);
-            if (fieldsFound >= 2) {
-                score += 0.10 * (fieldsFound - 1);
-            }
+            score += Math.min(tokenScore, tokenMax);
         }
 
-        return Math.min(score, 1.0);
+        return Math.min(score, 0.85);
+    }
+
+    private static int countOccurrences(String field, String token) {
+        if (field == null || token == null || token.isEmpty()) return 0;
+        String lower = field.toLowerCase();
+        String t = token.toLowerCase();
+        int count = 0;
+        int idx = 0;
+        while ((idx = lower.indexOf(t, idx)) != -1) {
+            count++;
+            idx += t.length();
+        }
+        // Si le token est au pluriel (finit par 's'), chercher aussi le singulier
+        if (t.endsWith("s") && t.length() > 3) {
+            String singular = t.substring(0, t.length() - 1);
+            idx = 0;
+            while ((idx = lower.indexOf(singular, idx)) != -1) {
+                int next = idx + singular.length();
+                // Ne pas compter si le singulier est suivi de 's' (déjà compté via le pluriel)
+                if (next >= lower.length() || lower.charAt(next) != 's') {
+                    count++;
+                }
+                idx = next;
+            }
+        }
+        return count;
+    }
+
+    private static int countOccurrencesInMap(Map<String, String> map, String token) {
+        if (map == null) return 0;
+        return map.values().stream()
+            .filter(Objects::nonNull)
+            .mapToInt(v -> countOccurrences(v, token))
+            .sum();
     }
 
     private static boolean contains(String field, String token) {
