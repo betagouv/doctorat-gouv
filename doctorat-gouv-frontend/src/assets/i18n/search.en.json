@@ -23,7 +23,9 @@
 	"AI_SEARCHING": "Searching…",
 	"AI_RAW_QUESTION": "Expert free-form question (raw text)",
 	"AI_SUGGESTED_KEYWORDS": "Relevant keywords for your search:",
-	"AI_BADGE": "AI search"
+	"AI_BADGE": "AI search",
+	"AI_UNAVAILABLE": "The AI-based search service is temporarily unavailable. The results below come from the standard keyword-based search.",
+	"AI_UNAVAILABLE_HINT": "You can also perform a standard search using the filters in the sidebar."
   },
 
   "FILTERS": {

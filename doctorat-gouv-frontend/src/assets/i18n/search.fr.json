@@ -23,7 +23,9 @@
 	"AI_SEARCHING": "Recherche en cours…",
 	"AI_RAW_QUESTION": "Question libre experte (texte brut)",
 	"AI_SUGGESTED_KEYWORDS": "Mots-clés pertinents pour votre recherche :",
-	"AI_BADGE": "Recherche IA"
+	"AI_BADGE": "Recherche IA",
+	"AI_UNAVAILABLE": "Le service d'intelligence artificielle est temporairement indisponible. Les résultats ci-dessous proviennent de la recherche classique par mots-clés.",
+	"AI_UNAVAILABLE_HINT": "Vous pouvez également effectuer une recherche classique via les filtres ci-contre."
   },
 
   "FILTERS": {

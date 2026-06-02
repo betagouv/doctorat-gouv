@@ -143,6 +143,7 @@ export class Search implements OnInit, OnDestroy {
   albertScores: Record<number, number> = {};
   albertMatchedTypes: Record<number, string> = {};
   albertSuggestedKeywords: string[] = [];
+  aiMessage: string | null = null;
 
   // Interface pour la réponse Albert enrichie
   private albertResponseData: any = null;
@@ -507,6 +508,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.albertSuggestedKeywords = [];
     this.albertScores = {};
     this.albertMatchedTypes = {};
+    this.aiMessage = null;
 
     const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}`;
 
@@ -538,6 +540,9 @@ resetFilter(filterName: MultiFilterKey) {
 
         // Mots-clés suggérés
         this.albertSuggestedKeywords = data.suggestedKeywords || [];
+
+        // Message d'indisponibilité Albert
+        this.aiMessage = data.aiMessage || null;
 
         // Sauvegarder l'état Albert dans la session
         this.searchFiltersService.save({
