@@ -42,8 +42,10 @@ public class SearchRerankerService {
         "veux", "vais", "aller"
     );
 
-    private static final double ALBERT_WEIGHT = 0.25;
-    private static final double KEYWORD_WEIGHT = 0.75;
+    private static final double ALBERT_AMPLIFY = 11.0;
+    private static final double ALBERT_MAX = 0.50;
+    private static final double KEYWORD_BOOST = 1.2;
+    private static final double OVERALL_MAX = 0.85;
 
     public List<Long> rerank(List<AlbertSearchHit> hits, String query,
                              Map<Long, PropositionTheseDto> theseMap) {
@@ -85,8 +87,15 @@ public class SearchRerankerService {
 
     private double computeComposite(List<String> tokens, AlbertSearchHit hit, PropositionTheseDto dto) {
         double keywordScore = computeKeywordScore(tokens, dto);
+        double amplifiedAlbert = Math.min(hit.getScore() * ALBERT_AMPLIFY, ALBERT_MAX);
         double chunkWeight = getChunkWeight(hit.getChunkType());
-        return (hit.getScore() * ALBERT_WEIGHT + keywordScore * KEYWORD_WEIGHT) * chunkWeight;
+        double composite = Math.min((amplifiedAlbert + keywordScore * KEYWORD_BOOST) * chunkWeight, OVERALL_MAX);
+        log.info("computeComposite: propId={}, albertRaw={}, amplified={}, keywordScore={}, kwBoosted={}, chunkType={}, composite={}",
+            hit.getPropositionTheseId(), String.format("%.4f", hit.getScore()),
+            String.format("%.4f", amplifiedAlbert), String.format("%.4f", keywordScore),
+            String.format("%.4f", keywordScore * KEYWORD_BOOST), hit.getChunkType(),
+            String.format("%.4f", composite));
+        return composite;
     }
 
     public List<String> extractTokens(String query) {
