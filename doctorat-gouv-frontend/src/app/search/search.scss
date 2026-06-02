@@ -913,6 +913,16 @@
   color: #000091;
 }
 
+/* Animation de chargement pour le texte "Recherche en cours..." */
+@keyframes loading-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.loading-text {
+  animation: loading-pulse 1.4s ease-in-out infinite;
+}
+
 /* Roue de chargement personnalisée pour le bouton recherche IA */
 @keyframes btn-spin {
   0% { transform: rotate(0deg); }
