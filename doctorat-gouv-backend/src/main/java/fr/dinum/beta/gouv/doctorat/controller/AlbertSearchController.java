@@ -71,11 +71,12 @@ public class AlbertSearchController {
     @GetMapping("/propositions")
     public ResponseEntity<AlbertSearchResponse> searchPropositions(
             @RequestParam("query") String query,
-            @RequestParam(value = "limit", required = false) Integer limit) {
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "useSql", required = false, defaultValue = "true") boolean useSql) {
         if (limit == null) limit = 100;
         long startTime = System.currentTimeMillis();
 
-        log.info("Recherche sémantique via /api/albert/propositions (limit={})", limit);
+        log.info("Recherche sémantique via /api/albert/propositions (limit={}, useSql={})", limit, useSql);
 
         // Phase 1 : Extraction des critères structurés depuis la requête
         // (financement, localisation, etc.) pour nettoyer la requête Albert
@@ -108,10 +109,10 @@ public class AlbertSearchController {
         log.info("Requêtes Albert : {} variante(s) × {} page(s) offset = {} appel(s)",
             queryVariants.size(), offsetPages, totalAlbertCalls);
 
-        // 4. Recherche SQL (LIKE) pour compléter le rappel
+        // 4. Recherche SQL (LIKE) pour compléter le rappel (optionnel)
         String sqlQuery = String.join(" ", tokens);
         Map<Long, PropositionTheseDto> sqlResults;
-        if (!tokens.isEmpty()) {
+        if (!tokens.isEmpty() && useSql) {
             sqlResults = propositionService.searchByQueryAsMap(sqlQuery);
         } else {
             sqlResults = Map.of();

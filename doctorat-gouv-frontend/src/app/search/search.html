@@ -70,6 +70,14 @@
 	      {{ isAlbertLoading ? ('SEARCH.AI_SEARCHING' | translate) : ('SEARCH.AI_SEARCH_BUTTON' | translate) }}
 	    </button>
 
+	    <!-- Interrupteur SQL complémentaire -->
+	    <div class="fr-toggle fr-mt-2w">
+	      <input type="checkbox" id="useSql" [(ngModel)]="useSql">
+	      <label class="fr-toggle__label" for="useSql">
+	        {{ 'SEARCH.AI_SQL_TOGGLE' | translate }}
+	      </label>
+	    </div>
+
 	    <!-- Mode question libre (texte) - caché par défaut -->
 	    <!--
 	    <details class="fr-mt-2w">

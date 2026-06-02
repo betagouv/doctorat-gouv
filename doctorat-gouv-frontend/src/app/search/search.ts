@@ -133,6 +133,7 @@ export class Search implements OnInit, OnDestroy {
   
   // --- Recherche IA Albert ---
   useAlbert = false;                  // case à cocher
+  useSql = true;                      // recherche SQL en complément d'Albert
   albertQuery = '';                   // texte saisi (mode legacy)
   albertSearchQuery = '';             // texte saisi pour la recherche structurée
   albertResult: string | null = null; // résultat texte (mode legacy)
@@ -287,12 +288,17 @@ export class Search implements OnInit, OnDestroy {
  		
          this.currentPage = saved.page ?? 0;
 
- 		this.albertSearchQuery = saved.albertSearchQuery || '';
- 		this.useAlbert = saved.useAlbert || false;
- 		this.isAlbertSearchActive = saved.isAlbertSearchActive || false;
- 		this.albertScores = saved.albertScores || {};
- 		this.albertMatchedTypes = saved.albertMatchedTypes || {};
- 		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
+		this.albertSearchQuery = saved.albertSearchQuery || '';
+		this.useAlbert = saved.useAlbert || false;
+		this.isAlbertSearchActive = saved.isAlbertSearchActive || false;
+		this.albertScores = saved.albertScores || {};
+		this.albertMatchedTypes = saved.albertMatchedTypes || {};
+		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
+
+		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
+		if (urlParams['useSql'] !== undefined) {
+		  this.useSql = urlParams['useSql'] === 'true';
+		}
 
  	  }
 
@@ -510,7 +516,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.albertMatchedTypes = {};
     this.aiMessage = null;
 
-    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}`;
+    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}&useSql=${this.useSql}`;
 
     fetch(url)
       .then(res => {
