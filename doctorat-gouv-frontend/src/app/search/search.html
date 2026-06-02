@@ -66,14 +66,9 @@
 
 	    <button class="fr-btn fr-mt-2w" (click)="onAlbertSearchPropositions()"
 	            [disabled]="!albertSearchQuery.trim() || isAlbertLoading">
-	      <span *ngIf="isAlbertLoading" class="fr-spinner fr-spinner--sm" aria-hidden="true"></span>
-	      <span *ngIf="isAlbertLoading" class="fr-ml-1w">{{ 'SEARCH.AI_SEARCHING' | translate }}</span>
-	      <span *ngIf="!isAlbertLoading">{{ 'SEARCH.AI_SEARCH_BUTTON' | translate }}</span>
+	      <span *ngIf="isAlbertLoading" class="btn-spinner fr-mr-1w"></span>
+	      {{ isAlbertLoading ? ('SEARCH.AI_SEARCHING' | translate) : ('SEARCH.AI_SEARCH_BUTTON' | translate) }}
 	    </button>
-
-	    <div *ngIf="isAlbertLoading" class="fr-mt-1w">
-	      <span class="fr-sr-only">Recherche en cours…</span>
-	    </div>
 
 	    <!-- Mode question libre (texte) - caché par défaut -->
 	    <!--
