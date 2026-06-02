@@ -519,8 +519,15 @@
 
 		<!-- ===================== LOADING RECHERCHE IA ===================== -->
 		<div class="fr-my-4w fr-text--center" *ngIf="isAlbertLoading">
-			<span class="fr-spinner" aria-hidden="true"></span>
-			<p class="fr-mt-2w loading-text">{{ 'SEARCH.AI_SEARCHING' | translate }}</p>
+			<div class="ai-thinking">
+				<span class="thinking-sparkle">✨</span>
+				<span class="thinking-text">Réflexion en cours</span>
+				<span class="thinking-dots">
+					<span class="dot"></span>
+					<span class="dot"></span>
+					<span class="dot"></span>
+				</span>
+			</div>
 		</div>
 
 		<!-- ===================== ALERTE INDISPONIBILITÉ ALBERT ===================== -->
