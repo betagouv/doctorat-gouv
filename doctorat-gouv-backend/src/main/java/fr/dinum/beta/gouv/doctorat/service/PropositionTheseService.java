@@ -228,7 +228,7 @@ public class PropositionTheseService {
 			            }
 
 			            if (!tokenPredicates.isEmpty()) {
-			                andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
+			                andPredicates.add(cb.or(tokenPredicates.toArray(Predicate[]::new)));
 			            }
 			        }
 

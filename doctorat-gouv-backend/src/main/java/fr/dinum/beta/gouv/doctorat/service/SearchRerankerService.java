@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ public class SearchRerankerService {
         "veux", "vais", "aller"
     );
 
+    private static final double ALBERT_WEIGHT = 0.25;
+    private static final double KEYWORD_WEIGHT = 0.75;
+
     public List<Long> rerank(List<AlbertSearchHit> hits, String query,
                              Map<Long, PropositionTheseDto> theseMap) {
 
@@ -60,11 +64,7 @@ public class SearchRerankerService {
             PropositionTheseDto dto = theseMap.get(propId);
             if (dto == null) continue;
 
-            double keywordScore = computeKeywordScore(tokens, dto);
-            double titleBonus = computeTitleBonus(tokens, dto);
-            double chunkWeight = getChunkWeight(hit.getChunkType());
-
-            double composite = (hit.getScore() * 0.5 + keywordScore * 0.3 + titleBonus * 0.1) * chunkWeight;
+            double composite = computeComposite(tokens, hit, dto);
             compositeScores.put(propId, composite);
         }
 
@@ -76,17 +76,16 @@ public class SearchRerankerService {
             .collect(Collectors.toList());
     }
 
-    /**
-     * Calcule le score composite pour un hit Albert et son DTO associé.
-     * Réutilise la même formule que le reranking.
-     */
     public double computeScoreForHit(AlbertSearchHit hit, String query, PropositionTheseDto dto) {
         List<String> tokens = extractTokens(query);
         if (tokens.isEmpty()) return hit.getScore();
+        return computeComposite(tokens, hit, dto);
+    }
+
+    private double computeComposite(List<String> tokens, AlbertSearchHit hit, PropositionTheseDto dto) {
         double keywordScore = computeKeywordScore(tokens, dto);
-        double titleBonus = computeTitleBonus(tokens, dto);
         double chunkWeight = getChunkWeight(hit.getChunkType());
-        return (hit.getScore() * 0.5 + keywordScore * 0.3 + titleBonus * 0.1) * chunkWeight;
+        return (hit.getScore() * ALBERT_WEIGHT + keywordScore * KEYWORD_WEIGHT) * chunkWeight;
     }
 
     public List<String> extractTokens(String query) {
@@ -132,38 +131,67 @@ public class SearchRerankerService {
     }
 
     public double computeKeywordScore(List<String> tokens, PropositionTheseDto dto) {
+        if (tokens.isEmpty()) return 0.0;
 
-        List<String> allFields = new ArrayList<>();
+        double score = 0.0;
 
-        if (dto.getTheseTitre() != null) {
-            for (int i = 0; i < 2; i++) allFields.add(dto.getTheseTitre().toLowerCase());
-        }
-        if (dto.getTheseTitreAnglais() != null) {
-            for (int i = 0; i < 2; i++) allFields.add(dto.getTheseTitreAnglais().toLowerCase());
-        }
-        if (dto.getMotsCles() != null) {
-            String kw = String.join(" ", dto.getMotsCles().values()).toLowerCase();
-            for (int i = 0; i < 3; i++) allFields.add(kw);
-        }
-        if (dto.getMotsClesAnglais() != null) {
-            String kw = String.join(" ", dto.getMotsClesAnglais().values()).toLowerCase();
-            for (int i = 0; i < 3; i++) allFields.add(kw);
-        }
-        if (dto.getResume() != null) allFields.add(dto.getResume().toLowerCase());
-        if (dto.getResumeAnglais() != null) allFields.add(dto.getResumeAnglais().toLowerCase());
-        if (dto.getObjectif() != null) allFields.add(dto.getObjectif().toLowerCase());
-        if (dto.getContexte() != null) allFields.add(dto.getContexte().toLowerCase());
-
-        String combinedText = String.join(" ", allFields);
-
-        if (combinedText.isBlank()) return 0.0;
-
-        int found = 0;
         for (String token : tokens) {
-            if (combinedText.contains(token)) found++;
+            boolean foundInTitle = false;
+            boolean foundInResume = false;
+            boolean foundInMotsCles = false;
+
+            // Titre français : poids fort
+            if (contains(dto.getTheseTitre(), token)) {
+                score += 0.40;
+                foundInTitle = true;
+            }
+            // Titre anglais : bonus
+            if (contains(dto.getTheseTitreAnglais(), token)) {
+                score += 0.20;
+                foundInTitle = true;
+            }
+
+            // Résumé français : poids important
+            if (contains(dto.getResume(), token)) {
+                score += 0.30;
+                foundInResume = true;
+            }
+            if (contains(dto.getResumeAnglais(), token)) {
+                score += 0.15;
+                foundInResume = true;
+            }
+
+            // Mots-clés : poids important
+            if (containsInMap(dto.getMotsCles(), token)) {
+                score += 0.30;
+                foundInMotsCles = true;
+            }
+            if (containsInMap(dto.getMotsClesAnglais(), token)) {
+                score += 0.15;
+                foundInMotsCles = true;
+            }
+
+            // Objectif et contexte : poids moyen
+            if (contains(dto.getObjectif(), token)) score += 0.20;
+            if (contains(dto.getContexte(), token)) score += 0.15;
+
+            // Bonus de répétition : si le token est dans 2+ champs différents
+            int fieldsFound = (foundInTitle ? 1 : 0) + (foundInResume ? 1 : 0) + (foundInMotsCles ? 1 : 0);
+            if (fieldsFound >= 2) {
+                score += 0.10 * (fieldsFound - 1);
+            }
         }
 
-        return (double) found / tokens.size();
+        return Math.min(score, 1.0);
+    }
+
+    private static boolean contains(String field, String token) {
+        return field != null && field.toLowerCase().contains(token);
+    }
+
+    private static boolean containsInMap(Map<String, String> map, String token) {
+        if (map == null) return false;
+        return map.values().stream().anyMatch(v -> v != null && v.toLowerCase().contains(token));
     }
 
     public double computeTitleBonus(List<String> tokens, PropositionTheseDto dto) {
@@ -174,9 +202,23 @@ public class SearchRerankerService {
         if (combined.isBlank()) return 0.0;
 
         long found = tokens.stream().filter(combined::contains).count();
-        if (found == tokens.size()) return 1.0;
-        if (found > 0) return 0.5;
-        return 0.0;
+        if (found == 0) return 0.0;
+        return (double) found / tokens.size();
+    }
+
+    public boolean allTokensFound(List<String> tokens, PropositionTheseDto dto) {
+        for (String token : tokens) {
+            boolean found = contains(dto.getTheseTitre(), token)
+                || contains(dto.getTheseTitreAnglais(), token)
+                || contains(dto.getResume(), token)
+                || contains(dto.getResumeAnglais(), token)
+                || containsInMap(dto.getMotsCles(), token)
+                || containsInMap(dto.getMotsClesAnglais(), token)
+                || contains(dto.getObjectif(), token)
+                || contains(dto.getContexte(), token);
+            if (!found) return false;
+        }
+        return true;
     }
 
     public double getChunkWeight(String chunkType) {
