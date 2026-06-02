@@ -580,6 +580,7 @@ resetFilter(filterName: MultiFilterKey) {
         this.isAlbertSearchActive = false;
         this.results = [];
         this.totalResults = 0;
+        this.aiMessage = 'error';
       });
   }
 

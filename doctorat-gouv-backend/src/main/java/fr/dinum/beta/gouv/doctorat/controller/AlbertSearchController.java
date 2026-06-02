@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -104,7 +105,8 @@ public class AlbertSearchController {
         log.info("Tokens extraits ({}): {}, variantes: {}", tokens.size(), tokens, queryVariants);
 
         // 3. Recherche multi-requêtes dans Albert (en parallèle avec offset)
-        List<AlbertSearchHit> mergedHits = searchInParallel(queryVariants);
+        AtomicBoolean allAlbertFailed = new AtomicBoolean(false);
+        List<AlbertSearchHit> mergedHits = searchInParallel(queryVariants, allAlbertFailed);
         int totalAlbertCalls = queryVariants.size() * offsetPages;
         log.info("Requêtes Albert : {} variante(s) × {} page(s) offset = {} appel(s)",
             queryVariants.size(), offsetPages, totalAlbertCalls);
@@ -136,8 +138,13 @@ public class AlbertSearchController {
             queryVariants.size(), offsetPages, mergedHits.size(), sqlResults.size(), sourceResults.size());
 
         if (sourceResults.isEmpty()) {
-            return ResponseEntity.ok(new AlbertSearchResponse(query, List.of(), List.of(),
-                    Map.of(), Map.of(), Map.of(), 0));
+            AlbertSearchResponse emptyResponse = new AlbertSearchResponse(query, List.of(), List.of(),
+                    Map.of(), Map.of(), Map.of(), 0);
+            if (allAlbertFailed.get()) {
+                emptyResponse.setAiMessage("Le service d'intelligence artificielle est temporairement indisponible. " +
+                    "Veuillez réessayer ultérieurement.");
+            }
+            return ResponseEntity.ok(emptyResponse);
         }
 
         // Phase 2 : Filtrage par critères extraits (financement, localisation)
@@ -237,12 +244,19 @@ public class AlbertSearchController {
 
             // Score composite (Albert + keyword) si disponible, sinon score keyword seul
             PropositionTheseDto dto = sourceResults.get(propId);
+            String titre = dto.getTheseTitre() != null ? dto.getTheseTitre().length() > 60 ? dto.getTheseTitre().substring(0, 60) + "..." : dto.getTheseTitre() : "null";
             double compositeScore = mergedHits.stream()
                 .filter(h -> propId.equals(h.getPropositionTheseId()))
                 .mapToDouble(h -> rerankerService.computeScoreForHit(h, albertQuery, dto))
                 .max()
-                .orElseGet(() -> rerankerService.computeKeywordScore(tokens, dto));
+                .orElseGet(() -> {
+                    double kwOnly = rerankerService.computeKeywordScore(tokens, dto);
+                    log.debug("Score keyword-only pour {} ({}): {}", propId, titre, String.format("%.4f", kwOnly));
+                    return kwOnly;
+                });
             scores.put(propId, compositeScore);
+            log.info("Score final pour {} ({}): {} (sur {} hit(s) Albert)", propId, titre, String.format("%.4f", compositeScore),
+                mergedHits.stream().filter(h -> propId.equals(h.getPropositionTheseId())).count());
 
             // Type et contenu du meilleur chunk Albert (si disponible)
             mergedHits.stream()
@@ -264,7 +278,7 @@ public class AlbertSearchController {
                 query, results, suggestedKeywords,
                 scores, matchedTypes, matchedContent, results.size());
 
-        if (mergedHits.isEmpty() && !sqlResults.isEmpty()) {
+        if (allAlbertFailed.get()) {
             response.setAiMessage("Le service d'intelligence artificielle est temporairement indisponible. " +
                 "Les résultats ci-dessous proviennent de la recherche classique par mots-clés.");
         }
@@ -369,7 +383,7 @@ public class AlbertSearchController {
      * Exécute plusieurs requêtes Albert en parallèle (variantes × offsets)
      * et fusionne les résultats en gardant pour chaque sujet le chunk avec le meilleur score.
      */
-    private List<AlbertSearchHit> searchInParallel(List<String> queries) {
+    private List<AlbertSearchHit> searchInParallel(List<String> queries, AtomicBoolean allFailed) {
         int step = 100; // correspond à apiSearchLimit
         List<CompletableFuture<List<AlbertSearchHit>>> futures = new ArrayList<>();
 
@@ -416,6 +430,8 @@ public class AlbertSearchController {
 
         log.info("Fusion offset : {} succès, {} échecs sur {} appel(s) → {} sujets uniques",
             successCount, failCount, futures.size(), bestHitBySubject.size());
+
+        allFailed.set(successCount == 0 && failCount > 0);
 
         List<AlbertSearchHit> merged = new ArrayList<>(bestHitBySubject.values());
         merged.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
