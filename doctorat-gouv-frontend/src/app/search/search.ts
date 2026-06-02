@@ -133,7 +133,7 @@ export class Search implements OnInit, OnDestroy {
   
   // --- Recherche IA Albert ---
   useAlbert = false;                  // case à cocher
-  useSql = true;                      // recherche SQL en complément d'Albert
+  useSql = false;                     // recherche SQL en complément d'Albert
   albertQuery = '';                   // texte saisi (mode legacy)
   albertSearchQuery = '';             // texte saisi pour la recherche structurée
   albertResult: string | null = null; // résultat texte (mode legacy)

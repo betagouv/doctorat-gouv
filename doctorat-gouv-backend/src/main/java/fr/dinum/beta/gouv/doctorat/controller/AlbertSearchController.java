@@ -72,7 +72,7 @@ public class AlbertSearchController {
     public ResponseEntity<AlbertSearchResponse> searchPropositions(
             @RequestParam("query") String query,
             @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "useSql", required = false, defaultValue = "true") boolean useSql) {
+            @RequestParam(value = "useSql", required = false, defaultValue = "false") boolean useSql) {
         if (limit == null) limit = 100;
         long startTime = System.currentTimeMillis();
 
