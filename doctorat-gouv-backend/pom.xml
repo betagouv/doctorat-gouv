@@ -75,6 +75,12 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- pgvector : support des embeddings vectoriels -->
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-vector</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Base embarquée H2 pour les tests -->
 		<dependency>
 			<groupId>com.h2database</groupId>
