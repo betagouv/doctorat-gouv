@@ -31,6 +31,12 @@ public class ScalewaySearchController {
 
 	private static final Logger log = LoggerFactory.getLogger(ScalewaySearchController.class);
 
+	// Seuils de pertinence basés sur le score composite (vectoriel + lexical)
+	// Calibrés avec la distribution observée des scores (juin 2026)
+	private static final double SEUIL_TRES_PERTINENT = 0.78;
+	private static final double SEUIL_PERTINENT = 0.70;
+	private static final double SEUIL_FAIBLEMENT_PERTINENT = 0.60;
+
 	private final VectorSearchService vectorSearchService;
 	private final PropositionTheseService propositionService;
 	private final SearchRerankerService rerankerService;
@@ -50,6 +56,13 @@ public class ScalewaySearchController {
 		this.sujetEmbeddingRepository = sujetEmbeddingRepository;
 		this.propositionTheseRepository = propositionTheseRepository;
 		this.indexationService = indexationService;
+	}
+
+	private static String niveauPertinence(double compositeScore) {
+		if (compositeScore >= SEUIL_TRES_PERTINENT) return "TRES_PERTINENT";
+		if (compositeScore >= SEUIL_PERTINENT) return "PERTINENT";
+		if (compositeScore >= SEUIL_FAIBLEMENT_PERTINENT) return "FAIBLEMENT_PERTINENT";
+		return "MASQUE";
 	}
 
 	@GetMapping("/propositions")
@@ -78,21 +91,27 @@ public class ScalewaySearchController {
 
 		// 3. Calculer les scores composites (vectoriel + keywords)
 		List<String> tokens = rerankerService.extractTokens(query);
-		Map<Long, Double> scores = new HashMap<>();
+		Map<Long, Double> compositeScores = new HashMap<>();
+		Map<Long, Double> vectorScores = new HashMap<>();
 		for (VectorSearchHit hit : hits) {
 			PropositionTheseDto dto = theseMap.get(hit.getSujetId());
+			vectorScores.put(hit.getSujetId(), hit.getScore());
 			double score = hit.getScore();
 			if (dto != null && !tokens.isEmpty()) {
 				double kwScore = rerankerService.computeKeywordScore(tokens, dto);
 				score = Math.min(score + kwScore * 1.2, 0.85);
 			}
-			scores.put(hit.getSujetId(), score);
+			compositeScores.put(hit.getSujetId(), score);
 		}
 
-		// 4. Trier par score décroissant et limiter
-		List<Long> sortedIds = scores.entrySet().stream()
+		// 4. Trier par score vectoriel brut (similarité sémantique réelle)
+		// et calculer le niveau de pertinence basé sur le composite (vectoriel + keywords)
+		Map<Long, String> relevanceLevels = new HashMap<>();
+		List<Long> sortedIds = vectorScores.entrySet().stream()
 			.sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
 			.limit(limit)
+			.peek(e -> relevanceLevels.put(e.getKey(),
+				niveauPertinence(compositeScores.getOrDefault(e.getKey(), 0.0))))
 			.map(Map.Entry::getKey)
 			.collect(Collectors.toList());
 
@@ -120,7 +139,9 @@ public class ScalewaySearchController {
 		return ResponseEntity.ok(Map.of(
 			"query", query,
 			"results", results,
-			"scores", scores,
+			"scores", compositeScores,
+			"vectorScores", vectorScores,
+			"relevanceLevels", relevanceLevels,
 			"matchedTypes", matchedTypes,
 			"matchedContent", matchedContent,
 			"totalResults", results.size(),
