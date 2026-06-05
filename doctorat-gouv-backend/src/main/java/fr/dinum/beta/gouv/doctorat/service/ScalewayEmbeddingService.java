@@ -54,10 +54,11 @@ public class ScalewayEmbeddingService {
 				java.util.Map.of("model", model, "input", texts));
 
 			HttpEntity<String> request = new HttpEntity<>(body, headers);
-			ResponseEntity<JsonNode> response = restTemplate.postForEntity(
-				apiUrl, request, JsonNode.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(
+				apiUrl, request, String.class);
 
-			JsonNode dataArray = response.getBody().get("data");
+			JsonNode root = objectMapper.readTree(response.getBody());
+			JsonNode dataArray = root.get("data");
 			List<float[]> embeddings = new ArrayList<>();
 			for (JsonNode item : dataArray) {
 				JsonNode embeddingNode = item.get("embedding");

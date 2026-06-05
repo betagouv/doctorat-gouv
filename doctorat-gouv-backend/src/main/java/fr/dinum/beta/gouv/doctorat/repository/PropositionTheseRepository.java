@@ -101,4 +101,18 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
         """)
     List<PropositionThese> findNeedingIndexation();
 
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE p.dateIndexationScaleway IS NOT NULL
+        """)
+    List<PropositionThese> findIndexedInScaleway();
+
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE (p.active IS NULL OR p.active = TRUE)
+            AND (p.dateIndexationScaleway IS NULL
+                 OR p.dateMaj IS NOT NULL AND p.dateIndexationScaleway IS NOT NULL AND p.dateMaj > p.dateIndexationScaleway)
+        """)
+    List<PropositionThese> findNeedingIndexationScaleway();
+
 }

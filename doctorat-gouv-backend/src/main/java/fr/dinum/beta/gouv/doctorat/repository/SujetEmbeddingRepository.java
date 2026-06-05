@@ -37,4 +37,6 @@ public interface SujetEmbeddingRepository extends JpaRepository<SujetEmbedding, 
 	List<SujetEmbedding> findByPropositionTheseIdIn(List<Long> ids);
 
 	void deleteByPropositionTheseId(Long propositionTheseId);
+
+	void deleteByPropositionTheseIdIn(List<Long> propositionTheseIds);
 }

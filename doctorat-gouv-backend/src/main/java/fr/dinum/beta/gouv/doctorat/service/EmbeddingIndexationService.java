@@ -42,34 +42,62 @@ public class EmbeddingIndexationService {
 
 	@Transactional
 	public void indexerTout() {
-		log.info("Début indexation initiale de tous les sujets actifs");
-		List<PropositionThese> sujets = sujetRepository.findActivePropositions();
-		indexer(sujets);
+		log.info("Début indexation initiale Scaleway");
+		List<PropositionThese> sujets = sujetRepository.findNeedingIndexationScaleway();
+		if (sujets.isEmpty()) {
+			log.info("Tous les sujets sont déjà indexés à jour");
+			return;
+		}
+		indexerEtMarquer(sujets);
 		log.info("Indexation initiale terminée : {} sujets traités", sujets.size());
 	}
 
 	@Transactional
-	public void indexerIncremental(LocalDateTime depuis) {
-		log.info("Début indexation incrémentale depuis {}", depuis);
-		List<PropositionThese> sujets = sujetRepository.findByDateMajAfter(depuis);
+	public void indexerIncremental() {
+		log.info("Début indexation incrémentale Scaleway");
+
+		// Désindexer les sujets devenus inactifs
+		List<PropositionThese> indexes = sujetRepository.findIndexedInScaleway();
+		List<PropositionThese> inactifs = indexes.stream()
+			.filter(s -> Boolean.FALSE.equals(s.getActive()))
+			.collect(Collectors.toList());
+		if (!inactifs.isEmpty()) {
+			List<Long> ids = inactifs.stream().map(PropositionThese::getId).collect(Collectors.toList());
+			repository.deleteByPropositionTheseIdIn(ids);
+			inactifs.forEach(s -> s.setDateIndexationScaleway(null));
+			sujetRepository.saveAll(inactifs);
+			log.info("{} sujets désindexés (devenus inactifs)", inactifs.size());
+		}
+
+		// Indexer les sujets qui en ont besoin
+		List<PropositionThese> sujets = sujetRepository.findNeedingIndexationScaleway();
 		if (sujets.isEmpty()) {
-			log.info("Aucun sujet modifié depuis {}", depuis);
+			log.info("Aucun sujet à indexer ou ré-indexer");
 			return;
 		}
-		indexer(sujets);
+		indexerEtMarquer(sujets);
 		log.info("Indexation incrémentale terminée : {} sujets traités", sujets.size());
 	}
 
 	@Transactional
 	public void indexerSujet(Long sujetId) {
-		log.info("Indexation du sujet {}", sujetId);
 		PropositionThese sujet = sujetRepository.findById(sujetId).orElseThrow();
+
+		// Nettoyer les anciens embeddings
 		repository.deleteByPropositionTheseId(sujetId);
-		indexer(List.of(sujet));
+
+		if (Boolean.FALSE.equals(sujet.getActive())) {
+			sujet.setDateIndexationScaleway(null);
+			sujetRepository.save(sujet);
+			log.info("Sujet {} désindexé (inactif)", sujetId);
+			return;
+		}
+
+		indexerEtMarquer(List.of(sujet));
 		log.info("Sujet {} indexé", sujetId);
 	}
 
-	private void indexer(List<PropositionThese> sujets) {
+	private void indexerEtMarquer(List<PropositionThese> sujets) {
 		List<BlocSujet> tousLesBlocs = new ArrayList<>();
 		for (PropositionThese sujet : sujets) {
 			tousLesBlocs.addAll(extractor.extraireBlocs(sujet));
@@ -102,6 +130,13 @@ public class EmbeddingIndexationService {
 		}
 
 		repository.saveAll(embeddings);
-		log.info("{} embeddings sauvegardés", embeddings.size());
+
+		LocalDateTime now = LocalDateTime.now();
+		for (PropositionThese sujet : sujets) {
+			sujet.setDateIndexationScaleway(now);
+		}
+		sujetRepository.saveAll(sujets);
+
+		log.info("{} embeddings sauvegardés pour {} sujets", embeddings.size(), sujets.size());
 	}
 }

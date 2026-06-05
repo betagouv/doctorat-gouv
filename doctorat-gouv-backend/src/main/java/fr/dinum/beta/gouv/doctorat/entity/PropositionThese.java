@@ -270,6 +270,9 @@ public class PropositionThese {
 	@Column(name = "date_indexation_albert")
 	private LocalDateTime dateIndexationAlbert;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "date_indexation_scaleway")
+	private LocalDateTime dateIndexationScaleway;
 
 	public Long getId() {
 		return id;
@@ -925,6 +928,14 @@ public class PropositionThese {
 
 	public void setDateIndexationAlbert(LocalDateTime dateIndexationAlbert) {
 		this.dateIndexationAlbert = dateIndexationAlbert;
+	}
+
+	public LocalDateTime getDateIndexationScaleway() {
+		return dateIndexationScaleway;
+	}
+
+	public void setDateIndexationScaleway(LocalDateTime dateIndexationScaleway) {
+		this.dateIndexationScaleway = dateIndexationScaleway;
 	}
 
 }
