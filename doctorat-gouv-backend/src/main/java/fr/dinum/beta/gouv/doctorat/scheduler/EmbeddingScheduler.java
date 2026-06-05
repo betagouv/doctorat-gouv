@@ -22,7 +22,7 @@ public class EmbeddingScheduler {
 		this.indexationService = indexationService;
 	}
 
-	@Scheduled(cron = "0 */2 * * * ?")
+	@Scheduled(cron = "${scaleway.scheduler.cron}")
 	public void indexationQuotidienne() {
 		if (!running.compareAndSet(false, true)) {
 			log.info("Indexation déjà en cours, exécution ignorée");
