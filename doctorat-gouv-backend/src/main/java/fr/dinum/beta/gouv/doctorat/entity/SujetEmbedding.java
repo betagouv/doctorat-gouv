@@ -8,15 +8,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "sujet_embedding")
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class SujetEmbedding {
 
 	@Id
@@ -32,14 +28,14 @@ public class SujetEmbedding {
 	@Column(name = "contenu", columnDefinition = "TEXT", nullable = false)
 	private String contenu;
 
-	@Column(name = "embedding", columnDefinition = "vector(1024)", nullable = false)
+	@Column(name = "embedding", columnDefinition = "vector(3584)", nullable = false)
 	private float[] embedding;
 
 	@Column(name = "date_indexation", nullable = false)
 	private LocalDateTime dateIndexation;
 
 	@Column(name = "version_modele", length = 50)
-	private String versionModele;
+	private String versionModele = "bge-multilingual-gemma2";
 
 	public Long getId() { return id; }
 	public void setId(Long id) { this.id = id; }
