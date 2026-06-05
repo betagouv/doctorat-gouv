@@ -84,6 +84,8 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 	Page<PropositionThese> findByActiveTrue(Pageable pageable);
 
     List<PropositionThese> findByIdIn(List<Long> ids);
+
+    List<PropositionThese> findByDateMajAfter(LocalDateTime depuis);
     
     @Query("""
             SELECT p FROM PropositionThese p
