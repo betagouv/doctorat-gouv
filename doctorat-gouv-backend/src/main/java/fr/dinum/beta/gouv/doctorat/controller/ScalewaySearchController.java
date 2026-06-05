@@ -9,13 +9,18 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.dto.VectorSearchHit;
+import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
+import fr.dinum.beta.gouv.doctorat.service.EmbeddingIndexationService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
 import fr.dinum.beta.gouv.doctorat.service.SearchRerankerService;
 import fr.dinum.beta.gouv.doctorat.service.VectorSearchService;
@@ -29,13 +34,22 @@ public class ScalewaySearchController {
 	private final VectorSearchService vectorSearchService;
 	private final PropositionTheseService propositionService;
 	private final SearchRerankerService rerankerService;
+	private final SujetEmbeddingRepository sujetEmbeddingRepository;
+	private final PropositionTheseRepository propositionTheseRepository;
+	private final EmbeddingIndexationService indexationService;
 
 	public ScalewaySearchController(VectorSearchService vectorSearchService,
 									PropositionTheseService propositionService,
-									SearchRerankerService rerankerService) {
+									SearchRerankerService rerankerService,
+									SujetEmbeddingRepository sujetEmbeddingRepository,
+									PropositionTheseRepository propositionTheseRepository,
+									EmbeddingIndexationService indexationService) {
 		this.vectorSearchService = vectorSearchService;
 		this.propositionService = propositionService;
 		this.rerankerService = rerankerService;
+		this.sujetEmbeddingRepository = sujetEmbeddingRepository;
+		this.propositionTheseRepository = propositionTheseRepository;
+		this.indexationService = indexationService;
 	}
 
 	@GetMapping("/propositions")
@@ -111,6 +125,33 @@ public class ScalewaySearchController {
 			"matchedContent", matchedContent,
 			"totalResults", results.size(),
 			"durationMs", duration
+		));
+	}
+
+	@Transactional
+	@PostMapping("/index/delete")
+	public ResponseEntity<Map<String, Object>> deleteAllIndexes() {
+		log.info("Suppression de tous les embeddings Scaleway demandée");
+		int deleted = sujetEmbeddingRepository.findAll().size();
+		sujetEmbeddingRepository.deleteAllInBatch();
+		propositionTheseRepository.clearDateIndexationScaleway();
+		log.info("{} embedding(s) Scaleway supprimé(s)", deleted);
+		return ResponseEntity.ok(Map.of(
+			"deleted", deleted,
+			"message", deleted + " embeddings supprimés. Les index seront recréés au prochain passage du scheduler."
+		));
+	}
+
+	@Transactional
+	@PostMapping("/index/reindex")
+	public ResponseEntity<Map<String, Object>> reindexAll() {
+		log.info("Réindexation complète Scaleway demandée");
+		sujetEmbeddingRepository.deleteAllInBatch();
+		propositionTheseRepository.clearDateIndexationScaleway();
+		indexationService.indexerTout();
+		log.info("Réindexation Scaleway terminée");
+		return ResponseEntity.ok(Map.of(
+			"message", "Réindexation Scaleway terminée."
 		));
 	}
 }

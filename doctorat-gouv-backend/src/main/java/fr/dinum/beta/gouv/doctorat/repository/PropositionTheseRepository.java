@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -114,5 +115,9 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
                  OR p.dateMaj IS NOT NULL AND p.dateIndexationScaleway IS NOT NULL AND p.dateMaj > p.dateIndexationScaleway)
         """)
     List<PropositionThese> findNeedingIndexationScaleway();
+
+    @Modifying
+    @Query("UPDATE PropositionThese p SET p.dateIndexationScaleway = NULL WHERE p.dateIndexationScaleway IS NOT NULL")
+    void clearDateIndexationScaleway();
 
 }
