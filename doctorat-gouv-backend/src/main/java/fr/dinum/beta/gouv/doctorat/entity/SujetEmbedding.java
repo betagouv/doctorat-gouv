@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -28,6 +30,7 @@ public class SujetEmbedding {
 	@Column(name = "contenu", columnDefinition = "TEXT", nullable = false)
 	private String contenu;
 
+	@JdbcTypeCode(SqlTypes.VECTOR)
 	@Column(name = "embedding", columnDefinition = "vector(3584)", nullable = false)
 	private float[] embedding;
 
