@@ -26,7 +26,13 @@
 	"AI_BADGE": "Recherche IA",
 	"AI_UNAVAILABLE": "Le service d'intelligence artificielle est temporairement indisponible. Les résultats ci-dessous proviennent de la recherche classique par mots-clés.",
 	"AI_UNAVAILABLE_HINT": "Vous pouvez également effectuer une recherche classique via les filtres ci-contre.",
-	"AI_SQL_TOGGLE": "Compléter avec la recherche par mots-clés (SQL)"
+	"AI_SQL_TOGGLE": "Compléter avec la recherche par mots-clés (SQL)",
+	"SCALEWAY_LABEL": "Recherche vectorielle (Scality IA)",
+	"SCALEWAY_HINT": "Recherche sémantique par similarité. Explorez les sujets proches de votre requête.",
+	"SCALEWAY_PLACEHOLDER": "Ex : thèses en intelligence artificielle pour la santé",
+	"SCALEWAY_SEARCH_BUTTON": "Rechercher",
+	"SCALEWAY_SEARCHING": "Recherche vectorielle en cours…",
+	"SCALEWAY_BADGE": "Recherche vectorielle"
   },
 
   "FILTERS": {

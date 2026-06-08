@@ -149,6 +149,12 @@ export class Search implements OnInit, OnDestroy {
   // Interface pour la réponse Albert enrichie
   private albertResponseData: any = null;
 
+  // --- Recherche vectorielle Scaleway ---
+  scalewayQuery = '';
+  isScalewayActive = false;
+  isScalewayLoading = false;
+  private scalewayResponseData: any = null;
+
   
   /* ------------------- Translations pour les filtres ------------------- */
   disciplineTranslations: Record<string, string> = {
@@ -295,6 +301,9 @@ export class Search implements OnInit, OnDestroy {
 		this.albertMatchedTypes = saved.albertMatchedTypes || {};
 		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
 
+		this.scalewayQuery = saved.scalewayQuery || '';
+		this.isScalewayActive = saved.isScalewayActive || false;
+
 		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
 		  this.useSql = urlParams['useSql'] === 'true';
@@ -303,7 +312,9 @@ export class Search implements OnInit, OnDestroy {
  	  }
 
 	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page
-	if (this.isAlbertSearchActive && this.albertSearchQuery.trim()) {
+	if (this.isScalewayActive && this.scalewayQuery.trim()) {
+	  this.onScalewaySearch();
+	} else if (this.isAlbertSearchActive && this.albertSearchQuery.trim()) {
 	  this.onAlbertSearchPropositions();
 	} else {
 	  this.onSearch(this.currentPage);
@@ -398,6 +409,8 @@ resetFilter(filterName: MultiFilterKey) {
 		  albertScores: this.albertScores,
 		  albertMatchedTypes: this.albertMatchedTypes,
 		  albertSuggestedKeywords: this.albertSuggestedKeywords,
+		  scalewayQuery: this.scalewayQuery,
+		  isScalewayActive: this.isScalewayActive,
 		  page: this.currentPage
 		});
 
@@ -459,6 +472,7 @@ resetFilter(filterName: MultiFilterKey) {
     const activeFilters = this.buildActiveFilters();
 
     this.isAlbertSearchActive = false;
+    this.isScalewayActive = false;
     this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: data => {
         this.results = data.content;
@@ -511,6 +525,7 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.isAlbertLoading = true;
     this.isAlbertSearchActive = true;
+    this.isScalewayActive = false;
     this.albertSuggestedKeywords = [];
     this.albertScores = {};
     this.albertMatchedTypes = {};
@@ -589,6 +604,10 @@ resetFilter(filterName: MultiFilterKey) {
     if (page >= 0 && page < this.totalPages) {
       if (this.isAlbertSearchActive && this.albertResponseData) {
         const allResults = this.albertResponseData.results || [];
+        this.currentPage = page;
+        this.results = allResults.slice(page * this.pageSize, (page + 1) * this.pageSize);
+      } else if (this.isScalewayActive && this.scalewayResponseData) {
+        const allResults = this.scalewayResponseData.results || [];
         this.currentPage = page;
         this.results = allResults.slice(page * this.pageSize, (page + 1) * this.pageSize);
       } else {
@@ -1053,6 +1072,11 @@ resetFilter(filterName: MultiFilterKey) {
     this.albertMatchedTypes = {};
     this.albertSuggestedKeywords = [];
 
+    this.scalewayQuery = '';
+    this.isScalewayActive = false;
+    this.isScalewayLoading = false;
+    this.scalewayResponseData = null;
+
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
 
@@ -1194,6 +1218,43 @@ resetFilter(filterName: MultiFilterKey) {
     } else {
       this.onSearch(0);
     }
+  }
+
+  /* ------------------- Recherche vectorielle Scaleway ------------------- */
+
+  onScalewaySearch(): void {
+    const q = this.scalewayQuery.trim();
+    if (!q) return;
+
+    this.isScalewayLoading = true;
+    this.isScalewayActive = true;
+    this.isAlbertSearchActive = false;
+    this.scalewayResponseData = null;
+
+    const url = `${environment.apiUrl}/scaleway/propositions?query=${encodeURIComponent(q)}&limit=100`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        this.isScalewayLoading = false;
+        this.scalewayResponseData = data;
+
+        const allResults = data.results || [];
+        this.totalResults = data.totalResults || allResults.length;
+        this.totalPages = Math.max(1, Math.ceil(allResults.length / this.pageSize));
+        this.currentPage = 0;
+        this.results = allResults.slice(0, this.pageSize);
+      })
+      .catch(err => {
+        console.error(err);
+        this.isScalewayLoading = false;
+        this.isScalewayActive = false;
+        this.results = [];
+        this.totalResults = 0;
+      });
   }
 
 }

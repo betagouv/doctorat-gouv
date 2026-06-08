@@ -26,7 +26,13 @@
 	"AI_BADGE": "AI search",
 	"AI_UNAVAILABLE": "The AI-based search service is temporarily unavailable. The results below come from the standard keyword-based search.",
 	"AI_UNAVAILABLE_HINT": "You can also perform a standard search using the filters in the sidebar.",
-	"AI_SQL_TOGGLE": "Complement with keyword search (SQL)"
+	"AI_SQL_TOGGLE": "Complement with keyword search (SQL)",
+	"SCALEWAY_LABEL": "Vector search (Scality AI)",
+	"SCALEWAY_HINT": "Semantic similarity search. Explore subjects close to your query.",
+	"SCALEWAY_PLACEHOLDER": "e.g. thesis on artificial intelligence for health",
+	"SCALEWAY_SEARCH_BUTTON": "Search",
+	"SCALEWAY_SEARCHING": "Vector search in progress…",
+	"SCALEWAY_BADGE": "Vector search"
   },
 
   "FILTERS": {

@@ -89,48 +89,10 @@ public class ScalewaySearchController {
 		List<Long> ids = hits.stream().map(VectorSearchHit::getSujetId).collect(Collectors.toList());
 		Map<Long, PropositionTheseDto> theseMap = propositionService.findByIdInAsMap(ids);
 
-		// 3. Calculer les scores composites (vectoriel + keywords)
-		List<String> tokens = rerankerService.extractTokens(query);
-		Map<Long, Double> compositeScores = new HashMap<>();
-		Map<Long, Double> vectorScores = new HashMap<>();
-		for (VectorSearchHit hit : hits) {
-			PropositionTheseDto dto = theseMap.get(hit.getSujetId());
-			vectorScores.put(hit.getSujetId(), hit.getScore());
-			double score = hit.getScore();
-			if (dto != null && !tokens.isEmpty()) {
-				double kwScore = rerankerService.computeKeywordScore(tokens, dto);
-				score = Math.min(score + kwScore * 1.2, 0.85);
-			}
-			compositeScores.put(hit.getSujetId(), score);
-		}
-
-		// 4. Trier par score vectoriel brut (similarité sémantique réelle)
-		// et calculer le niveau de pertinence basé sur le composite (vectoriel + keywords)
-		Map<Long, String> relevanceLevels = new HashMap<>();
-		List<Long> sortedIds = vectorScores.entrySet().stream()
-			.sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
-			.limit(limit)
-			.peek(e -> relevanceLevels.put(e.getKey(),
-				niveauPertinence(compositeScores.getOrDefault(e.getKey(), 0.0))))
-			.map(Map.Entry::getKey)
-			.collect(Collectors.toList());
-
-		// 5. Construire la réponse
 		List<PropositionTheseDto> results = new ArrayList<>();
-		Map<Long, String> matchedTypes = new HashMap<>();
-		Map<Long, String> matchedContent = new HashMap<>();
-		for (Long id : sortedIds) {
+		for (Long id : ids) {
 			PropositionTheseDto dto = theseMap.get(id);
-			if (dto != null) {
-				results.add(dto);
-				hits.stream()
-					.filter(h -> id.equals(h.getSujetId()))
-					.findFirst()
-					.ifPresent(hit -> {
-						matchedTypes.put(id, hit.getBlocType());
-						matchedContent.put(id, hit.getContenuMatche());
-					});
-			}
+			if (dto != null) results.add(dto);
 		}
 
 		long duration = System.currentTimeMillis() - startTime;
@@ -139,11 +101,6 @@ public class ScalewaySearchController {
 		return ResponseEntity.ok(Map.of(
 			"query", query,
 			"results", results,
-			"scores", compositeScores,
-			"vectorScores", vectorScores,
-			"relevanceLevels", relevanceLevels,
-			"matchedTypes", matchedTypes,
-			"matchedContent", matchedContent,
 			"totalResults", results.size(),
 			"durationMs", duration
 		));

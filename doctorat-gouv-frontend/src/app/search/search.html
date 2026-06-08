@@ -101,6 +101,26 @@
 	  </div>
 	</div>
 
+<!-- ===================== RECHERCHE SCALEWAY ===================== -->
+<div class="fr-mt-4w fr-p-2w">
+
+  <div class="custom-search-bar">
+    <div class="custom-input-wrapper">
+      <input type="search"
+             id="scalewayQuery"
+             class="custom-input"
+             placeholder="Recherche vectorielle…"
+             [(ngModel)]="scalewayQuery"
+             (keyup.enter)="onScalewaySearch()">
+    </div>
+  </div>
+
+  <button class="fr-btn fr-mt-2w" (click)="onScalewaySearch()"
+          [disabled]="!scalewayQuery.trim() || isScalewayLoading">
+    {{ isScalewayLoading ? 'Recherche en cours…' : 'Rechercher' }}
+  </button>
+</div>
+
     <!-- ===================== LIGNE 1 : 3 DROPDOWNS ===================== -->
     <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
 
