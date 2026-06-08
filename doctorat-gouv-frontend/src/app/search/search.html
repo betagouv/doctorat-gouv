@@ -101,8 +101,13 @@
 	  </div>
 	</div>
 
-<!-- ===================== RECHERCHE SCALEWAY ===================== -->
-<div class="fr-mt-4w fr-p-2w">
+<!-- ===================== RECHERCHE VECTORIELLE SCALEWAY ===================== -->
+<div class="fr-mt-4w fr-p-2w fr-border fr-border--grey-200 fr-radius-2w">
+
+  <div class="fr-mb-2w">
+    <strong>Recherche vectorielle Scaleway</strong>
+    <span class="fr-hint-text">Recherche sémantique par similarité vectorielle</span>
+  </div>
 
   <div class="custom-search-bar">
     <div class="custom-input-wrapper">
@@ -117,7 +122,7 @@
 
   <button class="fr-btn fr-mt-2w" (click)="onScalewaySearch()"
           [disabled]="!scalewayQuery.trim() || isScalewayLoading">
-    {{ isScalewayLoading ? 'Recherche en cours…' : 'Rechercher' }}
+    {{ isScalewayLoading ? 'Chargement…' : 'Rechercher' }}
   </button>
 </div>
 
@@ -536,6 +541,11 @@
 			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
 			<span *ngIf="isAlbertSearchActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
 		</p>
+
+		<!-- ===================== LOADING RECHERCHE SCALEWAY ===================== -->
+		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading">
+			<span>Recherche vectorielle en cours…</span>
+		</div>
 
 		<!-- ===================== LOADING RECHERCHE IA ===================== -->
 		<div class="fr-my-4w fr-text--center" *ngIf="isAlbertLoading">
