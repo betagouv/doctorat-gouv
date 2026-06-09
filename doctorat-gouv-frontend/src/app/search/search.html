@@ -714,8 +714,8 @@
             </span>
 
             <!-- Badge de score vectoriel Scaleway -->
-            <span class="scaleway-score-badge"
-                  *ngIf="isScalewayActive && getScalewayVectorScore(thesis) > 0"
+            <span class="albert-score-badge"
+                  *ngIf="isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
                   [ngClass]="getScoreColor(getScalewayVectorScore(thesis))">
               {{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
             </span>
