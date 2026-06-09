@@ -153,6 +153,7 @@ export class Search implements OnInit, OnDestroy {
   scalewayQuery = '';
   isScalewayActive = false;
   isScalewayLoading = false;
+  scalewayVectorScores: Record<number, number> = {};
   private scalewayResponseData: any = null;
 
   
@@ -1247,6 +1248,8 @@ resetFilter(filterName: MultiFilterKey) {
         this.totalPages = Math.max(1, Math.ceil(allResults.length / this.pageSize));
         this.currentPage = 0;
         this.results = allResults.slice(0, this.pageSize);
+
+        this.scalewayVectorScores = data.vectorScores || {};
       })
       .catch(err => {
         console.error(err);
@@ -1255,6 +1258,10 @@ resetFilter(filterName: MultiFilterKey) {
         this.results = [];
         this.totalResults = 0;
       });
+  }
+
+  getScalewayVectorScore(thesis: any): number {
+    return thesis.id != null ? (this.scalewayVectorScores[thesis.id] ?? 0) : 0;
   }
 
 }

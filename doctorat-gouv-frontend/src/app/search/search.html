@@ -713,6 +713,13 @@
               {{ formatScore(getAlbertScore(thesis)) }}
             </span>
 
+            <!-- Badge de score vectoriel Scaleway -->
+            <span class="scaleway-score-badge"
+                  *ngIf="isScalewayActive && getScalewayVectorScore(thesis) > 0"
+                  [ngClass]="getScoreColor(getScalewayVectorScore(thesis))">
+              {{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
+            </span>
+
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
               {{ getFirstDomaineWithMaxLength(thesis, 60) }}
