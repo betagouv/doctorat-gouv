@@ -32,7 +32,9 @@
 	"SCALEWAY_PLACEHOLDER": "e.g. thesis on artificial intelligence for health",
 	"SCALEWAY_SEARCH_BUTTON": "Search",
 	"SCALEWAY_SEARCHING": "Vector search in progress…",
-	"SCALEWAY_BADGE": "Vector search"
+	"SCALEWAY_BADGE": "Vector search",
+	"SCALEWAY_TRES_PERTINENT": "Best matches",
+	"SCALEWAY_AUTRES_RESULTATS": "Other results"
   },
 
   "FILTERS": {

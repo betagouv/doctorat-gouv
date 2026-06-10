@@ -255,6 +255,19 @@
   color: white;
 }
 
+.scaleway-section-title {
+  margin: 1.5rem 0 0.75rem 0;
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-left: 4px solid #0063cb;
+  border-radius: 4px;
+  color: #1a2a6c;
+}
+
+.scaleway-section-title:first-of-type {
+  margin-top: 0;
+}
+
 /* Mot-clé suggéré (Albert) cliquable */
 .fr-tag.fr-tag--sm {
   cursor: pointer;

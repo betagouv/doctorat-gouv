@@ -32,7 +32,9 @@
 	"SCALEWAY_PLACEHOLDER": "Ex : thèses en intelligence artificielle pour la santé",
 	"SCALEWAY_SEARCH_BUTTON": "Rechercher",
 	"SCALEWAY_SEARCHING": "Recherche vectorielle en cours…",
-	"SCALEWAY_BADGE": "Recherche vectorielle"
+	"SCALEWAY_BADGE": "Recherche vectorielle",
+	"SCALEWAY_TRES_PERTINENT": "Meilleurs résultats",
+	"SCALEWAY_AUTRES_RESULTATS": "Autres résultats"
   },
 
   "FILTERS": {

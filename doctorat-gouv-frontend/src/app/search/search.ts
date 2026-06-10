@@ -157,6 +157,8 @@ export class Search implements OnInit, OnDestroy {
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
   scalewayMatchedTypes: Record<number, string> = {};
+  scalewayResultsTresPertinent: any[] = [];
+  scalewayResultsOther: any[] = [];
   private scalewayResponseData: any = null;
 
   
@@ -1091,6 +1093,8 @@ resetFilter(filterName: MultiFilterKey) {
     this.scalewayVectorScores = {};
     this.scalewayRelevanceLevels = {};
     this.scalewayMatchedTypes = {};
+    this.scalewayResultsTresPertinent = [];
+    this.scalewayResultsOther = [];
     this.scalewayResponseData = null;
 
     // Fermer tous les dropdowns
@@ -1268,6 +1272,23 @@ resetFilter(filterName: MultiFilterKey) {
         this.scalewayScores = data.scores || {};
         this.scalewayRelevanceLevels = data.relevanceLevels || {};
         this.scalewayMatchedTypes = data.matchedTypes || {};
+
+        const levels = data.relevanceLevels || {};
+        this.scalewayResultsTresPertinent = allResults.filter(
+          (r: any) => levels[r.id] === 'TRES_PERTINENT'
+        );
+        this.scalewayResultsOther = allResults.filter(
+          (r: any) => r.id == null || levels[r.id] !== 'TRES_PERTINENT'
+        );
+
+        this.searchFiltersService.save({
+          scalewayQuery: this.scalewayQuery,
+          isScalewayActive: this.isScalewayActive,
+          scalewayScores: this.scalewayScores,
+          scalewayVectorScores: this.scalewayVectorScores,
+          scalewayRelevanceLevels: this.scalewayRelevanceLevels,
+          scalewayMatchedTypes: this.scalewayMatchedTypes,
+        });
       })
       .catch(err => {
         console.error(err);

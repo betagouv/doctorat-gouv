@@ -695,10 +695,9 @@
 <!--	  </ul>-->
 <!--	</div>-->
 	
-	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
-           *ngFor="let thesis of results">
+	<!-- Template de carte partagé entre tous les modes -->
+	<ng-template #cardTemplate let-thesis>
+      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
 
         <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
 
@@ -743,139 +742,156 @@
 
             <span class="fr-tag badge badge-pink"
                   *ngIf="thesis?.specialite">
-				  {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
-
+              {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
             </span>
           </div>
 
-		<div class="fr-card__body">
-			
-			<div>
-				<h3 class="fr-card__title custom-blue">
-				  {{ limitWords(getThesisTitle(thesis), 30) }}
-				</h3>
-				<!-- Type d'intention matché (Albert) -->
-				<span class="albert-matched-type fr-mt-1v"
-				      *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
-				  <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
-				  {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
-				</span>
-				<span class="albert-matched-type fr-mt-1v"
-				      *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayMatchedType(thesis)"
-				      style="color: #0063cb;">
-				  {{ getScalewayMatchedTypeLabel(thesis) }}
-				</span>
-			</div>
-		
-			<p class="fr-card__desc_type">
-				{{
-				thesis.typeProposition === 'proposition'
-				? ('CARDS.SUJET' | translate)
-				: thesis.typeProposition === 'offre'
-				? ('CARDS.OFFRE' | translate)
-				: thesis.typeProposition
-				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
-			</p>
-			
-			<div>
-				<p class="fr-card__desc"
-				   [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
-				</p>
-			</div>
-			
-			<!--			<div>-->
-			<!--				<p class="fr-card__desc_date">-->
-			<!--					Date de mise en ligne : {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}<br />-->
-			<!--					Date limite de candidature : {{ thesis.dateLimiteCandidature | dynamicDate:'d MMMM y' }}<br/>-->
-			<!--					 Matricule : {{ thesis.matricule }}-->
-			<!--				</p>-->
-			<!--			</div>-->
-			
-			<div class="fr-mt-2w">
-				<ng-container *ngIf="thesis.motsCles">
-					<strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
-					<div class="fr-tags-group fr-tags-group--column">
-						<span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
-							{{ entry[1] }}
-						</span>
-					</div>
-				</ng-container>
-			</div>
-		
-		</div>
+          <div class="fr-card__body">
 
-		<div class="fr-card__footer">
-		
-			<p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
-				<em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
-			  {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
-			</p>
-		
-			<a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
-				{{ 'CARDS.DETAIL' | translate }}
-			</a>
-		</div>
+            <div>
+              <h3 class="fr-card__title custom-blue">
+                {{ limitWords(getThesisTitle(thesis), 30) }}
+              </h3>
+              <span class="albert-matched-type fr-mt-1v"
+                    *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
+                <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
+                {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+              </span>
+              <span class="albert-matched-type fr-mt-1v"
+                    *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayMatchedType(thesis)"
+                    style="color: #0063cb;">
+                {{ getScalewayMatchedTypeLabel(thesis) }}
+              </span>
+            </div>
+
+            <p class="fr-card__desc_type">
+              {{
+              thesis.typeProposition === 'proposition'
+              ? ('CARDS.SUJET' | translate)
+              : thesis.typeProposition === 'offre'
+              ? ('CARDS.OFFRE' | translate)
+              : thesis.typeProposition
+              }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+            </p>
+
+            <div>
+              <p class="fr-card__desc"
+                 [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
+              </p>
+            </div>
+
+            <div class="fr-mt-2w">
+              <ng-container *ngIf="thesis.motsCles">
+                <strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
+                <div class="fr-tags-group fr-tags-group--column">
+                  <span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
+                    {{ entry[1] }}
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+
+          </div>
+
+          <div class="fr-card__footer">
+
+            <p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
+              <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
+              {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
+            </p>
+
+            <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+              {{ 'CARDS.DETAIL' | translate }}
+            </a>
+          </div>
 
         </div>
       </div>
+	</ng-template>
 
-      <!-- PAGINATION -->
-      <div class="fr-container fr-my-4w pagination-fixed">
-        <nav class="fr-pagination"
-             aria-label="Pagination"
-             *ngIf="totalPages > 1">
+	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
-          <ul class="fr-pagination__list">
+      <!-- Mode Scaleway : résultats triés en 2 sections -->
+      <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
+        <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">
+          <h2 class="scaleway-section-title fr-h6">{{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}</h2>
+        </div>
+        <ng-container *ngFor="let thesis of scalewayResultsTresPertinent">
+          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+        </ng-container>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(currentPage - 1)"
-                      [disabled]="currentPage === 0">
-                <span class="fr-icon-arrow-left-s-line"></span>
-                <span class="fr-mx-1w">{{ 'PAGINATION.PREVIOUS' | translate }}</span>
-              </button>
-            </li>
+        <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
+          <h2 class="scaleway-section-title fr-h6">{{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}</h2>
+        </div>
+        <ng-container *ngFor="let thesis of scalewayResultsOther">
+          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+        </ng-container>
+      </ng-container>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(0)"
-                      [class.fr-pagination__link--current]="currentPage === 0">
-                1
-              </button>
-            </li>
+      <!-- Mode standard / Albert : liste unique + pagination -->
+      <ng-container *ngIf="!isScalewayActive || isScalewayLoading">
+        <ng-container *ngFor="let thesis of results">
+          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+        </ng-container>
 
-            <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+        <!-- PAGINATION -->
+        <div class="fr-container fr-my-4w pagination-fixed">
+          <nav class="fr-pagination"
+               aria-label="Pagination"
+               *ngIf="totalPages > 1">
 
-            <li *ngFor="let i of getPagesAround()">
-              <button class="fr-pagination__link"
-                      (click)="goToPage(i)"
-                      [class.fr-pagination__link--current]="currentPage === i">
-                {{ i + 1 }}
-              </button>
-            </li>
+            <ul class="fr-pagination__list">
 
-            <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(currentPage - 1)"
+                        [disabled]="currentPage === 0">
+                  <span class="fr-icon-arrow-left-s-line"></span>
+                  <span class="fr-mx-1w">{{ 'PAGINATION.PREVIOUS' | translate }}</span>
+                </button>
+              </li>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(totalPages - 1)"
-                      [class.fr-pagination__link--current]="currentPage === totalPages - 1">
-                {{ totalPages }}
-              </button>
-            </li>
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(0)"
+                        [class.fr-pagination__link--current]="currentPage === 0">
+                  1
+                </button>
+              </li>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(currentPage + 1)"
-                      [disabled]="currentPage === totalPages - 1">
-                <span class="fr-mx-1w">{{ 'PAGINATION.NEXT' | translate }}</span>
-                <span class="fr-icon-arrow-right-s-line"></span>
-              </button>
-            </li>
+              <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
 
-          </ul>
-        </nav>
-      </div>
+              <li *ngFor="let i of getPagesAround()">
+                <button class="fr-pagination__link"
+                        (click)="goToPage(i)"
+                        [class.fr-pagination__link--current]="currentPage === i">
+                  {{ i + 1 }}
+                </button>
+              </li>
+
+              <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(totalPages - 1)"
+                        [class.fr-pagination__link--current]="currentPage === totalPages - 1">
+                  {{ totalPages }}
+                </button>
+              </li>
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(currentPage + 1)"
+                        [disabled]="currentPage === totalPages - 1">
+                  <span class="fr-mx-1w">{{ 'PAGINATION.NEXT' | translate }}</span>
+                  <span class="fr-icon-arrow-right-s-line"></span>
+                </button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+      </ng-container>
 
     </div>
 
