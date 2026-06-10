@@ -713,11 +713,20 @@
               {{ formatScore(getAlbertScore(thesis)) }}
             </span>
 
-            <!-- Badge de score vectoriel Scaleway -->
+            <!-- Badge de score composite Scaleway (vectoriel + keywords) -->
             <span class="albert-score-badge"
+                  *ngIf="isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                  [ngClass]="getScoreColor(getScalewayScore(thesis))"
+                  title="Score composite">
+              {{ getScalewayScore(thesis) | percent:'1.0-0' }}
+            </span>
+
+            <!-- Badge de score vectoriel Scaleway (similarité cosinus) -->
+            <span class="scaleway-vector-badge"
                   *ngIf="isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
-                  [ngClass]="getScoreColor(getScalewayVectorScore(thesis))">
-              {{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
+                  [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
+                  title="Score vectoriel">
+              V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
             </span>
 
             <!-- Badge de niveau de pertinence Scaleway -->
