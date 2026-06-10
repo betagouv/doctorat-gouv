@@ -154,6 +154,9 @@ export class Search implements OnInit, OnDestroy {
   isScalewayActive = false;
   isScalewayLoading = false;
   scalewayVectorScores: Record<number, number> = {};
+  scalewayScores: Record<number, number> = {};
+  scalewayRelevanceLevels: Record<number, string> = {};
+  scalewayMatchedTypes: Record<number, string> = {};
   private scalewayResponseData: any = null;
 
   
@@ -304,6 +307,10 @@ export class Search implements OnInit, OnDestroy {
 
 		this.scalewayQuery = saved.scalewayQuery || '';
 		this.isScalewayActive = saved.isScalewayActive || false;
+		this.scalewayScores = saved.scalewayScores || {};
+		this.scalewayVectorScores = saved.scalewayVectorScores || {};
+		this.scalewayRelevanceLevels = saved.scalewayRelevanceLevels || {};
+		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
 
 		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
@@ -412,6 +419,10 @@ resetFilter(filterName: MultiFilterKey) {
 		  albertSuggestedKeywords: this.albertSuggestedKeywords,
 		  scalewayQuery: this.scalewayQuery,
 		  isScalewayActive: this.isScalewayActive,
+		  scalewayScores: this.scalewayScores,
+		  scalewayVectorScores: this.scalewayVectorScores,
+		  scalewayRelevanceLevels: this.scalewayRelevanceLevels,
+		  scalewayMatchedTypes: this.scalewayMatchedTypes,
 		  page: this.currentPage
 		});
 
@@ -1076,6 +1087,10 @@ resetFilter(filterName: MultiFilterKey) {
     this.scalewayQuery = '';
     this.isScalewayActive = false;
     this.isScalewayLoading = false;
+    this.scalewayScores = {};
+    this.scalewayVectorScores = {};
+    this.scalewayRelevanceLevels = {};
+    this.scalewayMatchedTypes = {};
     this.scalewayResponseData = null;
 
     // Fermer tous les dropdowns
@@ -1250,6 +1265,9 @@ resetFilter(filterName: MultiFilterKey) {
         this.results = allResults.slice(0, this.pageSize);
 
         this.scalewayVectorScores = data.vectorScores || {};
+        this.scalewayScores = data.scores || {};
+        this.scalewayRelevanceLevels = data.relevanceLevels || {};
+        this.scalewayMatchedTypes = data.matchedTypes || {};
       })
       .catch(err => {
         console.error(err);
@@ -1262,6 +1280,48 @@ resetFilter(filterName: MultiFilterKey) {
 
   getScalewayVectorScore(thesis: any): number {
     return thesis.id != null ? (this.scalewayVectorScores[thesis.id] ?? 0) : 0;
+  }
+
+  getScalewayScore(thesis: any): number {
+    return thesis.id != null ? (this.scalewayScores[thesis.id] ?? 0) : 0;
+  }
+
+  hasScalewayRelevance(thesis: any): boolean {
+    return thesis.id != null && this.scalewayRelevanceLevels[thesis.id] !== undefined;
+  }
+
+  getScalewayRelevanceLabel(thesis: any): string {
+    const level: string = (thesis.id != null ? this.scalewayRelevanceLevels[thesis.id] : null) || '';
+    const labels: Record<string, string> = {
+      'TRES_PERTINENT': 'Très pertinent',
+      'PERTINENT': 'Pertinent',
+      'FAIBLEMENT_PERTINENT': 'Peu pertinent',
+      'MASQUE': 'Masqué'
+    };
+    return labels[level] || level || '';
+  }
+
+  getScalewayRelevanceClass(thesis: any): string {
+    const level = thesis.id != null ? this.scalewayRelevanceLevels[thesis.id] : null;
+    return 'scaleway-' + (level || 'masque').toLowerCase();
+  }
+
+  hasScalewayMatchedType(thesis: any): boolean {
+    return thesis.id != null && this.scalewayMatchedTypes[thesis.id] !== undefined;
+  }
+
+  getScalewayMatchedTypeLabel(thesis: any): string {
+    const type = thesis.id != null ? this.scalewayMatchedTypes[thesis.id] : null;
+    if (!type) return '';
+    const labels: Record<string, string> = {
+      'TITRE': 'Titre',
+      'RESUME': 'Résumé',
+      'MOTS_CLES': 'Mots-clés',
+      'OBJECTIF': 'Objectif',
+      'CONTEXTE': 'Contexte',
+      'LABORATOIRE': 'Laboratoire'
+    };
+    return labels[type] || type;
   }
 
 }

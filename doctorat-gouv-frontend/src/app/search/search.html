@@ -720,6 +720,13 @@
               {{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
             </span>
 
+            <!-- Badge de niveau de pertinence Scaleway -->
+            <span class="scaleway-relevance-badge"
+                  *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                  [ngClass]="getScalewayRelevanceClass(thesis)">
+              {{ getScalewayRelevanceLabel(thesis) }}
+            </span>
+
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
               {{ getFirstDomaineWithMaxLength(thesis, 60) }}
@@ -743,6 +750,11 @@
 				      *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
 				  <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
 				  {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+				</span>
+				<span class="albert-matched-type fr-mt-1v"
+				      *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayMatchedType(thesis)"
+				      style="color: #0063cb;">
+				  {{ getScalewayMatchedTypeLabel(thesis) }}
 				</span>
 			</div>
 		
