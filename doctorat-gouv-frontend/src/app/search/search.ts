@@ -1274,12 +1274,14 @@ resetFilter(filterName: MultiFilterKey) {
         this.scalewayMatchedTypes = data.matchedTypes || {};
 
         const levels = data.relevanceLevels || {};
-        this.scalewayResultsTresPertinent = allResults.filter(
-          (r: any) => levels[r.id] === 'TRES_PERTINENT'
-        );
-        this.scalewayResultsOther = allResults.filter(
-          (r: any) => r.id == null || levels[r.id] !== 'TRES_PERTINENT'
-        );
+        const scores = data.scores || {};
+        const sortByScore = (a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0);
+        this.scalewayResultsTresPertinent = allResults
+          .filter((r: any) => levels[r.id] === 'TRES_PERTINENT')
+          .sort(sortByScore);
+        this.scalewayResultsOther = allResults
+          .filter((r: any) => r.id == null || levels[r.id] !== 'TRES_PERTINENT')
+          .sort(sortByScore);
 
         this.searchFiltersService.save({
           scalewayQuery: this.scalewayQuery,
