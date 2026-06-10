@@ -1,6 +1,6 @@
 {
   "SEARCH": {
-    "TITLE": "Find PhD opportunities : projects and mentoring offers",
+    "TITLE": "Find an offer",
     "PLACEHOLDER": "Search by title or keywords",
     "MORE_FILTERS": "More filters",
     "LESS_FILTERS": "Fewer filters",
@@ -9,7 +9,7 @@
 	"RESULTS_SUFIX": "results",
     "BACK_TO_TOP": "Back to top",
 	"ALL_OFFERS": "All offers",
-	"THESIS_OFFER": "PhD offers",
+	"THESIS_OFFER": "Thesis topics",
 	"SUPERVISION_OFFER": "Mentoring or partnership offers",
 	"SORT_BY": "Sort by :",
 	"SORT_POSTING_DATE": "Posting date",
@@ -27,8 +27,8 @@
 	"AI_UNAVAILABLE": "The AI-based search service is temporarily unavailable. The results below come from the standard keyword-based search.",
 	"AI_UNAVAILABLE_HINT": "You can also perform a standard search using the filters in the sidebar.",
 	"AI_SQL_TOGGLE": "Complement with keyword search (SQL)",
-	"SCALEWAY_LABEL": "Vector search (Scality AI)",
-	"SCALEWAY_HINT": "Semantic similarity search. Explore subjects close to your query.",
+	"SCALEWAY_LABEL": "Enable natural language search",
+	"SCALEWAY_HINT": "Offers will be analyzed semantically (title, summary, keywords…).",
 	"SCALEWAY_PLACEHOLDER": "e.g. thesis on artificial intelligence for health",
 	"SCALEWAY_SEARCH_BUTTON": "Search",
 	"SCALEWAY_SEARCHING": "Vector search in progress…",
