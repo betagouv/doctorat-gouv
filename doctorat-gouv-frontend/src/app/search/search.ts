@@ -157,6 +157,7 @@ export class Search implements OnInit, OnDestroy {
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
   scalewayMatchedTypes: Record<number, string> = {};
+  topResultsCount = 6;
   scalewayResultsTresPertinent: any[] = [];
   scalewayResultsOther: any[] = [];
   private scalewayResponseData: any = null;
@@ -1273,15 +1274,11 @@ resetFilter(filterName: MultiFilterKey) {
         this.scalewayRelevanceLevels = data.relevanceLevels || {};
         this.scalewayMatchedTypes = data.matchedTypes || {};
 
-        const levels = data.relevanceLevels || {};
         const scores = data.scores || {};
         const sortByScore = (a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0);
-        this.scalewayResultsTresPertinent = allResults
-          .filter((r: any) => levels[r.id] === 'TRES_PERTINENT')
-          .sort(sortByScore);
-        this.scalewayResultsOther = allResults
-          .filter((r: any) => r.id == null || levels[r.id] !== 'TRES_PERTINENT')
-          .sort(sortByScore);
+        const sorted = [...allResults].sort(sortByScore);
+        this.scalewayResultsTresPertinent = sorted.slice(0, this.topResultsCount);
+        this.scalewayResultsOther = sorted.slice(this.topResultsCount);
 
         this.searchFiltersService.save({
           scalewayQuery: this.scalewayQuery,
