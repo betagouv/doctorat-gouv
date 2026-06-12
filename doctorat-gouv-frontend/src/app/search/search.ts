@@ -80,7 +80,7 @@ export class Search implements OnInit, OnDestroy {
 
   
   /* ------------------- Tri ------------------- */
-  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'relevance';
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'dateMiseEnLigne';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
   sortOpen = false;
 
@@ -489,6 +489,7 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.isAlbertSearchActive = false;
     this.isScalewayActive = false;
+    this.sortField = 'dateMiseEnLigne';
     this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: data => {
         this.results = data.content;
@@ -542,6 +543,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.isAlbertLoading = true;
     this.isAlbertSearchActive = true;
     this.isScalewayActive = false;
+    this.sortField = 'relevance';
     this.albertSuggestedKeywords = [];
     this.albertScores = {};
     this.albertMatchedTypes = {};
@@ -1073,7 +1075,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.etablissementRor = '';
 
     this.activeFilter = 'all';
-    this.sortField = 'relevance';
+    this.sortField = 'dateMiseEnLigne';
     this.sortDirection = 'DESC';
 
     this.showMoreFilters = false;
@@ -1251,6 +1253,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.isScalewayLoading = true;
     this.isScalewayActive = true;
     this.isAlbertSearchActive = false;
+    this.sortField = 'relevance';
     this.scalewayResponseData = null;
 
     const url = `${environment.apiUrl}/scaleway/propositions?query=${encodeURIComponent(q)}&limit=100`;
