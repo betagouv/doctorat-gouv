@@ -483,7 +483,7 @@
 				<div class="dropdown-panel" *ngIf="sortOpen">
 	
 					<!-- Option Pertinence (visible uniquement en mode Albert) -->
-					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive">
+					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive || isScalewayActive">
 						<input type="checkbox" id="sort_relevance" [checked]="sortField === 'relevance'"
 							(change)="setSortField('relevance')">
 						<label for="sort_relevance">Pertinence</label>
@@ -536,7 +536,8 @@
 
 	<!-- ===================== RÉSULTATS ===================== -->
 	<div class="results-margin">
-		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+		<!-- Compteur global (caché en mode Scaleway) -->
+		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue" *ngIf="!isScalewayActive">
 			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
 			</span>
 			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
@@ -810,19 +811,146 @@
       </div>
 	</ng-template>
 
+	<!-- Template de carte pour le carrousel (sans wrapper grille DSFR) -->
+	<ng-template #carouselCardTemplate let-thesis>
+      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
+
+        <div class="fr-card__img">
+          <img [src]="getImageForThesis(thesis)"
+               alt="Illustration de la thèse" />
+
+          <span class="albert-score-badge"
+                *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
+                [ngClass]="getScoreColor(getAlbertScore(thesis))">
+            {{ formatScore(getAlbertScore(thesis)) }}
+          </span>
+
+          <span class="albert-score-badge"
+                *ngIf="isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                [ngClass]="getScoreColor(getScalewayScore(thesis))"
+                title="Score composite">
+            {{ getScalewayScore(thesis) | percent:'1.0-0' }}
+          </span>
+
+          <span class="scaleway-vector-badge"
+                *ngIf="isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
+                [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
+                title="Score vectoriel">
+            V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
+          </span>
+
+          <span class="scaleway-relevance-badge"
+                *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                [ngClass]="getScalewayRelevanceClass(thesis)">
+            {{ getScalewayRelevanceLabel(thesis) }}
+          </span>
+
+          <span class="fr-tag badge badge-green"
+                *ngIf="getFirstDomaine(thesis)">
+            {{ getFirstDomaineWithMaxLength(thesis, 60) }}
+          </span>
+
+          <span class="fr-tag badge badge-pink"
+                *ngIf="thesis?.specialite">
+            {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
+          </span>
+        </div>
+
+        <div class="fr-card__body">
+          <div>
+            <h3 class="fr-card__title custom-blue">
+              {{ limitWords(getThesisTitle(thesis), 30) }}
+            </h3>
+            <span class="albert-matched-type fr-mt-1v"
+                  *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
+              <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
+              {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+            </span>
+            <span class="albert-matched-type fr-mt-1v"
+                  *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayMatchedType(thesis)"
+                  style="color: #0063cb;">
+              {{ getScalewayMatchedTypeLabel(thesis) }}
+            </span>
+          </div>
+
+          <p class="fr-card__desc_type">
+            {{
+            thesis.typeProposition === 'proposition'
+            ? ('CARDS.SUJET' | translate)
+            : thesis.typeProposition === 'offre'
+            ? ('CARDS.OFFRE' | translate)
+            : thesis.typeProposition
+            }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+          </p>
+
+          <div>
+            <p class="fr-card__desc"
+               [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
+            </p>
+          </div>
+
+          <div class="fr-mt-2w">
+            <ng-container *ngIf="thesis.motsCles">
+              <strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
+              <div class="fr-tags-group fr-tags-group--column">
+                <span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
+                  {{ entry[1] }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="fr-card__footer">
+          <p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
+            <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
+            {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
+          </p>
+          <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+            {{ 'CARDS.DETAIL' | translate }}
+          </a>
+        </div>
+      </div>
+	</ng-template>
+
 	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
       <!-- Mode Scaleway : résultats triés en 2 sections -->
       <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
-        <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">
-          <h2 class="scaleway-section-title fr-h6">{{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}</h2>
-        </div>
-        <ng-container *ngFor="let thesis of scalewayResultsTresPertinent">
-          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
-        </ng-container>
 
+        <!-- Section 1 : Meilleurs résultats (carrousel) -->
+        <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">
+          <div class="scaleway-section-title">
+            <h2>
+              {{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}
+              <span class="scaleway-section-count">({{ scalewayResultsTresPertinent.length }})</span>
+            </h2>
+            <div class="scaleway-carousel-nav">
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(-1)" aria-label="Précédent" title="Précédent">‹</button>
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(1)" aria-label="Suivant" title="Suivant">›</button>
+            </div>
+          </div>
+          <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
+            <ng-container *ngFor="let thesis of scalewayResultsTresPertinent; let i = index">
+              <div class="scaleway-carousel-item" [attr.data-index]="i">
+                <ng-container *ngTemplateOutlet="carouselCardTemplate; context: {$implicit: thesis}"></ng-container>
+              </div>
+            </ng-container>
+          </div>
+          <div class="scaleway-carousel-dots" *ngIf="scalewayResultsTresPertinent.length > 1">
+            <button class="scaleway-dot" *ngFor="let thesis of scalewayResultsTresPertinent; let i = index"
+                    [class.active]="i === carouselDotIndex"
+                    (click)="scrollCarouselTo(i)"
+                    [attr.aria-label]="'Aller à la carte ' + (i + 1)"></button>
+          </div>
+        </div>
+
+        <!-- Section 2 : Autres résultats -->
         <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
-          <h2 class="scaleway-section-title fr-h6">{{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}</h2>
+          <h2 class="scaleway-section-title">
+            {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
+            <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
+          </h2>
         </div>
         <ng-container *ngFor="let thesis of scalewayResultsOther">
           <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>

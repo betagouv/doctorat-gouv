@@ -80,7 +80,7 @@ export class Search implements OnInit, OnDestroy {
 
   
   /* ------------------- Tri ------------------- */
-  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'dateMiseEnLigne';
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'relevance';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
   sortOpen = false;
 
@@ -160,6 +160,7 @@ export class Search implements OnInit, OnDestroy {
   topResultsCount = 6;
   scalewayResultsTresPertinent: any[] = [];
   scalewayResultsOther: any[] = [];
+  carouselDotIndex = 0;
   private scalewayResponseData: any = null;
 
   
@@ -1072,7 +1073,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.etablissementRor = '';
 
     this.activeFilter = 'all';
-    this.sortField = 'dateMiseEnLigne';
+    this.sortField = 'relevance';
     this.sortDirection = 'DESC';
 
     this.showMoreFilters = false;
@@ -1344,4 +1345,41 @@ resetFilter(filterName: MultiFilterKey) {
     return labels[type] || type;
   }
 
+  scrollCarousel(direction: number): void {
+    const el = document.querySelector('.scaleway-carousel');
+    if (el) {
+      const items = el.querySelectorAll('.scaleway-carousel-item');
+      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+      const gap = 12;
+      const scrollAmount = itemWidth + gap;
+      el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      this.updateCarouselDot(el as HTMLElement, items);
+    }
+  }
+
+  scrollCarouselTo(index: number): void {
+    const el = document.querySelector('.scaleway-carousel');
+    if (el) {
+      const items = el.querySelectorAll('.scaleway-carousel-item');
+      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+      const gap = 12;
+      el.scrollTo({ left: index * (itemWidth + gap), behavior: 'smooth' });
+      this.carouselDotIndex = index;
+    }
+  }
+
+  onCarouselScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    const items = el.querySelectorAll('.scaleway-carousel-item');
+    this.updateCarouselDot(el, items);
+  }
+
+  private updateCarouselDot(el: HTMLElement, items: NodeListOf<Element>): void {
+    if (items.length === 0) return;
+    const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+    const gap = 12;
+    const scrollLeft = el.scrollLeft;
+    const index = Math.round(scrollLeft / (itemWidth + gap));
+    this.carouselDotIndex = Math.min(index, items.length - 1);
+  }
 }
