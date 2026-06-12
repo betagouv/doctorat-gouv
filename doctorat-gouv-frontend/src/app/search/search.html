@@ -947,10 +947,12 @@
 
         <!-- Section 2 : Autres résultats -->
         <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
-          <h2 class="scaleway-section-title">
-            {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
-            <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
-          </h2>
+          <div class="scaleway-section-title">
+            <h2>
+              {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
+              <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
+            </h2>
+          </div>
         </div>
         <ng-container *ngFor="let thesis of scalewayResultsOther">
           <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
