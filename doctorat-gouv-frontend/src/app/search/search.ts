@@ -1142,6 +1142,7 @@ resetFilter(filterName: MultiFilterKey) {
     if (this.etablissementRor) count++;
     if (this.query.trim()) count++;
     if (this.albertSearchQuery.trim()) count++;
+    if (this.scalewayQuery.trim()) count++;
     return count;
   }
   
