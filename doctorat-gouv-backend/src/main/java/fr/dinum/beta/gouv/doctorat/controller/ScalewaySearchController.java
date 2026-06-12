@@ -99,7 +99,7 @@ public class ScalewaySearchController {
 			double score = hit.getScore();
 			if (dto != null && !tokens.isEmpty()) {
 				double kwScore = rerankerService.computeKeywordScore(tokens, dto);
-				score = Math.min(score + kwScore * 1.2, 0.85);
+				score = Math.min(score + kwScore * 1.2, 1.0);
 			}
 			compositeScores.put(hit.getSujetId(), score);
 		}
