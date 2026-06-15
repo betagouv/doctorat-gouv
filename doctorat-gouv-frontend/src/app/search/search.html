@@ -487,21 +487,18 @@
 
 	<!-- ===================== RÉSULTATS ===================== -->
 	<div class="results-margin">
-		<!-- Compteur global (caché en mode Scaleway) -->
-		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue" *ngIf="!isScalewayActive">
-			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+		<!-- Badge IA (visible en mode IA ou Scaleway même si compteur caché) -->
+		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+			<span *ngIf="!isScalewayActive">
+				<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+				</span>
+				{{ 'SEARCH.RESULTS_SUFIX' | translate }}
 			</span>
-			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
-			<span *ngIf="isAlbertSearchActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
+			<span *ngIf="isAlbertSearchActive || isScalewayActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
 		</p>
 
 		<!-- ===================== LOADING RECHERCHE SCALEWAY ===================== -->
 		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading">
-			<span>{{ 'SEARCH.SCALEWAY_SEARCHING' | translate }}</span>
-		</div>
-
-		<!-- ===================== LOADING RECHERCHE IA ===================== -->
-		<div class="fr-my-4w fr-text--center" *ngIf="isAlbertLoading">
 			<div class="ai-thinking">
 				<span class="thinking-sparkle">✨</span>
 				<span class="thinking-text">Réflexion en cours</span>
