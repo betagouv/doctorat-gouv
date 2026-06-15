@@ -945,6 +945,13 @@
           </div>
         </div>
 
+        <!-- Infobulle requête ambiguë -->
+        <div class="fr-col-12" *ngIf="showAmbigueMessage">
+          <div class="scaleway-ambigue-info">
+            Veuillez préciser votre recherche pour de meilleurs résultats
+          </div>
+        </div>
+
         <!-- Section 2 : Autres résultats -->
         <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
           <div class="scaleway-section-title">

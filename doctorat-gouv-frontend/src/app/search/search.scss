@@ -279,6 +279,17 @@
   display: flex; justify-content: center; gap: 0.4rem;
   margin-top: 1.2rem;
 }
+
+.scaleway-ambigue-info {
+  background: #fff8e0;
+  border: 1px solid #f0d060;
+  border-left: 4px solid #e0a800;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  color: #6b5300;
+  font-size: 0.95rem;
+}
 .scaleway-dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: #ccc; border: none; cursor: pointer;

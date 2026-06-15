@@ -33,7 +33,9 @@ public class ScalewaySearchController {
 
 	// Seuils de pertinence basés sur le score composite (vectoriel + lexical)
 	// Calibrés avec la distribution observée des scores (juin 2026)
-	private static final double SEUIL_TRES_PERTINENT = 0.78;
+	// Version 1 (juin 2026) : TRES_PERTINENT >= 0.78
+	// Version 2 (juin 2026) : TRES_PERTINENT >= 0.91 (seuil relevé après test terrain)
+	private static final double SEUIL_TRES_PERTINENT = 0.91;
 	private static final double SEUIL_PERTINENT = 0.70;
 	private static final double SEUIL_FAIBLEMENT_PERTINENT = 0.60;
 

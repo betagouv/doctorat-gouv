@@ -157,7 +157,8 @@ export class Search implements OnInit, OnDestroy {
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
   scalewayMatchedTypes: Record<number, string> = {};
-  topResultsCount = 6;
+  ambigueThreshold = 20;
+  showAmbigueMessage = false;
   scalewayResultsTresPertinent: any[] = [];
   scalewayResultsOther: any[] = [];
   carouselDotIndex = 0;
@@ -1280,10 +1281,17 @@ resetFilter(filterName: MultiFilterKey) {
         this.scalewayMatchedTypes = data.matchedTypes || {};
 
         const scores = data.scores || {};
+        const levels = data.relevanceLevels || {};
         const sortByScore = (a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0);
         const sorted = [...allResults].sort(sortByScore);
-        this.scalewayResultsTresPertinent = sorted.slice(0, this.topResultsCount);
-        this.scalewayResultsOther = sorted.slice(this.topResultsCount);
+        this.scalewayResultsTresPertinent = sorted.filter((r: any) => levels[r.id] === 'TRES_PERTINENT');
+        this.scalewayResultsOther = sorted.filter((r: any) => levels[r.id] !== 'TRES_PERTINENT');
+
+        // Détection requête ambiguë
+        const countPertinent = sorted.filter((r: any) => levels[r.id] === 'PERTINENT').length;
+        this.showAmbigueMessage =
+          (this.scalewayResultsTresPertinent.length === 0 && countPertinent === 0)
+          || this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
 
         this.searchFiltersService.save({
           scalewayQuery: this.scalewayQuery,
