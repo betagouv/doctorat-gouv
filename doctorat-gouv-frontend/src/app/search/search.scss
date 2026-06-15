@@ -280,6 +280,19 @@
   margin-top: 1.2rem;
 }
 
+.scaleway-nlp-help {
+  background: #f5f5ff;
+  border-left: 4px solid #0063cb;
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+}
+.scaleway-nlp-help-title {
+  font-weight: 600; margin: 0 0 0.5rem 0; color: #1a2a6c;
+}
+.scaleway-nlp-help-text {
+  font-size: 0.9rem; color: #444; margin: 0 0 0.4rem 0; line-height: 1.5;
+}
+
 .scaleway-ambigue-info {
   background: #fff8e0;
   border: 1px solid #f0d060;

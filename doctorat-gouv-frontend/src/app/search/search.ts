@@ -132,7 +132,8 @@ export class Search implements OnInit, OnDestroy {
   
   
   // --- Recherche IA Albert ---
-  useAlbert = false;                  // case à cocher
+  useAlbert = false;
+  useScaleway = false;
   useSql = false;                     // recherche SQL en complément d'Albert
   albertQuery = '';                   // texte saisi (mode legacy)
   albertSearchQuery = '';             // texte saisi pour la recherche structurée
@@ -311,6 +312,7 @@ export class Search implements OnInit, OnDestroy {
 		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
 
 		this.scalewayQuery = saved.scalewayQuery || '';
+		this.useScaleway = saved.useScaleway || false;
 		this.isScalewayActive = saved.isScalewayActive || false;
 		this.scalewayScores = saved.scalewayScores || {};
 		this.scalewayVectorScores = saved.scalewayVectorScores || {};
@@ -423,6 +425,7 @@ resetFilter(filterName: MultiFilterKey) {
 		  albertMatchedTypes: this.albertMatchedTypes,
 		  albertSuggestedKeywords: this.albertSuggestedKeywords,
 		  scalewayQuery: this.scalewayQuery,
+		  useScaleway: this.useScaleway,
 		  isScalewayActive: this.isScalewayActive,
 		  scalewayScores: this.scalewayScores,
 		  scalewayVectorScores: this.scalewayVectorScores,
@@ -527,6 +530,23 @@ resetFilter(filterName: MultiFilterKey) {
       this.albertScores = {};
       this.albertMatchedTypes = {};
       this.albertSuggestedKeywords = [];
+      this.results = [];
+      this.totalResults = 0;
+    }
+    this.onFilterChange();
+  }
+
+  toggleScaleway(): void {
+    if (!this.useScaleway) {
+      this.isScalewayActive = false;
+      this.scalewayQuery = '';
+      this.scalewayScores = {};
+      this.scalewayVectorScores = {};
+      this.scalewayRelevanceLevels = {};
+      this.scalewayMatchedTypes = {};
+      this.scalewayResultsTresPertinent = [];
+      this.scalewayResultsOther = [];
+      this.showAmbigueMessage = false;
       this.results = [];
       this.totalResults = 0;
     }
