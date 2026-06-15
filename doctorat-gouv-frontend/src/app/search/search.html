@@ -881,6 +881,12 @@
               <button class="scaleway-nav-btn" (click)="scrollCarousel(1)" aria-label="Suivant" title="Suivant">›</button>
             </div>
           </div>
+
+          <!-- Infobulle requête ambiguë -->
+          <div class="scaleway-ambigue-info" *ngIf="showAmbigueMessage">
+            {{ 'SEARCH.SCALEWAY_AMBIGUE' | translate }}
+          </div>
+
           <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
             <ng-container *ngFor="let thesis of scalewayResultsTresPertinent; let i = index">
               <div class="scaleway-carousel-item" [attr.data-index]="i">
@@ -893,13 +899,6 @@
                     [class.active]="i === carouselDotIndex"
                     (click)="scrollCarouselTo(i)"
                     [attr.aria-label]="'Aller à la carte ' + (i + 1)"></button>
-          </div>
-        </div>
-
-        <!-- Infobulle requête ambiguë -->
-        <div class="fr-col-12" *ngIf="showAmbigueMessage">
-          <div class="scaleway-ambigue-info">
-            Veuillez préciser votre recherche pour de meilleurs résultats
           </div>
         </div>
 
