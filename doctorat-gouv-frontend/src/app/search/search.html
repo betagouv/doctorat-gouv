@@ -879,8 +879,8 @@
             </div>
           </div>
 
-          <!-- Infobulle requête ambiguë -->
-          <div class="scaleway-ambigue-info" *ngIf="showAmbigueMessage">
+          <!-- Infobulle trop de résultats très pertinents -->
+          <div class="scaleway-ambigue-info" *ngIf="showAmbigueTooMany">
             {{ 'SEARCH.SCALEWAY_AMBIGUE' | translate }}
           </div>
 
@@ -906,6 +906,11 @@
               {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
               <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
             </h2>
+          </div>
+
+          <!-- Infobulle aucun résultat très pertinent -->
+          <div class="scaleway-ambigue-info fr-mt-2w" *ngIf="showAmbigueMessage && !showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
           </div>
         </div>
         <ng-container *ngFor="let thesis of scalewayResultsOther">

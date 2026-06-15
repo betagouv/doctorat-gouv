@@ -160,6 +160,7 @@ export class Search implements OnInit, OnDestroy {
   scalewayMatchedTypes: Record<number, string> = {};
   ambigueThreshold = 20;
   showAmbigueMessage = false;
+  showAmbigueTooMany = false;
   scalewayResultsTresPertinent: any[] = [];
   scalewayResultsOther: any[] = [];
   carouselDotIndex = 0;
@@ -547,6 +548,7 @@ resetFilter(filterName: MultiFilterKey) {
       this.scalewayResultsTresPertinent = [];
       this.scalewayResultsOther = [];
       this.showAmbigueMessage = false;
+      this.showAmbigueTooMany = false;
       this.results = [];
       this.totalResults = 0;
     }
@@ -1308,10 +1310,8 @@ resetFilter(filterName: MultiFilterKey) {
         this.scalewayResultsOther = sorted.filter((r: any) => levels[r.id] !== 'TRES_PERTINENT');
 
         // Détection requête ambiguë
-        const countPertinent = sorted.filter((r: any) => levels[r.id] === 'PERTINENT').length;
-        this.showAmbigueMessage =
-          (this.scalewayResultsTresPertinent.length === 0 && countPertinent === 0)
-          || this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
+        this.showAmbigueTooMany = this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
+        this.showAmbigueMessage = this.scalewayResultsTresPertinent.length === 0 || this.showAmbigueTooMany;
 
         this.searchFiltersService.save({
           scalewayQuery: this.scalewayQuery,
