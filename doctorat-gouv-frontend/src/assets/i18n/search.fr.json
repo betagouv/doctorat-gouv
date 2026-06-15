@@ -34,7 +34,10 @@
 	"SCALEWAY_SEARCHING": "Recherche vectorielle en cours…",
 	"SCALEWAY_BADGE": "Recherche vectorielle",
 	"SCALEWAY_TRES_PERTINENT": "Meilleurs résultats",
-	"SCALEWAY_AUTRES_RESULTATS": "Offres qui pourraient également vous intéresser"
+	"SCALEWAY_AUTRES_RESULTATS": "Offres qui pourraient également vous intéresser",
+	"SCALEWAY_NLP_TITLE": "Comment formuler une recherche pertinente ?",
+	"SCALEWAY_NLP_DESC": "Décrivez précisément ce que vous cherchez — votre profil, vos objectifs — plutôt qu'une demande trop générale. Par exemple : <em>« Je cherche un sujet en IA appliquée à la santé, en particulier à la radiologie, pour un profil ingénieur en data science »</em>.",
+	"SCALEWAY_NLP_EXAMPLE": "Exemple de sujet trop générique à ne pas reproduire : <em>\"Sujet IA\"</em>. N'hésitez pas à itérer pour obtenir les meilleurs résultats."
   },
 
   "FILTERS": {

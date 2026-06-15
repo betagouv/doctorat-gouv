@@ -34,7 +34,10 @@
 	"SCALEWAY_SEARCHING": "Vector search in progress…",
 	"SCALEWAY_BADGE": "Vector search",
 	"SCALEWAY_TRES_PERTINENT": "Best matches",
-	"SCALEWAY_AUTRES_RESULTATS": "Offers that may also interest you"
+	"SCALEWAY_AUTRES_RESULTATS": "Offers that may also interest you",
+	"SCALEWAY_NLP_TITLE": "How to formulate a relevant search?",
+	"SCALEWAY_NLP_DESC": "Describe precisely what you are looking for — your profile, your goals — rather than a too general request. For example: <em>\"I am looking for a topic in AI applied to healthcare, particularly in radiology, for an engineering profile in data science\"</em>.",
+	"SCALEWAY_NLP_EXAMPLE": "Example of a topic too generic to reproduce: <em>\"AI topic\"</em>. Feel free to iterate to get the best results."
   },
 
   "FILTERS": {

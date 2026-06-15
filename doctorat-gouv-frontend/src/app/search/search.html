@@ -71,15 +71,9 @@
 
 	    <!-- Aide NLP -->
 	    <div class="fr-mt-3w scaleway-nlp-help">
-	      <p class="scaleway-nlp-help-title">Préciser la méthode pour faire une bonne recherche en langage naturel :</p>
-	      <p class="scaleway-nlp-help-text">
-	        Décrivez précisément ce que vous cherchez — votre profil, vos objectifs — plutôt qu'une demande trop générale.
-	        Par exemple : <em>« Je cherche un sujet en IA appliquée à la santé, en particulier à la radiologie, pour un profil ingénieur en data science »</em>.
-	      </p>
-	      <p class="scaleway-nlp-help-text">
-	        Exemple de sujet trop générique à ne pas reproduire : <em>"Sujet IA"</em>.
-	        N'hésitez pas à itérer pour obtenir les meilleurs résultats.
-	      </p>
+	      <p class="scaleway-nlp-help-title">{{ 'SEARCH.SCALEWAY_NLP_TITLE' | translate }}</p>
+	      <p class="scaleway-nlp-help-text" [innerHTML]="'SEARCH.SCALEWAY_NLP_DESC' | translate"></p>
+	      <p class="scaleway-nlp-help-text" [innerHTML]="'SEARCH.SCALEWAY_NLP_EXAMPLE' | translate"></p>
 	    </div>
 	  </div>
 	</div>
