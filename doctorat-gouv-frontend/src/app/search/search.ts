@@ -339,7 +339,13 @@ export class Search implements OnInit, OnDestroy {
 	
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
-      .subscribe(() => this.onSearch(0));
+      .subscribe(() => {
+        if (this.isScalewayActive && this.scalewayQuery.trim()) {
+          this.onScalewaySearch();
+        } else {
+          this.onSearch(0);
+        }
+      });
   }
   
   ngAfterViewInit(): void {
@@ -1280,7 +1286,12 @@ resetFilter(filterName: MultiFilterKey) {
     this.sortField = 'relevance';
     this.scalewayResponseData = null;
 
-    const url = `${environment.apiUrl}/scaleway/propositions?query=${encodeURIComponent(q)}&limit=100`;
+    const params = new URLSearchParams();
+    params.set('query', q);
+    params.set('limit', '100');
+    const filters = this.buildActiveFilters();
+    if (filters['localisation']) params.set('localisation', filters['localisation']);
+    const url = `${environment.apiUrl}/scaleway/propositions?${params}`;
 
     fetch(url)
       .then(res => {

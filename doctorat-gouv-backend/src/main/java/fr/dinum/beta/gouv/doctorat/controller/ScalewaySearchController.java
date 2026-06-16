@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.dto.VectorSearchHit;
+import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
 import fr.dinum.beta.gouv.doctorat.service.EmbeddingIndexationService;
@@ -67,10 +68,49 @@ public class ScalewaySearchController {
 		return "MASQUE";
 	}
 
+	/**
+	 * Filtre un DTO selon les paramètres de filtre passés dans la requête.
+	 * Seuls les paramètres de filtre reconnus sont appliqués (localisation, etc.).
+	 * Les paramètres inconnus (query, limit, sortField…) sont ignorés.
+	 */
+	private boolean matchesFilters(PropositionTheseDto dto, Map<String, String> params) {
+		if (dto == null) return false;
+
+		// Filtre localisation
+		String localisation = params.get("localisation");
+		if (localisation != null && !localisation.isBlank()) {
+			String postalCode = dto.getUniteRechercheCodePostal();
+			if (postalCode == null || postalCode.isBlank()) return false;
+
+			String[] regions = localisation.split(";");
+			boolean matchesRegion = false;
+			for (String region : regions) {
+				region = region.trim();
+				if (region.isEmpty()) continue;
+				List<String> depts = RegionsFrance.departementsFromRegion(region);
+				for (String dept : depts) {
+					if (postalCode.startsWith(dept)) {
+						matchesRegion = true;
+						break;
+					}
+				}
+				if (matchesRegion) break;
+			}
+			if (!matchesRegion) return false;
+		}
+
+		return true;
+	}
+
 	@GetMapping("/propositions")
 	public ResponseEntity<Map<String, Object>> search(
-			@RequestParam("query") String query,
-			@RequestParam(value = "limit", required = false, defaultValue = "100") int limit) {
+			@RequestParam Map<String, String> allParams) {
+
+		String query = allParams.get("query");
+		if (query == null || query.isBlank()) {
+			return ResponseEntity.badRequest().body(Map.of("error", "Le paramètre query est requis"));
+		}
+		int limit = Integer.parseInt(allParams.getOrDefault("limit", "100"));
 
 		long startTime = System.currentTimeMillis();
 		log.info("Recherche vectorielle via /api/scaleway/propositions (limit={})", limit);
@@ -115,6 +155,7 @@ public class ScalewaySearchController {
 			.peek(e -> relevanceLevels.put(e.getKey(),
 				niveauPertinence(compositeScores.getOrDefault(e.getKey(), 0.0))))
 			.map(Map.Entry::getKey)
+			.filter(id -> matchesFilters(theseMap.get(id), allParams))
 			.collect(Collectors.toList());
 
 		// 5. Construire la réponse
