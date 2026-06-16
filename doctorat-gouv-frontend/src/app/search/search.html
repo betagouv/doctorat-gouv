@@ -891,11 +891,9 @@
               </div>
             </ng-container>
           </div>
-          <div class="scaleway-carousel-dots" *ngIf="scalewayResultsTresPertinent.length > 1">
-            <button class="scaleway-dot" *ngFor="let thesis of scalewayResultsTresPertinent; let i = index"
-                    [class.active]="i === carouselDotIndex"
-                    (click)="scrollCarouselTo(i)"
-                    [attr.aria-label]="'Aller à la carte ' + (i + 1)"></button>
+          <div class="scaleway-carousel-bottom-nav" *ngIf="scalewayResultsTresPertinent.length > 1">
+            <button class="scaleway-nav-btn" (click)="scrollCarousel(-1)" aria-label="Précédent" title="Précédent">‹</button>
+            <button class="scaleway-nav-btn" (click)="scrollCarousel(1)" aria-label="Suivant" title="Suivant">›</button>
           </div>
         </div>
 
