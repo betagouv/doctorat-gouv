@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.dto.VectorSearchHit;
+import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
@@ -70,33 +71,108 @@ public class ScalewaySearchController {
 
 	/**
 	 * Filtre un DTO selon les paramètres de filtre passés dans la requête.
-	 * Seuls les paramètres de filtre reconnus sont appliqués (localisation, etc.).
+	 * Seuls les paramètres de filtre reconnus sont appliqués (discipline, localisation,
+	 * defisSociete, laboratoire, ecole, annee, typeProposition).
 	 * Les paramètres inconnus (query, limit, sortField…) sont ignorés.
 	 */
 	private boolean matchesFilters(PropositionTheseDto dto, Map<String, String> params) {
 		if (dto == null) return false;
 
-		// Filtre localisation
+		// 1. Localisation
 		String localisation = params.get("localisation");
 		if (localisation != null && !localisation.isBlank()) {
 			String postalCode = dto.getUniteRechercheCodePostal();
 			if (postalCode == null || postalCode.isBlank()) return false;
-
-			String[] regions = localisation.split(";");
 			boolean matchesRegion = false;
-			for (String region : regions) {
+			for (String region : localisation.split(";")) {
 				region = region.trim();
 				if (region.isEmpty()) continue;
-				List<String> depts = RegionsFrance.departementsFromRegion(region);
-				for (String dept : depts) {
-					if (postalCode.startsWith(dept)) {
-						matchesRegion = true;
-						break;
-					}
+				for (String dept : RegionsFrance.departementsFromRegion(region)) {
+					if (postalCode.startsWith(dept)) { matchesRegion = true; break; }
 				}
 				if (matchesRegion) break;
 			}
 			if (!matchesRegion) return false;
+		}
+
+		// 2. Discipline
+		String discipline = params.get("discipline");
+		if (discipline != null && !discipline.isBlank()) {
+			boolean matches = false;
+			for (String val : discipline.split(";")) {
+				String code = DomaineScientifique.codeFromLabel(val.trim());
+				if (code != null && code.equals(dto.getDomaineScientifique())) {
+					matches = true;
+					break;
+				}
+			}
+			if (!matches) return false;
+		}
+
+		// 3. Défis de société (combo domainesImpactListe + objectifsDeveloppementDurableListe)
+		String defisSociete = params.get("defisSociete");
+		if (defisSociete != null && !defisSociete.isBlank()) {
+			for (String val : defisSociete.split(";")) {
+				String lower = val.trim().toLowerCase();
+				if (lower.isEmpty()) continue;
+				boolean matchDomaines = dto.getDomainesImpactListe() != null
+					&& dto.getDomainesImpactListe().stream().anyMatch(d -> d.toLowerCase().contains(lower));
+				boolean matchOdd = dto.getObjectifsDeveloppementDurableListe() != null
+					&& dto.getObjectifsDeveloppementDurableListe().stream().anyMatch(o -> o.toLowerCase().contains(lower));
+				if (!matchDomaines && !matchOdd) return false;
+			}
+		}
+
+		// 4. Laboratoire (LIKE)
+		String laboratoire = params.get("laboratoire");
+		if (laboratoire != null && !laboratoire.isBlank()) {
+			String labo = dto.getUniteRechercheLibelle();
+			if (labo == null) return false;
+			boolean matches = false;
+			for (String val : laboratoire.split(";")) {
+				if (labo.toLowerCase().contains(val.trim().toLowerCase())) {
+					matches = true;
+					break;
+				}
+			}
+			if (!matches) return false;
+		}
+
+		// 5. École (IN)
+		String ecole = params.get("ecole");
+		if (ecole != null && !ecole.isBlank()) {
+			String ecoleVal = dto.getEtablissementLibelle();
+			if (ecoleVal == null) return false;
+			boolean matches = false;
+			for (String val : ecole.split(";")) {
+				if (ecoleVal.equals(val.trim())) {
+					matches = true;
+					break;
+				}
+			}
+			if (!matches) return false;
+		}
+
+		// 6. Année
+		String annee = params.get("annee");
+		if (annee != null && !annee.isBlank()) {
+			String anneeUniv = dto.getAnneeUniversitaire();
+			if (anneeUniv == null) return false;
+			boolean matches = false;
+			for (String val : annee.split(";")) {
+				if (anneeUniv.startsWith(val.trim())) {
+					matches = true;
+					break;
+				}
+			}
+			if (!matches) return false;
+		}
+
+		// 7. Type proposition
+		String typeProposition = params.get("typeProposition");
+		if (typeProposition != null && !typeProposition.isBlank()) {
+			String type = dto.getTypeProposition();
+			if (type == null || !type.equals(typeProposition.trim())) return false;
 		}
 
 		return true;

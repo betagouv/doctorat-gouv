@@ -1290,7 +1290,10 @@ resetFilter(filterName: MultiFilterKey) {
     params.set('query', q);
     params.set('limit', '100');
     const filters = this.buildActiveFilters();
-    if (filters['localisation']) params.set('localisation', filters['localisation']);
+    const scalewayFilterKeys = ['localisation', 'discipline', 'defisSociete', 'laboratoire', 'ecole', 'annee', 'typeProposition'];
+    for (const key of scalewayFilterKeys) {
+      if (filters[key]) params.set(key, filters[key]);
+    }
     const url = `${environment.apiUrl}/scaleway/propositions?${params}`;
 
     fetch(url)
