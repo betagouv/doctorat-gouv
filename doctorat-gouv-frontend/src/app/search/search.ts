@@ -1327,7 +1327,9 @@ resetFilter(filterName: MultiFilterKey) {
         this.showAmbigueTooMany = this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
         this.showAmbigueMessage = this.scalewayResultsTresPertinent.length === 0 || this.showAmbigueTooMany;
 
+        const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({
+          ...existingState,
           scalewayQuery: this.scalewayQuery,
           isScalewayActive: this.isScalewayActive,
           scalewayScores: this.scalewayScores,
