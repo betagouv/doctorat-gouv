@@ -164,6 +164,7 @@ export class Search implements OnInit, OnDestroy {
   scalewayResultsTresPertinent: any[] = [];
   scalewayResultsOther: any[] = [];
   carouselDotIndex = 0;
+  locationNotMatched = false;
   private scalewayResponseData: any = null;
 
   
@@ -319,6 +320,7 @@ export class Search implements OnInit, OnDestroy {
 		this.scalewayVectorScores = saved.scalewayVectorScores || {};
 		this.scalewayRelevanceLevels = saved.scalewayRelevanceLevels || {};
 		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
+		this.locationNotMatched = saved.locationNotMatched || false;
 
 		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
@@ -1129,6 +1131,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.scalewayResultsTresPertinent = [];
     this.scalewayResultsOther = [];
     this.scalewayResponseData = null;
+    this.locationNotMatched = false;
 
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
@@ -1327,6 +1330,9 @@ resetFilter(filterName: MultiFilterKey) {
         this.showAmbigueTooMany = this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
         this.showAmbigueMessage = this.scalewayResultsTresPertinent.length === 0 || this.showAmbigueTooMany;
 
+        // Détection localisation non matchée
+        this.locationNotMatched = data.locationNotMatched === true;
+
         const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({
           ...existingState,
@@ -1336,6 +1342,7 @@ resetFilter(filterName: MultiFilterKey) {
           scalewayVectorScores: this.scalewayVectorScores,
           scalewayRelevanceLevels: this.scalewayRelevanceLevels,
           scalewayMatchedTypes: this.scalewayMatchedTypes,
+          locationNotMatched: this.locationNotMatched,
         });
       })
       .catch(err => {
@@ -1383,12 +1390,13 @@ resetFilter(filterName: MultiFilterKey) {
     const type = thesis.id != null ? this.scalewayMatchedTypes[thesis.id] : null;
     if (!type) return '';
     const labels: Record<string, string> = {
-      'TITRE': 'Titre',
-      'RESUME': 'Résumé',
-      'MOTS_CLES': 'Mots-clés',
-      'OBJECTIF': 'Objectif',
-      'CONTEXTE': 'Contexte',
-      'LABORATOIRE': 'Laboratoire'
+      'titre': 'Titre',
+      'resume': 'Résumé',
+      'mots_cles': 'Mots-clés',
+      'objectif': 'Objectif',
+      'contexte': 'Contexte',
+      'profil': 'Profil recherché',
+      'localisation': 'Localisation'
     };
     return labels[type] || type;
   }

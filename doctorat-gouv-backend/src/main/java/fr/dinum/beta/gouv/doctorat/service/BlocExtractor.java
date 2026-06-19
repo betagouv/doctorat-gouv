@@ -33,6 +33,12 @@ public class BlocExtractor {
 		ajouterBloc(blocs, sujet.getId(), "profil",
 			join(sujet.getProfilRecherche(), sujet.getProfilRechercheAnglais()));
 
+		ajouterBloc(blocs, sujet.getId(), "localisation",
+			join(sujet.getUniteRechercheVille(),
+			     sujet.getUniteRechercheCodePostal(),
+			     sujet.getEtablissementVille(),
+			     sujet.getEtablissementCodePostal()));
+
 		return blocs;
 	}
 

@@ -34,6 +34,15 @@ public interface SujetEmbeddingRepository extends JpaRepository<SujetEmbedding, 
 	List<Object[]> findBestScoreBySubject(@Param("queryVector") String queryVector,
 										  @Param("limit") int limit);
 
+	@Query(value = """
+		SELECT COUNT(*) > 0
+		FROM sujet_embedding
+		WHERE bloc_type = 'localisation'
+		  AND 1 - (embedding <=> CAST(:queryVector AS vector)) > :threshold
+		""", nativeQuery = true)
+	boolean hasLocalisationMatch(@Param("queryVector") String queryVector,
+								 @Param("threshold") double threshold);
+
 	List<SujetEmbedding> findByPropositionTheseIdIn(List<Long> ids);
 
 	void deleteByPropositionTheseId(Long propositionTheseId);

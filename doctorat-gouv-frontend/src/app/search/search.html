@@ -884,6 +884,11 @@
             {{ 'SEARCH.SCALEWAY_AMBIGUE' | translate }}
           </div>
 
+          <!-- Infobulle localisation non matchée -->
+          <div class="scaleway-ambigue-info" *ngIf="locationNotMatched && !showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_LOCATION_NOT_MATCHED' | translate }}
+          </div>
+
           <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
             <ng-container *ngFor="let thesis of scalewayResultsTresPertinent; let i = index">
               <div class="scaleway-carousel-item" [attr.data-index]="i">

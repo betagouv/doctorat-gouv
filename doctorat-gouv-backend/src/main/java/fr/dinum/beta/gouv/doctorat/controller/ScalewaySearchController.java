@@ -1,9 +1,12 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
 import fr.dinum.beta.gouv.doctorat.service.EmbeddingIndexationService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
+import fr.dinum.beta.gouv.doctorat.service.ScalewayEmbeddingService;
 import fr.dinum.beta.gouv.doctorat.service.SearchRerankerService;
 import fr.dinum.beta.gouv.doctorat.service.VectorSearchService;
 
@@ -41,9 +45,33 @@ public class ScalewaySearchController {
 	private static final double SEUIL_PERTINENT = 0.70;
 	private static final double SEUIL_FAIBLEMENT_PERTINENT = 0.60;
 
+	// Mots-clés géographiques FR/EN pour détecter une intention de localisation
+	private static final String[] GEO_KEYWORDS = {
+		// Français
+		"proche", "près", "pas loin", "autour", "alentours", "voisinage",
+		"proximité", "proximite", "à coté", "à côté", "aux environs",
+		"secteur de", "zone de", "du côté de",
+		// English
+		"near", "close to", "around", "nearby", "vicinity", "close by",
+		"not far", "located in", "located near", "situated in"
+	};
+
+	// Détecte les prépositions suivies d'un nom propre (ville, région…)
+	// Ex: "à Paris", "dans le Var", "en Île-de-France", "sur Lyon", "aux alentours"
+	private static final Pattern GEO_PREPOSITION_PATTERN = Pattern.compile(
+		"(?:^|\\s)(?:à|aux|dans|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?[A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s|$)"
+	);
+
+	// Extrait le nom de ville après un mot-clé géographique
+	// Ex: "proche de Paris" → "Paris", "à Lyon" → "Lyon"
+	private static final Pattern GEO_CITY_EXTRACT_PATTERN = Pattern.compile(
+		"(?:(?:proche|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*|(?:à|aux|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?)([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+	);
+
 	private final VectorSearchService vectorSearchService;
 	private final PropositionTheseService propositionService;
 	private final SearchRerankerService rerankerService;
+	private final ScalewayEmbeddingService scalewayEmbeddingService;
 	private final SujetEmbeddingRepository sujetEmbeddingRepository;
 	private final PropositionTheseRepository propositionTheseRepository;
 	private final EmbeddingIndexationService indexationService;
@@ -51,12 +79,14 @@ public class ScalewaySearchController {
 	public ScalewaySearchController(VectorSearchService vectorSearchService,
 									PropositionTheseService propositionService,
 									SearchRerankerService rerankerService,
+									ScalewayEmbeddingService scalewayEmbeddingService,
 									SujetEmbeddingRepository sujetEmbeddingRepository,
 									PropositionTheseRepository propositionTheseRepository,
 									EmbeddingIndexationService indexationService) {
 		this.vectorSearchService = vectorSearchService;
 		this.propositionService = propositionService;
 		this.rerankerService = rerankerService;
+		this.scalewayEmbeddingService = scalewayEmbeddingService;
 		this.sujetEmbeddingRepository = sujetEmbeddingRepository;
 		this.propositionTheseRepository = propositionTheseRepository;
 		this.indexationService = indexationService;
@@ -178,6 +208,57 @@ public class ScalewaySearchController {
 		return true;
 	}
 
+	/**
+	 * Détecte si la requête contient une intention géographique :
+	 * - mots-clés explicites (proche, près, near…)
+	 * - préposition + nom de ville/région (à Paris, dans le Var, en Bretagne…)
+	 */
+	private boolean containsGeoIntent(String query) {
+		if (query == null || query.isBlank()) return false;
+
+		// Mots-clés insensibles à la casse
+		String lower = query.toLowerCase().trim();
+		for (String kw : GEO_KEYWORDS) {
+			if (lower.contains(kw)) return true;
+		}
+
+		// Préposition + nom propre (ex: "à Paris", "dans le Var")
+		Matcher m = GEO_PREPOSITION_PATTERN.matcher(query);
+		return m.find();
+	}
+
+	/**
+	 * Extrait le nom de ville mentionné après un mot-clé géographique
+	 * (proche de X, près de X, à X, etc.)
+	 */
+	private String extractCityFromGeoQuery(String query) {
+		if (query == null || query.isBlank()) return null;
+		Matcher m = GEO_CITY_EXTRACT_PATTERN.matcher(query);
+		if (m.find()) {
+			return m.group(1).trim().toLowerCase();
+		}
+		return null;
+	}
+
+	/**
+	 * Vérifie si au moins un résultat contient la ville extraite
+	 * (dans uniteRechercheVille ou etablissementVille)
+	 */
+	private boolean anyResultMatchesCity(List<PropositionTheseDto> results, String cityLower) {
+		if (results == null || results.isEmpty() || cityLower == null) return false;
+		int topN = Math.min(20, results.size());
+		for (int i = 0; i < topN; i++) {
+			PropositionTheseDto dto = results.get(i);
+			String urVille = dto.getUniteRechercheVille();
+			String etabVille = dto.getEtablissementVille();
+			if ((urVille != null && urVille.toLowerCase().contains(cityLower))
+				|| (etabVille != null && etabVille.toLowerCase().contains(cityLower))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@GetMapping("/propositions")
 	public ResponseEntity<Map<String, Object>> search(
 			@RequestParam Map<String, String> allParams) {
@@ -242,18 +323,25 @@ public class ScalewaySearchController {
 			PropositionTheseDto dto = theseMap.get(id);
 			if (dto != null) {
 				results.add(dto);
-				hits.stream()
-					.filter(h -> id.equals(h.getSujetId()))
-					.findFirst()
-					.ifPresent(hit -> {
+				for (VectorSearchHit hit : hits) {
+					if (id.equals(hit.getSujetId())) {
 						matchedTypes.put(id, hit.getBlocType());
 						matchedContent.put(id, hit.getContenuMatche());
-					});
+						break;
+					}
+				}
 			}
 		}
 
+		// 6. Détection localisation : extraction du nom de ville après mot-clé géo
+		String extractedCity = extractCityFromGeoQuery(query);
+		boolean locationNotMatched = containsGeoIntent(query)
+			&& extractedCity != null
+			&& !anyResultMatchesCity(results, extractedCity);
+
 		long duration = System.currentTimeMillis() - startTime;
-		log.info("{} résultat(s) retourné(s) pour la recherche vectorielle (durée={}ms)", results.size(), duration);
+		log.info("{} résultat(s) retourné(s) pour la recherche vectorielle (durée={}ms, locationNotMatched={})",
+			results.size(), duration, locationNotMatched);
 
 		return ResponseEntity.ok(Map.of(
 			"query", query,
@@ -264,7 +352,8 @@ public class ScalewaySearchController {
 			"matchedTypes", matchedTypes,
 			"matchedContent", matchedContent,
 			"totalResults", results.size(),
-			"durationMs", duration
+			"durationMs", duration,
+			"locationNotMatched", locationNotMatched
 		));
 	}
 
