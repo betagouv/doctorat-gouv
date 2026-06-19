@@ -151,10 +151,23 @@
 
 /* Premier badge (vert fluorescent, texte noir) */
 .fr-card__img .badge-green {
-  bottom: 2.5rem; /* placé plus haut */
+  bottom: 2.8rem;
   background-color: rgb(196, 255, 185);
   color: #000;
-  bottom: 2.8rem; /* remonte le badge vert pour créer l'espace */
+}
+
+/* Badge localisation (au-dessus du badge domaine) */
+.fr-card__img .badge-location {
+  top: 2.5rem;
+  right: 0.5rem;
+  left: auto;
+  z-index: 10;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
 }
 
 /* Badge de score Albert */
@@ -948,6 +961,12 @@
   /* Badges repositionnés */
   .fr-card__img .badge-green {
     bottom: 2rem;
+  }
+
+  .fr-card__img .badge-location {
+    top: 2.5rem;
+    right: 0.5rem;
+    left: auto;
   }
 
   .fr-card__img .badge-pink {

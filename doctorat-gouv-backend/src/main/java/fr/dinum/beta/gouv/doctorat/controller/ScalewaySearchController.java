@@ -1,7 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
 import fr.dinum.beta.gouv.doctorat.service.EmbeddingIndexationService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
-import fr.dinum.beta.gouv.doctorat.service.ScalewayEmbeddingService;
 import fr.dinum.beta.gouv.doctorat.service.SearchRerankerService;
 import fr.dinum.beta.gouv.doctorat.service.VectorSearchService;
 
@@ -71,7 +69,6 @@ public class ScalewaySearchController {
 	private final VectorSearchService vectorSearchService;
 	private final PropositionTheseService propositionService;
 	private final SearchRerankerService rerankerService;
-	private final ScalewayEmbeddingService scalewayEmbeddingService;
 	private final SujetEmbeddingRepository sujetEmbeddingRepository;
 	private final PropositionTheseRepository propositionTheseRepository;
 	private final EmbeddingIndexationService indexationService;
@@ -79,14 +76,12 @@ public class ScalewaySearchController {
 	public ScalewaySearchController(VectorSearchService vectorSearchService,
 									PropositionTheseService propositionService,
 									SearchRerankerService rerankerService,
-									ScalewayEmbeddingService scalewayEmbeddingService,
 									SujetEmbeddingRepository sujetEmbeddingRepository,
 									PropositionTheseRepository propositionTheseRepository,
 									EmbeddingIndexationService indexationService) {
 		this.vectorSearchService = vectorSearchService;
 		this.propositionService = propositionService;
 		this.rerankerService = rerankerService;
-		this.scalewayEmbeddingService = scalewayEmbeddingService;
 		this.sujetEmbeddingRepository = sujetEmbeddingRepository;
 		this.propositionTheseRepository = propositionTheseRepository;
 		this.indexationService = indexationService;
@@ -241,22 +236,15 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Vérifie si au moins un résultat contient la ville extraite
+	 * Vérifie si un DTO correspond à la ville extraite
 	 * (dans uniteRechercheVille ou etablissementVille)
 	 */
-	private boolean anyResultMatchesCity(List<PropositionTheseDto> results, String cityLower) {
-		if (results == null || results.isEmpty() || cityLower == null) return false;
-		int topN = Math.min(20, results.size());
-		for (int i = 0; i < topN; i++) {
-			PropositionTheseDto dto = results.get(i);
-			String urVille = dto.getUniteRechercheVille();
-			String etabVille = dto.getEtablissementVille();
-			if ((urVille != null && urVille.toLowerCase().contains(cityLower))
-				|| (etabVille != null && etabVille.toLowerCase().contains(cityLower))) {
-				return true;
-			}
-		}
-		return false;
+	private boolean dtoMatchesCity(PropositionTheseDto dto, String cityLower) {
+		if (dto == null || cityLower == null) return false;
+		String urVille = dto.getUniteRechercheVille();
+		String etabVille = dto.getEtablissementVille();
+		return (urVille != null && urVille.toLowerCase().contains(cityLower))
+			|| (etabVille != null && etabVille.toLowerCase().contains(cityLower));
 	}
 
 	@GetMapping("/propositions")
@@ -335,25 +323,37 @@ public class ScalewaySearchController {
 
 		// 6. Détection localisation : extraction du nom de ville après mot-clé géo
 		String extractedCity = extractCityFromGeoQuery(query);
+		Map<String, Boolean> locationMatchedMap = new HashMap<>();
+		boolean anyLocationMatched = false;
+		if (extractedCity != null) {
+			for (PropositionTheseDto dto : results) {
+				boolean matches = dtoMatchesCity(dto, extractedCity);
+				if (dto.getId() != null) {
+					locationMatchedMap.put(String.valueOf(dto.getId()), matches);
+				}
+				if (matches) anyLocationMatched = true;
+			}
+		}
 		boolean locationNotMatched = containsGeoIntent(query)
 			&& extractedCity != null
-			&& !anyResultMatchesCity(results, extractedCity);
+			&& !anyLocationMatched;
 
 		long duration = System.currentTimeMillis() - startTime;
 		log.info("{} résultat(s) retourné(s) pour la recherche vectorielle (durée={}ms, locationNotMatched={})",
 			results.size(), duration, locationNotMatched);
 
-		return ResponseEntity.ok(Map.of(
-			"query", query,
-			"results", results,
-			"scores", compositeScores,
-			"vectorScores", vectorScores,
-			"relevanceLevels", relevanceLevels,
-			"matchedTypes", matchedTypes,
-			"matchedContent", matchedContent,
-			"totalResults", results.size(),
-			"durationMs", duration,
-			"locationNotMatched", locationNotMatched
+		return ResponseEntity.ok(Map.ofEntries(
+			Map.entry("query", query),
+			Map.entry("results", results),
+			Map.entry("scores", compositeScores),
+			Map.entry("vectorScores", vectorScores),
+			Map.entry("relevanceLevels", relevanceLevels),
+			Map.entry("matchedTypes", matchedTypes),
+			Map.entry("matchedContent", matchedContent),
+			Map.entry("totalResults", results.size()),
+			Map.entry("durationMs", duration),
+			Map.entry("locationNotMatched", locationNotMatched),
+			Map.entry("locationMatchedMap", locationMatchedMap)
 		));
 	}
 

@@ -165,6 +165,7 @@ export class Search implements OnInit, OnDestroy {
   scalewayResultsOther: any[] = [];
   carouselDotIndex = 0;
   locationNotMatched = false;
+  locationMatchedMap: Record<string, boolean> = {};
   private scalewayResponseData: any = null;
 
   
@@ -321,6 +322,7 @@ export class Search implements OnInit, OnDestroy {
 		this.scalewayRelevanceLevels = saved.scalewayRelevanceLevels || {};
 		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
 		this.locationNotMatched = saved.locationNotMatched || false;
+		this.locationMatchedMap = saved.locationMatchedMap || {};
 
 		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
@@ -1132,6 +1134,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.scalewayResultsOther = [];
     this.scalewayResponseData = null;
     this.locationNotMatched = false;
+    this.locationMatchedMap = {};
 
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
@@ -1332,6 +1335,7 @@ resetFilter(filterName: MultiFilterKey) {
 
         // Détection localisation non matchée
         this.locationNotMatched = data.locationNotMatched === true;
+        this.locationMatchedMap = data.locationMatchedMap || {};
 
         const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({
@@ -1343,6 +1347,7 @@ resetFilter(filterName: MultiFilterKey) {
           scalewayRelevanceLevels: this.scalewayRelevanceLevels,
           scalewayMatchedTypes: this.scalewayMatchedTypes,
           locationNotMatched: this.locationNotMatched,
+          locationMatchedMap: this.locationMatchedMap,
         });
       })
       .catch(err => {
@@ -1437,5 +1442,9 @@ resetFilter(filterName: MultiFilterKey) {
     const scrollLeft = el.scrollLeft;
     const index = Math.round(scrollLeft / (itemWidth + gap));
     this.carouselDotIndex = Math.min(index, items.length - 1);
+  }
+
+  isLocationMatched(thesis: any): boolean {
+    return thesis?.id != null && this.locationMatchedMap[String(thesis.id)] === true;
   }
 }
