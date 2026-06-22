@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import jakarta.persistence.PersistenceContext;
  * - Aucune donnée à caractère personnel n'est tracée dans les logs du scheduler.
  */
 @Component
+@ConditionalOnProperty(name = "albert.scheduler.enabled", havingValue = "true", matchIfMissing = false)
 public class AlbertIndexationScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(AlbertIndexationScheduler.class);
