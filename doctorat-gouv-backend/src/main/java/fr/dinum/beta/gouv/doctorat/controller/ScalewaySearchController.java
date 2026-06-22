@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,16 +56,6 @@ public class ScalewaySearchController {
 		"not far", "located in", "located near", "situated in"
 	};
 
-	// Marqueurs fiables pour le split (sous-ensemble de GEO_KEYWORDS
-	// excluant les mots trop génériques comme "secteur de", "zone de",
-	// "autour", "voisinage", "proximité"… qui peuvent appartenir au cœur
-	// de la requête.
-	private static final String[] SPLIT_GEO_KEYWORDS = {
-		"proche", "près", "pas loin", "à coté", "à côté", "aux environs",
-		"near", "close to", "nearby", "close by", "not far",
-		"located in", "located near", "situated in"
-	};
-
 	// Détecte les prépositions suivies d'un nom propre (ville, région…)
 	// Ex: "à Paris", "dans le Var", "en Île-de-France", "sur Lyon", "aux alentours"
 	private static final Pattern GEO_PREPOSITION_PATTERN = Pattern.compile(
@@ -74,7 +65,7 @@ public class ScalewaySearchController {
 	// Extrait le nom de ville après un mot-clé géographique
 	// Ex: "proche de Paris" → "Paris", "à Lyon" → "Lyon"
 	private static final Pattern GEO_CITY_EXTRACT_PATTERN = Pattern.compile(
-		"(?:(?:proche|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*|(?:à|aux|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?)([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+		"(?:(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*|(?:à|aux|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?)([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
 	);
 
 	// Mots-clés financement FR/EN
@@ -84,9 +75,16 @@ public class ScalewaySearchController {
 		"funded", "grant", "scholarship", "sponsored"
 	};
 
-	// Regex pour nettoyer les prépositions/articles devant un nom d'organisme
+	// Pattern de split pour le financement : nécessite "financé/funded/sponsored" + "par/by",
+	// ou un mot-clé autonome suffisamment spécifique (bourse, subvention, grant, scholarship).
+	private static final Pattern SPLIT_FUNDING_PATTERN = Pattern.compile(
+		"(?:financé|funded|sponsored)\\s+(?:par|by)\\s+|bourse\\s+|subvention\\s+|grant\\s+|scholarship\\s+",
+		Pattern.CASE_INSENSITIVE
+	);
+
+	// Nettoie les prépositions/articles devant un nom d'organisme
 	private static final Pattern FUNDING_LEADING_CLEAN = Pattern.compile(
-		"^(?:par |pour |by |de |du |des |d'|le |la |l'|les |un |une |the |a |an )+",
+		"^(?:par |pour |by |de |du |des |d'|le |la |l'|les |un |une |aux |au |avec |chez |sans |sous |the |a |an )+",
 		Pattern.CASE_INSENSITIVE
 	);
 
@@ -312,12 +310,9 @@ public class ScalewaySearchController {
 
 		// Trouver le prochain mot-clé géo pour savoir où couper
 		int nextGeoIdx = Integer.MAX_VALUE;
-		String lowerAfter = after.toLowerCase();
-		for (String kw : SPLIT_GEO_KEYWORDS) {
-			int i = lowerAfter.indexOf(kw);
-			if (i >= 0 && i < nextGeoIdx) {
-				nextGeoIdx = i;
-			}
+		Matcher nextGeoM = GEO_CITY_EXTRACT_PATTERN.matcher(after);
+		if (nextGeoM.find()) {
+			nextGeoIdx = nextGeoM.start();
 		}
 
 		String orgPart;
@@ -346,21 +341,46 @@ public class ScalewaySearchController {
 		String origine = dto.getFinancementOrigine();
 		String employeur = dto.getFinancementEmployeur();
 		String details = dto.getFinancementDetails();
+		List<String> types = dto.getFinancementTypes();
+		if (origine == null && employeur == null && details == null && (types == null || types.isEmpty())) return false;
 
-		if (origine == null && employeur == null && details == null) return false;
-
-		// Split sur les conjonctions pour matcher des sous-parties
+		// 1. Split sur les conjonctions pour matcher des sous-parties
 		String[] parts = orgLower.split("\\s+(?:ou|et|or|and)\\s+|\\s*,\\s*");
 		for (String part : parts) {
 			String trimmed = part.trim();
 			if (trimmed.isEmpty()) continue;
-			if ((origine != null && origine.toLowerCase().contains(trimmed))
-				|| (employeur != null && employeur.toLowerCase().contains(trimmed))
-				|| (details != null && details.toLowerCase().contains(trimmed))) {
+			if (fieldContains(origine, trimmed) || fieldContains(employeur, trimmed) || fieldContains(details, trimmed) || typeListContains(types, trimmed)) {
 				return true;
 			}
 		}
+
+		// 2. Appariement progressif : "établissement public français" > 2 mots
+		//    On retire le dernier mot à chaque itération pour matcher
+		//    "Établissement public" stocké en base.
+		String[] words = orgLower.split("\\s+");
+		for (int end = words.length - 1; end >= 2; end--) {
+			String sub = String.join(" ", java.util.Arrays.copyOfRange(words, 0, end)).trim();
+			if (sub.length() < 4) continue;
+			if (fieldContains(origine, sub) || fieldContains(employeur, sub) || fieldContains(details, sub) || typeListContains(types, sub)) {
+				return true;
+			}
+		}
+
 		return false;
+	}
+
+	/** Vérifie si la liste de types de financement contient la valeur (lowercase). */
+	private boolean typeListContains(List<String> types, String value) {
+		if (types == null) return false;
+		for (String t : types) {
+			if (t != null && t.toLowerCase().contains(value)) return true;
+		}
+		return false;
+	}
+
+	/** Vérifie si un champ texte (nullable) contient la valeur (lowercase). */
+	private boolean fieldContains(String field, String value) {
+		return field != null && field.toLowerCase().contains(value);
 	}
 
 	/**
@@ -395,19 +415,24 @@ public class ScalewaySearchController {
 
 	/**
 	 * Trouve l'index du premier mot-clé d'intention (géo ou funding) dans la requête.
+	 * Utilise les regex d'extraction pour valider qu'il s'agit bien d'un pattern
+	 * d'intention (ex: "proche de Paris" et non "proche de la médecine").
 	 */
 	private int findFirstIntentMarker(String query) {
 		if (query == null || query.isBlank()) return -1;
-		String lower = query.toLowerCase().trim();
 		int firstIdx = Integer.MAX_VALUE;
 
-		for (String kw : SPLIT_GEO_KEYWORDS) {
-			int i = lower.indexOf(kw);
-			if (i >= 0 && i < firstIdx) firstIdx = i;
+		// Geo : utilise GEO_CITY_EXTRACT_PATTERN qui exige une majuscule
+		// après le mot-clé, évitant les faux positifs (ex: "proche de la médecine")
+		Matcher geoM = GEO_CITY_EXTRACT_PATTERN.matcher(query);
+		if (geoM.find()) {
+			firstIdx = geoM.start();
 		}
-		for (String kw : FUNDING_KEYWORDS) {
-			int i = lower.indexOf(kw);
-			if (i >= 0 && i < firstIdx) firstIdx = i;
+
+		// Funding : utilise SPLIT_FUNDING_PATTERN (financé par, bourse, grant…)
+		Matcher fundingM = SPLIT_FUNDING_PATTERN.matcher(query);
+		if (fundingM.find() && fundingM.start() < firstIdx) {
+			firstIdx = fundingM.start();
 		}
 
 		return firstIdx < Integer.MAX_VALUE ? firstIdx : -1;
@@ -421,6 +446,7 @@ public class ScalewaySearchController {
 		if (query == null || query.isBlank()) {
 			return ResponseEntity.badRequest().body(Map.of("error", "Le paramètre query est requis"));
 		}
+		query = query.trim();
 		int limit = Integer.parseInt(allParams.getOrDefault("limit", "100"));
 
 		long startTime = System.currentTimeMillis();
@@ -530,18 +556,27 @@ public class ScalewaySearchController {
 
 		// 7. Détection financement : construction de la map par résultat
 		Map<String, Boolean> fundingMatchedMap = new HashMap<>();
+		int fundingMatchCount = 0;
 		if (extractedFundingOrg != null) {
 			for (PropositionTheseDto dto : results) {
 				boolean matches = dtoMatchesFunding(dto, extractedFundingOrg);
 				if (dto.getId() != null) {
 					fundingMatchedMap.put(String.valueOf(dto.getId()), matches);
+					if (matches) fundingMatchCount++;
 				}
 			}
+			log.info("Funding: org=\"{}\", {}/{} résultats matchés", extractedFundingOrg, fundingMatchCount, results.size());
 		}
 
 		long duration = System.currentTimeMillis() - startTime;
 		log.info("{} résultat(s) retourné(s) pour la recherche vectorielle (durée={}ms, locationNotMatched={})",
 			results.size(), duration, locationNotMatched);
+		if (extractedCity != null) {
+			log.info("Location: city=\"{}\", {}/{} résultats matchés",
+				extractedCity,
+				locationMatchedMap.values().stream().filter(v -> v).count(),
+				results.size());
+		}
 
 		return ResponseEntity.ok(Map.ofEntries(
 			Map.entry("query", query),

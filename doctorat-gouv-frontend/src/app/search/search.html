@@ -685,6 +685,18 @@
               {{ getScalewayRelevanceLabel(thesis) }}
             </span>
 
+            <span class="badge badge-location"
+                  *ngIf="isScalewayActive && !isScalewayLoading && isLocationMatched(thesis)"
+                  title="Sujet au plus proche du secteur géographique recherché">
+              <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+            </span>
+
+            <span class="badge badge-funding"
+                  *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
+                  title="Sujet dont le financement correspond à la recherche">
+              <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
+            </span>
+
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
               {{ getFirstDomaineWithMaxLength(thesis, 60) }}
