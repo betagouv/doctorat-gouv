@@ -176,8 +176,8 @@
 }
 
 /* Badge localisation (au-dessus du badge domaine) */
-.fr-card__img .badge-location {
-  top: 2.5rem;
+.fr-card__img .badge-location,
+.fr-card__img .badge-funding {
   right: 0.5rem;
   left: auto;
   z-index: 10;
@@ -187,6 +187,14 @@
   background-color: rgba(0, 0, 0, 0.55);
   color: #fff;
   border: none;
+}
+
+.fr-card__img .badge-location {
+  top: 2.5rem;
+}
+
+.fr-card__img .badge-funding {
+  top: 4.5rem;
 }
 
 /* Badge de score Albert */
@@ -285,6 +293,40 @@
 .scaleway-masque {
   background-color: #999;
   color: white;
+}
+
+/* Chips d'intentions */
+.scaleway-intents {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+}
+.scaleway-intents-label {
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+}
+.intent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.8rem !important;
+  border-radius: 999px !important;
+}
+.intent-chip--core {
+  background-color: #e8edff !important;
+  color: #1a2a6c !important;
+}
+.intent-chip--location {
+  background-color: #e3f7e3 !important;
+  color: #1a6c1a !important;
+}
+.intent-chip--funding {
+  background-color: #fff3e0 !important;
+  color: #8d5c00 !important;
 }
 
 .scaleway-section-title {
@@ -984,6 +1026,12 @@
 
   .fr-card__img .badge-location {
     top: 2.5rem;
+    right: 0.5rem;
+    left: auto;
+  }
+
+  .fr-card__img .badge-funding {
+    top: 4.5rem;
     right: 0.5rem;
     left: auto;
   }

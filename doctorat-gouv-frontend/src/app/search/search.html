@@ -799,6 +799,12 @@
             <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
           </span>
 
+          <span class="badge badge-funding"
+                *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
+                title="Sujet dont le financement correspond à la recherche">
+            <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
+          </span>
+
           <span class="fr-tag badge badge-green"
                 *ngIf="getFirstDomaine(thesis)">
             {{ getFirstDomaineWithMaxLength(thesis, 60) }}
@@ -871,6 +877,18 @@
 
       <!-- Mode Scaleway : résultats triés en 2 sections -->
       <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
+
+        <!-- Chips d'intentions -->
+        <div class="fr-col-12" *ngIf="hasIntents()">
+          <div class="scaleway-intents">
+            <span class="scaleway-intents-label">{{ 'SEARCH.SCALEWAY_INTENTS_LABEL' | translate }}</span>
+            <span class="fr-tag intent-chip" *ngFor="let key of objectKeys(intents)"
+                  [ngClass]="'intent-chip--' + key">
+              <span [class]="getIntentIcon(key)" aria-hidden="true"></span>
+              {{ intents[key] }}
+            </span>
+          </div>
+        </div>
 
         <!-- Section 1 : Meilleurs résultats (carrousel) -->
         <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">

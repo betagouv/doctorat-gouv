@@ -166,6 +166,8 @@ export class Search implements OnInit, OnDestroy {
   carouselDotIndex = 0;
   locationNotMatched = false;
   locationMatchedMap: Record<string, boolean> = {};
+  fundingMatchedMap: Record<string, boolean> = {};
+  intents: Record<string, string> = {};
   private scalewayResponseData: any = null;
 
   
@@ -323,6 +325,8 @@ export class Search implements OnInit, OnDestroy {
 		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
 		this.locationNotMatched = saved.locationNotMatched || false;
 		this.locationMatchedMap = saved.locationMatchedMap || {};
+		this.fundingMatchedMap = saved.fundingMatchedMap || {};
+		this.intents = saved.intents || {};
 
 		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
@@ -1135,6 +1139,8 @@ resetFilter(filterName: MultiFilterKey) {
     this.scalewayResponseData = null;
     this.locationNotMatched = false;
     this.locationMatchedMap = {};
+    this.fundingMatchedMap = {};
+    this.intents = {};
 
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
@@ -1336,6 +1342,8 @@ resetFilter(filterName: MultiFilterKey) {
         // Détection localisation non matchée
         this.locationNotMatched = data.locationNotMatched === true;
         this.locationMatchedMap = data.locationMatchedMap || {};
+        this.fundingMatchedMap = data.fundingMatchedMap || {};
+        this.intents = data.intents || {};
 
         const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({
@@ -1348,6 +1356,8 @@ resetFilter(filterName: MultiFilterKey) {
           scalewayMatchedTypes: this.scalewayMatchedTypes,
           locationNotMatched: this.locationNotMatched,
           locationMatchedMap: this.locationMatchedMap,
+          fundingMatchedMap: this.fundingMatchedMap,
+          intents: this.intents,
         });
       })
       .catch(err => {
@@ -1446,5 +1456,35 @@ resetFilter(filterName: MultiFilterKey) {
 
   isLocationMatched(thesis: any): boolean {
     return thesis?.id != null && this.locationMatchedMap[String(thesis.id)] === true;
+  }
+
+  isFundingMatched(thesis: any): boolean {
+    return thesis?.id != null && this.fundingMatchedMap[String(thesis.id)] === true;
+  }
+
+  getIntentIcon(type: string): string {
+    const icons: Record<string, string> = {
+      core: 'fr-icon-search-line',
+      location: 'fr-icon-map-pin-2-line',
+      funding: 'fr-icon-money-euro-circle-line'
+    };
+    return icons[type] || 'fr-icon-information-line';
+  }
+
+  getIntentLabel(type: string): string {
+    const labels: Record<string, string> = {
+      core: 'Sujet',
+      location: 'Localisation',
+      funding: 'Financement'
+    };
+    return labels[type] || type;
+  }
+
+  hasIntents(): boolean {
+    return this.intents && Object.keys(this.intents).length > 0;
+  }
+
+  objectKeys(obj: Record<string, any>): string[] {
+    return Object.keys(obj);
   }
 }

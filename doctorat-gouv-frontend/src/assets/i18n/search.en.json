@@ -40,7 +40,8 @@
 	"SCALEWAY_NLP_EXAMPLE": "Example of a topic too generic to reproduce: <em>\"AI topic\"</em>. Feel free to iterate to get the best results.",
 	"SCALEWAY_AMBIGUE": "Your search generates a large number of very relevant results. For more precision, describe your topic more finely.",
 	"SCALEWAY_AMBIGUE_ZERO": "Ambiguous search: no result matches perfectly. Try rephrasing or broadening your query.",
-	"SCALEWAY_LOCATION_NOT_MATCHED": "Looking for a specific area? The most relevant results are not located in that zone. You can use the \"Location\" filter to display only results near the place you are interested in."
+	"SCALEWAY_LOCATION_NOT_MATCHED": "Looking for a specific area? The most relevant results are not located in that zone. You can use the \"Location\" filter to display only results near the place you are interested in.",
+	"SCALEWAY_INTENTS_LABEL": "Your search:"
   },
 
   "FILTERS": {

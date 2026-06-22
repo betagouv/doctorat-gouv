@@ -2,6 +2,7 @@ package fr.dinum.beta.gouv.doctorat.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -64,6 +65,19 @@ public class ScalewaySearchController {
 	// Ex: "proche de Paris" → "Paris", "à Lyon" → "Lyon"
 	private static final Pattern GEO_CITY_EXTRACT_PATTERN = Pattern.compile(
 		"(?:(?:proche|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*|(?:à|aux|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?)([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+	);
+
+	// Mots-clés financement FR/EN
+	private static final String[] FUNDING_KEYWORDS = {
+		"financé", "financement", "finance", "bourse", "subvention",
+		"fundé", "funding",
+		"funded", "grant", "scholarship", "sponsored"
+	};
+
+	// Regex pour nettoyer les prépositions/articles devant un nom d'organisme
+	private static final Pattern FUNDING_LEADING_CLEAN = Pattern.compile(
+		"^(?:par |pour |by |de |du |des |d'|le |la |l'|les |un |une |the |a |an )+",
+		Pattern.CASE_INSENSITIVE
 	);
 
 	private final VectorSearchService vectorSearchService;
@@ -247,6 +261,148 @@ public class ScalewaySearchController {
 			|| (etabVille != null && etabVille.toLowerCase().contains(cityLower));
 	}
 
+	/**
+	 * Détecte si la requête contient une intention de financement
+	 */
+	private boolean containsFundingIntent(String query) {
+		if (query == null || query.isBlank()) return false;
+		String lower = query.toLowerCase().trim();
+		for (String kw : FUNDING_KEYWORDS) {
+			if (lower.contains(kw)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Extrait l'organisme financeur à partir d'une zone d'intentions.
+	 * Prend tout le texte depuis le premier mot-clé funding jusqu'au
+	 * prochain mot-clé géographique (ou fin de chaîne), puis nettoie
+	 * les prépositions/articles en tête.
+	 * Ex: "financé par une collectivité locale ou territoriale proche de Paris"
+	 *     → "collectivité locale ou territoriale"
+	 */
+	private String extractFundingOrgFromQuery(String query) {
+		if (query == null || query.isBlank()) return null;
+		String lower = query.toLowerCase().trim();
+
+		// Trouver le premier mot-clé funding
+		int bestIdx = Integer.MAX_VALUE;
+		String bestKw = null;
+		for (String kw : FUNDING_KEYWORDS) {
+			int i = lower.indexOf(kw);
+			if (i >= 0 && i < bestIdx) {
+				bestIdx = i;
+				bestKw = kw;
+			}
+		}
+		if (bestKw == null) return null;
+
+		// Tout ce qui suit le mot-clé funding
+		String after = query.substring(bestIdx + bestKw.length()).trim();
+
+		// Trouver le prochain mot-clé géo pour savoir où couper
+		int nextGeoIdx = Integer.MAX_VALUE;
+		String lowerAfter = after.toLowerCase();
+		for (String kw : GEO_KEYWORDS) {
+			int i = lowerAfter.indexOf(kw);
+			if (i >= 0 && i < nextGeoIdx) {
+				nextGeoIdx = i;
+			}
+		}
+
+		String orgPart;
+		if (nextGeoIdx < Integer.MAX_VALUE) {
+			orgPart = after.substring(0, nextGeoIdx).trim();
+		} else {
+			orgPart = after;
+		}
+
+		// Nettoyer les prépositions/articles en tête
+		Matcher clean = FUNDING_LEADING_CLEAN.matcher(orgPart);
+		orgPart = clean.replaceAll("").trim();
+
+		if (orgPart.isEmpty()) return null;
+		return orgPart.toLowerCase();
+	}
+
+	/**
+	 * Vérifie si un DTO correspond à l'organisme financeur extrait.
+	 * Pour gérer les variantes de conjonction (ex: "collectivité locale ou territoriale"
+	 * vs "collectivité locale et territorial"), l'org est splitté sur ou/et et
+	 * chaque partie est testée individuellement.
+	 */
+	private boolean dtoMatchesFunding(PropositionTheseDto dto, String orgLower) {
+		if (dto == null || orgLower == null) return false;
+		String origine = dto.getFinancementOrigine();
+		String employeur = dto.getFinancementEmployeur();
+		String details = dto.getFinancementDetails();
+
+		if (origine == null && employeur == null && details == null) return false;
+
+		// Split sur les conjonctions pour matcher des sous-parties
+		String[] parts = orgLower.split("\\s+(?:ou|et|or|and)\\s+|\\s*,\\s*");
+		for (String part : parts) {
+			String trimmed = part.trim();
+			if (trimmed.isEmpty()) continue;
+			if ((origine != null && origine.toLowerCase().contains(trimmed))
+				|| (employeur != null && employeur.toLowerCase().contains(trimmed))
+				|| (details != null && details.toLowerCase().contains(trimmed))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Nettoie la requête pour la recherche vectorielle en ne gardant que le cœur,
+	 * c'est-à-dire tout ce qui précède le premier mot-clé d'intention
+	 * (géo ou financement).
+	 * Ex: "sujets santé proche de Paris financé par le CNRPS" → "sujets santé"
+	 *     "sujets santé financé par le CNRPS proche de Paris" → "sujets santé"
+	 * Si le mot-clé est en début de requête (pas de cœur), retourne la requête originale.
+	 */
+	private String cleanQueryForVectorSearch(String query) {
+		if (query == null || query.isBlank()) return query;
+		int idx = findFirstIntentMarker(query);
+		if (idx > 0) {
+			String cleaned = query.substring(0, idx).trim();
+			if (!cleaned.isEmpty()) return cleaned;
+		}
+		return query;
+	}
+
+	/**
+	 * Extrait la zone d'intentions (tout ce qui suit le premier mot-clé).
+	 * Retourne null si aucun mot-clé trouvé.
+	 */
+	private String extractIntentsZone(String query) {
+		if (query == null || query.isBlank()) return null;
+		int idx = findFirstIntentMarker(query);
+		if (idx < 0) return null;
+		String zone = query.substring(idx).trim();
+		return zone.isEmpty() ? null : zone;
+	}
+
+	/**
+	 * Trouve l'index du premier mot-clé d'intention (géo ou funding) dans la requête.
+	 */
+	private int findFirstIntentMarker(String query) {
+		if (query == null || query.isBlank()) return -1;
+		String lower = query.toLowerCase().trim();
+		int firstIdx = Integer.MAX_VALUE;
+
+		for (String kw : GEO_KEYWORDS) {
+			int i = lower.indexOf(kw);
+			if (i >= 0 && i < firstIdx) firstIdx = i;
+		}
+		for (String kw : FUNDING_KEYWORDS) {
+			int i = lower.indexOf(kw);
+			if (i >= 0 && i < firstIdx) firstIdx = i;
+		}
+
+		return firstIdx < Integer.MAX_VALUE ? firstIdx : -1;
+	}
+
 	@GetMapping("/propositions")
 	public ResponseEntity<Map<String, Object>> search(
 			@RequestParam Map<String, String> allParams) {
@@ -260,12 +416,29 @@ public class ScalewaySearchController {
 		long startTime = System.currentTimeMillis();
 		log.info("Recherche vectorielle via /api/scaleway/propositions (limit={})", limit);
 
-		// 1. Recherche vectorielle
-		List<VectorSearchHit> hits = vectorSearchService.search(query, limit);
+		// Nettoyer la requête : retirer les parties localisation et financement
+		// pour que l'embedding porte uniquement sur le cœur de la recherche
+		String vectorQuery = cleanQueryForVectorSearch(query);
+		if (!vectorQuery.equals(query)) {
+			log.info("Requête nettoyée pour l'embedding: \"{}\" → \"{}\"", query, vectorQuery);
+		}
+
+		// Extraire les intentions structurées (core, location, funding)
+		Map<String, String> intents = new LinkedHashMap<>();
+		intents.put("core", vectorQuery);
+		String intentsZone = extractIntentsZone(query);
+		String extractedCity = intentsZone != null ? extractCityFromGeoQuery(intentsZone) : null;
+		String extractedFundingOrg = intentsZone != null ? extractFundingOrgFromQuery(intentsZone) : null;
+		if (extractedCity != null) intents.put("location", extractedCity);
+		if (extractedFundingOrg != null) intents.put("funding", extractedFundingOrg);
+
+		// 1. Recherche vectorielle (sur la requête nettoyée)
+		List<VectorSearchHit> hits = vectorSearchService.search(vectorQuery, limit);
 
 		if (hits.isEmpty()) {
 			return ResponseEntity.ok(Map.of(
 				"query", query,
+				"intents", intents,
 				"results", List.of(),
 				"totalResults", 0,
 				"durationMs", System.currentTimeMillis() - startTime
@@ -321,8 +494,7 @@ public class ScalewaySearchController {
 			}
 		}
 
-		// 6. Détection localisation : extraction du nom de ville après mot-clé géo
-		String extractedCity = extractCityFromGeoQuery(query);
+		// 6. Détection localisation : construction de la map par résultat
 		Map<String, Boolean> locationMatchedMap = new HashMap<>();
 		boolean anyLocationMatched = false;
 		if (extractedCity != null) {
@@ -338,12 +510,24 @@ public class ScalewaySearchController {
 			&& extractedCity != null
 			&& !anyLocationMatched;
 
+		// 7. Détection financement : construction de la map par résultat
+		Map<String, Boolean> fundingMatchedMap = new HashMap<>();
+		if (extractedFundingOrg != null) {
+			for (PropositionTheseDto dto : results) {
+				boolean matches = dtoMatchesFunding(dto, extractedFundingOrg);
+				if (dto.getId() != null) {
+					fundingMatchedMap.put(String.valueOf(dto.getId()), matches);
+				}
+			}
+		}
+
 		long duration = System.currentTimeMillis() - startTime;
 		log.info("{} résultat(s) retourné(s) pour la recherche vectorielle (durée={}ms, locationNotMatched={})",
 			results.size(), duration, locationNotMatched);
 
 		return ResponseEntity.ok(Map.ofEntries(
 			Map.entry("query", query),
+			Map.entry("intents", intents),
 			Map.entry("results", results),
 			Map.entry("scores", compositeScores),
 			Map.entry("vectorScores", vectorScores),
@@ -353,7 +537,8 @@ public class ScalewaySearchController {
 			Map.entry("totalResults", results.size()),
 			Map.entry("durationMs", duration),
 			Map.entry("locationNotMatched", locationNotMatched),
-			Map.entry("locationMatchedMap", locationMatchedMap)
+			Map.entry("locationMatchedMap", locationMatchedMap),
+			Map.entry("fundingMatchedMap", fundingMatchedMap)
 		));
 	}
 
