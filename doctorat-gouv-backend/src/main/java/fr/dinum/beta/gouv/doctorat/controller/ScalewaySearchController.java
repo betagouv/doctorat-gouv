@@ -55,6 +55,16 @@ public class ScalewaySearchController {
 		"not far", "located in", "located near", "situated in"
 	};
 
+	// Marqueurs fiables pour le split (sous-ensemble de GEO_KEYWORDS
+	// excluant les mots trop génériques comme "secteur de", "zone de",
+	// "autour", "voisinage", "proximité"… qui peuvent appartenir au cœur
+	// de la requête.
+	private static final String[] SPLIT_GEO_KEYWORDS = {
+		"proche", "près", "pas loin", "à coté", "à côté", "aux environs",
+		"near", "close to", "nearby", "close by", "not far",
+		"located in", "located near", "situated in"
+	};
+
 	// Détecte les prépositions suivies d'un nom propre (ville, région…)
 	// Ex: "à Paris", "dans le Var", "en Île-de-France", "sur Lyon", "aux alentours"
 	private static final Pattern GEO_PREPOSITION_PATTERN = Pattern.compile(
@@ -303,7 +313,7 @@ public class ScalewaySearchController {
 		// Trouver le prochain mot-clé géo pour savoir où couper
 		int nextGeoIdx = Integer.MAX_VALUE;
 		String lowerAfter = after.toLowerCase();
-		for (String kw : GEO_KEYWORDS) {
+		for (String kw : SPLIT_GEO_KEYWORDS) {
 			int i = lowerAfter.indexOf(kw);
 			if (i >= 0 && i < nextGeoIdx) {
 				nextGeoIdx = i;
@@ -391,7 +401,7 @@ public class ScalewaySearchController {
 		String lower = query.toLowerCase().trim();
 		int firstIdx = Integer.MAX_VALUE;
 
-		for (String kw : GEO_KEYWORDS) {
+		for (String kw : SPLIT_GEO_KEYWORDS) {
 			int i = lower.indexOf(kw);
 			if (i >= 0 && i < firstIdx) firstIdx = i;
 		}
@@ -416,9 +426,15 @@ public class ScalewaySearchController {
 		long startTime = System.currentTimeMillis();
 		log.info("Recherche vectorielle via /api/scaleway/propositions (limit={})", limit);
 
+		// Retirer le "?" final qui parasiterait les intentions
+		// et le ré-attacher au core après le split
+		boolean hasTrailingQuestionMark = query.endsWith("?");
+		String cleanQuery = hasTrailingQuestionMark ? query.substring(0, query.length() - 1).trim() : query;
+
 		// Nettoyer la requête : retirer les parties localisation et financement
 		// pour que l'embedding porte uniquement sur le cœur de la recherche
-		String vectorQuery = cleanQueryForVectorSearch(query);
+		String core = cleanQueryForVectorSearch(cleanQuery);
+		String vectorQuery = hasTrailingQuestionMark ? core + " ?" : core;
 		if (!vectorQuery.equals(query)) {
 			log.info("Requête nettoyée pour l'embedding: \"{}\" → \"{}\"", query, vectorQuery);
 		}
@@ -426,7 +442,7 @@ public class ScalewaySearchController {
 		// Extraire les intentions structurées (core, location, funding)
 		Map<String, String> intents = new LinkedHashMap<>();
 		intents.put("core", vectorQuery);
-		String intentsZone = extractIntentsZone(query);
+		String intentsZone = extractIntentsZone(cleanQuery);
 		String extractedCity = intentsZone != null ? extractCityFromGeoQuery(intentsZone) : null;
 		String extractedFundingOrg = intentsZone != null ? extractFundingOrgFromQuery(intentsZone) : null;
 		if (extractedCity != null) intents.put("location", extractedCity);
@@ -450,7 +466,9 @@ public class ScalewaySearchController {
 		Map<Long, PropositionTheseDto> theseMap = propositionService.findByIdInAsMap(ids);
 
 		// 3. Calculer les scores composites (vectoriel + keywords)
-		List<String> tokens = rerankerService.extractTokens(query);
+		// Les tokens sont extraits du core nettoyé, pas de la requête brute
+		// avec intentions, pour que le scoring ne dépende pas du financement/localisation
+		List<String> tokens = rerankerService.extractTokens(vectorQuery);
 		Map<Long, Double> compositeScores = new HashMap<>();
 		Map<Long, Double> vectorScores = new HashMap<>();
 		for (VectorSearchHit hit : hits) {
