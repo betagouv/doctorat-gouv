@@ -158,7 +158,7 @@ export class Search implements OnInit, OnDestroy {
   loadingStep = 0;
   private loadingInterval: any;
   activeIntentFilter: ('location' | 'funding')[] = [];
-  showScoreBadges = false;
+  showScoreBadges = true;
   scalewayVectorScores: Record<number, number> = {};
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
@@ -1428,6 +1428,7 @@ resetFilter(filterName: MultiFilterKey) {
         this.locationMatchedMap = data.locationMatchedMap || {};
         this.fundingMatchedMap = data.fundingMatchedMap || {};
         this.intents = data.intents || {};
+        this.activeIntentFilter = (Object.keys(this.intents).filter(k => k === 'location' || k === 'funding') as ('location' | 'funding')[]);
 
         const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({

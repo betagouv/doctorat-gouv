@@ -190,17 +190,17 @@
 }
 
 .fr-card__img .badge-location {
-  top: 2.5rem;
+  top: 0.5rem;
 }
 
 .fr-card__img .badge-funding {
-  top: 4.5rem;
+  top: 2.5rem;
 }
 
 /* Badge de score Albert */
 .albert-score-badge {
   position: absolute;
-  top: 0.5rem;
+  top: 4.5rem;
   right: 0.5rem;
   z-index: 10;
   padding: 0.25rem 0.6rem;
@@ -227,7 +227,7 @@
 }
 
 .scaleway-vector-badge {
-  position: absolute; top: 2.3rem; right: 0.5rem;
+  position: absolute; top: 6.5rem; right: 0.5rem;
   z-index: 10; padding: 0.2rem 0.5rem;
   border-radius: 999px; font-size: 0.65rem;
   font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -264,8 +264,9 @@
 
 .scaleway-relevance-badge {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: 8.5rem;
+  right: 0.5rem;
+  left: auto;
   z-index: 10;
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
