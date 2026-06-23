@@ -1330,11 +1330,11 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   getLocationMatchedCount(): number {
-    return Object.values(this.locationMatchedMap).filter(v => v).length;
+    return this.scalewayResultsTresPertinent.filter(r => r?.id != null && this.locationMatchedMap[String(r.id)] === true).length;
   }
 
   getFundingMatchedCount(): number {
-    return Object.values(this.fundingMatchedMap).filter(v => v).length;
+    return this.scalewayResultsTresPertinent.filter(r => r?.id != null && this.fundingMatchedMap[String(r.id)] === true).length;
   }
 
   getIntentCount(key: string): number {
