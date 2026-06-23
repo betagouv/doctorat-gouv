@@ -928,24 +928,25 @@
         <div class="fr-col-12" *ngIf="hasIntents()">
           <div class="scaleway-intents">
             <span class="scaleway-intents-label">{{ 'SEARCH.SCALEWAY_INTENTS_LABEL' | translate }}
-              <span class="tooltip-container" *ngIf="!activeIntentFilter">
+              <span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
                 <span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
                 <span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
               </span>
             </span>
             <span class="fr-tag intent-chip"
                   *ngFor="let key of objectKeys(intents)"
-                  [class.intent-chip--active]="activeIntentFilter === key"
+                  [class.intent-chip--active]="isActiveIntentFilter(key)"
                   [class.intent-chip--clickable]="true"
                   [ngClass]="'intent-chip--' + key"
                   (click)="setActiveIntentFilter(key)"
-                  [title]="activeIntentFilter === key ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
+                  [title]="isActiveIntentFilter(key) ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
               <span [class]="getIntentIcon(key)" aria-hidden="true"></span>
               {{ intents[key] }}
+              <span *ngIf="isActiveIntentFilter(key)" class="intent-chip-check">✓</span>
               <span class="intent-chip-parens">({{ getIntentCount(key) }})</span>
             </span>
             <span class="intent-chip-reset fr-tag"
-                  *ngIf="activeIntentFilter"
+                  *ngIf="activeIntentFilter.length > 0"
                   (click)="resetIntentFilter()"
                   title="{{ 'SEARCH.SCALEWAY_FILTERING_CLEAR' | translate }}">
               ✕
@@ -956,10 +957,15 @@
 
 
         <!-- Résultats filtrés par intention cliquable (carrousel) -->
-        <div class="fr-col-12" *ngIf="activeIntentFilter">
+        <div class="fr-col-12" *ngIf="activeIntentFilter.length > 0">
           <div class="scaleway-section-title">
             <h2>
-              {{ activeIntentFilter === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate) }}
+              <ng-container *ngIf="activeIntentFilter.length === 1">
+                {{ activeIntentFilter[0] === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate) }}
+              </ng-container>
+              <ng-container *ngIf="activeIntentFilter.length > 1">
+                {{ 'SEARCH.SCALEWAY_FILTERING_LOCATION' | translate }} + {{ 'SEARCH.SCALEWAY_FILTERING_FUNDING' | translate }}
+              </ng-container>
               <span class="scaleway-section-count">({{ getFilteredScalewayResults().length }})</span>
             </h2>
             <div class="scaleway-carousel-nav" *ngIf="getFilteredScalewayResults().length > 1">
@@ -988,7 +994,7 @@
         </div>
 
         <!-- Section 1 : Meilleurs résultats (carrousel) — masqué si un filtre intention est actif -->
-        <div class="fr-col-12" *ngIf="!activeIntentFilter && scalewayResultsTresPertinent.length">
+        <div class="fr-col-12" *ngIf="activeIntentFilter.length === 0 && scalewayResultsTresPertinent.length">
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}
@@ -1024,7 +1030,7 @@
         </div>
 
         <!-- Section 2 : Autres résultats — masqué si un filtre intention est actif -->
-        <div class="fr-col-12" *ngIf="!activeIntentFilter && scalewayResultsOther.length">
+        <div class="fr-col-12" *ngIf="activeIntentFilter.length === 0 && scalewayResultsOther.length">
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
@@ -1037,7 +1043,7 @@
             {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
           </div>
         </div>
-        <ng-container *ngIf="!activeIntentFilter">
+        <ng-container *ngIf="activeIntentFilter.length === 0">
           <ng-container *ngFor="let thesis of scalewayResultsOther">
             <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
           </ng-container>

@@ -157,7 +157,7 @@ export class Search implements OnInit, OnDestroy {
   useSequentialLoading = false;
   loadingStep = 0;
   private loadingInterval: any;
-  activeIntentFilter: 'location' | 'funding' | null = null;
+  activeIntentFilter: ('location' | 'funding')[] = [];
   scalewayVectorScores: Record<number, number> = {};
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
@@ -1296,7 +1296,7 @@ resetFilter(filterName: MultiFilterKey) {
   startSequentialLoading(): void {
     this.loadingStep = 0;
     this.isScalewayLoading = true;
-    this.activeIntentFilter = null;
+    this.activeIntentFilter = [];
     this.loadingInterval = setInterval(() => {
       if (this.loadingStep < 4) {
         this.loadingStep++;
@@ -1344,23 +1344,31 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   getFilteredScalewayResults(): any[] {
-    if (!this.activeIntentFilter) return [];
+    if (this.activeIntentFilter.length === 0) return [];
     const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
     return allResults.filter(r => {
-      if (this.activeIntentFilter === 'location') return this.isLocationMatched(r);
-      if (this.activeIntentFilter === 'funding') return this.isFundingMatched(r);
-      return true;
+      const matchLocation = this.activeIntentFilter.includes('location') && this.isLocationMatched(r);
+      const matchFunding = this.activeIntentFilter.includes('funding') && this.isFundingMatched(r);
+      return matchLocation || matchFunding;
     });
   }
 
   setActiveIntentFilter(type: string): void {
     if (type !== 'location' && type !== 'funding') return;
     const t = type as 'location' | 'funding';
-    this.activeIntentFilter = this.activeIntentFilter === t ? null : t;
+    if (this.activeIntentFilter.includes(t)) {
+      this.activeIntentFilter = this.activeIntentFilter.filter(v => v !== t);
+    } else {
+      this.activeIntentFilter = [...this.activeIntentFilter, t];
+    }
+  }
+
+  isActiveIntentFilter(key: string): boolean {
+    return this.activeIntentFilter.includes(key as 'location' | 'funding');
   }
 
   resetIntentFilter(): void {
-    this.activeIntentFilter = null;
+    this.activeIntentFilter = [];
   }
 
   onScalewaySearch(): void {
