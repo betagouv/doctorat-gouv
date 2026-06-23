@@ -158,6 +158,7 @@ export class Search implements OnInit, OnDestroy {
   loadingStep = 0;
   private loadingInterval: any;
   activeIntentFilter: ('location' | 'funding')[] = [];
+  showScoreBadges = false;
   scalewayVectorScores: Record<number, number> = {};
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};

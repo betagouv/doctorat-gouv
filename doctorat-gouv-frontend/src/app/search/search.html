@@ -723,7 +723,7 @@
 
             <!-- Badge de score composite Scaleway (vectoriel + keywords) -->
             <span class="albert-score-badge"
-                  *ngIf="isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
                   [ngClass]="getScoreColor(getScalewayScore(thesis))"
                   title="Score composite">
               {{ getScalewayScore(thesis) | percent:'1.0-0' }}
@@ -731,7 +731,7 @@
 
             <!-- Badge de score vectoriel Scaleway (similarité cosinus) -->
             <span class="scaleway-vector-badge"
-                  *ngIf="isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
                   [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
                   title="Score vectoriel">
               V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
@@ -739,7 +739,7 @@
 
             <!-- Badge de niveau de pertinence Scaleway -->
             <span class="scaleway-relevance-badge"
-                  *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
                   [ngClass]="getScalewayRelevanceClass(thesis)">
               {{ getScalewayRelevanceLabel(thesis) }}
             </span>
@@ -845,21 +845,21 @@
           </span>
 
           <span class="albert-score-badge"
-                *ngIf="isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayScore(thesis))"
                 title="Score composite">
             {{ getScalewayScore(thesis) | percent:'1.0-0' }}
           </span>
 
           <span class="scaleway-vector-badge"
-                *ngIf="isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
                 title="Score vectoriel">
             V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
           </span>
 
           <span class="scaleway-relevance-badge"
-                *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
                 [ngClass]="getScalewayRelevanceClass(thesis)">
             {{ getScalewayRelevanceLabel(thesis) }}
           </span>
