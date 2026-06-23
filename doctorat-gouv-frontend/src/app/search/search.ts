@@ -1370,21 +1370,6 @@ resetFilter(filterName: MultiFilterKey) {
     return matchLocation || matchFunding;
   }
 
-  /** Retourne les résultats qui ne matchent AUCUN filtre d'intention actif,
-   * triés par score de pertinence décroissant.
-   * Utilisé pour la section "Offres qui pourraient également vous intéresser". */
-  getNonMatchingScalewayResults(): any[] {
-    if (this.activeIntentFilter.length === 0) return [];
-    const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
-    const nonMatching = allResults.filter(r => {
-      const matchLocation = this.activeIntentFilter.includes('location') && this.isLocationMatched(r);
-      const matchFunding = this.activeIntentFilter.includes('funding') && this.isFundingMatched(r);
-      return !matchLocation && !matchFunding;
-    });
-    const scores = this.scalewayScores;
-    return nonMatching.sort((a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
-  }
-
   setActiveIntentFilter(type: string): void {
     if (type !== 'location' && type !== 'funding') return;
     const t = type as 'location' | 'funding';
@@ -1535,15 +1520,7 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   scrollCarousel(direction: number): void {
-    const el = document.querySelector('.scaleway-carousel');
-    if (el) {
-      const items = el.querySelectorAll('.scaleway-carousel-item');
-      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
-      const gap = 12;
-      const scrollAmount = itemWidth + gap;
-      el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-      this.updateCarouselDot(el as HTMLElement, items);
-    }
+    this.scrollCarouselBySelector('.scaleway-carousel', direction);
   }
 
   scrollCarouselTo(index: number): void {
@@ -1554,6 +1531,18 @@ resetFilter(filterName: MultiFilterKey) {
       const gap = 12;
       el.scrollTo({ left: index * (itemWidth + gap), behavior: 'smooth' });
       this.carouselDotIndex = index;
+    }
+  }
+
+  private scrollCarouselBySelector(selector: string, direction: number): void {
+    const el = document.querySelector(selector);
+    if (el) {
+      const items = el.querySelectorAll('.scaleway-carousel-item');
+      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+      const gap = 12;
+      const scrollAmount = itemWidth + gap;
+      el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      this.updateCarouselDot(el as HTMLElement, items);
     }
   }
 

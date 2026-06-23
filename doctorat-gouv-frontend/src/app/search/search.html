@@ -991,63 +991,26 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- Section 2 : Autres résultats (filtrés si intention active)    -->
-        <!-- Quand un filtre intention est actif, ne montre que les        -->
-        <!-- autres résultats qui matchent le filtre intention.            -->
+        <!-- Section 2 : Offres qui pourraient également vous intéresser   -->
+        <!-- Grille 3 cartes par ligne, filtrée si intention active.       -->
         <!-- ============================================================ -->
-        <ng-container *ngIf="activeIntentFilter.length > 0">
-          <div class="fr-col-12" *ngIf="getFilteredScalewayOther().length > 0">
-            <div class="scaleway-section-title">
-              <h2>
-                {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
-                <span class="scaleway-section-count">({{ getFilteredScalewayOther().length }})</span>
-              </h2>
-            </div>
-            <div class="scaleway-ambigue-info fr-mt-2w" *ngIf="showAmbigueMessage && !showAmbigueTooMany">
-              {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
-            </div>
+        <div class="fr-col-12" *ngIf="getFilteredScalewayOther().length > 0">
+          <div class="scaleway-section-title">
+            <h2>
+              {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
+              <span class="scaleway-section-count">({{ getFilteredScalewayOther().length }})</span>
+            </h2>
+          </div>
+
+          <div class="scaleway-ambigue-info" *ngIf="showAmbigueMessage && !showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
             <ng-container *ngFor="let thesis of getFilteredScalewayOther()">
               <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
             </ng-container>
           </div>
-        </ng-container>
-        <ng-container *ngIf="activeIntentFilter.length === 0">
-          <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
-            <div class="scaleway-section-title">
-              <h2>
-                {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
-                <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
-              </h2>
-            </div>
-            <div class="scaleway-ambigue-info fr-mt-2w" *ngIf="showAmbigueMessage && !showAmbigueTooMany">
-              {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
-            </div>
-          </div>
-          <ng-container *ngFor="let thesis of scalewayResultsOther">
-            <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
-          </ng-container>
-        </ng-container>
-
-        <!-- ============================================================ -->
-        <!-- Section 3 : Offres qui pourraient également vous intéresser  -->
-        <!-- Visible seulement quand un filtre intention est actif         -->
-        <!-- Contient tous les résultats (TRES_PERTINENT + autres) qui    -->
-        <!-- ne matchent PAS le filtre, triés par pertinence.             -->
-        <!-- Les résultats exclus des "Meilleurs résultats" apparaissent  -->
-        <!-- en premier.                                                   -->
-        <!-- ============================================================ -->
-        <div class="fr-col-12 fr-mt-4w" *ngIf="activeIntentFilter.length > 0 && getNonMatchingScalewayResults().length > 0">
-          <div class="scaleway-section-title">
-            <h2>
-              {{ 'SEARCH.SCALEWAY_OTHER_INTERESTS' | translate }}
-              <span class="scaleway-section-count">({{ getNonMatchingScalewayResults().length }})</span>
-            </h2>
-          </div>
-          <ng-container *ngFor="let thesis of getNonMatchingScalewayResults(); let i = index">
-            <div class="fade-in-up" [style.animation-delay]="(i * 0.05) + 's'">
-              <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
-            </div>
-          </ng-container>
         </div>
       </ng-container>
 
