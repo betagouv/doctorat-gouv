@@ -943,7 +943,7 @@
               <span [class]="getIntentIcon(key)" aria-hidden="true"></span>
               {{ intents[key] }}
               <span *ngIf="isActiveIntentFilter(key)" class="intent-chip-check">✓</span>
-              <span class="intent-chip-parens">({{ getIntentCount(key) }})</span>
+              <span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
             </span>
             <span class="intent-chip-reset fr-tag"
                   *ngIf="activeIntentFilter.length > 0"
@@ -998,7 +998,6 @@
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}
-              <span class="scaleway-section-count">({{ scalewayResultsTresPertinent.length }})</span>
             </h2>
             <div class="scaleway-carousel-nav">
               <button class="scaleway-nav-btn" (click)="scrollCarousel(-1)" aria-label="Précédent" title="Précédent">‹</button>
@@ -1034,7 +1033,6 @@
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
-              <span class="scaleway-section-count">({{ scalewayResultsOther.length }})</span>
             </h2>
           </div>
 
