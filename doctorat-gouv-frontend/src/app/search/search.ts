@@ -1556,7 +1556,7 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   hasIntents(): boolean {
-    return this.intents && Object.keys(this.intents).length > 0;
+    return !!(this.intents && this.intents['location'] && this.intents['funding']);
   }
 
   objectKeys(obj: Record<string, any>): string[] {

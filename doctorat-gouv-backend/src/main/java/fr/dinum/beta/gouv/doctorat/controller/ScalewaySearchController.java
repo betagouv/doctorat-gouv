@@ -474,6 +474,24 @@ public class ScalewaySearchController {
 		if (extractedCity != null) intents.put("location", extractedCity);
 		if (extractedFundingOrg != null) intents.put("funding", extractedFundingOrg);
 
+		// Valider que les intentions sont fiables
+		boolean intentsValid = intents.containsKey("location") && intents.containsKey("funding");
+		if (intentsValid && extractedFundingOrg != null) {
+			int fundingWordCount = extractedFundingOrg.split("\\s+").length;
+			if (fundingWordCount > 8) {
+				log.warn("Intents invalides: financement \"{}\" ({} mots) — trop long, contient probablement du contenu du cœur",
+					extractedFundingOrg, fundingWordCount);
+				intentsValid = false;
+			}
+		}
+		if (!intentsValid) {
+			intents.clear();
+			extractedCity = null;
+			extractedFundingOrg = null;
+			// Recherche vectorielle sur la requête complète (split core/intentions non fiable)
+			vectorQuery = hasTrailingQuestionMark ? cleanQuery + " ?" : cleanQuery;
+		}
+
 		// 1. Recherche vectorielle (sur la requête nettoyée)
 		List<VectorSearchHit> hits = vectorSearchService.search(vectorQuery, limit);
 
