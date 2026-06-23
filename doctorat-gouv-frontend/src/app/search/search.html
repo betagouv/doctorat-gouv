@@ -994,11 +994,11 @@
         <!-- Section 2 : Offres qui pourraient également vous intéresser   -->
         <!-- Grille 3 cartes par ligne, filtrée si intention active.       -->
         <!-- ============================================================ -->
-        <div class="fr-col-12" *ngIf="getFilteredScalewayOther().length > 0">
+        <div class="fr-col-12" *ngIf="getScalewaySection2Results().length > 0">
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
-              <span class="scaleway-section-count">({{ getFilteredScalewayOther().length }})</span>
+              <span class="scaleway-section-count">({{ getScalewaySection2Results().length }})</span>
             </h2>
           </div>
 
@@ -1007,7 +1007,7 @@
           </div>
 
           <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-            <ng-container *ngFor="let thesis of getFilteredScalewayOther()">
+            <ng-container *ngFor="let thesis of getScalewaySection2Results()">
               <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
             </ng-container>
           </div>

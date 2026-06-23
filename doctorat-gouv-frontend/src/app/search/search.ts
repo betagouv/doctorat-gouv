@@ -1358,10 +1358,17 @@ resetFilter(filterName: MultiFilterKey) {
     return this.scalewayResultsTresPertinent.filter(r => this.matchesActiveIntentFilter(r));
   }
 
-  /** Retourne uniquement les autres résultats qui matchent le filtre intention actif */
-  getFilteredScalewayOther(): any[] {
-    if (this.activeIntentFilter.length === 0) return this.scalewayResultsOther;
-    return this.scalewayResultsOther.filter(r => this.matchesActiveIntentFilter(r));
+  /**
+   * Retourne les résultats de la section 2 (Offres qui pourraient également vous intéresser) :
+   * - TRES_PERTINENT non matchants (si filtre intention actif) en premier
+   * - Puis tous les autres résultats (PERTINENT et en dessous), non filtrés
+   */
+  getScalewaySection2Results(): any[] {
+    let nonMatchingTres: any[] = [];
+    if (this.activeIntentFilter.length > 0) {
+      nonMatchingTres = this.scalewayResultsTresPertinent.filter(r => !this.matchesActiveIntentFilter(r));
+    }
+    return [...nonMatchingTres, ...this.scalewayResultsOther];
   }
 
   private matchesActiveIntentFilter(r: any): boolean {
