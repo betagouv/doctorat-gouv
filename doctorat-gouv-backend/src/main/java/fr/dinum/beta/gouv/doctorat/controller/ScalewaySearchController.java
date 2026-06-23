@@ -65,15 +65,16 @@ public class ScalewaySearchController {
 
 	// Extrait le nom de ville après un mot-clé de proximité (fiable)
 	// Ex: "proche de Paris" → "Paris"
+	// Non ancré : on cherche la dernière occurrence dans toute la requête
 	private static final Pattern GEO_CITY_PROXIMITY_PATTERN = Pattern.compile(
 		"(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
 	);
 
 	// Extrait le nom de ville après une préposition simple (moins fiable)
 	// Ex: "à Paris", "dans le Var", "en Bretagne"
-	// Utilisé uniquement en fallback si aucun pattern de proximité n'est trouvé
+	// Non ancré : on cherche la dernière occurrence dans toute la requête
 	private static final Pattern GEO_CITY_PREPOSITION_PATTERN = Pattern.compile(
-		"(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)\\s*$"
+		"(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
 	);
 
 	// Mots qui ne doivent PAS être considérés comme des localisations
@@ -84,8 +85,13 @@ public class ScalewaySearchController {
 		"physique", "mathematiques", "mathématiques", "economie", "économie",
 		"droit", "histoire", "sociologie", "psychologie", "philosophie",
 		"education", "éducation", "formation", "apprentissage",
-		"informatique", "science", "sciences", "recherche", "these", "thèse"
+		"informatique", "science", "sciences", "recherche", "these", "thèse",
+		"la", "le", "les", "des", "un", "une"
 	);
+
+	// Record pour stocker le résultat d'un match d'intention
+	// value = valeur extraite (ville, organisme), matchedText = texte brut matché, position = index de début
+	private record IntentMatch(String value, String matchedText, int position) {}
 
 	// Mots-clés financement FR/EN
 	private static final String[] FUNDING_KEYWORDS = {
@@ -264,30 +270,40 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Extrait le nom de ville mentionné après un mot-clé géographique.
-	 * Priorise les patterns de proximité (proche de X, près de X) car plus fiables,
-	 * puis les prépositions simples (à X, dans X, en X) en fallback uniquement.
+	 * Extrait la DERNIÈRE intention de localisation dans toute la requête.
+	 * Scan indépendamment les patterns de proximité et les prépositions simples,
+	 * et retourne celle qui apparaît le plus tard (position la plus élevée).
+	 * Retourne un IntentMatch avec la valeur, le texte brut matché, et sa position.
 	 */
-	private String extractCityFromGeoQuery(String query) {
+	private IntentMatch extractCityFromGeoQuery(String query) {
 		if (query == null || query.isBlank()) return null;
-		String lower = query.toLowerCase();
 
-		// 1. Priorité : patterns de proximité (proche de X, près de X, etc.)
+		// 1. Patterns de proximité : on prend la dernière occurrence valide
+		IntentMatch lastProximity = null;
 		Matcher proximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(query);
-		if (proximityM.find()) {
-			return proximityM.group(1).trim().toLowerCase();
-		}
-
-		// 2. Fallback : préposition simple en fin de requête uniquement
-		//    mais on ignore les mots dans NON_LOCATION_WORDS
-		Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(query);
-		if (prepM.find()) {
-			String candidate = prepM.group(1).trim().toLowerCase();
+		while (proximityM.find()) {
+			String candidate = proximityM.group(1).trim().toLowerCase();
 			if (!NON_LOCATION_WORDS.contains(candidate)) {
-				return candidate;
+				lastProximity = new IntentMatch(candidate, proximityM.group(), proximityM.start());
 			}
 		}
 
+		// 2. Prépositions simples : on prend la dernière occurrence valide
+		IntentMatch lastPrep = null;
+		Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(query);
+		while (prepM.find()) {
+			String candidate = prepM.group(1).trim().toLowerCase();
+			if (!NON_LOCATION_WORDS.contains(candidate)) {
+				lastPrep = new IntentMatch(candidate, prepM.group(), prepM.start());
+			}
+		}
+
+		// 3. On prend celle qui apparaît le plus tard dans la requête
+		if (lastProximity != null && lastPrep != null) {
+			return lastProximity.position() >= lastPrep.position() ? lastProximity : lastPrep;
+		}
+		if (lastProximity != null) return lastProximity;
+		if (lastPrep != null) return lastPrep;
 		return null;
 	}
 
@@ -316,57 +332,58 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Extrait l'organisme financeur à partir d'une zone d'intentions.
-	 * Prend tout le texte depuis le premier mot-clé funding jusqu'au
+	 * Extrait la DERNIÈRE intention de financement dans toute la requête.
+	 * Trouve le dernier mot-clé funding, puis délimite l'organisme jusqu'au
 	 * prochain mot-clé géographique (ou fin de chaîne), puis nettoie
 	 * les prépositions/articles en tête.
-	 * Ex: "financé par une collectivité locale ou territoriale proche de Paris"
-	 *     → "collectivité locale ou territoriale"
+	 * Ex: "thèses en France financé par établissement public proche de Paris"
+	 *     → IntentMatch("établissement public", "financé par établissement public", pos)
 	 */
-	private String extractFundingOrgFromQuery(String query) {
+	private IntentMatch extractFundingOrgFromQuery(String query) {
 		if (query == null || query.isBlank()) return null;
-		String lower = query.toLowerCase().trim();
+		String lower = query.toLowerCase();
 
-		// Trouver le premier mot-clé funding
-		int bestIdx = Integer.MAX_VALUE;
+		// Trouver le DERNIER mot-clé funding
+		int bestIdx = -1;
 		String bestKw = null;
 		for (String kw : FUNDING_KEYWORDS) {
-			int i = lower.indexOf(kw);
-			if (i >= 0 && i < bestIdx) {
-				bestIdx = i;
+			int idx = lower.lastIndexOf(kw);
+			if (idx >= 0 && idx > bestIdx) {
+				bestIdx = idx;
 				bestKw = kw;
 			}
 		}
 		if (bestKw == null) return null;
 
-		// Tout ce qui suit le mot-clé funding
-		String after = query.substring(bestIdx + bestKw.length()).trim();
+		// Texte après le mot-clé funding (dans la requête originale, préservant la casse)
+		int afterStart = bestIdx + bestKw.length();
+		String after = query.substring(afterStart);
 
-		// Trouver le prochain mot-clé géo (proximité d'abord, préposition ensuite) pour savoir où couper
-		int nextGeoIdx = Integer.MAX_VALUE;
-		Matcher nextGeoProximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(after);
-		if (nextGeoProximityM.find()) {
-			nextGeoIdx = nextGeoProximityM.start();
+		// Trouver le prochain mot-clé géo dans la suite du texte
+		int boundary = after.length();
+		Matcher geoM = GEO_CITY_PROXIMITY_PATTERN.matcher(after);
+		if (geoM.find()) {
+			boundary = geoM.start();
 		} else {
-			Matcher nextGeoPrepM = GEO_CITY_PREPOSITION_PATTERN.matcher(after);
-			if (nextGeoPrepM.find()) {
-				nextGeoIdx = nextGeoPrepM.start();
+			Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(after);
+			if (prepM.find()) {
+				boundary = prepM.start();
 			}
 		}
 
-		String orgPart;
-		if (nextGeoIdx < Integer.MAX_VALUE) {
-			orgPart = after.substring(0, nextGeoIdx).trim();
-		} else {
-			orgPart = after;
-		}
+		// Extraire la partie organisme (sans le mot-clé funding)
+		String orgPart = after.substring(0, boundary).trim();
 
 		// Nettoyer les prépositions/articles en tête
 		Matcher clean = FUNDING_LEADING_CLEAN.matcher(orgPart);
-		orgPart = clean.replaceAll("").trim();
+		String cleanedOrg = clean.replaceAll("").trim();
 
-		if (orgPart.isEmpty()) return null;
-		return orgPart.toLowerCase();
+		if (cleanedOrg.isEmpty()) return null;
+
+		// matchedText = texte brut depuis le mot-clé funding jusqu'à la limite
+		String matchedText = query.substring(bestIdx, bestIdx + bestKw.length() + boundary).trim();
+
+		return new IntentMatch(cleanedOrg.toLowerCase(), matchedText, bestIdx);
 	}
 
 	/**
@@ -423,72 +440,37 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Nettoie la requête pour la recherche vectorielle en ne gardant que le cœur,
-	 * c'est-à-dire tout ce qui précède le premier mot-clé d'intention
-	 * (géo ou financement).
-	 * Ex: "sujets santé proche de Paris financé par le CNRPS" → "sujets santé"
-	 *     "sujets santé financé par le CNRPS proche de Paris" → "sujets santé"
-	 * Si le mot-clé est en début de requête (pas de cœur), retourne la requête originale.
+	 * Nettoie la requête en retirant les textes matchés des intentions
+	 * (localisation, financement), pour obtenir le cœur de la recherche.
+	 * Ex: "sujets santé proche de Paris financé par le CNRPS"
+	 *     → "sujets santé"
+	 * Si le cœur obtenu est vide ou trop court (< 3 car), retourne la requête originale.
 	 */
-	private String cleanQueryForVectorSearch(String query) {
+	private String cleanCoreQuery(String query, IntentMatch... matches) {
 		if (query == null || query.isBlank()) return query;
-		int idx = findFirstIntentMarker(query);
-		if (idx > 0) {
-			String cleaned = query.substring(0, idx).trim();
-			if (!cleaned.isEmpty()) return cleaned;
-		}
-		return query;
-	}
+		if (matches == null || matches.length == 0) return query;
 
-	/**
-	 * Extrait la zone d'intentions (tout ce qui suit le premier mot-clé).
-	 * Retourne null si aucun mot-clé trouvé.
-	 */
-	private String extractIntentsZone(String query) {
-		if (query == null || query.isBlank()) return null;
-		int idx = findFirstIntentMarker(query);
-		if (idx < 0) return null;
-		String zone = query.substring(idx).trim();
-		return zone.isEmpty() ? null : zone;
-	}
+		// Trier par position décroissante pour ne pas décaler les indices
+		List<IntentMatch> list = java.util.Arrays.stream(matches)
+			.filter(m -> m != null)
+			.sorted((a, b) -> Integer.compare(b.position(), a.position()))
+			.collect(Collectors.toList());
 
-	/**
-	 * Trouve l'index du premier mot-clé d'intention fiable dans la requête.
-	 * Ordre de priorité :
-	 * 1. Patterns de proximité géographique (proche de X, près de X) — les plus fiables
-	 * 2. Patterns de financement (financé par, bourse, grant…)
-	 * 3. Prépositions simples (à X, dans X, en X) — utilisées seulement si le mot extrait
-	 *    n'est pas dans la liste NON_LOCATION_WORDS
-	 */
-	private int findFirstIntentMarker(String query) {
-		if (query == null || query.isBlank()) return -1;
-		int firstIdx = Integer.MAX_VALUE;
+		if (list.isEmpty()) return query;
 
-		// 1. Geo : patterns de proximité (les plus fiables)
-		Matcher proximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(query);
-		if (proximityM.find()) {
-			firstIdx = proximityM.start();
-		}
-
-		// 2. Funding : utilise SPLIT_FUNDING_PATTERN (financé par, bourse, grant…)
-		Matcher fundingM = SPLIT_FUNDING_PATTERN.matcher(query);
-		if (fundingM.find() && fundingM.start() < firstIdx) {
-			firstIdx = fundingM.start();
-		}
-
-		// 3. Geo : prépositions simples en fallback, seulement si le mot extrait
-		//    n'est pas dans NON_LOCATION_WORDS (évite "sur l'IA", "en France"…)
-		if (firstIdx == Integer.MAX_VALUE) {
-			Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(query);
-			if (prepM.find()) {
-				String candidate = prepM.group(1).trim().toLowerCase();
-				if (!NON_LOCATION_WORDS.contains(candidate)) {
-					firstIdx = prepM.start();
-				}
+		String result = query;
+		for (IntentMatch m : list) {
+			int start = m.position();
+			int end = start + m.matchedText().length();
+			if (start >= 0 && end <= result.length()) {
+				result = result.substring(0, start) + result.substring(end);
 			}
 		}
+		result = result.trim();
 
-		return firstIdx < Integer.MAX_VALUE ? firstIdx : -1;
+		// Si le cœur est trop court, on garde la requête originale
+		if (result.length() < 3) return query;
+		return result;
 	}
 
 	@GetMapping("/propositions")
@@ -506,43 +488,42 @@ public class ScalewaySearchController {
 		log.info("Recherche vectorielle via /api/scaleway/propositions (limit={})", limit);
 
 		// Retirer le "?" final qui parasiterait les intentions
-		// et le ré-attacher au core après le split
 		boolean hasTrailingQuestionMark = query.endsWith("?");
 		String cleanQuery = hasTrailingQuestionMark ? query.substring(0, query.length() - 1).trim() : query;
 
-		// Nettoyer la requête : retirer les parties localisation et financement
-		// pour que l'embedding porte uniquement sur le cœur de la recherche
-		String core = cleanQueryForVectorSearch(cleanQuery);
+		// Extraire les intentions indépendamment dans toute la requête
+		IntentMatch cityMatch = extractCityFromGeoQuery(cleanQuery);
+		IntentMatch fundingMatch = extractFundingOrgFromQuery(cleanQuery);
+
+		// Valider chaque intention indépendamment (0, 1 ou 2 possibles)
+		String extractedCity = null;
+		String extractedFundingOrg = null;
+		if (cityMatch != null) {
+			extractedCity = cityMatch.value();
+		}
+		if (fundingMatch != null) {
+			extractedFundingOrg = fundingMatch.value();
+			int fundingWordCount = extractedFundingOrg.split("\\s+").length;
+			if (fundingWordCount > 8) {
+				log.warn("Intention de financement invalide: \"{}\" ({} mots) — trop long, ignorée",
+					extractedFundingOrg, fundingWordCount);
+				fundingMatch = null;
+				extractedFundingOrg = null;
+			}
+		}
+
+		// Nettoyer la requête en retirant les textes matchés pour l'embedding
+		String core = cleanCoreQuery(cleanQuery, cityMatch, fundingMatch);
 		String vectorQuery = hasTrailingQuestionMark ? core + " ?" : core;
 		if (!vectorQuery.equals(query)) {
 			log.info("Requête nettoyée pour l'embedding: \"{}\" → \"{}\"", query, vectorQuery);
 		}
 
-		// Extraire les intentions structurées (core, location, funding)
+		// Construire la map des intentions pour la réponse
 		Map<String, String> intents = new LinkedHashMap<>();
 		intents.put("core", vectorQuery);
-		String intentsZone = extractIntentsZone(cleanQuery);
-		String extractedCity = intentsZone != null ? extractCityFromGeoQuery(intentsZone) : null;
-		String extractedFundingOrg = intentsZone != null ? extractFundingOrgFromQuery(intentsZone) : null;
 		if (extractedCity != null) intents.put("location", extractedCity);
 		if (extractedFundingOrg != null) intents.put("funding", extractedFundingOrg);
-
-		// Valider chaque intention indépendamment
-		// L'utilisateur peut avoir 0, 1 ou 2 intentions dans sa requête
-		if (extractedFundingOrg != null) {
-			int fundingWordCount = extractedFundingOrg.split("\\s+").length;
-			if (fundingWordCount > 8) {
-				log.warn("Intention de financement invalide: \"{}\" ({} mots) — trop long, ignorée",
-					extractedFundingOrg, fundingWordCount);
-				intents.remove("funding");
-				extractedFundingOrg = null;
-			}
-		}
-		if (extractedCity != null && NON_LOCATION_WORDS.contains(extractedCity)) {
-			log.warn("Intention de localisation invalide: \"{}\" — mot non géographique, ignorée", extractedCity);
-			intents.remove("location");
-			extractedCity = null;
-		}
 
 		// 1. Recherche vectorielle (sur la requête nettoyée)
 		List<VectorSearchHit> hits = vectorSearchService.search(vectorQuery, limit);
