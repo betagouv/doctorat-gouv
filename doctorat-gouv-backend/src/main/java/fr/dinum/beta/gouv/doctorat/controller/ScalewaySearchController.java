@@ -57,15 +57,34 @@ public class ScalewaySearchController {
 	};
 
 	// Détecte les prépositions suivies d'un nom propre (ville, région…)
-	// Ex: "à Paris", "dans le Var", "en Île-de-France", "sur Lyon", "aux alentours"
+	// Ex: "à Paris", "dans le Var", "en Île-de-France"
+	// NOTE: "sur" est volontairement exclu car trop ambigu (ex: "sujet sur l'IA")
 	private static final Pattern GEO_PREPOSITION_PATTERN = Pattern.compile(
-		"(?:^|\\s)(?:à|aux|dans|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?[A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s|$)"
+		"(?:^|\\s)(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?[A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s|$)"
 	);
 
-	// Extrait le nom de ville après un mot-clé géographique
-	// Ex: "proche de Paris" → "Paris", "à Lyon" → "Lyon"
-	private static final Pattern GEO_CITY_EXTRACT_PATTERN = Pattern.compile(
-		"(?:(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*|(?:à|aux|vers|sur|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?)([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+	// Extrait le nom de ville après un mot-clé de proximité (fiable)
+	// Ex: "proche de Paris" → "Paris"
+	private static final Pattern GEO_CITY_PROXIMITY_PATTERN = Pattern.compile(
+		"(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+	);
+
+	// Extrait le nom de ville après une préposition simple (moins fiable)
+	// Ex: "à Paris", "dans le Var", "en Bretagne"
+	// Utilisé uniquement en fallback si aucun pattern de proximité n'est trouvé
+	private static final Pattern GEO_CITY_PREPOSITION_PATTERN = Pattern.compile(
+		"(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)\\s*$"
+	);
+
+	// Mots qui ne doivent PAS être considérés comme des localisations
+	private static final java.util.Set<String> NON_LOCATION_WORDS = java.util.Set.of(
+		"ia", "ai", "ml", "deep", "data", "big", "climat", "climatique",
+		"climatiques", "environnement", "numerique", "numérique", "digital",
+		"sante", "santé", "biologie", "medecine", "médecine", "chimie",
+		"physique", "mathematiques", "mathématiques", "economie", "économie",
+		"droit", "histoire", "sociologie", "psychologie", "philosophie",
+		"education", "éducation", "formation", "apprentissage",
+		"informatique", "science", "sciences", "recherche", "these", "thèse"
 	);
 
 	// Mots-clés financement FR/EN
@@ -245,15 +264,30 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Extrait le nom de ville mentionné après un mot-clé géographique
-	 * (proche de X, près de X, à X, etc.)
+	 * Extrait le nom de ville mentionné après un mot-clé géographique.
+	 * Priorise les patterns de proximité (proche de X, près de X) car plus fiables,
+	 * puis les prépositions simples (à X, dans X, en X) en fallback uniquement.
 	 */
 	private String extractCityFromGeoQuery(String query) {
 		if (query == null || query.isBlank()) return null;
-		Matcher m = GEO_CITY_EXTRACT_PATTERN.matcher(query);
-		if (m.find()) {
-			return m.group(1).trim().toLowerCase();
+		String lower = query.toLowerCase();
+
+		// 1. Priorité : patterns de proximité (proche de X, près de X, etc.)
+		Matcher proximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(query);
+		if (proximityM.find()) {
+			return proximityM.group(1).trim().toLowerCase();
 		}
+
+		// 2. Fallback : préposition simple en fin de requête uniquement
+		//    mais on ignore les mots dans NON_LOCATION_WORDS
+		Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(query);
+		if (prepM.find()) {
+			String candidate = prepM.group(1).trim().toLowerCase();
+			if (!NON_LOCATION_WORDS.contains(candidate)) {
+				return candidate;
+			}
+		}
+
 		return null;
 	}
 
@@ -308,11 +342,16 @@ public class ScalewaySearchController {
 		// Tout ce qui suit le mot-clé funding
 		String after = query.substring(bestIdx + bestKw.length()).trim();
 
-		// Trouver le prochain mot-clé géo pour savoir où couper
+		// Trouver le prochain mot-clé géo (proximité d'abord, préposition ensuite) pour savoir où couper
 		int nextGeoIdx = Integer.MAX_VALUE;
-		Matcher nextGeoM = GEO_CITY_EXTRACT_PATTERN.matcher(after);
-		if (nextGeoM.find()) {
-			nextGeoIdx = nextGeoM.start();
+		Matcher nextGeoProximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(after);
+		if (nextGeoProximityM.find()) {
+			nextGeoIdx = nextGeoProximityM.start();
+		} else {
+			Matcher nextGeoPrepM = GEO_CITY_PREPOSITION_PATTERN.matcher(after);
+			if (nextGeoPrepM.find()) {
+				nextGeoIdx = nextGeoPrepM.start();
+			}
 		}
 
 		String orgPart;
@@ -414,25 +453,39 @@ public class ScalewaySearchController {
 	}
 
 	/**
-	 * Trouve l'index du premier mot-clé d'intention (géo ou funding) dans la requête.
-	 * Utilise les regex d'extraction pour valider qu'il s'agit bien d'un pattern
-	 * d'intention (ex: "proche de Paris" et non "proche de la médecine").
+	 * Trouve l'index du premier mot-clé d'intention fiable dans la requête.
+	 * Ordre de priorité :
+	 * 1. Patterns de proximité géographique (proche de X, près de X) — les plus fiables
+	 * 2. Patterns de financement (financé par, bourse, grant…)
+	 * 3. Prépositions simples (à X, dans X, en X) — utilisées seulement si le mot extrait
+	 *    n'est pas dans la liste NON_LOCATION_WORDS
 	 */
 	private int findFirstIntentMarker(String query) {
 		if (query == null || query.isBlank()) return -1;
 		int firstIdx = Integer.MAX_VALUE;
 
-		// Geo : utilise GEO_CITY_EXTRACT_PATTERN qui exige une majuscule
-		// après le mot-clé, évitant les faux positifs (ex: "proche de la médecine")
-		Matcher geoM = GEO_CITY_EXTRACT_PATTERN.matcher(query);
-		if (geoM.find()) {
-			firstIdx = geoM.start();
+		// 1. Geo : patterns de proximité (les plus fiables)
+		Matcher proximityM = GEO_CITY_PROXIMITY_PATTERN.matcher(query);
+		if (proximityM.find()) {
+			firstIdx = proximityM.start();
 		}
 
-		// Funding : utilise SPLIT_FUNDING_PATTERN (financé par, bourse, grant…)
+		// 2. Funding : utilise SPLIT_FUNDING_PATTERN (financé par, bourse, grant…)
 		Matcher fundingM = SPLIT_FUNDING_PATTERN.matcher(query);
 		if (fundingM.find() && fundingM.start() < firstIdx) {
 			firstIdx = fundingM.start();
+		}
+
+		// 3. Geo : prépositions simples en fallback, seulement si le mot extrait
+		//    n'est pas dans NON_LOCATION_WORDS (évite "sur l'IA", "en France"…)
+		if (firstIdx == Integer.MAX_VALUE) {
+			Matcher prepM = GEO_CITY_PREPOSITION_PATTERN.matcher(query);
+			if (prepM.find()) {
+				String candidate = prepM.group(1).trim().toLowerCase();
+				if (!NON_LOCATION_WORDS.contains(candidate)) {
+					firstIdx = prepM.start();
+				}
+			}
 		}
 
 		return firstIdx < Integer.MAX_VALUE ? firstIdx : -1;
@@ -474,22 +527,21 @@ public class ScalewaySearchController {
 		if (extractedCity != null) intents.put("location", extractedCity);
 		if (extractedFundingOrg != null) intents.put("funding", extractedFundingOrg);
 
-		// Valider que les intentions sont fiables
-		boolean intentsValid = intents.containsKey("location") && intents.containsKey("funding");
-		if (intentsValid && extractedFundingOrg != null) {
+		// Valider chaque intention indépendamment
+		// L'utilisateur peut avoir 0, 1 ou 2 intentions dans sa requête
+		if (extractedFundingOrg != null) {
 			int fundingWordCount = extractedFundingOrg.split("\\s+").length;
 			if (fundingWordCount > 8) {
-				log.warn("Intents invalides: financement \"{}\" ({} mots) — trop long, contient probablement du contenu du cœur",
+				log.warn("Intention de financement invalide: \"{}\" ({} mots) — trop long, ignorée",
 					extractedFundingOrg, fundingWordCount);
-				intentsValid = false;
+				intents.remove("funding");
+				extractedFundingOrg = null;
 			}
 		}
-		if (!intentsValid) {
-			intents.clear();
+		if (extractedCity != null && NON_LOCATION_WORDS.contains(extractedCity)) {
+			log.warn("Intention de localisation invalide: \"{}\" — mot non géographique, ignorée", extractedCity);
+			intents.remove("location");
 			extractedCity = null;
-			extractedFundingOrg = null;
-			// Recherche vectorielle sur la requête complète (split core/intentions non fiable)
-			vectorQuery = hasTrailingQuestionMark ? cleanQuery + " ?" : cleanQuery;
 		}
 
 		// 1. Recherche vectorielle (sur la requête nettoyée)

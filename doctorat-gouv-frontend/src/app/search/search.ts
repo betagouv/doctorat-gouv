@@ -1348,10 +1348,41 @@ resetFilter(filterName: MultiFilterKey) {
     if (this.activeIntentFilter.length === 0) return [];
     const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
     return allResults.filter(r => {
+      return this.matchesActiveIntentFilter(r);
+    });
+  }
+
+  /** Retourne uniquement les TRES_PERTINENT qui matchent le filtre intention actif */
+  getFilteredScalewayTresPertinent(): any[] {
+    if (this.activeIntentFilter.length === 0) return this.scalewayResultsTresPertinent;
+    return this.scalewayResultsTresPertinent.filter(r => this.matchesActiveIntentFilter(r));
+  }
+
+  /** Retourne uniquement les autres résultats qui matchent le filtre intention actif */
+  getFilteredScalewayOther(): any[] {
+    if (this.activeIntentFilter.length === 0) return this.scalewayResultsOther;
+    return this.scalewayResultsOther.filter(r => this.matchesActiveIntentFilter(r));
+  }
+
+  private matchesActiveIntentFilter(r: any): boolean {
+    const matchLocation = this.activeIntentFilter.includes('location') && this.isLocationMatched(r);
+    const matchFunding = this.activeIntentFilter.includes('funding') && this.isFundingMatched(r);
+    return matchLocation || matchFunding;
+  }
+
+  /** Retourne les résultats qui ne matchent AUCUN filtre d'intention actif,
+   * triés par score de pertinence décroissant.
+   * Utilisé pour la section "Offres qui pourraient également vous intéresser". */
+  getNonMatchingScalewayResults(): any[] {
+    if (this.activeIntentFilter.length === 0) return [];
+    const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
+    const nonMatching = allResults.filter(r => {
       const matchLocation = this.activeIntentFilter.includes('location') && this.isLocationMatched(r);
       const matchFunding = this.activeIntentFilter.includes('funding') && this.isFundingMatched(r);
-      return matchLocation || matchFunding;
+      return !matchLocation && !matchFunding;
     });
+    const scores = this.scalewayScores;
+    return nonMatching.sort((a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
   }
 
   setActiveIntentFilter(type: string): void {
@@ -1428,7 +1459,9 @@ resetFilter(filterName: MultiFilterKey) {
         this.locationMatchedMap = data.locationMatchedMap || {};
         this.fundingMatchedMap = data.fundingMatchedMap || {};
         this.intents = data.intents || {};
-        this.activeIntentFilter = (Object.keys(this.intents).filter(k => k === 'location' || k === 'funding') as ('location' | 'funding')[]);
+        // N'activer que les intentions réellement présentes dans la réponse
+        const detectedIntents = Object.keys(this.intents).filter(k => k === 'location' || k === 'funding') as ('location' | 'funding')[];
+        this.activeIntentFilter = detectedIntents;
 
         const existingState = this.searchFiltersService.load() || {};
         this.searchFiltersService.save({
@@ -1566,7 +1599,7 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   hasIntents(): boolean {
-    return !!(this.intents && this.intents['location'] && this.intents['funding']);
+    return !!(this.intents && (this.intents['location'] || this.intents['funding']));
   }
 
   objectKeys(obj: Record<string, any>): string[] {

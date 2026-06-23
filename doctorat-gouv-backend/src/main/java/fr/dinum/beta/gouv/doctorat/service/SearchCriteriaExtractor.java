@@ -19,12 +19,12 @@ public class SearchCriteriaExtractor {
     );
 
     private static final Pattern LOCATION_PROXIMITE = Pattern.compile(
-        "(?:(?:proche|près)\\s+de|autour\\s+de)\\s+(\\w+(?:-\\w+)?(?:(?:\\s+|\\s+d')?\\w+)?)",
+        "(?:(?:proche|proches|près)\\s+de|autour\\s+de)\\s+(\\w+(?:-\\w+)?(?:(?:\\s+|\\s+d')?\\w+)?)",
         Pattern.CASE_INSENSITIVE
     );
 
     private static final Pattern LOCATION_ENDPHRASE = Pattern.compile(
-        "(?:à|dans|en|sur)\\s+(\\w+(?:-\\w+)?(?:\\s+\\w+)?)\\s*$",
+        "(?:à|dans|en)\\s+(\\w+(?:-\\w+)?(?:\\s+\\w+)?)\\s*$",
         Pattern.CASE_INSENSITIVE
     );
 
@@ -32,7 +32,15 @@ public class SearchCriteriaExtractor {
         "la", "le", "les", "des", "un", "une", "mon", "ton", "son",
         "cette", "ces", "leur", "leurs",
         "recherche", "sujet", "these", "thèse", "domaine", "cadre",
-        "milieu", "sein", "partie", "fonction"
+        "milieu", "sein", "partie", "fonction",
+        // Mots couramment confondus avec des localisations
+        "ia", "ai", "ml", "data", "big", "climat", "climatique",
+        "climatiques", "environnement", "numerique", "numérique", "digital",
+        "sante", "santé", "biologie", "medecine", "médecine", "chimie",
+        "physique", "mathematiques", "mathématiques", "economie", "économie",
+        "droit", "histoire", "sociologie", "psychologie", "philosophie",
+        "education", "éducation", "formation", "apprentissage",
+        "informatique", "science", "sciences"
     );
 
     public static Criteria extract(String query) {
