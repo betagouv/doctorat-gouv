@@ -495,6 +495,31 @@
 				{{ 'SEARCH.RESULTS_SUFIX' | translate }}
 			</span>
 			<span *ngIf="isAlbertSearchActive || isScalewayActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
+			<!-- Chips d'intentions cliquables Scaleway -->
+			<span class="scaleway-intents-inline" *ngIf="isScalewayActive && !isScalewayLoading && hasIntents()">
+				<span class="fr-tag intent-chip"
+					  *ngFor="let key of objectKeys(intents)"
+					  [class.intent-chip--active]="isActiveIntentFilter(key)"
+					  [class.intent-chip--clickable]="true"
+					  [ngClass]="'intent-chip--' + key"
+					  (click)="setActiveIntentFilter(key)"
+					  [title]="isActiveIntentFilter(key) ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
+					<span [class]="getIntentIcon(key)" aria-hidden="true"></span>
+					{{ intents[key] }}
+					<span *ngIf="isActiveIntentFilter(key)" class="intent-chip-check">✓</span>
+					<span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
+				</span>
+				<span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
+					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
+					<span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
+				</span>
+				<span class="intent-chip-reset fr-tag"
+					  *ngIf="activeIntentFilter.length > 0"
+					  (click)="resetIntentFilter()"
+					  title="{{ 'SEARCH.SCALEWAY_FILTERING_CLEAR' | translate }}">
+					✕
+				</span>
+			</span>
 		</p>
 
 		<!-- ===================== LOADING SCALEWAY ===================== -->
@@ -923,37 +948,6 @@
 
       <!-- Mode Scaleway : résultats triés en 2 sections -->
       <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
-
-        <!-- Chips d'intentions cliquables -->
-        <div class="fr-col-12" *ngIf="hasIntents()">
-          <div class="scaleway-intents">
-            <span class="scaleway-intents-label">{{ 'SEARCH.SCALEWAY_INTENTS_LABEL' | translate }}
-              <span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
-                <span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
-                <span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
-              </span>
-            </span>
-            <span class="fr-tag intent-chip"
-                  *ngFor="let key of objectKeys(intents)"
-                  [class.intent-chip--active]="isActiveIntentFilter(key)"
-                  [class.intent-chip--clickable]="true"
-                  [ngClass]="'intent-chip--' + key"
-                  (click)="setActiveIntentFilter(key)"
-                  [title]="isActiveIntentFilter(key) ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
-              <span [class]="getIntentIcon(key)" aria-hidden="true"></span>
-              {{ intents[key] }}
-              <span *ngIf="isActiveIntentFilter(key)" class="intent-chip-check">✓</span>
-              <span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
-            </span>
-            <span class="intent-chip-reset fr-tag"
-                  *ngIf="activeIntentFilter.length > 0"
-                  (click)="resetIntentFilter()"
-                  title="{{ 'SEARCH.SCALEWAY_FILTERING_CLEAR' | translate }}">
-              ✕
-            </span>
-          </div>
-        </div>
-
 
 
         <!-- Résultats filtrés par intention cliquable (carrousel) -->

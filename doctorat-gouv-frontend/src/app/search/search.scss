@@ -295,6 +295,16 @@
   color: white;
 }
 
+/* Chips d'intentions en ligne avec le badge */
+.scaleway-intents-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  margin-left: 0.75rem;
+}
+
 /* Chips d'intentions */
 .scaleway-intents {
   display: flex;
