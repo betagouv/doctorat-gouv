@@ -154,6 +154,10 @@ export class Search implements OnInit, OnDestroy {
   scalewayQuery = '';
   isScalewayActive = false;
   isScalewayLoading = false;
+  useSequentialLoading = false;
+  loadingStep = 0;
+  private loadingInterval: any;
+  activeIntentFilter: 'location' | 'funding' | null = null;
   scalewayVectorScores: Record<number, number> = {};
   scalewayScores: Record<number, number> = {};
   scalewayRelevanceLevels: Record<number, string> = {};
@@ -376,6 +380,7 @@ export class Search implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();
 	document.removeEventListener('click', this.handleClickOutside.bind(this));
+    this.stopSequentialLoading();
   }
 
   /* ------------------- Dropdown logic ------------------- */
@@ -1288,11 +1293,81 @@ resetFilter(filterName: MultiFilterKey) {
 
   /* ------------------- Recherche vectorielle Scaleway ------------------- */
 
+  startSequentialLoading(): void {
+    this.loadingStep = 0;
+    this.isScalewayLoading = true;
+    this.activeIntentFilter = null;
+    this.loadingInterval = setInterval(() => {
+      if (this.loadingStep < 4) {
+        this.loadingStep++;
+      }
+    }, 1200);
+  }
+
+  stopSequentialLoading(): void {
+    if (this.loadingInterval != null) {
+      clearInterval(this.loadingInterval);
+      this.loadingInterval = null;
+    }
+    if (!this.useSequentialLoading) {
+      this.isScalewayLoading = false;
+      return;
+    }
+    const advance = () => {
+      if (this.loadingStep < 4) {
+        this.loadingStep++;
+        setTimeout(advance, 350);
+      } else {
+        this.isScalewayLoading = false;
+      }
+    };
+    advance();
+  }
+
+  getCoreMatchedCount(): number {
+    return (this.scalewayResultsTresPertinent?.length ?? 0) + (this.scalewayResultsOther?.length ?? 0);
+  }
+
+  getLocationMatchedCount(): number {
+    return Object.values(this.locationMatchedMap).filter(v => v).length;
+  }
+
+  getFundingMatchedCount(): number {
+    return Object.values(this.fundingMatchedMap).filter(v => v).length;
+  }
+
+  getIntentCount(key: string): number {
+    if (key === 'core') return this.getCoreMatchedCount();
+    if (key === 'location') return this.getLocationMatchedCount();
+    if (key === 'funding') return this.getFundingMatchedCount();
+    return 0;
+  }
+
+  getFilteredScalewayResults(): any[] {
+    if (!this.activeIntentFilter) return [];
+    const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
+    return allResults.filter(r => {
+      if (this.activeIntentFilter === 'location') return this.isLocationMatched(r);
+      if (this.activeIntentFilter === 'funding') return this.isFundingMatched(r);
+      return true;
+    });
+  }
+
+  setActiveIntentFilter(type: string): void {
+    if (type !== 'location' && type !== 'funding') return;
+    const t = type as 'location' | 'funding';
+    this.activeIntentFilter = this.activeIntentFilter === t ? null : t;
+  }
+
+  resetIntentFilter(): void {
+    this.activeIntentFilter = null;
+  }
+
   onScalewaySearch(): void {
     const q = this.scalewayQuery.trim();
     if (!q) return;
 
-    this.isScalewayLoading = true;
+    this.startSequentialLoading();
     this.isScalewayActive = true;
     this.isAlbertSearchActive = false;
     this.sortField = 'relevance';
@@ -1314,7 +1389,7 @@ resetFilter(filterName: MultiFilterKey) {
         return res.json();
       })
       .then(data => {
-        this.isScalewayLoading = false;
+        this.stopSequentialLoading();
         this.scalewayResponseData = data;
 
         const allResults = data.results || [];
@@ -1362,7 +1437,7 @@ resetFilter(filterName: MultiFilterKey) {
       })
       .catch(err => {
         console.error(err);
-        this.isScalewayLoading = false;
+        this.stopSequentialLoading();
         this.isScalewayActive = false;
         this.results = [];
         this.totalResults = 0;

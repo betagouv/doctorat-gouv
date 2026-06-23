@@ -497,16 +497,50 @@
 			<span *ngIf="isAlbertSearchActive || isScalewayActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
 		</p>
 
-		<!-- ===================== LOADING RECHERCHE SCALEWAY ===================== -->
-		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading">
+		<!-- ===================== LOADING SCALEWAY ===================== -->
+		<!-- Mode simple (Albert-like) par défaut -->
+		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading && !useSequentialLoading">
 			<div class="ai-thinking">
 				<span class="thinking-sparkle">✨</span>
-				<span class="thinking-text">Réflexion en cours</span>
+				<span class="thinking-text">{{ 'SEARCH.SCALEWAY_SEARCHING' | translate }}</span>
 				<span class="thinking-dots">
 					<span class="dot"></span>
 					<span class="dot"></span>
 					<span class="dot"></span>
 				</span>
+			</div>
+		</div>
+		<!-- Mode séquentiel (fallback) -->
+		<div class="fr-my-4w fr-text--center scaleway-loading" *ngIf="isScalewayLoading && useSequentialLoading">
+			<div class="scaleway-loading-steps">
+				<div class="loading-step" [class.active]="loadingStep >= 0" [class.done]="loadingStep > 0">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep === 0">1</span>
+						<span class="step-check" *ngIf="loadingStep > 0">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP1' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 1" [class.done]="loadingStep > 1">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 1">2</span>
+						<span class="step-check" *ngIf="loadingStep > 1">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP2' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 2" [class.done]="loadingStep > 2">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 2">3</span>
+						<span class="step-check" *ngIf="loadingStep > 2">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP3' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 3" [class.done]="loadingStep > 3">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 3">4</span>
+						<span class="step-check" *ngIf="loadingStep > 3">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP4' | translate }}</span>
+				</div>
 			</div>
 		</div>
 
@@ -685,13 +719,13 @@
               {{ getScalewayRelevanceLabel(thesis) }}
             </span>
 
-            <span class="badge badge-location"
+            <span class="badge badge-location badge-pop"
                   *ngIf="isScalewayActive && !isScalewayLoading && isLocationMatched(thesis)"
                   title="Sujet au plus proche du secteur géographique recherché">
               <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
             </span>
 
-            <span class="badge badge-funding"
+            <span class="badge badge-funding badge-pop"
                   *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
                   title="Sujet dont le financement correspond à la recherche">
               <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
@@ -805,13 +839,13 @@
             {{ getScalewayRelevanceLabel(thesis) }}
           </span>
 
-          <span class="badge badge-location"
+          <span class="badge badge-location badge-pop"
                 *ngIf="isScalewayActive && !isScalewayLoading && isLocationMatched(thesis)"
                 title="Sujet au plus proche du secteur géographique recherché">
             <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
           </span>
 
-          <span class="badge badge-funding"
+          <span class="badge badge-funding badge-pop"
                 *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
                 title="Sujet dont le financement correspond à la recherche">
             <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
@@ -885,25 +919,76 @@
       </div>
 	</ng-template>
 
-	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w scaleway-results-grid">
 
       <!-- Mode Scaleway : résultats triés en 2 sections -->
       <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
 
-        <!-- Chips d'intentions -->
+        <!-- Chips d'intentions cliquables -->
         <div class="fr-col-12" *ngIf="hasIntents()">
           <div class="scaleway-intents">
-            <span class="scaleway-intents-label">{{ 'SEARCH.SCALEWAY_INTENTS_LABEL' | translate }}</span>
-            <span class="fr-tag intent-chip" *ngFor="let key of objectKeys(intents)"
-                  [ngClass]="'intent-chip--' + key">
+            <span class="scaleway-intents-label">{{ 'SEARCH.SCALEWAY_INTENTS_LABEL' | translate }}
+              <span class="tooltip-container" *ngIf="!activeIntentFilter">
+                <span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
+                <span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
+              </span>
+            </span>
+            <span class="fr-tag intent-chip"
+                  *ngFor="let key of objectKeys(intents)"
+                  [class.intent-chip--active]="activeIntentFilter === key"
+                  [class.intent-chip--clickable]="true"
+                  [ngClass]="'intent-chip--' + key"
+                  (click)="setActiveIntentFilter(key)"
+                  [title]="activeIntentFilter === key ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
               <span [class]="getIntentIcon(key)" aria-hidden="true"></span>
               {{ intents[key] }}
+              <span class="intent-chip-parens">({{ getIntentCount(key) }})</span>
+            </span>
+            <span class="intent-chip-reset fr-tag"
+                  *ngIf="activeIntentFilter"
+                  (click)="resetIntentFilter()"
+                  title="{{ 'SEARCH.SCALEWAY_FILTERING_CLEAR' | translate }}">
+              ✕
             </span>
           </div>
         </div>
 
-        <!-- Section 1 : Meilleurs résultats (carrousel) -->
-        <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">
+
+
+        <!-- Résultats filtrés par intention cliquable (carrousel) -->
+        <div class="fr-col-12" *ngIf="activeIntentFilter">
+          <div class="scaleway-section-title">
+            <h2>
+              {{ activeIntentFilter === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate) }}
+              <span class="scaleway-section-count">({{ getFilteredScalewayResults().length }})</span>
+            </h2>
+            <div class="scaleway-carousel-nav" *ngIf="getFilteredScalewayResults().length > 1">
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(-1)" aria-label="Précédent" title="Précédent">‹</button>
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(1)" aria-label="Suivant" title="Suivant">›</button>
+            </div>
+          </div>
+          <ng-container *ngIf="getFilteredScalewayResults().length > 0; else noFiltered">
+            <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
+              <ng-container *ngFor="let thesis of getFilteredScalewayResults(); let i = index">
+                <div class="scaleway-carousel-item fade-in-up" [style.animation-delay]="(i * 0.08) + 's'">
+                  <ng-container *ngTemplateOutlet="carouselCardTemplate; context: {$implicit: thesis}"></ng-container>
+                </div>
+              </ng-container>
+            </div>
+            <div class="scaleway-carousel-bottom-nav" *ngIf="getFilteredScalewayResults().length > 1">
+              <button class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-arrow-left-s-line" (click)="scrollCarousel(-1)">Précédent</button>
+              <button class="fr-btn fr-btn--tertiary fr-btn--icon-right fr-icon-arrow-right-s-line" (click)="scrollCarousel(1)">Suivant</button>
+            </div>
+          </ng-container>
+          <ng-template #noFiltered>
+            <div class="scaleway-ambigue-info fr-mt-2w">
+              {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Section 1 : Meilleurs résultats (carrousel) — masqué si un filtre intention est actif -->
+        <div class="fr-col-12" *ngIf="!activeIntentFilter && scalewayResultsTresPertinent.length">
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}
@@ -927,7 +1012,7 @@
 
           <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
             <ng-container *ngFor="let thesis of scalewayResultsTresPertinent; let i = index">
-              <div class="scaleway-carousel-item" [attr.data-index]="i">
+              <div class="scaleway-carousel-item fade-in-up" [style.animation-delay]="(i * 0.08) + 's'">
                 <ng-container *ngTemplateOutlet="carouselCardTemplate; context: {$implicit: thesis}"></ng-container>
               </div>
             </ng-container>
@@ -938,8 +1023,8 @@
           </div>
         </div>
 
-        <!-- Section 2 : Autres résultats -->
-        <div class="fr-col-12" *ngIf="scalewayResultsOther.length">
+        <!-- Section 2 : Autres résultats — masqué si un filtre intention est actif -->
+        <div class="fr-col-12" *ngIf="!activeIntentFilter && scalewayResultsOther.length">
           <div class="scaleway-section-title">
             <h2>
               {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
@@ -952,8 +1037,10 @@
             {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
           </div>
         </div>
-        <ng-container *ngFor="let thesis of scalewayResultsOther">
-          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+        <ng-container *ngIf="!activeIntentFilter">
+          <ng-container *ngFor="let thesis of scalewayResultsOther">
+            <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+          </ng-container>
         </ng-container>
       </ng-container>
 

@@ -31,7 +31,7 @@
 	"SCALEWAY_HINT": "Offers will be analyzed semantically (title, summary, keywords…).",
 	"SCALEWAY_PLACEHOLDER": "e.g. thesis on artificial intelligence for health",
 	"SCALEWAY_SEARCH_BUTTON": "Search",
-	"SCALEWAY_SEARCHING": "Vector search in progress…",
+	"SCALEWAY_SEARCHING": "Analyzing your request…",
 	"SCALEWAY_BADGE": "Vector search",
 	"SCALEWAY_TRES_PERTINENT": "Best matches",
 	"SCALEWAY_AUTRES_RESULTATS": "Offers that may also interest you",
@@ -41,7 +41,16 @@
 	"SCALEWAY_AMBIGUE": "Your search generates a large number of very relevant results. For more precision, describe your topic more finely.",
 	"SCALEWAY_AMBIGUE_ZERO": "Ambiguous search: no result matches perfectly. Try rephrasing or broadening your query.",
 	"SCALEWAY_LOCATION_NOT_MATCHED": "Looking for a specific area? The most relevant results are not located in that zone. You can use the \"Location\" filter to display only results near the place you are interested in.",
-	"SCALEWAY_INTENTS_LABEL": "Your search:"
+	"SCALEWAY_INTENTS_LABEL": "Your search:",
+	"SCALEWAY_INTERPRET_TITLE": "I understood your search",
+	"SCALEWAY_LOADING_STEP1": "Analyzing query…",
+	"SCALEWAY_LOADING_STEP2": "Vector search…",
+	"SCALEWAY_LOADING_STEP3": "Geographic analysis…",
+	"SCALEWAY_LOADING_STEP4": "Funding analysis…",
+	"SCALEWAY_FILTERING_LOCATION": "Location only",
+	"SCALEWAY_FILTERING_FUNDING": "Funding only",
+	"SCALEWAY_FILTERING_CLEAR": "Reset filter",
+	"SCALEWAY_INTENTS_FILTER_HINT": "Click an intention to filter results"
   },
 
   "FILTERS": {
