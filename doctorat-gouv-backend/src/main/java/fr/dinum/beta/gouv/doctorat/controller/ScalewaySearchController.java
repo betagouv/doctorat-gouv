@@ -66,21 +66,24 @@ public class ScalewaySearchController {
 	// Ex: "à Paris", "dans le Var", "en Île-de-France"
 	// NOTE: "sur" est volontairement exclu car trop ambigu (ex: "sujet sur l'IA")
 	private static final Pattern GEO_PREPOSITION_PATTERN = Pattern.compile(
-		"(?:^|\\s)(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?[A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s|$)"
+		"(?:^|\\s)(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?[A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s|$)",
+		Pattern.CASE_INSENSITIVE
 	);
 
 	// Extrait le nom de ville après un mot-clé de proximité (fiable)
 	// Ex: "proche de Paris" → "Paris"
 	// Non ancré : on cherche la dernière occurrence dans toute la requête
 	private static final Pattern GEO_CITY_PROXIMITY_PATTERN = Pattern.compile(
-		"(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+		"(?:proche|proches|près|pas loin|autour|voisinage|proximité|proximite|à coté|à côté|aux environs)\\s+(?:de|d')\\s*([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)",
+		Pattern.CASE_INSENSITIVE
 	);
 
 	// Extrait le nom de ville après une préposition simple (moins fiable)
 	// Ex: "à Paris", "dans le Var", "en Bretagne"
 	// Non ancré : on cherche la dernière occurrence dans toute la requête
 	private static final Pattern GEO_CITY_PREPOSITION_PATTERN = Pattern.compile(
-		"(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)"
+		"(?:à|aux|dans|vers|en)\\s+(?:le\\s+|la\\s+|l'|les\\s+)?([A-ZÀ-Ÿ][A-Za-zÀ-ÿ-]+(?:\\s*-\\s*[A-ZÀ-Ÿ][A-Za-zÀ-ÿ]+)?)",
+		Pattern.CASE_INSENSITIVE
 	);
 
 	// Mots qui ne doivent PAS être considérés comme des localisations (safety net)
