@@ -28,6 +28,7 @@
 	"AI_UNAVAILABLE_HINT": "Vous pouvez également effectuer une recherche classique via les filtres ci-contre.",
 	"AI_SQL_TOGGLE": "Compléter avec la recherche par mots-clés (SQL)",
 	"SCALEWAY_LABEL": "Activer la recherche en langage naturel",
+	"SCALEWAY_BETA": "Version bêta",
 	"SCALEWAY_HINT": "Les offres seront analysées sémantiquement (titre, résumé, mots-clés…).",
 	"SCALEWAY_PLACEHOLDER": "Ex : thèses en intelligence artificielle pour la santé",
 	"SCALEWAY_SEARCH_BUTTON": "Rechercher",

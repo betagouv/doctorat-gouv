@@ -39,6 +39,7 @@
 	    <input type="checkbox" id="useScaleway" [(ngModel)]="useScaleway" (ngModelChange)="toggleScaleway()">
 	    <label for="useScaleway">
 	    <strong>{{ 'SEARCH.SCALEWAY_LABEL' | translate }}</strong>
+	      <span class="fr-badge fr-badge--sm fr-badge--info fr-ml-2w">{{ 'SEARCH.SCALEWAY_BETA' | translate }}</span>
 	      <span class="fr-hint-text" *ngIf="!useScaleway">{{ 'SEARCH.SCALEWAY_HINT' | translate }}</span>
 	    </label>
 	  </div>
