@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.dto.VectorSearchHit;
+import fr.dinum.beta.gouv.doctorat.entity.ScalewayQueryLog;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import fr.dinum.beta.gouv.doctorat.repository.ScalewayQueryLogRepository;
 import fr.dinum.beta.gouv.doctorat.repository.SujetEmbeddingRepository;
 import fr.dinum.beta.gouv.doctorat.service.EmbeddingIndexationService;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
@@ -645,19 +648,25 @@ public class ScalewaySearchController {
 	private final SujetEmbeddingRepository sujetEmbeddingRepository;
 	private final PropositionTheseRepository propositionTheseRepository;
 	private final EmbeddingIndexationService indexationService;
+	private final ScalewayQueryLogRepository scalewayQueryLogRepository;
+
+	@Value("${scaleway.query-log.enabled:false}")
+	private boolean queryLogEnabled;
 
 	public ScalewaySearchController(VectorSearchService vectorSearchService,
 									PropositionTheseService propositionService,
 									SearchRerankerService rerankerService,
 									SujetEmbeddingRepository sujetEmbeddingRepository,
 									PropositionTheseRepository propositionTheseRepository,
-									EmbeddingIndexationService indexationService) {
+									EmbeddingIndexationService indexationService,
+									ScalewayQueryLogRepository scalewayQueryLogRepository) {
 		this.vectorSearchService = vectorSearchService;
 		this.propositionService = propositionService;
 		this.rerankerService = rerankerService;
 		this.sujetEmbeddingRepository = sujetEmbeddingRepository;
 		this.propositionTheseRepository = propositionTheseRepository;
 		this.indexationService = indexationService;
+		this.scalewayQueryLogRepository = scalewayQueryLogRepository;
 	}
 
 	private static String niveauPertinence(double compositeScore) {
@@ -1009,6 +1018,10 @@ public class ScalewaySearchController {
 		}
 		query = query.trim();
 		int limit = Integer.parseInt(allParams.getOrDefault("limit", "100"));
+
+		if (queryLogEnabled) {
+			scalewayQueryLogRepository.save(new ScalewayQueryLog(query, java.time.LocalDateTime.now()));
+		}
 
 		long startTime = System.currentTimeMillis();
 		log.info("Recherche vectorielle via /api/scaleway/propositions (limit={})", limit);
