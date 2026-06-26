@@ -894,11 +894,6 @@
               <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
               {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
             </span>
-            <span class="albert-matched-type fr-mt-1v"
-                  *ngIf="isScalewayActive && !isScalewayLoading && hasScalewayMatchedType(thesis)"
-                  style="color: #0063cb;">
-              {{ getScalewayMatchedTypeLabel(thesis) }}
-            </span>
           </div>
 
           <p class="fr-card__desc_type">
