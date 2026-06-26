@@ -1227,7 +1227,19 @@ public class ScalewaySearchController {
 			}
 		}
 
-		// 6. Détection localisation : construction de la map par résultat
+		// 6. Filtrer les résultats masqués (score < seuil)
+		results.removeIf(dto -> {
+			if ("MASQUE".equals(relevanceLevels.get(dto.getId()))) {
+				relevanceLevels.remove(dto.getId());
+				vectorScores.remove(dto.getId());
+				matchedTypes.remove(dto.getId());
+				matchedContent.remove(dto.getId());
+				return true;
+			}
+			return false;
+		});
+
+		// 7. Détection localisation : construction de la map par résultat
 		Map<String, Boolean> locationMatchedMap = new HashMap<>();
 		boolean anyLocationMatched = false;
 		if (extractedCity != null) {
@@ -1258,7 +1270,7 @@ public class ScalewaySearchController {
 			&& extractedCity != null
 			&& !anyLocationMatched;
 
-		// 7. Détection financement : construction de la map par résultat
+		// 8. Détection financement : construction de la map par résultat
 		Map<String, Boolean> fundingMatchedMap = new HashMap<>();
 		int fundingMatchCount = 0;
 		if (extractedFundingOrg != null) {
