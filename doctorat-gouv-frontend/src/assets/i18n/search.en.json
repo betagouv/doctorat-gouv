@@ -29,7 +29,7 @@
 	"AI_SQL_TOGGLE": "Complement with keyword search (SQL)",
 	"SCALEWAY_LABEL": "Enable natural language search",
 	"SCALEWAY_BETA": "Under experimentation",
-	"SCALEWAY_HINT": "Offers will be analyzed semantically (title, summary, keywords…).",
+	"SCALEWAY_HINT": "Write your search in natural language, as if you were speaking",
 	"SCALEWAY_PLACEHOLDER": "e.g. thesis on artificial intelligence for health",
 	"SCALEWAY_SEARCH_BUTTON": "Search",
 	"SCALEWAY_SEARCHING": "Analyzing your request…",

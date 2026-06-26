@@ -29,7 +29,7 @@
 	"AI_SQL_TOGGLE": "Compléter avec la recherche par mots-clés (SQL)",
 	"SCALEWAY_LABEL": "Activer la recherche en langage naturel",
 	"SCALEWAY_BETA": "En cours d'expérimentation",
-	"SCALEWAY_HINT": "Les offres seront analysées sémantiquement (titre, résumé, mots-clés…).",
+	"SCALEWAY_HINT": "Formulez votre recherche en langage naturel, comme à l'oral",
 	"SCALEWAY_PLACEHOLDER": "Ex : thèses en intelligence artificielle pour la santé",
 	"SCALEWAY_SEARCH_BUTTON": "Rechercher",
 	"SCALEWAY_SEARCHING": "Analyse de votre requête…",
