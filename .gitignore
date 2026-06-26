@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 **/logs/
 **/*.log
+*.err
 
 # Node / Angular
 node_modules/
@@ -37,3 +38,6 @@ Thumbs.db
 *.key
 *.pem
 *.crt
+
+# Documentation interne
+/docs/

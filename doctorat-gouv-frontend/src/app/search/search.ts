@@ -37,6 +37,8 @@ import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { ViewEncapsulation } from '@angular/core';
 
+import { environment } from '../../environments/environment';
+
 type MultiFilterKey =
   'discipline' |
   'localisation' |
@@ -78,7 +80,7 @@ export class Search implements OnInit, OnDestroy {
 
   
   /* ------------------- Tri ------------------- */
-  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' = 'dateMiseEnLigne';
+  sortField: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance' = 'dateMiseEnLigne';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
   sortOpen = false;
 
@@ -128,6 +130,51 @@ export class Search implements OnInit, OnDestroy {
   private filterChanges$ = new Subject<void>();
   private filterSub!: Subscription;
   
+  
+  // --- Recherche IA Albert ---
+  useAlbert = false;
+  useScaleway = false;
+  useSql = false;                     // recherche SQL en complément d'Albert
+  albertQuery = '';                   // texte saisi (mode legacy)
+  albertSearchQuery = '';             // texte saisi pour la recherche structurée
+  albertResult: string | null = null; // résultat texte (mode legacy)
+  isAlbertLoading = false;            // spinner
+  isAlbertSearchActive = false;       // vrai quand on est en mode Albert enrichi
+
+  // Données structurées retournées par /api/albert/propositions
+  albertScores: Record<number, number> = {};
+  albertMatchedTypes: Record<number, string> = {};
+  albertSuggestedKeywords: string[] = [];
+  aiMessage: string | null = null;
+
+  // Interface pour la réponse Albert enrichie
+  private albertResponseData: any = null;
+
+  // --- Recherche vectorielle Scaleway ---
+  scalewayQuery = '';
+  isScalewayActive = false;
+  isScalewayLoading = false;
+  useSequentialLoading = false;
+  loadingStep = 0;
+  private loadingInterval: any;
+  activeIntentFilter: ('location' | 'funding')[] = [];
+  showScoreBadges = false;
+  scalewayVectorScores: Record<number, number> = {};
+  scalewayScores: Record<number, number> = {};
+  scalewayRelevanceLevels: Record<number, string> = {};
+  scalewayMatchedTypes: Record<number, string> = {};
+  ambigueThreshold = 20;
+  showAmbigueMessage = false;
+  showAmbigueTooMany = false;
+  scalewayResultsTresPertinent: any[] = [];
+  scalewayResultsOther: any[] = [];
+  carouselDotIndex = 0;
+  locationNotMatched = false;
+  locationMatchedMap: Record<string, boolean> = {};
+  fundingMatchedMap: Record<string, boolean> = {};
+  intents: Record<string, string> = {};
+  private scalewayResponseData: any = null;
+
   
   /* ------------------- Translations pour les filtres ------------------- */
   disciplineTranslations: Record<string, string> = {
@@ -261,21 +308,57 @@ export class Search implements OnInit, OnDestroy {
 		  this.sortField = saved.sortField;
 		}
 
-		if (saved.sortDirection) {
-		  this.sortDirection = saved.sortDirection;
+ 		if (saved.sortDirection) {
+ 		  this.sortDirection = saved.sortDirection;
+ 		}
+ 		
+         this.currentPage = saved.page ?? 0;
+
+		this.albertSearchQuery = saved.albertSearchQuery || '';
+		this.useAlbert = saved.useAlbert || false;
+		this.isAlbertSearchActive = false;
+		this.albertScores = saved.albertScores || {};
+		this.albertMatchedTypes = saved.albertMatchedTypes || {};
+		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
+
+		this.scalewayQuery = saved.scalewayQuery || '';
+		this.useScaleway = saved.useScaleway || false;
+		this.isScalewayActive = saved.isScalewayActive || false;
+		this.scalewayScores = saved.scalewayScores || {};
+		this.scalewayVectorScores = saved.scalewayVectorScores || {};
+		this.scalewayRelevanceLevels = saved.scalewayRelevanceLevels || {};
+		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
+		this.locationNotMatched = saved.locationNotMatched || false;
+		this.locationMatchedMap = saved.locationMatchedMap || {};
+		this.fundingMatchedMap = saved.fundingMatchedMap || {};
+		this.intents = saved.intents || {};
+
+		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
+		if (urlParams['useSql'] !== undefined) {
+		  this.useSql = urlParams['useSql'] === 'true';
 		}
-		
-        this.currentPage = saved.page ?? 0;
 
-	  }
+ 	  }
 
-	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page 
-	this.onSearch(this.currentPage);
+	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page
+	if (this.isScalewayActive && this.scalewayQuery.trim()) {
+	  this.onScalewaySearch();
+	} else if (this.isAlbertSearchActive && this.albertSearchQuery.trim()) {
+	  this.onAlbertSearchPropositions();
+	} else {
+	  this.onSearch(this.currentPage);
+	}
 	this.isInitialLoad = false;
 	
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
-      .subscribe(() => this.onSearch(0));
+      .subscribe(() => {
+        if (this.isScalewayActive && this.scalewayQuery.trim()) {
+          this.onScalewaySearch();
+        } else {
+          this.onSearch(0);
+        }
+      });
   }
   
   ngAfterViewInit(): void {
@@ -298,6 +381,7 @@ export class Search implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();
 	document.removeEventListener('click', this.handleClickOutside.bind(this));
+    this.stopSequentialLoading();
   }
 
   /* ------------------- Dropdown logic ------------------- */
@@ -341,23 +425,35 @@ resetFilter(filterName: MultiFilterKey) {
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
     // Sauvegarder les filtres
-    this.searchFiltersService.save({
-      query: this.query,
-      discipline: this.discipline,
-      localisation: this.localisation,
-      laboratoire: this.laboratoire,
-      ecole: this.ecole,
-      defisSociete: this.defisSociete,
-      ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
-      etablissementRor: this.etablissementRor,
-	  typeProposition: this.activeFilter,
-	  sortField: this.sortField,
-	  sortDirection: this.sortDirection,
-	  annee: this.annee,
-	  showMoreFilters: this.showMoreFilters,
-	  scrollPosition: 0
-	  // page: this.currentPage
-    });
+		this.searchFiltersService.save({
+		  query: this.query,
+		  discipline: this.discipline,
+		  localisation: this.localisation,
+		  laboratoire: this.laboratoire,
+		  ecole: this.ecole,
+		  defisSociete: this.defisSociete,
+		  ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+		  etablissementRor: this.etablissementRor,
+		  typeProposition: this.activeFilter,
+		  sortField: this.sortField,
+		  sortDirection: this.sortDirection,
+		  annee: this.annee,
+		  showMoreFilters: this.showMoreFilters,
+		  albertSearchQuery: this.albertSearchQuery,
+		  useAlbert: this.useAlbert,
+		  isAlbertSearchActive: this.isAlbertSearchActive,
+		  albertScores: this.albertScores,
+		  albertMatchedTypes: this.albertMatchedTypes,
+		  albertSuggestedKeywords: this.albertSuggestedKeywords,
+		  scalewayQuery: this.scalewayQuery,
+		  useScaleway: this.useScaleway,
+		  isScalewayActive: this.isScalewayActive,
+		  scalewayScores: this.scalewayScores,
+		  scalewayVectorScores: this.scalewayVectorScores,
+		  scalewayRelevanceLevels: this.scalewayRelevanceLevels,
+		  scalewayMatchedTypes: this.scalewayMatchedTypes,
+		  page: this.currentPage
+		});
 
 	// ⚠️ Ne pas déclencher filterChanges$ pendant le chargement initial
 	if (!this.isInitialLoad) {
@@ -416,6 +512,9 @@ resetFilter(filterName: MultiFilterKey) {
   onSearch(page: number = 0): void {
     const activeFilters = this.buildActiveFilters();
 
+    this.isAlbertSearchActive = false;
+    this.isScalewayActive = false;
+    this.sortField = 'dateMiseEnLigne';
     this.propositionService.search(activeFilters, page, this.pageSize).subscribe({
       next: data => {
         this.results = data.content;
@@ -439,18 +538,142 @@ resetFilter(filterName: MultiFilterKey) {
 		  annee: this.annee,
 		  page: this.currentPage
 		});
-		
-        // Après chargement des résultats, scroller vers le haut de la liste
-        // document.getElementById('results-count')?.scrollIntoView({ behavior: 'smooth' });
       },
       error: err => console.error('❌ Erreur lors de la recherche :', err)
     });
   }
 
+  /** Active/désactive la recherche IA */
+  toggleAlbert(): void {
+    if (!this.useAlbert) {
+      this.isAlbertSearchActive = false;
+      this.albertSearchQuery = '';
+      this.albertScores = {};
+      this.albertMatchedTypes = {};
+      this.albertSuggestedKeywords = [];
+      this.results = [];
+      this.totalResults = 0;
+    }
+    this.onFilterChange();
+  }
+
+  toggleScaleway(): void {
+    if (!this.useScaleway) {
+      this.isScalewayActive = false;
+      this.scalewayQuery = '';
+      this.scalewayScores = {};
+      this.scalewayVectorScores = {};
+      this.scalewayRelevanceLevels = {};
+      this.scalewayMatchedTypes = {};
+      this.scalewayResultsTresPertinent = [];
+      this.scalewayResultsOther = [];
+      this.showAmbigueMessage = false;
+      this.showAmbigueTooMany = false;
+      this.results = [];
+      this.totalResults = 0;
+    }
+    this.onFilterChange();
+  }
+
+  /**
+   * Recherche sémantique via Albert, retourne les sujets sous forme de cards enrichies
+   * avec scores, types d'intention et mots-clés suggérés.
+   */
+  onAlbertSearchPropositions(): void {
+    const q = this.albertSearchQuery.trim();
+    if (!q) return;
+
+    this.isAlbertLoading = true;
+    this.isAlbertSearchActive = true;
+    this.isScalewayActive = false;
+    this.sortField = 'relevance';
+    this.albertSuggestedKeywords = [];
+    this.albertScores = {};
+    this.albertMatchedTypes = {};
+    this.aiMessage = null;
+
+    const url = `${environment.apiUrl}/albert/propositions?query=${encodeURIComponent(q)}&useSql=${this.useSql}`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        this.isAlbertLoading = false;
+
+        // Stocker la réponse brute complète
+        this.albertResponseData = data;
+
+        // Pagination côté frontend sur les résultats Albert
+        const allResults = data.results || [];
+        this.totalResults = data.totalResults || allResults.length;
+        this.totalPages = Math.max(1, Math.ceil(allResults.length / this.pageSize));
+        this.currentPage = 0;
+        this.results = allResults.slice(0, this.pageSize);
+
+        // Scores et types d'intention
+        if (data.scores) {
+          this.albertScores = data.scores;
+        }
+        if (data.matchedTypes) {
+          this.albertMatchedTypes = data.matchedTypes;
+        }
+
+        // Mots-clés suggérés
+        this.albertSuggestedKeywords = data.suggestedKeywords || [];
+
+        // Message d'indisponibilité Albert
+        this.aiMessage = data.aiMessage || null;
+
+        // Sauvegarder l'état Albert dans la session
+        this.searchFiltersService.save({
+          query: '',
+          discipline: this.discipline,
+          localisation: this.localisation,
+          laboratoire: this.laboratoire,
+          ecole: this.ecole,
+          defisSociete: this.defisSociete,
+          annee: this.annee,
+          ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+          etablissementRor: this.etablissementRor,
+          typeProposition: this.activeFilter,
+          sortField: this.sortField,
+          sortDirection: this.sortDirection,
+          showMoreFilters: this.showMoreFilters,
+          albertSearchQuery: this.albertSearchQuery,
+          useAlbert: this.useAlbert,
+          isAlbertSearchActive: this.isAlbertSearchActive,
+          albertScores: this.albertScores,
+          albertMatchedTypes: this.albertMatchedTypes,
+          albertSuggestedKeywords: this.albertSuggestedKeywords,
+          scrollPosition: 0
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.isAlbertLoading = false;
+        this.isAlbertSearchActive = false;
+        this.results = [];
+        this.totalResults = 0;
+        this.aiMessage = 'error';
+      });
+  }
+
   /* ------------------- Pagination ------------------- */
   goToPage(page: number): void {
     if (page >= 0 && page < this.totalPages) {
-      this.onSearch(page);
+      if (this.isAlbertSearchActive && this.albertResponseData) {
+        const allResults = this.albertResponseData.results || [];
+        this.currentPage = page;
+        this.results = allResults.slice(page * this.pageSize, (page + 1) * this.pageSize);
+      } else if (this.isScalewayActive && this.scalewayResponseData) {
+        const allResults = this.scalewayResponseData.results || [];
+        this.currentPage = page;
+        this.results = allResults.slice(page * this.pageSize, (page + 1) * this.pageSize);
+      } else {
+        this.onSearch(page);
+      }
       const el = document.getElementById('results-count');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
@@ -754,9 +977,12 @@ resetFilter(filterName: MultiFilterKey) {
     this.onFilterChange();
   }
   
-  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature') {
-    this.sortField = field;
+  setSortField(field: 'dateMiseEnLigne' | 'dateLimiteCandidature' | 'relevance') {
+    this.sortField = field as any;
     this.sortOpen = false;
+    if (field === 'relevance') {
+      this.sortDirection = 'DESC';
+    }
     this.onFilterChange();
   }
 
@@ -819,7 +1045,7 @@ resetFilter(filterName: MultiFilterKey) {
     };
 
     // 1 seul élément → badge avec libellé tronqué
-    if (list.length === 0) {
+    if (list.length === 1) {
       const first = this.getSingleLabel(list[0], type);
       const truncated = truncateWords(first, 4);
       return `
@@ -899,6 +1125,29 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.currentPage = 0;
 
+    this.albertSearchQuery = '';
+    this.useAlbert = false;
+    this.isAlbertSearchActive = false;
+    this.isAlbertLoading = false;
+    this.albertScores = {};
+    this.albertMatchedTypes = {};
+    this.albertSuggestedKeywords = [];
+
+    this.scalewayQuery = '';
+    this.isScalewayActive = false;
+    this.isScalewayLoading = false;
+    this.scalewayScores = {};
+    this.scalewayVectorScores = {};
+    this.scalewayRelevanceLevels = {};
+    this.scalewayMatchedTypes = {};
+    this.scalewayResultsTresPertinent = [];
+    this.scalewayResultsOther = [];
+    this.scalewayResponseData = null;
+    this.locationNotMatched = false;
+    this.locationMatchedMap = {};
+    this.fundingMatchedMap = {};
+    this.intents = {};
+
     // Fermer tous les dropdowns
     this.closeAllDropdowns();
 
@@ -917,6 +1166,9 @@ resetFilter(filterName: MultiFilterKey) {
       sortField: 'dateMiseEnLigne',
       sortDirection: 'DESC',
       showMoreFilters: false,
+      albertSearchQuery: '',
+      useAlbert: false,
+      isAlbertSearchActive: false,
       page: 0,
       scrollPosition: 0
     });
@@ -926,17 +1178,427 @@ resetFilter(filterName: MultiFilterKey) {
   }
   
   get activeFiltersCount(): number {
-    return (
-      this.discipline.length +
-      this.localisation.length +
-      this.laboratoire.length +
-      this.ecole.length +
-      this.defisSociete.length +
-      this.annee.length +
-      (this.ecoleDoctoraleNumero ? 1 : 0) +
-      (this.etablissementRor ? 1 : 0) +
-      (this.query.trim() ? 1 : 0)
-    );
+    let count = 0;
+    count += this.discipline.length;
+    count += this.localisation.length;
+    count += this.laboratoire.length;
+    count += this.ecole.length;
+    count += this.defisSociete.length;
+    count += this.annee.length;
+    if (this.ecoleDoctoraleNumero) count++;
+    if (this.etablissementRor) count++;
+    if (this.query.trim()) count++;
+    if (this.albertSearchQuery.trim()) count++;
+    if (this.scalewayQuery.trim()) count++;
+    return count;
+  }
+  
+  onAlbertSearch(): void {
+		if (!this.albertQuery.trim()) {
+			this.albertResult = "Veuillez saisir une question.";
+			return;
+		}
+
+		this.isAlbertLoading = true;
+		this.albertResult = null;
+
+		fetch(`${environment.apiUrl}/albert/search?query=${encodeURIComponent(this.albertQuery)}`)
+			.then(res => {
+				if (!res.ok) {
+					throw new Error("Erreur HTTP " + res.status);
+				}
+				return res.json();
+			})
+			.then(data => {
+				this.isAlbertLoading = false;
+				this.albertResult = data.answer || "Aucun résultat trouvé dans les sujets de thèse.";
+			})
+			.catch(err => {
+				console.error(err);
+				this.isAlbertLoading = false;
+				this.albertResult = "Erreur lors de l'interrogation d'Albert.";
+			});
+	}
+
+  /** Formate le score en pourcentage lisible */
+  formatScore(score: number): string {
+    return Math.round(score * 100) + '%';
   }
 
+  /** Retourne la classe CSS pour la couleur du badge de score */
+  getScoreColor(score: number): string {
+    if (score >= 0.8) return 'score-high';
+    if (score >= 0.6) return 'score-medium';
+    return 'score-low';
+  }
+
+  /** Libellé lisible du type d'intention */
+  getMatchedTypeLabel(type: string | null): string {
+    if (!type) return '';
+    const labels: Record<string, string> = {
+      'mots_cles': 'Mots-clés',
+      'resume': 'Résumé',
+      'contexte': 'Contexte',
+      'objectif': 'Objectif',
+      'titre': 'Titre',
+      'profil': 'Profil recherché',
+      'general': 'Contenu général'
+    };
+    return labels[type] || type;
+  }
+
+  getMatchedTypeIcon(type: string | null): string {
+    if (!type) return 'fr-icon-information-line';
+    const icons: Record<string, string> = {
+      'mots_cles': 'fr-icon-price-tag-line',
+      'resume': 'fr-icon-draft-line',
+      'contexte': 'fr-icon-folder-2-line',
+      'objectif': 'fr-icon-target-line',
+      'titre': 'fr-icon-article-line',
+      'profil': 'fr-icon-user-line',
+      'general': 'fr-icon-information-line'
+    };
+    return icons[type] || 'fr-icon-information-line';
+  }
+
+  /** Wrapper helpers that handle null thesis.id for strict template type checking */
+  hasAlbertScore(thesis: any): boolean {
+    return thesis.id != null && this.albertScores[thesis.id] !== undefined;
+  }
+  getAlbertScore(thesis: any): number {
+    return thesis.id != null ? (this.albertScores[thesis.id] ?? 0) : 0;
+  }
+  hasAlbertMatchedType(thesis: any): boolean {
+    return thesis.id != null && this.albertMatchedTypes[thesis.id] != null;
+  }
+  getAlbertMatchedType(thesis: any): string | null {
+    return thesis.id != null ? this.albertMatchedTypes[thesis.id] : null;
+  }
+
+  /** Ajoute un mot-clé suggéré à la recherche */
+  addSuggestedKeyword(keyword: string): void {
+    const currentQuery = this.query.trim();
+    this.query = currentQuery ? currentQuery + ' ' + keyword : keyword;
+    this.onFilterChange();
+  }
+
+  /** Appliquer un mot-clé suggest comme requête de recherche Albert */
+  searchByKeyword(keyword: string): void {
+    this.query = keyword;
+    if (this.useAlbert) {
+      this.onFilterChange();
+    } else {
+      this.onSearch(0);
+    }
+  }
+
+  /* ------------------- Recherche vectorielle Scaleway ------------------- */
+
+  startSequentialLoading(): void {
+    this.loadingStep = 0;
+    this.isScalewayLoading = true;
+    this.activeIntentFilter = [];
+    this.loadingInterval = setInterval(() => {
+      if (this.loadingStep < 4) {
+        this.loadingStep++;
+      }
+    }, 1200);
+  }
+
+  stopSequentialLoading(): void {
+    if (this.loadingInterval != null) {
+      clearInterval(this.loadingInterval);
+      this.loadingInterval = null;
+    }
+    if (!this.useSequentialLoading) {
+      this.isScalewayLoading = false;
+      return;
+    }
+    const advance = () => {
+      if (this.loadingStep < 4) {
+        this.loadingStep++;
+        setTimeout(advance, 350);
+      } else {
+        this.isScalewayLoading = false;
+      }
+    };
+    advance();
+  }
+
+  getCoreMatchedCount(): number {
+    return (this.scalewayResultsTresPertinent?.length ?? 0) + (this.scalewayResultsOther?.length ?? 0);
+  }
+
+  getLocationMatchedCount(): number {
+    return this.scalewayResultsTresPertinent.filter(r => r?.id != null && this.locationMatchedMap[String(r.id)] === true).length;
+  }
+
+  getFundingMatchedCount(): number {
+    return this.scalewayResultsTresPertinent.filter(r => r?.id != null && this.fundingMatchedMap[String(r.id)] === true).length;
+  }
+
+  getIntentCount(key: string): number {
+    if (key === 'core') return this.getCoreMatchedCount();
+    if (key === 'location') return this.getLocationMatchedCount();
+    if (key === 'funding') return this.getFundingMatchedCount();
+    return 0;
+  }
+
+  getFilteredScalewayResults(): any[] {
+    if (this.activeIntentFilter.length === 0) return [];
+    const allResults = [...this.scalewayResultsTresPertinent, ...this.scalewayResultsOther];
+    return allResults.filter(r => {
+      return this.matchesActiveIntentFilter(r);
+    });
+  }
+
+  /** Retourne uniquement les TRES_PERTINENT qui matchent le filtre intention actif */
+  getFilteredScalewayTresPertinent(): any[] {
+    if (this.activeIntentFilter.length === 0) return this.scalewayResultsTresPertinent;
+    return this.scalewayResultsTresPertinent.filter(r => this.matchesActiveIntentFilter(r));
+  }
+
+  /**
+   * Retourne les résultats de la section 2 (Offres qui pourraient également vous intéresser) :
+   * - TRES_PERTINENT non matchants (si filtre intention actif) en premier
+   * - Puis tous les autres résultats (PERTINENT et en dessous), non filtrés
+   */
+  getScalewaySection2Results(): any[] {
+    let nonMatchingTres: any[] = [];
+    if (this.activeIntentFilter.length > 0) {
+      nonMatchingTres = this.scalewayResultsTresPertinent.filter(r => !this.matchesActiveIntentFilter(r));
+    }
+    return [...nonMatchingTres, ...this.scalewayResultsOther];
+  }
+
+  private matchesActiveIntentFilter(r: any): boolean {
+    const matchLocation = this.activeIntentFilter.includes('location') && this.isLocationMatched(r);
+    const matchFunding = this.activeIntentFilter.includes('funding') && this.isFundingMatched(r);
+    return matchLocation || matchFunding;
+  }
+
+  setActiveIntentFilter(type: string): void {
+    if (type !== 'location' && type !== 'funding') return;
+    const t = type as 'location' | 'funding';
+    if (this.activeIntentFilter.includes(t)) {
+      this.activeIntentFilter = this.activeIntentFilter.filter(v => v !== t);
+    } else {
+      this.activeIntentFilter = [...this.activeIntentFilter, t];
+    }
+  }
+
+  isActiveIntentFilter(key: string): boolean {
+    return this.activeIntentFilter.includes(key as 'location' | 'funding');
+  }
+
+  resetIntentFilter(): void {
+    this.activeIntentFilter = [];
+  }
+
+  onScalewaySearch(): void {
+    const q = this.scalewayQuery.trim();
+    if (!q) return;
+
+    this.startSequentialLoading();
+    this.isScalewayActive = true;
+    this.isAlbertSearchActive = false;
+    this.sortField = 'relevance';
+    this.scalewayResponseData = null;
+
+    const params = new URLSearchParams();
+    params.set('query', q);
+    params.set('limit', '100');
+    const filters = this.buildActiveFilters();
+    const scalewayFilterKeys = ['localisation', 'discipline', 'defisSociete', 'laboratoire', 'ecole', 'annee', 'typeProposition'];
+    for (const key of scalewayFilterKeys) {
+      if (filters[key]) params.set(key, filters[key]);
+    }
+    const url = `${environment.apiUrl}/scaleway/propositions?${params}`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        this.stopSequentialLoading();
+        this.scalewayResponseData = data;
+
+        const allResults = data.results || [];
+        this.totalResults = data.totalResults || allResults.length;
+        this.totalPages = Math.max(1, Math.ceil(allResults.length / this.pageSize));
+        this.currentPage = 0;
+        this.results = allResults.slice(0, this.pageSize);
+
+        this.scalewayVectorScores = data.vectorScores || {};
+        this.scalewayScores = data.scores || {};
+        this.scalewayRelevanceLevels = data.relevanceLevels || {};
+        this.scalewayMatchedTypes = data.matchedTypes || {};
+
+        const scores = data.scores || {};
+        const levels = data.relevanceLevels || {};
+        const sortByScore = (a: any, b: any) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0);
+        const sorted = [...allResults].sort(sortByScore);
+        this.scalewayResultsTresPertinent = sorted.filter((r: any) => levels[r.id] === 'TRES_PERTINENT');
+        this.scalewayResultsOther = sorted.filter((r: any) => levels[r.id] !== 'TRES_PERTINENT');
+
+        // Détection requête ambiguë
+        this.showAmbigueTooMany = this.scalewayResultsTresPertinent.length > this.ambigueThreshold;
+        this.showAmbigueMessage = this.scalewayResultsTresPertinent.length === 0 || this.showAmbigueTooMany;
+
+        // Détection localisation non matchée
+        this.locationNotMatched = data.locationNotMatched === true;
+        this.locationMatchedMap = data.locationMatchedMap || {};
+        this.fundingMatchedMap = data.fundingMatchedMap || {};
+        this.intents = data.intents || {};
+        // N'activer que les intentions réellement présentes dans la réponse
+        const detectedIntents = Object.keys(this.intents).filter(k => k === 'location' || k === 'funding') as ('location' | 'funding')[];
+        this.activeIntentFilter = detectedIntents;
+
+        const existingState = this.searchFiltersService.load() || {};
+        this.searchFiltersService.save({
+          ...existingState,
+          scalewayQuery: this.scalewayQuery,
+          isScalewayActive: this.isScalewayActive,
+          scalewayScores: this.scalewayScores,
+          scalewayVectorScores: this.scalewayVectorScores,
+          scalewayRelevanceLevels: this.scalewayRelevanceLevels,
+          scalewayMatchedTypes: this.scalewayMatchedTypes,
+          locationNotMatched: this.locationNotMatched,
+          locationMatchedMap: this.locationMatchedMap,
+          fundingMatchedMap: this.fundingMatchedMap,
+          intents: this.intents,
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.stopSequentialLoading();
+        this.isScalewayActive = false;
+        this.results = [];
+        this.totalResults = 0;
+      });
+  }
+
+  getScalewayVectorScore(thesis: any): number {
+    return thesis.id != null ? (this.scalewayVectorScores[thesis.id] ?? 0) : 0;
+  }
+
+  getScalewayScore(thesis: any): number {
+    return thesis.id != null ? (this.scalewayScores[thesis.id] ?? 0) : 0;
+  }
+
+  hasScalewayRelevance(thesis: any): boolean {
+    return thesis.id != null && this.scalewayRelevanceLevels[thesis.id] !== undefined;
+  }
+
+  getScalewayRelevanceLabel(thesis: any): string {
+    const level: string = (thesis.id != null ? this.scalewayRelevanceLevels[thesis.id] : null) || '';
+    const labels: Record<string, string> = {
+      'TRES_PERTINENT': 'Très pertinent',
+      'PERTINENT': 'Pertinent',
+      'FAIBLEMENT_PERTINENT': 'Peu pertinent',
+      'MASQUE': 'Masqué'
+    };
+    return labels[level] || level || '';
+  }
+
+  getScalewayRelevanceClass(thesis: any): string {
+    const level = thesis.id != null ? this.scalewayRelevanceLevels[thesis.id] : null;
+    return 'scaleway-' + (level || 'masque').toLowerCase();
+  }
+
+  hasScalewayMatchedType(thesis: any): boolean {
+    return thesis.id != null && this.scalewayMatchedTypes[thesis.id] !== undefined;
+  }
+
+  getScalewayMatchedTypeLabel(thesis: any): string {
+    const type = thesis.id != null ? this.scalewayMatchedTypes[thesis.id] : null;
+    if (!type) return '';
+    const labels: Record<string, string> = {
+      'titre': 'Titre',
+      'resume': 'Résumé',
+      'mots_cles': 'Mots-clés',
+      'objectif': 'Objectif',
+      'contexte': 'Contexte',
+      'profil': 'Profil recherché',
+      'localisation': 'Localisation'
+    };
+    return labels[type] || type;
+  }
+
+  scrollCarousel(direction: number): void {
+    this.scrollCarouselBySelector('.scaleway-carousel', direction);
+  }
+
+  scrollCarouselTo(index: number): void {
+    const el = document.querySelector('.scaleway-carousel');
+    if (el) {
+      const items = el.querySelectorAll('.scaleway-carousel-item');
+      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+      const gap = 12;
+      el.scrollTo({ left: index * (itemWidth + gap), behavior: 'smooth' });
+      this.carouselDotIndex = index;
+    }
+  }
+
+  private scrollCarouselBySelector(selector: string, direction: number): void {
+    const el = document.querySelector(selector);
+    if (el) {
+      const items = el.querySelectorAll('.scaleway-carousel-item');
+      const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+      const gap = 12;
+      const scrollAmount = itemWidth + gap;
+      el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      this.updateCarouselDot(el as HTMLElement, items);
+    }
+  }
+
+  onCarouselScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    const items = el.querySelectorAll('.scaleway-carousel-item');
+    this.updateCarouselDot(el, items);
+  }
+
+  private updateCarouselDot(el: HTMLElement, items: NodeListOf<Element>): void {
+    if (items.length === 0) return;
+    const itemWidth = (items[0] as HTMLElement)?.offsetWidth ?? 320;
+    const gap = 12;
+    const scrollLeft = el.scrollLeft;
+    const index = Math.round(scrollLeft / (itemWidth + gap));
+    this.carouselDotIndex = Math.min(index, items.length - 1);
+  }
+
+  isLocationMatched(thesis: any): boolean {
+    return thesis?.id != null && this.locationMatchedMap[String(thesis.id)] === true;
+  }
+
+  isFundingMatched(thesis: any): boolean {
+    return thesis?.id != null && this.fundingMatchedMap[String(thesis.id)] === true;
+  }
+
+  getIntentIcon(type: string): string {
+    const icons: Record<string, string> = {
+      core: 'fr-icon-search-line',
+      location: 'fr-icon-map-pin-2-line',
+      funding: 'fr-icon-money-euro-circle-line'
+    };
+    return icons[type] || 'fr-icon-information-line';
+  }
+
+  getIntentLabel(type: string): string {
+    const labels: Record<string, string> = {
+      core: 'Sujet',
+      location: 'Localisation',
+      funding: 'Financement'
+    };
+    return labels[type] || type;
+  }
+
+  hasIntents(): boolean {
+    return !!(this.intents && (this.intents['location'] || this.intents['funding']));
+  }
+
+  objectKeys(obj: Record<string, any>): string[] {
+    return Object.keys(obj);
+  }
 }
