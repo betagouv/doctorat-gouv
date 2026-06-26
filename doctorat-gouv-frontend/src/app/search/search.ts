@@ -316,7 +316,7 @@ export class Search implements OnInit, OnDestroy {
 
 		this.albertSearchQuery = saved.albertSearchQuery || '';
 		this.useAlbert = saved.useAlbert || false;
-		this.isAlbertSearchActive = saved.isAlbertSearchActive || false;
+		this.isAlbertSearchActive = false;
 		this.albertScores = saved.albertScores || {};
 		this.albertMatchedTypes = saved.albertMatchedTypes || {};
 		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
