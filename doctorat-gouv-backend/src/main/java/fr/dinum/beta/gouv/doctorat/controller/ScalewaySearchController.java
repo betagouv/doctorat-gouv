@@ -621,6 +621,59 @@ public class ScalewaySearchController {
 		"wattrelos"
 	)));
 
+	// Mapping des noms de régions (FRENCH_LOCATIONS → RegionsFrance)
+	private static final Map<String, String> NORMALIZED_REGIONS = Map.ofEntries(
+		Map.entry("auvergne-rhône-alpes", "Auvergne-Rhône-Alpes"),
+		Map.entry("auvergne-rhone-alpes", "Auvergne-Rhône-Alpes"),
+		Map.entry("auvergne rhone alpes", "Auvergne-Rhône-Alpes"),
+		Map.entry("bourgogne-franche-comte", "Bourgogne-Franche-Comté"),
+		Map.entry("bourgogne-franche-comté", "Bourgogne-Franche-Comté"),
+		Map.entry("bourgogne franche comte", "Bourgogne-Franche-Comté"),
+		Map.entry("bourgogne franche comté", "Bourgogne-Franche-Comté"),
+		Map.entry("bretagne", "Bretagne"),
+		Map.entry("centre-val de loire", "Centre-Val de Loire"),
+		Map.entry("centre val de loire", "Centre-Val de Loire"),
+		Map.entry("corse", "Corse"),
+		Map.entry("grand est", "Grand Est"),
+		Map.entry("hauts-de-france", "Hauts-de-France"),
+		Map.entry("hauts de france", "Hauts-de-France"),
+		Map.entry("ile-de-france", "Île-de-France"),
+		Map.entry("île-de-france", "Île-de-France"),
+		Map.entry("ile de france", "Île-de-France"),
+		Map.entry("île de france", "Île-de-France"),
+		Map.entry("normandie", "Normandie"),
+		Map.entry("nouvelle-aquitaine", "Nouvelle-Aquitaine"),
+		Map.entry("nouvelle aquitaine", "Nouvelle-Aquitaine"),
+		Map.entry("occitanie", "Occitanie"),
+		Map.entry("pays de la loire", "Pays de la Loire"),
+		Map.entry("provence-alpes-cote d'azur", "Provence-Alpes-Côte d'Azur"),
+		Map.entry("provence-alpes-côte d'azur", "Provence-Alpes-Côte d'Azur"),
+		Map.entry("paca", "Provence-Alpes-Côte d'Azur"),
+		Map.entry("guadeloupe", "Guadeloupe"),
+		Map.entry("martinique", "Martinique"),
+		Map.entry("guyane", "Guyane"),
+		Map.entry("guyane française", "Guyane"),
+		Map.entry("la réunion", "La Réunion"),
+		Map.entry("la reunion", "La Réunion"),
+		Map.entry("réunion", "La Réunion"),
+		Map.entry("reunion", "La Réunion"),
+		Map.entry("mayotte", "Mayotte"),
+		Map.entry("nouvelle-caledonie", "Nouvelle-Calédonie"),
+		Map.entry("nouvelle-calédonie", "Nouvelle-Calédonie"),
+		Map.entry("nouvelle caledonie", "Nouvelle-Calédonie"),
+		Map.entry("nouvelle calédonie", "Nouvelle-Calédonie"),
+		Map.entry("polynésie française", "Polynésie Française"),
+		Map.entry("polynesie française", "Polynésie Française"),
+		Map.entry("polynésie francaise", "Polynésie Française"),
+		Map.entry("polynesie francaise", "Polynésie Française"),
+		Map.entry("wallis-et-futuna", "Wallis-et-Futuna"),
+		Map.entry("wallis et futuna", "Wallis-et-Futuna"),
+		Map.entry("saint-pierre-et-miquelon", "Saint-Pierre-et-Miquelon"),
+		Map.entry("saint pierre et miquelon", "Saint-Pierre-et-Miquelon"),
+		Map.entry("terres australes et antarctiques françaises", "Terres Australes et Antarctiques Françaises"),
+		Map.entry("taaf", "Terres Australes et Antarctiques Françaises")
+	);
+
 	// Record pour stocker le résultat d'un match d'intention
 	// value = valeur extraite (ville, organisme), matchedText = texte brut matché, position = index de début
 	private record IntentMatch(String value, String matchedText, int position) {}
@@ -855,6 +908,49 @@ public class ScalewaySearchController {
 		String etabVille = dto.getEtablissementVille();
 		return (urVille != null && urVille.toLowerCase().contains(cityLower))
 			|| (etabVille != null && etabVille.toLowerCase().contains(cityLower));
+	}
+
+	/**
+	 * Retourne la région associée à une localisation (ville ou région).
+	 * Si c'est un nom de région connu, retourne la région normalisée.
+	 * Si c'est une ville, cherche un résultat dont la ville correspond et déduit la région via son code postal.
+	 */
+	private String getRegionForLocation(String location, List<PropositionTheseDto> results) {
+		if (location == null) return null;
+
+		// C'est un nom de région connu
+		String normalizedRegion = NORMALIZED_REGIONS.get(location);
+		if (normalizedRegion != null) return normalizedRegion;
+
+		// C'est une ville : on cherche un résultat qui la mentionne pour déduire sa région
+		for (PropositionTheseDto dto : results) {
+			if (dtoMatchesCity(dto, location)) {
+				String postalCode = dto.getUniteRechercheCodePostal();
+				if (postalCode == null) postalCode = dto.getEtablissementCodePostal();
+				if (postalCode != null) {
+					String region = RegionsFrance.regionFromCodePostal(postalCode);
+					if (region != null) return region;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Vérifie si un DTO se situe dans une région donnée, via son code postal.
+	 */
+	private boolean isDtoInRegion(PropositionTheseDto dto, String region) {
+		if (dto == null || region == null) return false;
+		List<String> depts = RegionsFrance.departementsFromRegion(region);
+		String postalCode = dto.getUniteRechercheCodePostal();
+		if (postalCode == null) postalCode = dto.getEtablissementCodePostal();
+		if (postalCode != null) {
+			for (String dept : depts) {
+				if (postalCode.startsWith(dept)) return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1135,12 +1231,27 @@ public class ScalewaySearchController {
 		Map<String, Boolean> locationMatchedMap = new HashMap<>();
 		boolean anyLocationMatched = false;
 		if (extractedCity != null) {
+			// Étape 1 : correspondance exacte sur le nom de la ville
 			for (PropositionTheseDto dto : results) {
 				boolean matches = dtoMatchesCity(dto, extractedCity);
 				if (dto.getId() != null) {
 					locationMatchedMap.put(String.valueOf(dto.getId()), matches);
 				}
 				if (matches) anyLocationMatched = true;
+			}
+
+			// Étape 2 : extension à toute la région
+			String region = getRegionForLocation(extractedCity, results);
+			if (region != null) {
+				for (PropositionTheseDto dto : results) {
+					if (dto.getId() != null) {
+						String key = String.valueOf(dto.getId());
+						if (!locationMatchedMap.getOrDefault(key, false) && isDtoInRegion(dto, region)) {
+							locationMatchedMap.put(key, true);
+							anyLocationMatched = true;
+						}
+					}
+				}
 			}
 		}
 		boolean locationNotMatched = containsGeoIntent(query)
