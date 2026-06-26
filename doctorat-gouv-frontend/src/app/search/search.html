@@ -779,11 +779,7 @@
                 <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
                 {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
               </span>
-              <span class="albert-matched-type fr-mt-1v"
-                    *ngIf="false"
-                    style="color: #0063cb;">
-                {{ getScalewayMatchedTypeLabel(thesis) }}
-              </span>
+
             </div>
 
             <p class="fr-card__desc_type">
@@ -1084,7 +1080,7 @@
 
   </section>
   
-  <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top"
+  <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top fr-mt-3w"
           data-fr-back-to-top (click)="scrollToTop()">
     {{ 'SEARCH.BACK_TO_TOP' | translate }}
   </button>
