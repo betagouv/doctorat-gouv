@@ -80,6 +80,11 @@ public class PropositionTheseService {
         String sortField = filters.getOrDefault("sortField", "dateMiseEnLigne");
         String sortDirection = filters.getOrDefault("sortDirection", "DESC");
 
+        // 'relevance' n'est pas une colonne JPA -> fallback date
+        if ("relevance".equals(sortField)) {
+            sortField = "dateMiseEnLigne";
+        }
+
         Sort.Direction direction = "ASC".equalsIgnoreCase(sortDirection)
                 ? Sort.Direction.ASC
                 : Sort.Direction.DESC;
