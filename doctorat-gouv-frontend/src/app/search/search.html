@@ -85,7 +85,10 @@
       <!-- DISCIPLINE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-			<button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
+			<button class="dropdown-btn"
+			        [attr.aria-expanded]="disciplineOpen"
+			        [attr.aria-controls]="'panel-discipline'"
+			        (click)="toggleDropdown('disciplineOpen')">
 				<span [innerHTML]="discipline.length > 0 
 				        ? getFilterLabelList(discipline, 'discipline') 
 				        : ( 'FILTERS.DISCIPLINE' | translate )">
@@ -93,7 +96,7 @@
 			  <span class="fr-icon-arrow-down-s-line"></span>
 			</button>
 
-          <div class="dropdown-panel" *ngIf="disciplineOpen">
+          <div class="dropdown-panel" id="panel-discipline" *ngIf="disciplineOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
@@ -130,7 +133,10 @@
       <!-- DEFIS DE SOCIETE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="defisSocieteOpen"
+                  [attr.aria-controls]="'panel-defis'"
+                  (click)="toggleDropdown('defisSocieteOpen')">
 			<span [innerHTML]="defisSociete.length > 0 
 			      ? getFilterLabelList(defisSociete, 'defisSociete') 
 			      : ('FILTERS.DEFIS' | translate)">
@@ -138,7 +144,7 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="defisSocieteOpen">
+          <div class="dropdown-panel" id="panel-defis" *ngIf="defisSocieteOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
@@ -175,7 +181,10 @@
       <!-- LOCALISATION -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('localisationOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="localisationOpen"
+                  [attr.aria-controls]="'panel-localisation'"
+                  (click)="toggleDropdown('localisationOpen')">
 			<span [innerHTML]="localisation.length > 0 
 			        ? getFilterLabelList(localisation, 'localisation') 
 			        : ('FILTERS.LOCALISATION' | translate)">
@@ -183,7 +192,7 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="localisationOpen">
+          <div class="dropdown-panel" id="panel-localisation" *ngIf="localisationOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
@@ -226,7 +235,10 @@
       <!-- LABORATOIRE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('laboratoireOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="laboratoireOpen"
+                  [attr.aria-controls]="'panel-labo'"
+                  (click)="toggleDropdown('laboratoireOpen')">
 			<span [innerHTML]="laboratoire.length > 0 
 			      ? getFilterLabelList(laboratoire, 'laboratoire') 
 			      : ('FILTERS.LABO' | translate)">
@@ -234,7 +246,7 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="laboratoireOpen">
+          <div class="dropdown-panel" id="panel-labo" *ngIf="laboratoireOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
@@ -271,7 +283,10 @@
       <!-- ECOLE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('ecoleOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="ecoleOpen"
+                  [attr.aria-controls]="'panel-ecole'"
+                  (click)="toggleDropdown('ecoleOpen')">
 			<span [innerHTML]="ecole.length > 0 
 			        ? getFilterLabelList(ecole, 'ecole') 
 			        : ('FILTERS.ECOLE' | translate)">
@@ -279,7 +294,7 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="ecoleOpen">
+          <div class="dropdown-panel" id="panel-ecole" *ngIf="ecoleOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
@@ -428,7 +443,10 @@
 	
 			<!-- DROPDOWN CUSTOM POUR LE CHAMP -->
 			<div class="dropdown-filter sort-dropdown">
-				<button class="dropdown-btn" (click)="toggleDropdown('sortOpen')">
+				<button class="dropdown-btn"
+				        [attr.aria-expanded]="sortOpen"
+				        [attr.aria-controls]="'panel-sort'"
+				        (click)="toggleDropdown('sortOpen')">
 					{{ sortField === 'dateMiseEnLigne'
 					? ('SEARCH.SORT_POSTING_DATE' | translate)
 					: sortField === 'dateLimiteCandidature'
@@ -437,7 +455,7 @@
 					<span class="fr-icon-arrow-down-s-line"></span>
 				</button>
 	
-				<div class="dropdown-panel" *ngIf="sortOpen">
+				<div class="dropdown-panel" id="panel-sort" *ngIf="sortOpen">
 	
 					<!-- Option Pertinence (visible uniquement en mode Albert) -->
 					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive || isScalewayActive">
