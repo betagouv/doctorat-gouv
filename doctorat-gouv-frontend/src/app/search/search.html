@@ -408,15 +408,24 @@
 	
 		<!-- =====================SWITCH OFFRES/SUJETS=====================-->
 		<div class="offer-switch fr-mt-3w menu-margin">
-			<button class="switch-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'all'"
+			        [attr.aria-pressed]="activeFilter === 'all'"
+			        (click)="setFilter('all')">
 				{{ 'SEARCH.ALL_OFFERS' | translate }}
 			</button>
 	
-			<button class="switch-btn" [class.active]="activeFilter === 'thesis'" (click)="setFilter('thesis')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'thesis'"
+			        [attr.aria-pressed]="activeFilter === 'thesis'"
+			        (click)="setFilter('thesis')">
 				{{ 'SEARCH.THESIS_OFFER' | translate }}
 			</button>
 	
-			<button class="switch-btn" [class.active]="activeFilter === 'supervision'" (click)="setFilter('supervision')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'supervision'"
+			        [attr.aria-pressed]="activeFilter === 'supervision'"
+			        (click)="setFilter('supervision')">
 				{{ 'SEARCH.SUPERVISION_OFFER' | translate }}
 			</button>
 		</div>
@@ -481,11 +490,19 @@
 	
 			<!-- FLÈCHES ASC / DESC À L'EXTÉRIEUR -->
 			<div class="sort-arrows" *ngIf="!isAlbertSearchActive">
-				<button class="arrow-btn" [class.active]="sortDirection === 'ASC'" (click)="setSortDirection('ASC')">
+				<button class="arrow-btn"
+				        [class.active]="sortDirection === 'ASC'"
+				        [attr.aria-pressed]="sortDirection === 'ASC'"
+				        aria-label="Trier par ordre croissant"
+				        (click)="setSortDirection('ASC')">
 					▲
 				</button>
 	
-				<button class="arrow-btn" [class.active]="sortDirection === 'DESC'" (click)="setSortDirection('DESC')">
+				<button class="arrow-btn"
+				        [class.active]="sortDirection === 'DESC'"
+				        [attr.aria-pressed]="sortDirection === 'DESC'"
+				        aria-label="Trier par ordre décroissant"
+				        (click)="setSortDirection('DESC')">
 					▼
 				</button>
 		</div>
