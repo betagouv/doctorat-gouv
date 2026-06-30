@@ -818,7 +818,10 @@
               {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
             </p>
 
-            <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+            <a [routerLink]="['/proposition']"
+               [queryParams]="{ id: thesis.id }"
+               class="arrow-link"
+               [attr.aria-label]="('CARDS.DETAIL' | translate) + ' : ' + getThesisTitle(thesis)">
               {{ 'CARDS.DETAIL' | translate }}
             </a>
           </div>
@@ -929,7 +932,10 @@
             <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
             {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
           </p>
-          <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+          <a [routerLink]="['/proposition']"
+             [queryParams]="{ id: thesis.id }"
+             class="arrow-link"
+             [attr.aria-label]="('CARDS.DETAIL' | translate) + ' : ' + getThesisTitle(thesis)">
             {{ 'CARDS.DETAIL' | translate }}
           </a>
         </div>

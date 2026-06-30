@@ -235,110 +235,97 @@ export class Search implements OnInit, OnDestroy {
 	  document.addEventListener('click', this.handleClickOutside.bind(this));
 	  
 	  // Restaurer les filtres sauvegardés
-	  const saved = this.searchFiltersService.load();
+	  const savedFilters = this.searchFiltersService.load();
 	  
 	  let urlHasEtablissementRor = false;
 	  let urlHasEcoleDoctorale = false;
 
-	  // Lecture synchrone des paramètres d'URL via le snapshot
-	  // (évite le problème de timing asynchrone de queryParams.subscribe)
 	  const urlParams = this.route.snapshot.queryParams;
 	  if (urlParams['ecoledoctorale']) {
-
-		  // Initialiser les filtres
-		  this.discipline = saved?.discipline || [];
-		  this.localisation = saved?.localisation || [];
-		  this.laboratoire = saved?.laboratoire || [];
-		  this.ecole = saved?.ecole || [];
-		  this.defisSociete = saved?.defisSociete || [];
-		  this.annee = saved?.annee || [];
+		  this.discipline = savedFilters?.discipline || [];
+		  this.localisation = savedFilters?.localisation || [];
+		  this.laboratoire = savedFilters?.laboratoire || [];
+		  this.ecole = savedFilters?.ecole || [];
+		  this.defisSociete = savedFilters?.defisSociete || [];
+		  this.annee = savedFilters?.annee || [];
 		  this.etablissementRor = '';
 		  this.query = '';
-
 		  this.ecoleDoctoraleNumero = urlParams['ecoledoctorale'];
 		  urlHasEcoleDoctorale = true;
 	  }
 
 	  if (urlParams['etablissementror']) {
-
-		  // Initialiser les filtres
-		  this.discipline = saved?.discipline || [];
-		  this.localisation = saved?.localisation || [];
-		  this.laboratoire = saved?.laboratoire || [];
-		  this.ecole = saved?.ecole || [];
-		  this.defisSociete = saved?.defisSociete || [];
-		  this.annee = saved?.annee || [];
+		  this.discipline = savedFilters?.discipline || [];
+		  this.localisation = savedFilters?.localisation || [];
+		  this.laboratoire = savedFilters?.laboratoire || [];
+		  this.ecole = savedFilters?.ecole || [];
+		  this.defisSociete = savedFilters?.defisSociete || [];
+		  this.annee = savedFilters?.annee || [];
 		  this.ecoleDoctoraleNumero = '';
 		  this.query = '';
-
 		  this.etablissementRor = urlParams['etablissementror'];
 		  urlHasEtablissementRor = true;
 	  }
 	  
 	  this.anneeOpts = this.generateYears();
 
-
 	  this.loadFilterOptions();
 	  
-	  if (saved) {
-	    this.query = saved.query || '';
-	    this.discipline = Array.isArray(saved.discipline) ? saved.discipline : [];
-	    this.localisation = Array.isArray(saved.localisation) ? saved.localisation : [];
-	    this.laboratoire = Array.isArray(saved.laboratoire) ? saved.laboratoire : [];
-	    this.ecole = Array.isArray(saved.ecole) ? saved.ecole : [];
-	    this.defisSociete = Array.isArray(saved.defisSociete) ? saved.defisSociete : [];
-		this.annee = Array.isArray(saved.annee) ? saved.annee : [];
-		this.showMoreFilters = saved.showMoreFilters ?? false;
+	  if (savedFilters) {
+	    this.query = savedFilters.query || '';
+	    this.discipline = Array.isArray(savedFilters.discipline) ? savedFilters.discipline : [];
+	    this.localisation = Array.isArray(savedFilters.localisation) ? savedFilters.localisation : [];
+	    this.laboratoire = Array.isArray(savedFilters.laboratoire) ? savedFilters.laboratoire : [];
+	    this.ecole = Array.isArray(savedFilters.ecole) ? savedFilters.ecole : [];
+	    this.defisSociete = Array.isArray(savedFilters.defisSociete) ? savedFilters.defisSociete : [];
+		this.annee = Array.isArray(savedFilters.annee) ? savedFilters.annee : [];
+		this.showMoreFilters = savedFilters.showMoreFilters ?? false;
 		
-		// Ne PAS écraser la valeur venant de l’URL
 		if (!urlHasEtablissementRor) {
-		    this.etablissementRor = saved.etablissementRor || '';
+		    this.etablissementRor = savedFilters.etablissementRor || '';
 		}
 		
-		// Ne PAS écraser la valeur venant de l’URL
 		if (!urlHasEcoleDoctorale) {
-			this.ecoleDoctoraleNumero = saved.ecoleDoctoraleNumero || '';
+			this.ecoleDoctoraleNumero = savedFilters.ecoleDoctoraleNumero || '';
 		}
 		
-		if (saved.typeProposition) {
-		  this.activeFilter = saved.typeProposition;
+		if (savedFilters.typeProposition) {
+		  this.activeFilter = savedFilters.typeProposition;
 		}
 		
-		if (saved.sortField) {
-		  this.sortField = saved.sortField;
+		if (savedFilters.sortField) {
+		  this.sortField = savedFilters.sortField;
 		}
 
- 		if (saved.sortDirection) {
- 		  this.sortDirection = saved.sortDirection;
+ 		if (savedFilters.sortDirection) {
+ 		  this.sortDirection = savedFilters.sortDirection;
  		}
  		
-         this.currentPage = saved.page ?? 0;
+         this.currentPage = savedFilters.page ?? 0;
 
-		this.albertSearchQuery = saved.albertSearchQuery || '';
-		this.useAlbert = saved.useAlbert || false;
+		this.albertSearchQuery = savedFilters.albertSearchQuery || '';
+		this.useAlbert = savedFilters.useAlbert || false;
 		this.isAlbertSearchActive = false;
-		this.albertScores = saved.albertScores || {};
-		this.albertMatchedTypes = saved.albertMatchedTypes || {};
-		this.albertSuggestedKeywords = saved.albertSuggestedKeywords || [];
+		this.albertScores = savedFilters.albertScores || {};
+		this.albertMatchedTypes = savedFilters.albertMatchedTypes || {};
+		this.albertSuggestedKeywords = savedFilters.albertSuggestedKeywords || [];
 
-		this.scalewayQuery = saved.scalewayQuery || '';
-		this.useScaleway = saved.useScaleway || false;
-		this.isScalewayActive = saved.isScalewayActive || false;
-		this.scalewayScores = saved.scalewayScores || {};
-		this.scalewayVectorScores = saved.scalewayVectorScores || {};
-		this.scalewayRelevanceLevels = saved.scalewayRelevanceLevels || {};
-		this.scalewayMatchedTypes = saved.scalewayMatchedTypes || {};
-		this.locationNotMatched = saved.locationNotMatched || false;
-		this.locationMatchedMap = saved.locationMatchedMap || {};
-		this.fundingMatchedMap = saved.fundingMatchedMap || {};
-		this.intents = saved.intents || {};
+		this.scalewayQuery = savedFilters.scalewayQuery || '';
+		this.useScaleway = savedFilters.useScaleway || false;
+		this.isScalewayActive = savedFilters.isScalewayActive || false;
+		this.scalewayScores = savedFilters.scalewayScores || {};
+		this.scalewayVectorScores = savedFilters.scalewayVectorScores || {};
+		this.scalewayRelevanceLevels = savedFilters.scalewayRelevanceLevels || {};
+		this.scalewayMatchedTypes = savedFilters.scalewayMatchedTypes || {};
+		this.locationNotMatched = savedFilters.locationNotMatched || false;
+		this.locationMatchedMap = savedFilters.locationMatchedMap || {};
+		this.fundingMatchedMap = savedFilters.fundingMatchedMap || {};
+		this.intents = savedFilters.intents || {};
 
-		// Surcharge via paramètre d'URL pour debug (ex: ?useSql=false)
 		if (urlParams['useSql'] !== undefined) {
 		  this.useSql = urlParams['useSql'] === 'true';
 		}
-
- 	  }
+	  }
 
 	// Charger les résultats avec les filtres restaurés ou dès l'arrivée sur la page
 	if (this.isScalewayActive && this.scalewayQuery.trim()) {
@@ -362,10 +349,10 @@ export class Search implements OnInit, OnDestroy {
   }
   
   ngAfterViewInit(): void {
-    const saved = this.searchFiltersService.load();
+    const savedScrollPos = this.searchFiltersService.load();
 
-    if (saved?.scrollPosition) {
-      const target = saved.scrollPosition;
+    if (savedScrollPos?.scrollPosition) {
+      const target = savedScrollPos.scrollPosition;
 
       const interval = setInterval(() => {
         const cards = document.querySelectorAll('.fr-card');
@@ -871,10 +858,10 @@ resetFilter(filterName: MultiFilterKey) {
 	
 	// Sauvegarder la position actuelle du scroll pour pouvoir y revenir après consultation du détail
 	const pos = window.scrollY;
-	const saved = this.searchFiltersService.load() || {};
+	const savedState = this.searchFiltersService.load() || {};
 
 	this.searchFiltersService.save({
-	  ...saved,
+	  ...savedState,
 	  scrollPosition: pos,
 	  showMoreFilters: this.showMoreFilters
 	});
@@ -919,7 +906,7 @@ resetFilter(filterName: MultiFilterKey) {
     }
 
     // Sinon fallback sur la version française
-    return thesis.theseTitre;
+    return thesis.theseTitre || 'sans titre';
   }
   
   getLocalizedResume(thesis: any, maxWords = 30): string {
