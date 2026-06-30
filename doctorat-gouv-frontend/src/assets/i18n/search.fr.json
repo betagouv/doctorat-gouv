@@ -6,6 +6,7 @@
     "LESS_FILTERS": "Moins de filtres",
     "ACTIVE_FILTERS": "Filtres actifs :",
     "RESULTS": "{{count}} résultats",
+	"RESULTS_TITLE": "Résultats de recherche",
 	"RESULTS_SUFIX": "de recherche",
     "BACK_TO_TOP": "Haut de page",
 	"ALL_OFFERS": "Toutes les offres",
