@@ -65,6 +65,11 @@
 	"ANNEE": "Academic year",
     "SELECT_ALL": "Select all",
     "SEARCH": "Search",
+    "SEARCH_DISCIPLINE": "Search for a discipline",
+    "SEARCH_DEFIS": "Search for a societal challenge",
+    "SEARCH_LOCALISATION": "Search for a location",
+    "SEARCH_LABO": "Search for a research group",
+    "SEARCH_ECOLE": "Search for a doctoral school",
 	"RESET_ALL": "Reset filters",
 	"SELECTED_ONE": "selected",
 	"SELECTED_MANY": "selected"

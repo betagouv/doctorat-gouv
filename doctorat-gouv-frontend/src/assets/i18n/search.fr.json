@@ -65,6 +65,11 @@
 	"ANNEE": "Année universitaire",
     "SELECT_ALL": "Tout sélectionner",
     "SEARCH": "Rechercher",
+    "SEARCH_DISCIPLINE": "Rechercher une discipline",
+    "SEARCH_DEFIS": "Rechercher un défi de société",
+    "SEARCH_LOCALISATION": "Rechercher une localisation",
+    "SEARCH_LABO": "Rechercher un laboratoire",
+    "SEARCH_ECOLE": "Rechercher une école doctorale",
 	"RESET_ALL": "Réinitialiser les filtres",
 	"SELECTED_ONE": "sélectionné",
 	"SELECTED_MANY": "sélectionnés"

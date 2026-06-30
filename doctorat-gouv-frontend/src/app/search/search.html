@@ -99,7 +99,8 @@
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_DISCIPLINE' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="disciplineSearch">
             </div>
 
@@ -143,7 +144,8 @@
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_DEFIS' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="defisSocieteSearch">
             </div>
 
@@ -187,7 +189,8 @@
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_LOCALISATION' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="localisationSearch">
             </div>
 
@@ -237,7 +240,8 @@
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_LABO' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="laboratoireSearch">
             </div>
 
@@ -281,7 +285,8 @@
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_ECOLE' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="ecoleSearch">
             </div>
 
