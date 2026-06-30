@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,12 +23,12 @@ import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
-import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Predicate;
 
 @Service
@@ -78,6 +79,11 @@ public class PropositionTheseService {
         
         String sortField = filters.getOrDefault("sortField", "dateMiseEnLigne");
         String sortDirection = filters.getOrDefault("sortDirection", "DESC");
+
+        // 'relevance' n'est pas une colonne JPA -> fallback date
+        if ("relevance".equals(sortField)) {
+            sortField = "dateMiseEnLigne";
+        }
 
         Sort.Direction direction = "ASC".equalsIgnoreCase(sortDirection)
                 ? Sort.Direction.ASC
@@ -203,10 +209,13 @@ public class PropositionTheseService {
 			            andPredicates.add(root.get("annee").in(years));
 			        }
 
-			        /* ---------------------- QUERY (inchangé) ---------------------- */
+			        /* ---------------------- QUERY (recherche FR + EN) ---------------------- */
 			        case "query" -> {
 			            String[] tokens = value.trim().toLowerCase().split("\\s+");
 			            List<Predicate> tokenPredicates = new ArrayList<>();
+
+			            MapJoin<PropositionThese, String, String> motsClesJoin = root.joinMap("motsCles", JoinType.LEFT);
+			            MapJoin<PropositionThese, String, String> motsClesAnglaisJoin = root.joinMap("motsClesAnglais", JoinType.LEFT);
 
 			            for (String token : tokens) {
 			                if (token.isBlank()) continue;
@@ -216,13 +225,15 @@ public class PropositionTheseService {
 			                        cb.like(cb.lower(root.get("theseTitre")), tokenPattern),
 			                        cb.like(cb.lower(root.get("theseTitreAnglais")), tokenPattern),
 			                        cb.like(cb.lower(root.get("resume")), tokenPattern),
-			                        cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern)
+			                        cb.like(cb.lower(root.get("resumeAnglais")), tokenPattern),
+			                        cb.like(cb.lower(motsClesJoin.value()), tokenPattern),
+			                        cb.like(cb.lower(motsClesAnglaisJoin.value()), tokenPattern)
 			                );
 			                tokenPredicates.add(tokenInAnyField);
 			            }
 
 			            if (!tokenPredicates.isEmpty()) {
-			                andPredicates.add(cb.and(tokenPredicates.toArray(Predicate[]::new)));
+			                andPredicates.add(cb.or(tokenPredicates.toArray(Predicate[]::new)));
 			            }
 			        }
 
@@ -243,8 +254,40 @@ public class PropositionTheseService {
      */
     public PropositionTheseDto findById(Long id) {
         Optional<PropositionThese> opt = repo.findById(id);
-        return opt.map(PropositionTheseMapper::toDto)               // mapper entité → DTO
+        return opt.map(PropositionTheseMapper::toDto)
                   .orElseThrow(() -> new ResourceNotFoundException(
                           "Proposition de thèse avec l’id " + id + " introuvable"));
+    }
+
+    /**
+     * Retourne les propositions de thèse correspondant aux identifiants fournis.
+     * Utilisé par la recherche Albert pour enrichir les résultats avec les données complètes.
+     */
+    public List<PropositionTheseDto> findByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        return repo.findByIdIn(ids).stream()
+                .map(PropositionTheseMapper::toDto)
+                .toList();
+    }
+
+    /**
+     * Retourne une map id -> PropositionTheseDto pour un ensemble d'IDs.
+     */
+    public Map<Long, PropositionTheseDto> findByIdInAsMap(List<Long> ids) {
+        return findByIdIn(ids).stream()
+                .collect(Collectors.toMap(PropositionTheseDto::getId, dto -> dto));
+    }
+
+    /**
+     * Recherche SQL (LIKE) sans pagination et retourne une map id -> DTO.
+     * Utilisé par la recherche Albert pour enrichir les résultats avec un rappel maximal.
+     */
+    public Map<Long, PropositionTheseDto> searchByQueryAsMap(String query) {
+        Map<String, String> filters = new HashMap<>();
+        filters.put("query", query);
+        Specification<PropositionThese> spec = buildSpecification(filters);
+        return repo.findAll(spec).stream()
+                .map(PropositionTheseMapper::toDto)
+                .collect(Collectors.toMap(PropositionTheseDto::getId, dto -> dto));
     }
 }

@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -64,5 +67,57 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 		      AND (p.active IS NULL OR p.active = TRUE)
 		""")
 	List<PropositionThese> findActiveBySourceAndAnnee(@Param("source") SourceThese source, @Param("annee") Integer annee);
+	
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    WHERE p.active IS NULL 
+		    OR p.active = TRUE
+		""")
+	List<PropositionThese> findActivePropositions();
+	
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    left join fetch p.motsCles
+		    left join fetch p.motsClesAnglais
+		    WHERE p.active IS NULL 
+		    OR p.active = TRUE
+		""")
+	Page<PropositionThese> findByActiveTrue(Pageable pageable);
+
+    List<PropositionThese> findByIdIn(List<Long> ids);
+
+    List<PropositionThese> findByDateMajAfter(LocalDateTime depuis);
+    
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE p.albertDocumentId IS NOT NULL
+        """)
+    List<PropositionThese> findIndexedInAlbert();
+    
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE (p.active IS NULL OR p.active = TRUE)
+            AND (p.albertDocumentId IS NULL 
+                 OR p.dateMaj IS NOT NULL AND p.dateIndexationAlbert IS NOT NULL AND p.dateMaj > p.dateIndexationAlbert)
+        """)
+    List<PropositionThese> findNeedingIndexation();
+
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE p.dateIndexationScaleway IS NOT NULL
+        """)
+    List<PropositionThese> findIndexedInScaleway();
+
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE (p.active IS NULL OR p.active = TRUE)
+            AND (p.dateIndexationScaleway IS NULL
+                 OR p.dateMaj IS NOT NULL AND p.dateIndexationScaleway IS NOT NULL AND p.dateMaj > p.dateIndexationScaleway)
+        """)
+    List<PropositionThese> findNeedingIndexationScaleway();
+
+    @Modifying
+    @Query("UPDATE PropositionThese p SET p.dateIndexationScaleway = NULL WHERE p.dateIndexationScaleway IS NOT NULL")
+    void clearDateIndexationScaleway();
 
 }

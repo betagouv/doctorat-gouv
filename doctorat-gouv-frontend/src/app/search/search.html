@@ -28,9 +28,59 @@
                aria-label="Champ de recherche">
       </div>
     </div>
+	
+	
+	
+	<!-- ===================== RECHERCHE VECTORIELLE SCALEWAY ===================== -->
+	<div class="fr-mt-2w fr-pt-1w fr-pr-1w fr-pl-1w fr-pb-0 fr-border fr-border--grey-200 fr-radius-2w"
+	     [ngClass]="{'albert-active': useScaleway}">
+
+	  <div class="fr-checkbox-group">
+	    <input type="checkbox" id="useScaleway" [(ngModel)]="useScaleway" (ngModelChange)="toggleScaleway()">
+	    <label for="useScaleway">
+	    <strong>{{ 'SEARCH.SCALEWAY_LABEL' | translate }}</strong>
+	      <span class="fr-badge fr-badge--sm fr-badge--info fr-ml-2w">{{ 'SEARCH.SCALEWAY_BETA' | translate }}</span>
+	      <span class="fr-hint-text" *ngIf="!useScaleway">{{ 'SEARCH.SCALEWAY_HINT' | translate }}</span>
+	    </label>
+	  </div>
+
+	  <div *ngIf="useScaleway" class="fr-mt-2w">
+
+	    <!-- Champ de recherche vectorielle -->
+	    <div class="custom-search-bar fr-mt-2w">
+	      <div class="custom-input-wrapper">
+	        <span class="custom-icon">
+	          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+	            <circle cx="11" cy="11" r="8"></circle>
+	            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+	          </svg>
+	        </span>
+	        <input type="search"
+	               id="scalewayQuery"
+	               class="custom-input"
+	               placeholder="{{ 'SEARCH.SCALEWAY_PLACEHOLDER' | translate }}"
+	               [(ngModel)]="scalewayQuery"
+	               (keyup.enter)="onScalewaySearch()">
+	      </div>
+	    </div>
+
+	    <button class="fr-btn fr-mt-2w" (click)="onScalewaySearch()"
+	            [disabled]="!scalewayQuery.trim() || isScalewayLoading">
+	      <span *ngIf="isScalewayLoading" class="btn-spinner fr-mr-1w"></span>
+	      {{ isScalewayLoading ? ('SEARCH.SCALEWAY_SEARCHING' | translate) : ('SEARCH.SCALEWAY_SEARCH_BUTTON' | translate) }}
+	    </button>
+
+	    <!-- Aide NLP -->
+	    <div class="fr-mt-3w scaleway-nlp-help">
+	      <p class="scaleway-nlp-help-title">{{ 'SEARCH.SCALEWAY_NLP_TITLE' | translate }}</p>
+	      <p class="scaleway-nlp-help-text" [innerHTML]="'SEARCH.SCALEWAY_NLP_DESC' | translate"></p>
+	      <p class="scaleway-nlp-help-text" [innerHTML]="'SEARCH.SCALEWAY_NLP_EXAMPLE' | translate"></p>
+	    </div>
+	  </div>
+	</div>
 
     <!-- ===================== LIGNE 1 : 3 DROPDOWNS ===================== -->
-    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-4w">
+    <div class="filters-grid fr-grid-row fr-grid-row--gutters fr-mt-2w">
 
       <!-- DISCIPLINE -->
       <div class="fr-col-12 fr-col-md-4">
@@ -46,7 +96,7 @@
           <div class="dropdown-panel" *ngIf="disciplineOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -90,7 +140,7 @@
           <div class="dropdown-panel" *ngIf="defisSocieteOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -134,7 +184,7 @@
           <div class="dropdown-panel" *ngIf="localisationOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -184,7 +234,7 @@
           <div class="dropdown-panel" *ngIf="laboratoireOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -228,7 +278,7 @@
           <div class="dropdown-panel" *ngIf="ecoleOpen">
 
             <div class="search-box">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
                      placeholder="Rechercher"
@@ -302,11 +352,11 @@
 
 	  <!-- Lien Plus/Moins de filtres -->
 	  <div class="fr-col-12 fr-col-md-6 fr-text--left">
-	    <a href="javascript:void(0)"
+	    <button
 	       class="fr-link toggle-filters"
 	       (click)="toggleFilters()">
 	       {{ showMoreFilters ? ('SEARCH.LESS_FILTERS' | translate) : ('SEARCH.MORE_FILTERS' | translate) }}
-	    </a>
+	    </button>
 	  </div>
 
 	  <!-- Bouton Réinitialiser -->
@@ -366,7 +416,7 @@
 		<!--			  </button>-->
 		<!--			</div>-->
 	
-		<!-- TRI PAR DATE Style 2 -->
+		<!-- TRI PAR DATE / PERTINENCE Style 2 -->
 		<div class="sort-menu">
 	
 			<label class="sort-label">{{ 'SEARCH.SORT_BY' | translate }}</label>
@@ -376,11 +426,20 @@
 				<button class="dropdown-btn" (click)="toggleDropdown('sortOpen')">
 					{{ sortField === 'dateMiseEnLigne'
 					? ('SEARCH.SORT_POSTING_DATE' | translate)
-					: ('SEARCH.SORT_DEADLINE' | translate) }}
+					: sortField === 'dateLimiteCandidature'
+					? ('SEARCH.SORT_DEADLINE' | translate)
+					: 'Pertinence' }}
 					<span class="fr-icon-arrow-down-s-line"></span>
 				</button>
 	
 				<div class="dropdown-panel" *ngIf="sortOpen">
+	
+					<!-- Option Pertinence (visible uniquement en mode Albert) -->
+					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive || isScalewayActive">
+						<input type="checkbox" id="sort_relevance" [checked]="sortField === 'relevance'"
+							(change)="setSortField('relevance')">
+						<label for="sort_relevance">Pertinence</label>
+					</div>
 	
 					<div class="fr-checkbox-group fr-mb-2w">
 						<input type="checkbox" id="sort_posting" [checked]="sortField === 'dateMiseEnLigne'"
@@ -397,8 +456,8 @@
 				</div>
 			</div>
 	
-			<!-- FLÈCHES ASC / DESC À L’EXTÉRIEUR -->
-			<div class="sort-arrows">
+			<!-- FLÈCHES ASC / DESC À L'EXTÉRIEUR -->
+			<div class="sort-arrows" *ngIf="!isAlbertSearchActive">
 				<button class="arrow-btn" [class.active]="sortDirection === 'ASC'" (click)="setSortDirection('ASC')">
 					▲
 				</button>
@@ -406,9 +465,9 @@
 				<button class="arrow-btn" [class.active]="sortDirection === 'DESC'" (click)="setSortDirection('DESC')">
 					▼
 				</button>
-			</div>
-	
 		</div>
+	
+	</div>
 	
 	</div>
 	
@@ -429,12 +488,106 @@
 
 	<!-- ===================== RÉSULTATS ===================== -->
 	<div class="results-margin">
+		<!-- Badge IA (visible en mode IA ou Scaleway même si compteur caché) -->
 		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
-			<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+			<span *ngIf="!isScalewayActive">
+				<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
+				</span>
+				{{ 'SEARCH.RESULTS_SUFIX' | translate }}
 			</span>
-			{{ 'SEARCH.RESULTS_SUFIX' | translate }}
+			<span *ngIf="isAlbertSearchActive || isScalewayActive" class="fr-badge fr-badge--info fr-ml-2w">{{ 'SEARCH.AI_BADGE' | translate }}</span>
+			<!-- Chips d'intentions cliquables Scaleway -->
+			<span class="scaleway-intents-inline" *ngIf="isScalewayActive && !isScalewayLoading && hasIntents()">
+				<span class="fr-tag intent-chip"
+					  *ngFor="let key of objectKeys(intents)"
+					  [class.intent-chip--active]="isActiveIntentFilter(key)"
+					  [class.intent-chip--clickable]="true"
+					  [ngClass]="'intent-chip--' + key"
+					  (click)="setActiveIntentFilter(key)"
+					  [title]="isActiveIntentFilter(key) ? ('SEARCH.SCALEWAY_FILTERING_CLEAR' | translate) : key === 'location' ? ('SEARCH.SCALEWAY_FILTERING_LOCATION' | translate) : ('SEARCH.SCALEWAY_FILTERING_FUNDING' | translate)">
+					<span [class]="getIntentIcon(key)" aria-hidden="true"></span>
+					{{ intents[key] }}
+					<span *ngIf="isActiveIntentFilter(key)" class="intent-chip-check">✓</span>
+					<span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
+				</span>
+				<span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
+					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
+					<span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
+				</span>
+				<span class="intent-chip-reset fr-tag"
+					  *ngIf="activeIntentFilter.length > 0"
+					  (click)="resetIntentFilter()"
+					  title="{{ 'SEARCH.SCALEWAY_FILTERING_CLEAR' | translate }}">
+					✕
+				</span>
+			</span>
 		</p>
+
+		<!-- ===================== LOADING SCALEWAY ===================== -->
+		<!-- Mode simple (Albert-like) par défaut -->
+		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading && !useSequentialLoading">
+			<div class="ai-thinking">
+				<span class="thinking-sparkle">✨</span>
+				<span class="thinking-text">{{ 'SEARCH.SCALEWAY_SEARCHING' | translate }}</span>
+				<span class="thinking-dots">
+					<span class="dot"></span>
+					<span class="dot"></span>
+					<span class="dot"></span>
+				</span>
+			</div>
+		</div>
+		<!-- Mode séquentiel (fallback) -->
+		<div class="fr-my-4w fr-text--center scaleway-loading" *ngIf="isScalewayLoading && useSequentialLoading">
+			<div class="scaleway-loading-steps">
+				<div class="loading-step" [class.active]="loadingStep >= 0" [class.done]="loadingStep > 0">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep === 0">1</span>
+						<span class="step-check" *ngIf="loadingStep > 0">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP1' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 1" [class.done]="loadingStep > 1">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 1">2</span>
+						<span class="step-check" *ngIf="loadingStep > 1">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP2' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 2" [class.done]="loadingStep > 2">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 2">3</span>
+						<span class="step-check" *ngIf="loadingStep > 2">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP3' | translate }}</span>
+				</div>
+				<div class="loading-step" [class.active]="loadingStep >= 3" [class.done]="loadingStep > 3">
+					<span class="step-indicator">
+						<span class="step-number" *ngIf="loadingStep <= 3">4</span>
+						<span class="step-check" *ngIf="loadingStep > 3">✓</span>
+					</span>
+					<span class="step-label">{{ 'SEARCH.SCALEWAY_LOADING_STEP4' | translate }}</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- ===================== ALERTE INDISPONIBILITÉ ALBERT ===================== -->
+		<div class="fr-alert fr-alert--warning fr-mt-2w fr-mb-4w" *ngIf="aiMessage">
+			<h3 class="fr-alert__title">{{ 'SEARCH.AI_UNAVAILABLE' | translate }}</h3>
+			<p>{{ 'SEARCH.AI_UNAVAILABLE_HINT' | translate }}</p>
+		</div>
 	</div>
+
+	<!-- ===================== MOTS-CLÉS SUGGÉRÉS (Albert) ===================== -->
+	<section class="fr-mt-2w" *ngIf="isAlbertSearchActive && albertSuggestedKeywords.length > 0">
+		<p class="fr-text--bold fr-mb-1v">{{ 'SEARCH.AI_SUGGESTED_KEYWORDS' | translate }}</p>
+		<div class="fr-tags-group">
+			<button class="fr-tag fr-tag--sm"
+			        *ngFor="let keyword of albertSuggestedKeywords"
+			        (click)="searchByKeyword(keyword)">
+				{{ keyword }}
+			</button>
+		</div>
+	</section>
 
 	<!-- ===================== FILTRES ACTIFS ===================== -->
 	<section class="fr-tags-group fr-mt-2w"
@@ -552,16 +705,57 @@
 <!--	  </ul>-->
 <!--	</div>-->
 	
-	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+	<!-- Template de carte partagé entre tous les modes -->
+	<ng-template #cardTemplate let-thesis>
+      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
 
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-4"
-           *ngFor="let thesis of results">
-
-        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
+        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
 
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
                  alt="Illustration de la thèse" />
+
+            <!-- Badge de score Albert -->
+            <span class="albert-score-badge"
+                  *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
+                  [ngClass]="getScoreColor(getAlbertScore(thesis))">
+              {{ formatScore(getAlbertScore(thesis)) }}
+            </span>
+
+            <!-- Badge de score composite Scaleway (vectoriel + keywords) -->
+            <span class="albert-score-badge"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                  [ngClass]="getScoreColor(getScalewayScore(thesis))"
+                  title="Score composite">
+              {{ getScalewayScore(thesis) | percent:'1.0-0' }}
+            </span>
+
+            <!-- Badge de score vectoriel Scaleway (similarité cosinus) -->
+            <span class="scaleway-vector-badge"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
+                  [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
+                  title="Score vectoriel">
+              V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
+            </span>
+
+            <!-- Badge de niveau de pertinence Scaleway -->
+            <span class="scaleway-relevance-badge"
+                  *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                  [ngClass]="getScalewayRelevanceClass(thesis)">
+              {{ getScalewayRelevanceLabel(thesis) }}
+            </span>
+
+            <span class="badge badge-location badge-pop"
+                  *ngIf="isScalewayActive && !isScalewayLoading && isLocationMatched(thesis)"
+                  title="Sujet au plus proche du secteur géographique recherché">
+              <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+            </span>
+
+            <span class="badge badge-funding badge-pop"
+                  *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
+                  title="Sujet dont le financement correspond à la recherche">
+              <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
+            </span>
 
             <span class="fr-tag badge badge-green"
                   *ngIf="getFirstDomaine(thesis)">
@@ -570,135 +764,318 @@
 
             <span class="fr-tag badge badge-pink"
                   *ngIf="thesis?.specialite">
-				  {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
-
+              {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
             </span>
           </div>
 
-		<div class="fr-card__body">
-			
-			<div>
-				<h3 class="fr-card__title custom-blue">
-				  {{ limitWords(getThesisTitle(thesis), 30) }}
-				</h3>
-			</div>
-		
-			<p class="fr-card__desc_type">
-				{{
-				thesis.typeProposition === 'proposition'
-				? ('CARDS.SUJET' | translate)
-				: thesis.typeProposition === 'offre'
-				? ('CARDS.OFFRE' | translate)
-				: thesis.typeProposition
-				}} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
-			</p>
-			
-			<div>
-				<p class="fr-card__desc"
-				   [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
-				</p>
-			</div>
-			
-			<!--			<div>-->
-			<!--				<p class="fr-card__desc_date">-->
-			<!--					Date de mise en ligne : {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}<br />-->
-			<!--					Date limite de candidature : {{ thesis.dateLimiteCandidature | dynamicDate:'d MMMM y' }}<br/>-->
-			<!--					 Matricule : {{ thesis.matricule }}-->
-			<!--				</p>-->
-			<!--			</div>-->
-			
-			<div class="fr-mt-2w">
-				<ng-container *ngIf="thesis.motsCles">
-					<strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
-					<div class="fr-tags-group fr-tags-group--column">
-						<span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
-							{{ entry[1] }}
-						</span>
-					</div>
-				</ng-container>
-			</div>
-		
-		</div>
+          <div class="fr-card__body">
 
-		<div class="fr-card__footer">
-		
-			<p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
-				<em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
-			  {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
-			</p>
-		
-			<a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
-				{{ 'CARDS.DETAIL' | translate }}
-			</a>
-		</div>
+            <div>
+              <h3 class="fr-card__title custom-blue">
+                {{ limitWords(getThesisTitle(thesis), 30) }}
+              </h3>
+              <span class="albert-matched-type fr-mt-1v"
+                    *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
+                <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
+                {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+              </span>
+
+            </div>
+
+            <p class="fr-card__desc_type">
+              {{
+              thesis.typeProposition === 'proposition'
+              ? ('CARDS.SUJET' | translate)
+              : thesis.typeProposition === 'offre'
+              ? ('CARDS.OFFRE' | translate)
+              : thesis.typeProposition
+              }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+            </p>
+
+            <div>
+              <p class="fr-card__desc"
+                 [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
+              </p>
+            </div>
+
+            <div class="fr-mt-2w">
+              <ng-container *ngIf="thesis.motsCles">
+                <strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
+                <div class="fr-tags-group fr-tags-group--column">
+                  <span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
+                    {{ entry[1] }}
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+
+          </div>
+
+          <div class="fr-card__footer">
+
+            <p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
+              <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
+              {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
+            </p>
+
+            <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+              {{ 'CARDS.DETAIL' | translate }}
+            </a>
+          </div>
 
         </div>
       </div>
+	</ng-template>
 
-      <!-- PAGINATION -->
-      <div class="fr-container fr-my-4w pagination-fixed">
-        <nav class="fr-pagination"
-             role="navigation"
-             aria-label="Pagination"
-             *ngIf="totalPages > 1">
+	<!-- Template de carte pour le carrousel (sans wrapper grille DSFR) -->
+	<ng-template #carouselCardTemplate let-thesis>
+      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
 
-          <ul class="fr-pagination__list">
+        <div class="fr-card__img">
+          <img [src]="getImageForThesis(thesis)"
+               alt="Illustration de la thèse" />
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(currentPage - 1)"
-                      [disabled]="currentPage === 0">
-                <span class="fr-icon-arrow-left-s-line"></span>
-                <span class="fr-mx-1w">{{ 'PAGINATION.PREVIOUS' | translate }}</span>
-              </button>
-            </li>
+          <span class="albert-score-badge"
+                *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
+                [ngClass]="getScoreColor(getAlbertScore(thesis))">
+            {{ formatScore(getAlbertScore(thesis)) }}
+          </span>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(0)"
-                      [class.fr-pagination__link--current]="currentPage === 0">
-                1
-              </button>
-            </li>
+          <span class="albert-score-badge"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
+                [ngClass]="getScoreColor(getScalewayScore(thesis))"
+                title="Score composite">
+            {{ getScalewayScore(thesis) | percent:'1.0-0' }}
+          </span>
 
-            <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+          <span class="scaleway-vector-badge"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
+                [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
+                title="Score vectoriel">
+            V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
+          </span>
 
-            <li *ngFor="let i of getPagesAround()">
-              <button class="fr-pagination__link"
-                      (click)="goToPage(i)"
-                      [class.fr-pagination__link--current]="currentPage === i">
-                {{ i + 1 }}
-              </button>
-            </li>
+          <span class="scaleway-relevance-badge"
+                *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
+                [ngClass]="getScalewayRelevanceClass(thesis)">
+            {{ getScalewayRelevanceLabel(thesis) }}
+          </span>
 
-            <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+          <span class="badge badge-location badge-pop"
+                *ngIf="isScalewayActive && !isScalewayLoading && isLocationMatched(thesis)"
+                title="Sujet au plus proche du secteur géographique recherché">
+            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+          </span>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(totalPages - 1)"
-                      [class.fr-pagination__link--current]="currentPage === totalPages - 1">
-                {{ totalPages }}
-              </button>
-            </li>
+          <span class="badge badge-funding badge-pop"
+                *ngIf="isScalewayActive && !isScalewayLoading && isFundingMatched(thesis)"
+                title="Sujet dont le financement correspond à la recherche">
+            <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
+          </span>
 
-            <li>
-              <button class="fr-pagination__link"
-                      (click)="goToPage(currentPage + 1)"
-                      [disabled]="currentPage === totalPages - 1">
-                <span class="fr-mx-1w">{{ 'PAGINATION.NEXT' | translate }}</span>
-                <span class="fr-icon-arrow-right-s-line"></span>
-              </button>
-            </li>
+          <span class="fr-tag badge badge-green"
+                *ngIf="getFirstDomaine(thesis)">
+            {{ getFirstDomaineWithMaxLength(thesis, 60) }}
+          </span>
 
-          </ul>
-        </nav>
+          <span class="fr-tag badge badge-pink"
+                *ngIf="thesis?.specialite">
+            {{ getSpecialiteLabelWithMaxLength(thesis.specialite, 60) }}
+          </span>
+        </div>
+
+        <div class="fr-card__body">
+          <div>
+            <h3 class="fr-card__title custom-blue">
+              {{ limitWords(getThesisTitle(thesis), 30) }}
+            </h3>
+            <span class="albert-matched-type fr-mt-1v"
+                  *ngIf="isAlbertSearchActive && hasAlbertMatchedType(thesis)">
+              <span [ngClass]="getMatchedTypeIcon(getAlbertMatchedType(thesis))" aria-hidden="true"></span>
+              {{ getMatchedTypeLabel(getAlbertMatchedType(thesis)) }}
+            </span>
+          </div>
+
+          <p class="fr-card__desc_type">
+            {{
+            thesis.typeProposition === 'proposition'
+            ? ('CARDS.SUJET' | translate)
+            : thesis.typeProposition === 'offre'
+            ? ('CARDS.OFFRE' | translate)
+            : thesis.typeProposition
+            }} {{ cleanVille(thesis.uniteRechercheVille) ? ' / ' + cleanVille(thesis.uniteRechercheVille) : '' }}
+          </p>
+
+          <div>
+            <p class="fr-card__desc"
+               [innerHTML]="getLocalizedResume(thesis, 30) | nl2br">
+            </p>
+          </div>
+
+          <div class="fr-mt-2w">
+            <ng-container *ngIf="thesis.motsCles">
+              <strong>{{ 'CARDS.KEYWORDS' | translate }}</strong>
+              <div class="fr-tags-group fr-tags-group--column">
+                <span class="fr-tag violet" *ngFor="let entry of getLocalizedKeywords(thesis)">
+                  {{ entry[1] }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="fr-card__footer">
+          <p class="fr-card__desc_date" *ngIf="thesis.dateMiseEnLigne">
+            <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
+            {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
+          </p>
+          <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+            {{ 'CARDS.DETAIL' | translate }}
+          </a>
+        </div>
       </div>
+	</ng-template>
+
+	<div *ngIf="view === 'liste'" class="fr-grid-row fr-grid-row--gutters fr-mt-2w scaleway-results-grid">
+
+      <!-- Mode Scaleway : résultats triés en 2 sections -->
+      <ng-container *ngIf="isScalewayActive && !isScalewayLoading">
+
+        <!-- ============================================================ -->
+        <!-- Section 1 : Meilleurs résultats (carrousel)                   -->
+        <!-- Quand un filtre intention est actif, ne montre que les        -->
+        <!-- très pertinents qui matchent le filtre.                       -->
+        <!-- Sinon, montre tous les très pertinents.                       -->
+        <!-- ============================================================ -->
+        <div class="fr-col-12" *ngIf="scalewayResultsTresPertinent.length">
+          <div class="scaleway-section-title">
+            <h2>
+              {{ 'SEARCH.SCALEWAY_TRES_PERTINENT' | translate }}
+              <span class="scaleway-section-count">({{ (activeIntentFilter.length > 0 ? getFilteredScalewayTresPertinent() : scalewayResultsTresPertinent).length }})</span>
+            </h2>
+            <div class="scaleway-carousel-nav">
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(-1)" aria-label="Précédent" title="Précédent">‹</button>
+              <button class="scaleway-nav-btn" (click)="scrollCarousel(1)" aria-label="Suivant" title="Suivant">›</button>
+            </div>
+          </div>
+
+          <!-- Infobulle trop de résultats très pertinents -->
+          <div class="scaleway-ambigue-info" *ngIf="showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_AMBIGUE' | translate }}
+          </div>
+
+          <!-- Infobulle localisation non matchée -->
+          <div class="scaleway-ambigue-info" *ngIf="locationNotMatched && !showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_LOCATION_NOT_MATCHED' | translate }}
+          </div>
+
+          <div class="scaleway-carousel" (scroll)="onCarouselScroll($event)">
+            <ng-container *ngFor="let thesis of (activeIntentFilter.length > 0 ? getFilteredScalewayTresPertinent() : scalewayResultsTresPertinent); let i = index">
+              <div class="scaleway-carousel-item fade-in-up" [style.animation-delay]="(i * 0.08) + 's'">
+                <ng-container *ngTemplateOutlet="carouselCardTemplate; context: {$implicit: thesis}"></ng-container>
+              </div>
+            </ng-container>
+          </div>
+          <div class="scaleway-carousel-bottom-nav" *ngIf="(activeIntentFilter.length > 0 ? getFilteredScalewayTresPertinent() : scalewayResultsTresPertinent).length > 1">
+            <button class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-arrow-left-s-line" (click)="scrollCarousel(-1)">Précédent</button>
+            <button class="fr-btn fr-btn--tertiary fr-btn--icon-right fr-icon-arrow-right-s-line" (click)="scrollCarousel(1)">Suivant</button>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 2 : Offres qui pourraient également vous intéresser   -->
+        <!-- Grille 3 cartes par ligne, filtrée si intention active.       -->
+        <!-- ============================================================ -->
+        <div class="fr-col-12" *ngIf="getScalewaySection2Results().length > 0">
+          <div class="scaleway-section-title">
+            <h2>
+              {{ 'SEARCH.SCALEWAY_AUTRES_RESULTATS' | translate }}
+              <span class="scaleway-section-count">({{ getScalewaySection2Results().length }})</span>
+            </h2>
+          </div>
+
+          <div class="scaleway-ambigue-info" *ngIf="showAmbigueMessage && !showAmbigueTooMany">
+            {{ 'SEARCH.SCALEWAY_AMBIGUE_ZERO' | translate }}
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+            <ng-container *ngFor="let thesis of getScalewaySection2Results()">
+              <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Mode standard / Albert : liste unique + pagination -->
+      <ng-container *ngIf="!isScalewayActive || isScalewayLoading">
+        <ng-container *ngFor="let thesis of results">
+          <ng-container *ngTemplateOutlet="cardTemplate; context: {$implicit: thesis}"></ng-container>
+        </ng-container>
+
+        <!-- PAGINATION -->
+        <div class="fr-container fr-my-4w pagination-fixed">
+          <nav class="fr-pagination"
+               aria-label="Pagination"
+               *ngIf="totalPages > 1">
+
+            <ul class="fr-pagination__list">
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(currentPage - 1)"
+                        [disabled]="currentPage === 0">
+                  <span class="fr-icon-arrow-left-s-line"></span>
+                  <span class="fr-mx-1w">{{ 'PAGINATION.PREVIOUS' | translate }}</span>
+                </button>
+              </li>
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(0)"
+                        [class.fr-pagination__link--current]="currentPage === 0">
+                  1
+                </button>
+              </li>
+
+              <li *ngIf="currentPage > 3"><span class="fr-pagination__link">…</span></li>
+
+              <li *ngFor="let i of getPagesAround()">
+                <button class="fr-pagination__link"
+                        (click)="goToPage(i)"
+                        [class.fr-pagination__link--current]="currentPage === i">
+                  {{ i + 1 }}
+                </button>
+              </li>
+
+              <li *ngIf="currentPage < totalPages - 4"><span class="fr-pagination__link">…</span></li>
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(totalPages - 1)"
+                        [class.fr-pagination__link--current]="currentPage === totalPages - 1">
+                  {{ totalPages }}
+                </button>
+              </li>
+
+              <li>
+                <button class="fr-pagination__link"
+                        (click)="goToPage(currentPage + 1)"
+                        [disabled]="currentPage === totalPages - 1">
+                  <span class="fr-mx-1w">{{ 'PAGINATION.NEXT' | translate }}</span>
+                  <span class="fr-icon-arrow-right-s-line"></span>
+                </button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+      </ng-container>
 
     </div>
 
   </section>
   
-  <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top"
+  <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top fr-mt-3w"
           data-fr-back-to-top (click)="scrollToTop()">
     {{ 'SEARCH.BACK_TO_TOP' | translate }}
   </button>
