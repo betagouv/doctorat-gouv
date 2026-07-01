@@ -36,6 +36,7 @@ import { Nl2brPipe } from '../pipes/nl2br-pipe';
 
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { ViewEncapsulation } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 import { environment } from '../../environments/environment';
 
@@ -227,7 +228,8 @@ export class Search implements OnInit, OnDestroy {
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
 	private searchFiltersService: SearchFiltersService,
-	public translate: TranslateService
+	public translate: TranslateService,
+	private titleService: Title
   ) {}
 
   /* ------------------- Lifecycle ------------------- */
@@ -336,7 +338,12 @@ export class Search implements OnInit, OnDestroy {
 	  this.onSearch(this.currentPage);
 	}
 	this.isInitialLoad = false;
-	
+
+	const titre = this.translate.currentLang === 'en'
+	  ? 'Search a PhD thesis — Doctorat.gouv.fr'
+	  : 'Rechercher un sujet de thèse — Doctorat.gouv.fr';
+	this.titleService.setTitle(titre);
+
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
       .subscribe(() => {
