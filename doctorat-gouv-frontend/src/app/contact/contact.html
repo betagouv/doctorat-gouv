@@ -52,8 +52,8 @@
 
 					<!-- Nom -->
 					<div class="form-field large">
-					  <label class="fr-label">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" formControlName="nom" type="text">
+					  <label class="fr-label" for="nom">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" id="nom" formControlName="nom" type="text" required aria-required="true">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
 					    {{ 'CONTACT.ERROR_NOM' | translate }}.
@@ -63,8 +63,8 @@
 
 					<!-- Prénom -->
 					<div class="form-field large">
-					  <label class="fr-label">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" formControlName="prenom" type="text">
+					  <label class="fr-label" for="prenom">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" id="prenom" formControlName="prenom" type="text" required aria-required="true">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
 					    {{ 'CONTACT.ERROR_PRENOM' | translate }}
@@ -74,8 +74,8 @@
 
 					<!-- Civilité -->
 					<div class="form-field large">
-						<label class="fr-label">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
-						<select class="fr-select" formControlName="civilite">
+						<label class="fr-label" for="civilite">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
+						<select class="fr-select" id="civilite" formControlName="civilite">
 							<option value="" disabled selected>{{ 'CONTACT.CIVILITE_CHOIX' | translate }}</option>
 							<option *ngFor="let c of civilites" [value]="c">{{ c | translate }}</option>
 						</select>
@@ -83,8 +83,8 @@
 
 					<!-- Email -->
 					<div class="form-field large">
-					  <label class="fr-label">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" formControlName="email" type="email">
+					  <label class="fr-label" for="email">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+					  <input class="fr-input" id="email" formControlName="email" type="email" required aria-required="true">
 
 					  <p class="fr-error-text" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
 					    {{ 'CONTACT.ERROR_EMAIL' | translate }}
@@ -94,8 +94,8 @@
 
 					<!-- Vous êtes -->
 					<div class="form-field small">
-						<label class="fr-label">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
-						<select class="fr-select" formControlName="profil">
+						<label class="fr-label" for="profil">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
+						<select class="fr-select" id="profil" formControlName="profil">
 							<option value="" disabled selected>{{ 'CONTACT.PROFIL_CHOIX' | translate }}</option>
 							<option *ngFor="let p of profils" [value]="p">{{ p | translate }}</option>
 						</select>
@@ -103,8 +103,8 @@
 
 					<!-- Depuis combien d'années -->
 					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
-					  <select class="fr-select" formControlName="annees">
+					  <label class="fr-label" for="annees">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
+					  <select class="fr-select" id="annees" formControlName="annees">
 					    <option value="" disabled selected>{{ 'CONTACT.ANNEES_CHOIX' | translate }}</option>
 					    <option *ngFor="let a of annees" [value]="a">{{ a }} {{ 'CONTACT.YEARS' | translate }}</option>
 					  </select>
@@ -112,8 +112,8 @@
 
 					<!-- Secteur -->
 					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
-					  <select class="fr-select" formControlName="secteur">
+					  <label class="fr-label" for="secteur">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
+					  <select class="fr-select" id="secteur" formControlName="secteur">
 					    <option value="" disabled selected>{{ 'CONTACT.SECTEUR_CHOIX' | translate }}</option>
 					    <option *ngFor="let s of secteurs" [value]="s">{{ s | translate }}</option>
 					  </select>
@@ -194,14 +194,16 @@
 
 					<!-- Texte de motivation -->
 					<div class="form-field large">
-						<label class="fr-label">
+						<label class="fr-label" for="message">
 						  {{ isOrganisationProfile ? ('CONTACT.MESSAGE_LABEL_ORGA' | translate) : ('CONTACT.MESSAGE_LABEL' | translate) }}
 						</label>
 
 					  <textarea 
 					    class="fr-input" 
+					    id="message"
 					    formControlName="message" 
 					    rows="5"
+					    required aria-required="true"
 					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
 					  ></textarea>
 					  
