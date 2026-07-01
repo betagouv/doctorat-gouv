@@ -38,7 +38,7 @@
 	"SCALEWAY_TRES_PERTINENT": "Meilleurs résultats",
 	"SCALEWAY_AUTRES_RESULTATS": "Offres qui pourraient également vous intéresser",
 	"SCALEWAY_NLP_TITLE": "Comment formuler une recherche pertinente ?",
-	"SCALEWAY_NLP_DESC": "Décrivez le type de sujet que vous cherchez, puis ajoutez, si besoin, en fin de requête et dans cet ordre, la localisation puis le financement.<br>Exemple : <em>« Je cherche un sujet qui s'intéresse aux applications de l'intelligence artificielle appliquée à la santé, en particulier à la radiologie, à Paris, financé par une CIFRE »</em>.",
+	"SCALEWAY_NLP_DESC": "Décrivez le type de sujet que vous cherchez, puis ajoutez, si besoin, en fin de requête et dans cet ordre, la localisation puis le financement.<br>Exemple : <em>« Je cherche un sujet qui s'intéresse aux applications de l'intelligence artificielle appliquée à l'imagerie médicale, à Marseille, financé par une CIFRE »</em>.",
 	"SCALEWAY_NLP_EXAMPLE": "",
 	"SCALEWAY_AMBIGUE": "De nombreux résultats pertinents correspondent à votre requête. Pour affiner ces résultats, nous vous invitons à préciser davantage votre sujet.",
 	"SCALEWAY_AMBIGUE_ZERO": "Aucun résultat ne correspond exactement à votre requête. Veuillez reformuler ou élargissez votre recherche pour découvrir plus de résultats.",
