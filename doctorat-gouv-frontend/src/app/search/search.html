@@ -85,7 +85,10 @@
       <!-- DISCIPLINE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-			<button class="dropdown-btn" (click)="toggleDropdown('disciplineOpen')">
+			<button class="dropdown-btn"
+			        [attr.aria-expanded]="disciplineOpen"
+			        [attr.aria-controls]="'panel-discipline'"
+			        (click)="toggleDropdown('disciplineOpen')">
 				<span [innerHTML]="discipline.length > 0 
 				        ? getFilterLabelList(discipline, 'discipline') 
 				        : ( 'FILTERS.DISCIPLINE' | translate )">
@@ -93,13 +96,14 @@
 			  <span class="fr-icon-arrow-down-s-line"></span>
 			</button>
 
-          <div class="dropdown-panel" *ngIf="disciplineOpen">
+          <div class="dropdown-panel" id="panel-discipline" *ngIf="disciplineOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_DISCIPLINE' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="disciplineSearch">
             </div>
 
@@ -129,7 +133,10 @@
       <!-- DEFIS DE SOCIETE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('defisSocieteOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="defisSocieteOpen"
+                  [attr.aria-controls]="'panel-defis'"
+                  (click)="toggleDropdown('defisSocieteOpen')">
 			<span [innerHTML]="defisSociete.length > 0 
 			      ? getFilterLabelList(defisSociete, 'defisSociete') 
 			      : ('FILTERS.DEFIS' | translate)">
@@ -137,13 +144,14 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="defisSocieteOpen">
+          <div class="dropdown-panel" id="panel-defis" *ngIf="defisSocieteOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_DEFIS' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="defisSocieteSearch">
             </div>
 
@@ -173,7 +181,10 @@
       <!-- LOCALISATION -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('localisationOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="localisationOpen"
+                  [attr.aria-controls]="'panel-localisation'"
+                  (click)="toggleDropdown('localisationOpen')">
 			<span [innerHTML]="localisation.length > 0 
 			        ? getFilterLabelList(localisation, 'localisation') 
 			        : ('FILTERS.LOCALISATION' | translate)">
@@ -181,13 +192,14 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="localisationOpen">
+          <div class="dropdown-panel" id="panel-localisation" *ngIf="localisationOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_LOCALISATION' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="localisationSearch">
             </div>
 
@@ -223,7 +235,10 @@
       <!-- LABORATOIRE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('laboratoireOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="laboratoireOpen"
+                  [attr.aria-controls]="'panel-labo'"
+                  (click)="toggleDropdown('laboratoireOpen')">
 			<span [innerHTML]="laboratoire.length > 0 
 			      ? getFilterLabelList(laboratoire, 'laboratoire') 
 			      : ('FILTERS.LABO' | translate)">
@@ -231,13 +246,14 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="laboratoireOpen">
+          <div class="dropdown-panel" id="panel-labo" *ngIf="laboratoireOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_LABO' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="laboratoireSearch">
             </div>
 
@@ -267,7 +283,10 @@
       <!-- ECOLE -->
       <div class="fr-col-12 fr-col-md-4">
         <div class="dropdown-filter">
-          <button class="dropdown-btn" (click)="toggleDropdown('ecoleOpen')">
+          <button class="dropdown-btn"
+                  [attr.aria-expanded]="ecoleOpen"
+                  [attr.aria-controls]="'panel-ecole'"
+                  (click)="toggleDropdown('ecoleOpen')">
 			<span [innerHTML]="ecole.length > 0 
 			        ? getFilterLabelList(ecole, 'ecole') 
 			        : ('FILTERS.ECOLE' | translate)">
@@ -275,13 +294,14 @@
             <span class="fr-icon-arrow-down-s-line"></span>
           </button>
 
-          <div class="dropdown-panel" *ngIf="ecoleOpen">
+          <div class="dropdown-panel" id="panel-ecole" *ngIf="ecoleOpen">
 
             <div class="search-box">
               <span class="search-icon" aria-hidden="true">🔍</span>
               <input type="text"
                      class="search-input"
-                     placeholder="Rechercher"
+                     [attr.aria-label]="'FILTERS.SEARCH_ECOLE' | translate"
+                     placeholder="{{ 'FILTERS.SEARCH' | translate }}"
                      [(ngModel)]="ecoleSearch">
             </div>
 
@@ -382,21 +402,30 @@
   </div>
 </div>
 
-<main class="fr-container fr-py-3w search-main">
+<main id="main-content" class="fr-container fr-py-3w search-main">
 
 	<div class="switch-and-sort fr-mt-3w menu-margin">
 	
 		<!-- =====================SWITCH OFFRES/SUJETS=====================-->
 		<div class="offer-switch fr-mt-3w menu-margin">
-			<button class="switch-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'all'"
+			        [attr.aria-pressed]="activeFilter === 'all'"
+			        (click)="setFilter('all')">
 				{{ 'SEARCH.ALL_OFFERS' | translate }}
 			</button>
 	
-			<button class="switch-btn" [class.active]="activeFilter === 'thesis'" (click)="setFilter('thesis')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'thesis'"
+			        [attr.aria-pressed]="activeFilter === 'thesis'"
+			        (click)="setFilter('thesis')">
 				{{ 'SEARCH.THESIS_OFFER' | translate }}
 			</button>
 	
-			<button class="switch-btn" [class.active]="activeFilter === 'supervision'" (click)="setFilter('supervision')">
+			<button class="switch-btn"
+			        [class.active]="activeFilter === 'supervision'"
+			        [attr.aria-pressed]="activeFilter === 'supervision'"
+			        (click)="setFilter('supervision')">
 				{{ 'SEARCH.SUPERVISION_OFFER' | translate }}
 			</button>
 		</div>
@@ -423,7 +452,10 @@
 	
 			<!-- DROPDOWN CUSTOM POUR LE CHAMP -->
 			<div class="dropdown-filter sort-dropdown">
-				<button class="dropdown-btn" (click)="toggleDropdown('sortOpen')">
+				<button class="dropdown-btn"
+				        [attr.aria-expanded]="sortOpen"
+				        [attr.aria-controls]="'panel-sort'"
+				        (click)="toggleDropdown('sortOpen')">
 					{{ sortField === 'dateMiseEnLigne'
 					? ('SEARCH.SORT_POSTING_DATE' | translate)
 					: sortField === 'dateLimiteCandidature'
@@ -432,7 +464,7 @@
 					<span class="fr-icon-arrow-down-s-line"></span>
 				</button>
 	
-				<div class="dropdown-panel" *ngIf="sortOpen">
+				<div class="dropdown-panel" id="panel-sort" *ngIf="sortOpen">
 	
 					<!-- Option Pertinence (visible uniquement en mode Albert) -->
 					<div class="fr-checkbox-group fr-mb-2w" *ngIf="isAlbertSearchActive || isScalewayActive">
@@ -458,11 +490,19 @@
 	
 			<!-- FLÈCHES ASC / DESC À L'EXTÉRIEUR -->
 			<div class="sort-arrows" *ngIf="!isAlbertSearchActive">
-				<button class="arrow-btn" [class.active]="sortDirection === 'ASC'" (click)="setSortDirection('ASC')">
+				<button class="arrow-btn"
+				        [class.active]="sortDirection === 'ASC'"
+				        [attr.aria-pressed]="sortDirection === 'ASC'"
+				        aria-label="Trier par ordre croissant"
+				        (click)="setSortDirection('ASC')">
 					▲
 				</button>
 	
-				<button class="arrow-btn" [class.active]="sortDirection === 'DESC'" (click)="setSortDirection('DESC')">
+				<button class="arrow-btn"
+				        [class.active]="sortDirection === 'DESC'"
+				        [attr.aria-pressed]="sortDirection === 'DESC'"
+				        aria-label="Trier par ordre décroissant"
+				        (click)="setSortDirection('DESC')">
 					▼
 				</button>
 		</div>
@@ -665,6 +705,8 @@
 	</section>
 
 
+  <h2 class="fr-sr-only">{{ 'SEARCH.RESULTS_TITLE' | translate }}</h2>
+
   <section class="fr-mt-2w" *ngIf="results.length">
 
 	<!-- Boutons DSFR -->
@@ -818,7 +860,10 @@
               {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
             </p>
 
-            <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+            <a [routerLink]="['/proposition']"
+               [queryParams]="{ id: thesis.id }"
+               class="arrow-link"
+               [attr.aria-label]="('CARDS.DETAIL' | translate) + ' : ' + getThesisTitle(thesis)">
               {{ 'CARDS.DETAIL' | translate }}
             </a>
           </div>
@@ -929,7 +974,10 @@
             <em>{{ 'SEARCH.DATE_MISE_EN_LIGNE' | translate }}</em>
             {{ thesis.dateMiseEnLigne | dynamicDate:'d MMMM y' }}
           </p>
-          <a [routerLink]="['/proposition']" [queryParams]="{ id: thesis.id }" class="arrow-link">
+          <a [routerLink]="['/proposition']"
+             [queryParams]="{ id: thesis.id }"
+             class="arrow-link"
+             [attr.aria-label]="('CARDS.DETAIL' | translate) + ' : ' + getThesisTitle(thesis)">
             {{ 'CARDS.DETAIL' | translate }}
           </a>
         </div>

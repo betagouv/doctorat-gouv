@@ -10,6 +10,7 @@ import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 @Component({
 	selector: 'app-proposition-detail',
@@ -69,7 +70,8 @@ export class PropositionDetail {
 		private router: Router,
 		private propositionTheseService: PropositionTheseService,
 		private contactContextService: ContactContextService,
-		public translate: TranslateService
+		public translate: TranslateService,
+		private titleService: Title
 	) { }
 
 
@@ -84,7 +86,9 @@ export class PropositionDetail {
 		   .getThesisById(this.thesisId)               // le service attend un number
 		   .subscribe((data: PropositionTheseDto) => {
 		     this.thesis = data;
-			 // console.log('thèse : ', this.thesis);
+			 const titre = this.thesis.theseTitre || this.thesis.theseTitreAnglais || 'Sans titre';
+			 const shortTitre = titre.length > 80 ? titre.substring(0, 77) + '…' : titre;
+			 this.titleService.setTitle(`${shortTitre} — Doctorat.gouv.fr`);
 		   });
 	}
 	

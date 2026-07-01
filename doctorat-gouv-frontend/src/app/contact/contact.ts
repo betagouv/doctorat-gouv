@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -6,6 +6,7 @@ import { ContactContextService } from '../services/contact-context-service';
 import { environment } from '../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-contact',
@@ -18,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './contact.html',
   styleUrls: ['./contact.scss']
 })
-export class Contact {
+export class Contact implements OnInit {
 	
 	private readonly apiBase = `${environment.apiUrl}`;
 	
@@ -76,7 +77,7 @@ export class Contact {
 	  'CONTACT.SECTEURS.TRANSPORT'
 	];
 
-	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService, private translate: TranslateService) {
+	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService, private translate: TranslateService, private titleService: Title) {
 	  this.contactForm = this.fb.group({
         nom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]], 
 		prenom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
@@ -153,7 +154,14 @@ export class Contact {
 	  }
 
 	}
-	
+
+	ngOnInit(): void {
+		const titre = this.translate.currentLang === 'en'
+		  ? 'Contact — Doctorat.gouv.fr'
+		  : 'Contact — Doctorat.gouv.fr';
+		this.titleService.setTitle(titre);
+	}
+
 	onSubmit() {
 		
 		if (this.isSubmitting) {

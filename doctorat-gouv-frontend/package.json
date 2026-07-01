@@ -1,6 +1,6 @@
 {
   "name": "doctorat-gouv-frontend",
-  "version": "0.3.5",
+  "version": "0.3.6-beta",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
