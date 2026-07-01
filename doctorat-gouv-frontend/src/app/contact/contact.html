@@ -48,14 +48,18 @@
 
 				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" >
 					
+					<p class="fr-mb-3w fr-text--sm">{{ 'CONTACT.REQUIRED_FIELDS' | translate }}</p>
+					
 					<div class="contact-grid">
 
 					<!-- Nom -->
 					<div class="form-field large">
 					  <label class="fr-label" for="nom">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="nom" formControlName="nom" type="text" required aria-required="true">
+					  <input class="fr-input" id="nom" formControlName="nom" type="text" required aria-required="true"
+					         [attr.aria-invalid]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'true' : null"
+					         [attr.aria-describedby]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'nom-error' : null">
 
-					  <p class="fr-error-text" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
+					  <p class="fr-error-text" id="nom-error" role="alert" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
 					    {{ 'CONTACT.ERROR_NOM' | translate }}.
 					  </p>
 					</div>
@@ -64,9 +68,11 @@
 					<!-- Prénom -->
 					<div class="form-field large">
 					  <label class="fr-label" for="prenom">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="prenom" formControlName="prenom" type="text" required aria-required="true">
+					  <input class="fr-input" id="prenom" formControlName="prenom" type="text" required aria-required="true"
+					         [attr.aria-invalid]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'true' : null"
+					         [attr.aria-describedby]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'prenom-error' : null">
 
-					  <p class="fr-error-text" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
+					  <p class="fr-error-text" id="prenom-error" role="alert" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
 					    {{ 'CONTACT.ERROR_PRENOM' | translate }}
 					  </p>
 					</div>
@@ -84,9 +90,11 @@
 					<!-- Email -->
 					<div class="form-field large">
 					  <label class="fr-label" for="email">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="email" formControlName="email" type="email" required aria-required="true">
+					  <input class="fr-input" id="email" formControlName="email" type="email" required aria-required="true"
+					         [attr.aria-invalid]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'true' : null"
+					         [attr.aria-describedby]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'email-error' : null">
 
-					  <p class="fr-error-text" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
+					  <p class="fr-error-text" id="email-error" role="alert" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
 					    {{ 'CONTACT.ERROR_EMAIL' | translate }}
 					  </p>
 					</div>
@@ -123,13 +131,15 @@
 					<!-- Confirmation diplôme -->
 					<div class="form-field large confirm-master-field" *ngIf="showMasterConfirmation">
 						<div class="fr-checkbox-group">
-							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required>
+							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required
+							       [attr.aria-invalid]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'true' : null"
+							       [attr.aria-describedby]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'confirmMaster-error' : null">
 							<label class="fr-label" for="confirmMaster">
 								{{ 'CONTACT.FIELD_CONFIRM_MASTER' | translate }}
 							</label>
 						</div>
 					
-						<p class="fr-error-text"
+						<p class="fr-error-text" id="confirmMaster-error" role="alert"
 							*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
 							{{ 'CONTACT.ERROR_MASTER' | translate }}
 						</p>
@@ -145,19 +155,23 @@
 							{{ 'CONTACT.UPLOAD_HINT_1MO' | translate }}
 						</p>
 					
-						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple accept=".pdf" >
+						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple accept=".pdf"
+						       [attr.aria-invalid]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'true' : null"
+						       [attr.aria-describedby]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'cv-error' : null">
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
+						<div id="cv-error">
+						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
 							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
 						</p>
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
+						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
 							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_1MO' | translate }}
 						</p>
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
+						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
 							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
 						</p>
+						</div>
 					
 					</div>
 
@@ -174,20 +188,24 @@
 						</p>
 					
 						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
-							multiple accept=".pdf">
+							multiple accept=".pdf"
+							[attr.aria-invalid]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'true' : null"
+							[attr.aria-describedby]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'document-error' : null">
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
+						<div id="document-error">
+						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
 							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
 						</p>
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
+						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
 							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_5MO' | translate }}
 						</p>
 					
-						<p class="fr-error-text"
+						<p class="fr-error-text" role="alert"
 							*ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.errors?.['required']">
 							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
 						</p>
+						</div>
 					
 					</div>
 
@@ -204,6 +222,8 @@
 					    formControlName="message" 
 					    rows="5"
 					    required aria-required="true"
+					    [attr.aria-invalid]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'true' : null"
+					    [attr.aria-describedby]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'message-error' : null"
 					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
 					  ></textarea>
 					  
@@ -212,32 +232,36 @@
 					  </div>
 
 					  
-					  <p class="fr-error-text"
+					  <div id="message-error">
+					  <p class="fr-error-text" role="alert"
 					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
 					    {{ 'CONTACT.ERROR_REQUIRED' | translate }}
 					  </p>
 
-					  <p class="fr-error-text"
+					  <p class="fr-error-text" role="alert"
 					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
 					    {{ 'CONTACT.ERROR_MIN_LENGTH' | translate }}
 					  </p>
 
-					  <p class="fr-error-text"
+					  <p class="fr-error-text" role="alert"
 					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['maxlength']">
 					    {{ 'CONTACT.ERROR_MAX_LENGTH' | translate }}
 					  </p>
+					  </div>
 
 					 <!-- Consentement RGPD -->
 					<div class="form-field large rgpd-field">
 						<div class="fr-checkbox-group">
-							<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required>
+							<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required
+							       [attr.aria-invalid]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'true' : null"
+							       [attr.aria-describedby]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'rgpdConsent-error' : null">
 							<label class="fr-label" for="rgpdConsent">
 								{{ 'CONTACT.RGPD' | translate }}
 								<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">{{ 'CONTACT.LEGAL' | translate }}</a>.
 							</label>
 						</div>
 					
-						<p class="fr-error-text" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
+						<p class="fr-error-text" id="rgpdConsent-error" role="alert" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
 							{{ 'CONTACT.ERROR_RGPD' | translate }}
 						</p>
 					 </div>

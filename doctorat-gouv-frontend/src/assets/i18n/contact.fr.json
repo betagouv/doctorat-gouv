@@ -1,6 +1,7 @@
 {
   "CONTACT": {
     "TITLE": "Formulaire de mise en relation",
+    "REQUIRED_FIELDS": "Les champs marqués d'un astérisque (*) sont obligatoires.",
 
     "INFO_TITLE": "Pour être mis en relation, merci de remplir le formulaire ci-dessous et de fournir les documents demandés :",
 
