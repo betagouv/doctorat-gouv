@@ -23,6 +23,7 @@ export class I18nService {
   useLang(lang: string) {
 	
 	this.currentLocale = lang === 'en' ? 'en-US' : 'fr-FR';
+	document.documentElement.lang = lang;
 	this.applicationRef.tick();
 	
 	const files = ['header', 'search', 'detail', 'contact'];
