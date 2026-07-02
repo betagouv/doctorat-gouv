@@ -1,4 +1,4 @@
-<div class="page-background" *ngIf="thesis">
+<main id="main-content" class="page-background" *ngIf="thesis">
 
 	<div class="container">
 
@@ -26,9 +26,9 @@
 				</div>
 
 
-				<h2 class="card-title fr-mb-10v">
+				<h1 class="card-title fr-mb-10v">
 					{{ getThesisTitle(thesis) }}
-				</h2>
+				</h1>
 
 				<p><img src="/assets/icons/type_proposition.png" class="icon-img" alt="">
 					<strong>{{ 'DETAIL.TYPE_OFFRE' | translate }} :</strong>
@@ -187,12 +187,12 @@
 				</div>
 
 				<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
-					<h2 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h2>
+					<h3 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h3>
 					<p class="paragraph fr-mb-12v" [innerHTML]="resume | nl2br"></p>
 				</ng-container>
 
 				<ng-container *ngIf="(thesis?.objectif?.trim() || thesis?.contexte?.trim()) as _">
-					<h3 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.OBJECTIF_CONTEXTE' | translate }}</h4>
 
 					<p class="paragraph" *ngIf="thesis?.objectif?.trim()" [innerHTML]="thesis.objectif | nl2br">
 					</p>
@@ -205,27 +205,27 @@
 				</ng-container>
 
 				<ng-container *ngIf="getProfilRecherche(thesis) as profil">
-					<h3 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.PROFIL' | translate }}</h4>
 					<p class="paragraph" [innerHTML]="profil | nl2br"></p>
 				</ng-container>
 
 				<ng-container *ngIf="thesis?.modalitesEncadrement as encadrement">
 					<hr class="separator">
-					<h3 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.ENCADREMENT' | translate }}</h4>
 					<p class="paragraph fr-mb-12v" [innerHTML]="encadrement | nl2br"></p>
 				</ng-container>
 
 				<ng-container *ngIf="thesis?.resultatsAttendus as resultats">
-					<h3 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.RESULTATS' | translate }}</h4>
 					<p class="paragraph fr-mb-12v" [innerHTML]="resultats | nl2br"></p>
 				</ng-container>
 
 				<ng-container *ngIf="thesis?.valorisationTravaux as valorisation">
-					<h3 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.VALORISATION' | translate }}</h4>
 					<p class="paragraph fr-mb-12v" [innerHTML]="valorisation | nl2br"></p>
 				</ng-container>
 
-				<h3 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h3>
+				<h4 class="section-title">{{ 'DETAIL.FINANCEMENT' | translate }}</h4>
 
 				<ng-container *ngIf="
 		      thesis?.financementEtat ||
@@ -274,13 +274,13 @@
 
 
 				<ng-container *ngIf="thesis?.referencesBibliographiques as references">
-					<h3 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.REFERENCES' | translate }}</h4>
 					<p class="paragraph fr-mb-12v" [innerHTML]="references | nl2br"></p>
 				</ng-container>
 
 
 				<div *ngIf="thesis?.urlPdf">
-					<h3 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h3>
+					<h4 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h4>
 
 					<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download
 						target="_blank" rel="noopener noreferrer">
@@ -368,4 +368,4 @@
 		</div>
 
 	</div>
-</div>
+</main>

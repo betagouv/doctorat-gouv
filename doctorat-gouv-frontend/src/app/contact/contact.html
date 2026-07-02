@@ -1,11 +1,11 @@
 
 
-<div class="page-background" *ngIf="!showConfirmation">
+<main id="main-content" class="page-background" *ngIf="!showConfirmation">
 
 	<div class="container-header">
 
 		<!-- Titre centré comme sur la maquette -->
-		<h2 class="form-title fr-mb-4v">{{ 'CONTACT.TITLE' | translate }}</h2>
+		<h1 class="form-title fr-mb-4v">{{ 'CONTACT.TITLE' | translate }}</h1>
 
 		<!-- Alerte DSFR d'information -->
 		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
@@ -289,7 +289,7 @@
 		</div>
 
 	</div>
-</div>
+</main>
 
 <div *ngIf="showConfirmation" class="confirmation-wrapper">
 
