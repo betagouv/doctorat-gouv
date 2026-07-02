@@ -1,6 +1,6 @@
-<main id="main-content" class="page-background" *ngIf="thesis">
+<main id="main-content" class="page-background">
 
-	<div class="container">
+	<div class="container" *ngIf="thesis">
 
 		<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
 			<p>{{ errorMessage }}</p>

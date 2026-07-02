@@ -1,293 +1,292 @@
+<main id="main-content" class="page-background">
 
+	<div *ngIf="!showConfirmation">
+		<div class="container-header">
+			<!-- Titre centré comme sur la maquette -->
+			<h1 class="form-title fr-mb-4v">{{ 'CONTACT.TITLE' | translate }}</h1>
 
-<main id="main-content" class="page-background" *ngIf="!showConfirmation">
+			<!-- Alerte DSFR d'information -->
+			<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
+			
+				<p class="fr-alert__title">
+				  <strong>{{ 'CONTACT.INFO_TITLE' | translate }}</strong>
+				</p>
 
-	<div class="container-header">
+				<ul class="fr-pl-3w fr-mb-3w">
+				  <li class="fr-mt-2w">{{ 'CONTACT.INFO_DOCTORAT' | translate }}</li>
+				  <li class="fr-mt-2w">{{ 'CONTACT.INFO_PARTENARIAT' | translate }}</li>
+				</ul>
 
-		<!-- Titre centré comme sur la maquette -->
-		<h1 class="form-title fr-mb-4v">{{ 'CONTACT.TITLE' | translate }}</h1>
-
-		<!-- Alerte DSFR d'information -->
-		<div class="fr-alert fr-alert--info fr-alert--sm info-alert">
-		
-			<p class="fr-alert__title">
-			  <strong>{{ 'CONTACT.INFO_TITLE' | translate }}</strong>
-			</p>
-
-			<ul class="fr-pl-3w fr-mb-3w">
-			  <li class="fr-mt-2w">{{ 'CONTACT.INFO_DOCTORAT' | translate }}</li>
-			  <li class="fr-mt-2w">{{ 'CONTACT.INFO_PARTENARIAT' | translate }}</li>
-			</ul>
-
-			<p class="fr-mt-2w">
-			  {{ 'CONTACT.INFO_END' | translate }}
-			</p>
-		
-		</div>
-		
-		
-		<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w info-alert" *ngIf="sujetAttribue  === 'oui'">
-		  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
-		</div>
-		
-		<!-- Message si aucun sujet valide -->
-		<div *ngIf="!sujetValide" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
-			<p>{{ sujetErreurMessage | translate }}</p>
-		
-			<!--		  <a routerLink="/search" class="fr-btn fr-btn--secondary fr-mt-2w">-->
-			<!--		    Retour aux sujets-->
-			<!--		  </a>-->
-		</div>
-
-	</div>
-
-	<div class="container">
-
-		<div class="card shadow">
-			<div class="card-body">
-
-				<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" >
-					
-					<p class="fr-mb-3w fr-text--sm">{{ 'CONTACT.REQUIRED_FIELDS' | translate }}</p>
-					
-					<div class="contact-grid">
-
-					<!-- Nom -->
-					<div class="form-field large">
-					  <label class="fr-label" for="nom">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="nom" formControlName="nom" type="text" required aria-required="true"
-					         [attr.aria-invalid]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'true' : null"
-					         [attr.aria-describedby]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'nom-error' : null">
-
-					  <p class="fr-error-text" id="nom-error" role="alert" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
-					    {{ 'CONTACT.ERROR_NOM' | translate }}.
-					  </p>
-					</div>
-
-
-					<!-- Prénom -->
-					<div class="form-field large">
-					  <label class="fr-label" for="prenom">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="prenom" formControlName="prenom" type="text" required aria-required="true"
-					         [attr.aria-invalid]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'true' : null"
-					         [attr.aria-describedby]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'prenom-error' : null">
-
-					  <p class="fr-error-text" id="prenom-error" role="alert" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
-					    {{ 'CONTACT.ERROR_PRENOM' | translate }}
-					  </p>
-					</div>
-
-
-					<!-- Civilité -->
-					<div class="form-field large">
-						<label class="fr-label" for="civilite">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
-						<select class="fr-select" id="civilite" formControlName="civilite">
-							<option value="" disabled selected>{{ 'CONTACT.CIVILITE_CHOIX' | translate }}</option>
-							<option *ngFor="let c of civilites" [value]="c">{{ c | translate }}</option>
-						</select>
-					</div>
-
-					<!-- Email -->
-					<div class="form-field large">
-					  <label class="fr-label" for="email">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
-					  <input class="fr-input" id="email" formControlName="email" type="email" required aria-required="true"
-					         [attr.aria-invalid]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'true' : null"
-					         [attr.aria-describedby]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'email-error' : null">
-
-					  <p class="fr-error-text" id="email-error" role="alert" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
-					    {{ 'CONTACT.ERROR_EMAIL' | translate }}
-					  </p>
-					</div>
-
-
-					<!-- Vous êtes -->
-					<div class="form-field small">
-						<label class="fr-label" for="profil">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
-						<select class="fr-select" id="profil" formControlName="profil">
-							<option value="" disabled selected>{{ 'CONTACT.PROFIL_CHOIX' | translate }}</option>
-							<option *ngFor="let p of profils" [value]="p">{{ p | translate }}</option>
-						</select>
-					</div>
-
-					<!-- Depuis combien d'années -->
-					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label" for="annees">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
-					  <select class="fr-select" id="annees" formControlName="annees">
-					    <option value="" disabled selected>{{ 'CONTACT.ANNEES_CHOIX' | translate }}</option>
-					    <option *ngFor="let a of annees" [value]="a">{{ a }} {{ 'CONTACT.YEARS' | translate }}</option>
-					  </select>
-					</div>
-
-					<!-- Secteur -->
-					<div class="form-field small" *ngIf="showExperienceFields">
-					  <label class="fr-label" for="secteur">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
-					  <select class="fr-select" id="secteur" formControlName="secteur">
-					    <option value="" disabled selected>{{ 'CONTACT.SECTEUR_CHOIX' | translate }}</option>
-					    <option *ngFor="let s of secteurs" [value]="s">{{ s | translate }}</option>
-					  </select>
-					</div>
-
-					
-					<!-- Confirmation diplôme -->
-					<div class="form-field large confirm-master-field" *ngIf="showMasterConfirmation">
-						<div class="fr-checkbox-group">
-							<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required
-							       [attr.aria-invalid]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'true' : null"
-							       [attr.aria-describedby]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'confirmMaster-error' : null">
-							<label class="fr-label" for="confirmMaster">
-								{{ 'CONTACT.FIELD_CONFIRM_MASTER' | translate }}
-							</label>
-						</div>
-					
-						<p class="fr-error-text" id="confirmMaster-error" role="alert"
-							*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
-							{{ 'CONTACT.ERROR_MASTER' | translate }}
-						</p>
-					</div>
-
-
-					<!-- Upload CV -->
-					<div class="form-field large">
-						<label class="fr-label" for="cvUpload">{{ isOrganisationProfile ? ('CONTACT.UPLOAD_ORGA' | translate) : ('CONTACT.UPLOAD_CV' | translate) }}
-							<span class="fr-text--xs fr-text--error">*</span>
-						</label>
-						<p class="fr-hint-text">
-							{{ 'CONTACT.UPLOAD_HINT_1MO' | translate }}
-						</p>
-					
-						<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple accept=".pdf"
-						       [attr.aria-invalid]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'true' : null"
-						       [attr.aria-describedby]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'cv-error' : null">
-					
-						<div id="cv-error">
-						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
-							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
-						</p>
-					
-						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
-							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_1MO' | translate }}
-						</p>
-					
-						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
-							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
-						</p>
-						</div>
-					
-					</div>
-
-					<!-- Upload un autre document -->
-					<div class="form-field large">
-						<label class="fr-label" for="docsUpload">
-							{{ isOrganisationProfile ? ('CONTACT.UPLOAD_PARTENARIAT' | translate) : ('CONTACT.UPLOAD_DOC' | translate) }}
-							<span class="fr-text--xs fr-text--error">*</span>
-						</label>
-					
-					
-						<p class="fr-hint-text">
-							{{ 'CONTACT.UPLOAD_HINT_5MO' | translate }}
-						</p>
-					
-						<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
-							multiple accept=".pdf"
-							[attr.aria-invalid]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'true' : null"
-							[attr.aria-describedby]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'document-error' : null">
-					
-						<div id="document-error">
-						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
-							{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
-						</p>
-					
-						<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
-							{{ 'CONTACT.ERROR_FILE_TOO_LARGE_5MO' | translate }}
-						</p>
-					
-						<p class="fr-error-text" role="alert"
-							*ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.errors?.['required']">
-							{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
-						</p>
-						</div>
-					
-					</div>
-
-
-					<!-- Texte de motivation -->
-					<div class="form-field large">
-						<label class="fr-label" for="message">
-						  {{ isOrganisationProfile ? ('CONTACT.MESSAGE_LABEL_ORGA' | translate) : ('CONTACT.MESSAGE_LABEL' | translate) }}
-						</label>
-
-					  <textarea 
-					    class="fr-input" 
-					    id="message"
-					    formControlName="message" 
-					    rows="5"
-					    required aria-required="true"
-					    [attr.aria-invalid]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'true' : null"
-					    [attr.aria-describedby]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'message-error' : null"
-					     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
-					  ></textarea>
-					  
-					  <div class="fr-hint-text">
-					    {{ contactForm.get('message')?.value?.length || 0 }} / 3500
-					  </div>
-
-					  
-					  <div id="message-error">
-					  <p class="fr-error-text" role="alert"
-					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
-					    {{ 'CONTACT.ERROR_REQUIRED' | translate }}
-					  </p>
-
-					  <p class="fr-error-text" role="alert"
-					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
-					    {{ 'CONTACT.ERROR_MIN_LENGTH' | translate }}
-					  </p>
-
-					  <p class="fr-error-text" role="alert"
-					     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['maxlength']">
-					    {{ 'CONTACT.ERROR_MAX_LENGTH' | translate }}
-					  </p>
-					  </div>
-
-					 <!-- Consentement RGPD -->
-					<div class="form-field large rgpd-field">
-						<div class="fr-checkbox-group">
-							<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required
-							       [attr.aria-invalid]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'true' : null"
-							       [attr.aria-describedby]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'rgpdConsent-error' : null">
-							<label class="fr-label" for="rgpdConsent">
-								{{ 'CONTACT.RGPD' | translate }}
-								<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">{{ 'CONTACT.LEGAL' | translate }}</a>.
-							</label>
-						</div>
-					
-						<p class="fr-error-text" id="rgpdConsent-error" role="alert" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
-							{{ 'CONTACT.ERROR_RGPD' | translate }}
-						</p>
-					 </div>
-
-
-					</div>
-					
-					</div>
-
-					<!-- Boutons alignés à droite -->
-					<div class="buttons-row">
-						<!--						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">-->
-						<!--							Annuler-->
-						<!--						</button>-->
-					
-						<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="isSubmitting || !sujetValide">
-						  {{ isSubmitting ? ('CONTACT.SUBMIT_LOADING' | translate) : ('CONTACT.SUBMIT' | translate) }}
-						</button>
-
-					</div>
-
-				</form>
-
+				<p class="fr-mt-2w">
+				  {{ 'CONTACT.INFO_END' | translate }}
+				</p>
+			
 			</div>
+			
+			
+			<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w info-alert" *ngIf="sujetAttribue  === 'oui'">
+			  {{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
+			</div>
+			
+			<!-- Message si aucun sujet valide -->
+			<div *ngIf="!sujetValide" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
+				<p>{{ sujetErreurMessage | translate }}</p>
+			
+				<!--		  <a routerLink="/search" class="fr-btn fr-btn--secondary fr-mt-2w">-->
+				<!--		    Retour aux sujets-->
+				<!--		  </a>-->
+			</div>
+
 		</div>
 
+		<div class="container">
+
+			<div class="card shadow">
+				<div class="card-body">
+
+					<form [formGroup]="contactForm" (ngSubmit)="onSubmit()" >
+						
+						<p class="fr-mb-3w fr-text--sm">{{ 'CONTACT.REQUIRED_FIELDS' | translate }}</p>
+						
+						<div class="contact-grid">
+
+						<!-- Nom -->
+						<div class="form-field large">
+						  <label class="fr-label" for="nom">{{ 'CONTACT.FIELD_NOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+						  <input class="fr-input" id="nom" formControlName="nom" type="text" required aria-required="true"
+						         [attr.aria-invalid]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'true' : null"
+						         [attr.aria-describedby]="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid ? 'nom-error' : null">
+
+						  <p class="fr-error-text" id="nom-error" role="alert" *ngIf="contactForm.get('nom')?.touched && contactForm.get('nom')?.invalid">
+						    {{ 'CONTACT.ERROR_NOM' | translate }}.
+						  </p>
+						</div>
+
+
+						<!-- Prénom -->
+						<div class="form-field large">
+						  <label class="fr-label" for="prenom">{{ 'CONTACT.FIELD_PRENOM' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+						  <input class="fr-input" id="prenom" formControlName="prenom" type="text" required aria-required="true"
+						         [attr.aria-invalid]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'true' : null"
+						         [attr.aria-describedby]="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid ? 'prenom-error' : null">
+
+						  <p class="fr-error-text" id="prenom-error" role="alert" *ngIf="contactForm.get('prenom')?.touched && contactForm.get('prenom')?.invalid">
+						    {{ 'CONTACT.ERROR_PRENOM' | translate }}
+						  </p>
+						</div>
+
+
+						<!-- Civilité -->
+						<div class="form-field large">
+							<label class="fr-label" for="civilite">{{ 'CONTACT.FIELD_CIVILITE' | translate }}</label>
+							<select class="fr-select" id="civilite" formControlName="civilite">
+								<option value="" disabled selected>{{ 'CONTACT.CIVILITE_CHOIX' | translate }}</option>
+								<option *ngFor="let c of civilites" [value]="c">{{ c | translate }}</option>
+							</select>
+						</div>
+
+						<!-- Email -->
+						<div class="form-field large">
+						  <label class="fr-label" for="email">{{ 'CONTACT.FIELD_EMAIL' | translate }} <span class="fr-text--xs fr-text--error">*</span></label>
+						  <input class="fr-input" id="email" formControlName="email" type="email" required aria-required="true"
+						         [attr.aria-invalid]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'true' : null"
+						         [attr.aria-describedby]="contactForm.get('email')?.touched && contactForm.get('email')?.invalid ? 'email-error' : null">
+
+						  <p class="fr-error-text" id="email-error" role="alert" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
+						    {{ 'CONTACT.ERROR_EMAIL' | translate }}
+						  </p>
+						</div>
+
+
+						<!-- Vous êtes -->
+						<div class="form-field small">
+							<label class="fr-label" for="profil">{{ 'CONTACT.FIELD_PROFIL' | translate }}</label>
+							<select class="fr-select" id="profil" formControlName="profil">
+								<option value="" disabled selected>{{ 'CONTACT.PROFIL_CHOIX' | translate }}</option>
+								<option *ngFor="let p of profils" [value]="p">{{ p | translate }}</option>
+							</select>
+						</div>
+
+						<!-- Depuis combien d'années -->
+						<div class="form-field small" *ngIf="showExperienceFields">
+						  <label class="fr-label" for="annees">{{ 'CONTACT.FIELD_ANNEES' | translate }}</label>
+						  <select class="fr-select" id="annees" formControlName="annees">
+						    <option value="" disabled selected>{{ 'CONTACT.ANNEES_CHOIX' | translate }}</option>
+						    <option *ngFor="let a of annees" [value]="a">{{ a }} {{ 'CONTACT.YEARS' | translate }}</option>
+						  </select>
+						</div>
+
+						<!-- Secteur -->
+						<div class="form-field small" *ngIf="showExperienceFields">
+						  <label class="fr-label" for="secteur">{{ 'CONTACT.FIELD_SECTEUR' | translate }}</label>
+						  <select class="fr-select" id="secteur" formControlName="secteur">
+						    <option value="" disabled selected>{{ 'CONTACT.SECTEUR_CHOIX' | translate }}</option>
+						    <option *ngFor="let s of secteurs" [value]="s">{{ s | translate }}</option>
+						  </select>
+						</div>
+
+						
+						<!-- Confirmation diplôme -->
+						<div class="form-field large confirm-master-field" *ngIf="showMasterConfirmation">
+							<div class="fr-checkbox-group">
+								<input type="checkbox" id="confirmMaster" formControlName="confirmMaster" required
+								       [attr.aria-invalid]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'true' : null"
+								       [attr.aria-describedby]="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid ? 'confirmMaster-error' : null">
+								<label class="fr-label" for="confirmMaster">
+									{{ 'CONTACT.FIELD_CONFIRM_MASTER' | translate }}
+								</label>
+							</div>
+						
+							<p class="fr-error-text" id="confirmMaster-error" role="alert"
+								*ngIf="contactForm.get('confirmMaster')?.touched && contactForm.get('confirmMaster')?.invalid">
+								{{ 'CONTACT.ERROR_MASTER' | translate }}
+							</p>
+						</div>
+
+
+						<!-- Upload CV -->
+						<div class="form-field large">
+							<label class="fr-label" for="cvUpload">{{ isOrganisationProfile ? ('CONTACT.UPLOAD_ORGA' | translate) : ('CONTACT.UPLOAD_CV' | translate) }}
+								<span class="fr-text--xs fr-text--error">*</span>
+							</label>
+							<p class="fr-hint-text">
+								{{ 'CONTACT.UPLOAD_HINT_1MO' | translate }}
+							</p>
+						
+							<input class="fr-upload" type="file" id="cvUpload" (change)="onCvSelected($event)" formControlName="cv" multiple accept=".pdf"
+							       [attr.aria-invalid]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'true' : null"
+							       [attr.aria-describedby]="contactForm.get('cv')?.touched && contactForm.get('cv')?.invalid ? 'cv-error' : null">
+						
+							<div id="cv-error">
+							<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['invalidFormat']">
+								{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
+							</p>
+						
+							<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.errors?.['fileTooLarge']">
+								{{ 'CONTACT.ERROR_FILE_TOO_LARGE_1MO' | translate }}
+							</p>
+						
+							<p class="fr-error-text" role="alert" *ngIf="contactForm.get('cv')?.touched && contactForm.get('cv')?.errors?.['required']">
+								{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
+							</p>
+							</div>
+						
+						</div>
+
+						<!-- Upload un autre document -->
+						<div class="form-field large">
+							<label class="fr-label" for="docsUpload">
+								{{ isOrganisationProfile ? ('CONTACT.UPLOAD_PARTENARIAT' | translate) : ('CONTACT.UPLOAD_DOC' | translate) }}
+								<span class="fr-text--xs fr-text--error">*</span>
+							</label>
+						
+						
+							<p class="fr-hint-text">
+								{{ 'CONTACT.UPLOAD_HINT_5MO' | translate }}
+							</p>
+						
+							<input class="fr-upload" type="file" id="docsUpload" formControlName="document" (change)="onDocsSelected($event)"
+								multiple accept=".pdf"
+								[attr.aria-invalid]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'true' : null"
+								[attr.aria-describedby]="contactForm.get('document')?.touched && contactForm.get('document')?.invalid ? 'document-error' : null">
+						
+							<div id="document-error">
+							<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['invalidFormat']">
+								{{ 'CONTACT.ERROR_FILE_PDF' | translate }}
+							</p>
+						
+							<p class="fr-error-text" role="alert" *ngIf="contactForm.get('document')?.errors?.['fileTooLarge']">
+								{{ 'CONTACT.ERROR_FILE_TOO_LARGE_5MO' | translate }}
+							</p>
+						
+							<p class="fr-error-text" role="alert"
+								*ngIf="contactForm.get('document')?.touched && contactForm.get('document')?.errors?.['required']">
+								{{ 'CONTACT.ERROR_FILE_REQUIRED' | translate }}
+							</p>
+							</div>
+						
+						</div>
+
+
+						<!-- Texte de motivation -->
+						<div class="form-field large">
+							<label class="fr-label" for="message">
+							  {{ isOrganisationProfile ? ('CONTACT.MESSAGE_LABEL_ORGA' | translate) : ('CONTACT.MESSAGE_LABEL' | translate) }}
+							</label>
+
+						  <textarea 
+						    class="fr-input" 
+						    id="message"
+						    formControlName="message" 
+						    rows="5"
+						    required aria-required="true"
+						    [attr.aria-invalid]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'true' : null"
+						    [attr.aria-describedby]="contactForm.get('message')?.touched && contactForm.get('message')?.invalid ? 'message-error' : null"
+						     [placeholder]="isOrganisationProfile ? '' : ('CONTACT.MESSAGE_PLACEHOLDER' | translate)"
+						  ></textarea>
+						  
+						  <div class="fr-hint-text">
+						    {{ contactForm.get('message')?.value?.length || 0 }} / 3500
+						  </div>
+
+						  
+						  <div id="message-error">
+						  <p class="fr-error-text" role="alert"
+						     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['required']">
+						    {{ 'CONTACT.ERROR_REQUIRED' | translate }}
+						  </p>
+
+						  <p class="fr-error-text" role="alert"
+						     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['minlength']">
+						    {{ 'CONTACT.ERROR_MIN_LENGTH' | translate }}
+						  </p>
+
+						  <p class="fr-error-text" role="alert"
+						     *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.errors?.['maxlength']">
+						    {{ 'CONTACT.ERROR_MAX_LENGTH' | translate }}
+						  </p>
+						  </div>
+
+						 <!-- Consentement RGPD -->
+						<div class="form-field large rgpd-field">
+							<div class="fr-checkbox-group">
+								<input type="checkbox" id="rgpdConsent" formControlName="rgpdConsent" required
+								       [attr.aria-invalid]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'true' : null"
+								       [attr.aria-describedby]="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid ? 'rgpdConsent-error' : null">
+								<label class="fr-label" for="rgpdConsent">
+									{{ 'CONTACT.RGPD' | translate }}
+									<a href="https://doctorat.gouv.fr/a-propos/mentions-legales/" target="_blank">{{ 'CONTACT.LEGAL' | translate }}</a>.
+								</label>
+							</div>
+						
+							<p class="fr-error-text" id="rgpdConsent-error" role="alert" *ngIf="contactForm.get('rgpdConsent')?.touched && contactForm.get('rgpdConsent')?.invalid">
+								{{ 'CONTACT.ERROR_RGPD' | translate }}
+							</p>
+						 </div>
+
+
+						</div>
+						
+						</div>
+
+						<!-- Boutons alignés à droite -->
+						<div class="buttons-row">
+							<!--						<button class="fr-btn fr-btn--secondary fr-btn--lg" type="button">-->
+							<!--							Annuler-->
+							<!--						</button>-->
+						
+							<button class="fr-btn fr-btn--primary fr-btn--lg" type="submit" [disabled]="isSubmitting || !sujetValide">
+							  {{ isSubmitting ? ('CONTACT.SUBMIT_LOADING' | translate) : ('CONTACT.SUBMIT' | translate) }}
+							</button>
+
+						</div>
+
+					</form>
+
+				</div>
+			</div>
+
+		</div>
 	</div>
 </main>
 
@@ -305,4 +304,3 @@
 	</p>
 
 </div>
-
