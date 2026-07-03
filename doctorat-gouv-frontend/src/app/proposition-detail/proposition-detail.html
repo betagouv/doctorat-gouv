@@ -2,7 +2,7 @@
 
 	<div class="container" *ngIf="thesis">
 
-		<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert">
+		<div *ngIf="errorMessage" class="fr-alert fr-alert--warning fr-mt-3w info-alert" role="alert">
 			<p>{{ errorMessage }}</p>
 		</div>
 
@@ -10,8 +10,8 @@
 		<div class="card shadow mb-4">
 			<div class="card-body">
 
-				<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w bottom-space"
-					*ngIf="thesis?.sujetAttribue === 'oui'">
+			<div class="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w bottom-space"
+				*ngIf="thesis?.sujetAttribue === 'oui'" role="alert">
 					{{ 'DETAIL.INFO_SUJET_ATTRIBUE' | translate }}
 				</div>
 
@@ -62,8 +62,8 @@
 
 					<ng-container *ngIf="thesis?.deposantOrcid">
 						<a [href]="'https://orcid.org/' + thesis.deposantOrcid" target="_blank" rel="noopener"
-							class="orcid-link">
-							<img src="assets/orcid.logo.icon.svg" alt="ORCID" class="orcid-icon">
+							class="orcid-link" aria-label="ORCID — {{ 'DETAIL.NEW_WINDOW' | translate }}">
+							<img src="assets/orcid.logo.icon.svg" alt="" class="orcid-icon">
 						</a>
 					</ng-container>
 				</p>
@@ -182,7 +182,7 @@
 		<div class="card shadow">
 			<div class="card-body">
 
-				<div class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w" *ngIf="translate.currentLang !== 'fr'">
+				<div class="fr-alert fr-alert--info fr-alert--sm fr-mt-2w" *ngIf="translate.currentLang !== 'fr'" role="alert">
 					{{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
 				</div>
 
@@ -283,7 +283,8 @@
 					<h4 class="section-title">{{ 'DETAIL.PIECES_JOINTES' | translate }}</h4>
 
 					<a class="fr-link fr-icon-download-line fr-link--icon-left" [href]="thesis.urlPdf" download
-						target="_blank" rel="noopener noreferrer">
+						target="_blank" rel="noopener noreferrer"
+						aria-label="{{ 'DETAIL.DOWNLOAD_PDF' | translate }} — {{ 'DETAIL.NEW_WINDOW' | translate }}">
 						{{ 'DETAIL.DOWNLOAD_PDF' | translate }}
 					</a>
 				</div>
