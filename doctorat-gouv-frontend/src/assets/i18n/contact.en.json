@@ -1,6 +1,7 @@
 {
   "CONTACT": {
     "TITLE": "Contact form",
+    "REQUIRED_FIELDS": "Fields marked with an asterisk (*) are required.",
 
     "INFO_TITLE": "To be put in touch, please fill in the form below and provide the requested documents:",
 

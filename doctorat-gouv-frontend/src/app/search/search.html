@@ -402,7 +402,7 @@
   </div>
 </div>
 
-<main id="main-content" class="fr-container fr-py-3w search-main">
+<main id="main-content-search" class="fr-container fr-py-3w search-main">
 
 	<div class="switch-and-sort fr-mt-3w menu-margin">
 	
@@ -529,7 +529,7 @@
 	<!-- ===================== RÉSULTATS ===================== -->
 	<div class="results-margin">
 		<!-- Badge IA (visible en mode IA ou Scaleway même si compteur caché) -->
-		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue">
+		<p id="results-count" tabindex="-1" class="fr-text--l custom-blue" aria-live="polite" role="status">
 			<span *ngIf="!isScalewayActive">
 				<span class="fr-text--bold custom-bold">{{ 'SEARCH.RESULTS' | translate:{ count: totalResults } }}
 				</span>
@@ -566,7 +566,7 @@
 		<!-- ===================== LOADING SCALEWAY ===================== -->
 		<!-- Mode simple (Albert-like) par défaut -->
 		<div class="fr-my-4w fr-text--center" *ngIf="isScalewayLoading && !useSequentialLoading">
-			<div class="ai-thinking">
+			<div class="ai-thinking" aria-live="polite">
 				<span class="thinking-sparkle">✨</span>
 				<span class="thinking-text">{{ 'SEARCH.SCALEWAY_SEARCHING' | translate }}</span>
 				<span class="thinking-dots">
@@ -577,7 +577,7 @@
 			</div>
 		</div>
 		<!-- Mode séquentiel (fallback) -->
-		<div class="fr-my-4w fr-text--center scaleway-loading" *ngIf="isScalewayLoading && useSequentialLoading">
+		<div class="fr-my-4w fr-text--center scaleway-loading" *ngIf="isScalewayLoading && useSequentialLoading" aria-live="polite">
 			<div class="scaleway-loading-steps">
 				<div class="loading-step" [class.active]="loadingStep >= 0" [class.done]="loadingStep > 0">
 					<span class="step-indicator">
@@ -611,7 +611,7 @@
 		</div>
 
 		<!-- ===================== ALERTE INDISPONIBILITÉ ALBERT ===================== -->
-		<div class="fr-alert fr-alert--warning fr-mt-2w fr-mb-4w" *ngIf="aiMessage">
+		<div class="fr-alert fr-alert--warning fr-mt-2w fr-mb-4w" *ngIf="aiMessage" role="alert">
 			<h3 class="fr-alert__title">{{ 'SEARCH.AI_UNAVAILABLE' | translate }}</h3>
 			<p>{{ 'SEARCH.AI_UNAVAILABLE_HINT' | translate }}</p>
 		</div>
