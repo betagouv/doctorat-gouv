@@ -6,7 +6,7 @@ import { ContactContextService } from '../services/contact-context-service';
 import { environment } from '../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-contact',
@@ -77,7 +77,7 @@ export class Contact implements OnInit {
 	  'CONTACT.SECTEURS.TRANSPORT'
 	];
 
-	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService, private translate: TranslateService, private titleService: Title) {
+	constructor(private fb: FormBuilder, private http: HttpClient, private contactContextService: ContactContextService, private translate: TranslateService, private titleService: Title, private metaService: Meta) {
 	  this.contactForm = this.fb.group({
         nom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]], 
 		prenom: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
@@ -160,6 +160,11 @@ export class Contact implements OnInit {
 		  ? 'Contact — Doctorat.gouv.fr'
 		  : 'Contact — Doctorat.gouv.fr';
 		this.titleService.setTitle(titre);
+
+		const description = this.translate.currentLang === 'en'
+		  ? 'Contact thesis supervisors to apply for a PhD topic through the contact form on the Doctorat.gouv.fr platform.'
+		  : 'Contactez les directeurs de thèse pour candidater sur un sujet de thèse via le formulaire de mise en relation de la plateforme Doctorat.gouv.fr.';
+		this.metaService.updateTag({ name: 'description', content: description });
 	}
 
 	onSubmit() {
