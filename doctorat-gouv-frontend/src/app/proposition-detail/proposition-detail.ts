@@ -10,7 +10,7 @@ import { DefaultValuePipe } from '../pipes/default-value-pipe';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
 	selector: 'app-proposition-detail',
@@ -71,7 +71,8 @@ export class PropositionDetail {
 		private propositionTheseService: PropositionTheseService,
 		private contactContextService: ContactContextService,
 		public translate: TranslateService,
-		private titleService: Title
+		private titleService: Title,
+		private metaService: Meta
 	) { }
 
 
@@ -89,6 +90,16 @@ export class PropositionDetail {
 			 const titre = this.thesis.theseTitre || this.thesis.theseTitreAnglais || 'Sans titre';
 			 const shortTitre = titre.length > 80 ? titre.substring(0, 77) + '…' : titre;
 			 this.titleService.setTitle(`${shortTitre} — Doctorat.gouv.fr`);
+
+			 const resume = this.translate.currentLang === 'en'
+			   ? (this.thesis.resumeAnglais || this.thesis.resume)
+			   : (this.thesis.resume || this.thesis.resumeAnglais);
+			 const shortDesc = resume
+			   ? (resume.length > 157 ? resume.substring(0, 154) + '…' : resume)
+			   : (this.translate.currentLang === 'en'
+			       ? 'PhD thesis topic on ' + (this.thesis.theseTitreAnglais || this.thesis.theseTitre)
+			       : 'Sujet de thèse : ' + (this.thesis.theseTitre || this.thesis.theseTitreAnglais));
+			 this.metaService.updateTag({ name: 'description', content: shortDesc });
 		   });
 	}
 	
