@@ -751,7 +751,7 @@
 	<ng-template #cardTemplate let-thesis>
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
 
-        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
+        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
 
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
@@ -874,18 +874,20 @@
 
 	<!-- Template de carte pour le carrousel (sans wrapper grille DSFR) -->
 	<ng-template #carouselCardTemplate let-thesis>
-      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
+      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
 
         <div class="fr-card__img">
           <img [src]="getImageForThesis(thesis)"
                alt="Illustration de la thèse" />
 
+          <!-- Badge de score Albert -->
           <span class="albert-score-badge"
                 *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
                 [ngClass]="getScoreColor(getAlbertScore(thesis))">
             {{ formatScore(getAlbertScore(thesis)) }}
           </span>
 
+          <!-- Badge de score composite Scaleway (vectoriel + keywords) -->
           <span class="albert-score-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayScore(thesis))"
@@ -893,6 +895,7 @@
             {{ getScalewayScore(thesis) | percent:'1.0-0' }}
           </span>
 
+          <!-- Badge de score vectoriel Scaleway (similarité cosinus) -->
           <span class="scaleway-vector-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
@@ -900,6 +903,7 @@
             V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
           </span>
 
+          <!-- Badge de niveau de pertinence Scaleway -->
           <span class="scaleway-relevance-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
                 [ngClass]="getScalewayRelevanceClass(thesis)">
