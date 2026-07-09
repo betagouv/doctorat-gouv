@@ -380,7 +380,13 @@ export class Search implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   onEscapePress(): void {
+    const activeEl = document.activeElement;
+    const panel = activeEl?.closest('.dropdown-panel');
     this.closeAllDropdowns();
+    if (panel) {
+      const btn = panel.parentElement?.querySelector<HTMLElement>('.dropdown-btn');
+      if (btn) btn.focus();
+    }
   }
 
   ngOnDestroy(): void {
@@ -407,6 +413,13 @@ export class Search implements OnInit, OnDestroy {
 
     if (isOpening) {
       (this as any)[panel] = true;
+
+      setTimeout(() => {
+        const openPanel = document.querySelector<HTMLElement>('.dropdown-panel');
+        if (!openPanel) return;
+        const input = openPanel.querySelector<HTMLElement>('input.search-input, input[type="checkbox"]');
+        if (input) input.focus();
+      });
     }
   }
   
