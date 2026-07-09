@@ -12,7 +12,7 @@
  *  
  *****************************************************************************************/
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -377,6 +377,11 @@ export class Search implements OnInit, OnDestroy {
     }
   }
 
+
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    this.closeAllDropdowns();
+  }
 
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();

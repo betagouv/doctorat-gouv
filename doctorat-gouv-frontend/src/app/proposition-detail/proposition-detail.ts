@@ -218,6 +218,11 @@ export class PropositionDetail {
 	  window.open(url, '_blank');
 	}
 	
+	@HostListener('document:keydown.escape')
+	onEscapePress(): void {
+	  this.closeTooltip();
+	}
+
 	toggleTooltip(id: string) {
 	  this.openTooltip = this.openTooltip === id ? null : id;
 	}

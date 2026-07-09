@@ -551,7 +551,7 @@
 					<span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
 				</span>
 				<span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
-					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
+					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true" tabindex="0"></span>
 					<span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
 				</span>
 				<span class="intent-chip-reset fr-tag"
