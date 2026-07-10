@@ -63,6 +63,13 @@ export class Header implements AfterViewInit {
     this.i18n.useLang(lang);
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    this.langMenuOpen = false;
+    this.langMenuOpenMobile = false;
+    this.closeMobileMenuAndReturnFocus();
+  }
+
   toggleLangMenu(event: MouseEvent) {
     event.stopPropagation();
     this.langMenuOpen = !this.langMenuOpen;
@@ -80,5 +87,14 @@ export class Header implements AfterViewInit {
 
   closeBanner() {
     this.showBanner = false;
+  }
+
+  private closeMobileMenuAndReturnFocus(): void {
+    const mobileMenu = document.querySelector('.mobile-menu') as HTMLElement;
+    const burger = document.querySelector('.mobile-burger') as HTMLElement;
+    if (mobileMenu && mobileMenu.classList.contains('open')) {
+      mobileMenu.classList.remove('open');
+      if (burger) burger.focus();
+    }
   }
 }

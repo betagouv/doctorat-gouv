@@ -1,6 +1,7 @@
 {
   "SEARCH": {
     "TITLE": "Trouver une offre",
+    "META_DESCRIPTION": "Recherchez des sujets de thèse et offres de doctorat sur la plateforme nationale du doctorat. Filtrez par discipline, localisation, laboratoire de recherche et bien plus.",
     "PLACEHOLDER": "Rechercher par titre ou mot clés",
     "MORE_FILTERS": "Plus de filtres",
     "LESS_FILTERS": "Moins de filtres",

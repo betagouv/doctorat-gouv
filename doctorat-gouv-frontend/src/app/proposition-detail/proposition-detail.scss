@@ -112,7 +112,8 @@
 /* TOOLTIP DESKTOP (survol) */
 /* ========================= */
 /* --- Tooltip Desktop (survol du bouton entier) --- */
-.tooltip-container:hover .tooltip-content {
+.tooltip-container:hover .tooltip-content,
+.tooltip-container:focus-within .tooltip-content {
   opacity: 1;
   pointer-events: auto;
 }
