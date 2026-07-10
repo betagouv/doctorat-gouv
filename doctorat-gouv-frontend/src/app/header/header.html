@@ -208,7 +208,7 @@
 
 	<p>
 	  {{ 'INFO.LAUNCH_TITLE' | translate }}
-	  <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank">
+	  <a href="https://doctorat.gouv.fr/a-propos/donner-votre-avis/" target="_blank" rel="noopener" [attr.aria-label]="('INFO.GIVE_FEEDBACK' | translate) + ' — ' + ('DETAIL.NEW_WINDOW' | translate)">
 	    {{ 'INFO.GIVE_FEEDBACK' | translate }}
 	  </a>
 	  {{ 'INFO.LAUNCH_END' | translate }}<br/>

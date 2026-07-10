@@ -5,10 +5,10 @@
     </div>
 
     <nav class="gov-links">
-      <a href="https://www.info.gouv.fr" target="_blank" rel="noopener">info.gouv.fr</a>
-      <a href="https://www.service-public.fr" target="_blank" rel="noopener">service-public.gouv.fr</a>
-      <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">legifrance.gouv.fr</a>
-      <a href="https://www.data.gouv.fr" target="_blank" rel="noopener">data.gouv.fr</a>
+      <a href="https://www.info.gouv.fr" target="_blank" rel="noopener" [attr.aria-label]="'info.gouv.fr — ' + ('DETAIL.NEW_WINDOW' | translate)">info.gouv.fr</a>
+      <a href="https://www.service-public.fr" target="_blank" rel="noopener" [attr.aria-label]="'service-public.fr — ' + ('DETAIL.NEW_WINDOW' | translate)">service-public.gouv.fr</a>
+      <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener" [attr.aria-label]="'legifrance.gouv.fr — ' + ('DETAIL.NEW_WINDOW' | translate)">legifrance.gouv.fr</a>
+      <a href="https://www.data.gouv.fr" target="_blank" rel="noopener" [attr.aria-label]="'data.gouv.fr — ' + ('DETAIL.NEW_WINDOW' | translate)">data.gouv.fr</a>
     </nav>
   </div>
 
@@ -26,7 +26,7 @@
 
     <p class="license">
       Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous licence 
-	        <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank">Etalab-2.0.</a>
+	        <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener" [attr.aria-label]="'Etalab-2.0 — ' + ('DETAIL.NEW_WINDOW' | translate)">Etalab-2.0.</a>
 			<span class="version"> - Version {{ version }} </span> 
             <!-- <span class="copyright">© 2026 Ministère de l’Enseignement supérieur et de la Recherche</span><br />-->
     </p>
