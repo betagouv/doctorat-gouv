@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /api/
+Disallow: /*?*
+Disallow: /browser/
+
+Sitemap: https://app.doctorat.gouv.fr/sitemap.xml

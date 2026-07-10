@@ -1,6 +1,7 @@
 {
   "SEARCH": {
     "TITLE": "Find an offer",
+    "META_DESCRIPTION": "Search for PhD thesis topics and doctoral offers on the national PhD platform. Filter by discipline, location, research laboratory and more.",
     "PLACEHOLDER": "Search by title or keywords",
     "MORE_FILTERS": "More filters",
     "LESS_FILTERS": "Fewer filters",

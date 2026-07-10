@@ -12,7 +12,7 @@
  *  
  *****************************************************************************************/
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -36,7 +36,7 @@ import { Nl2brPipe } from '../pipes/nl2br-pipe';
 
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { ViewEncapsulation } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { environment } from '../../environments/environment';
 
@@ -229,7 +229,8 @@ export class Search implements OnInit, OnDestroy {
     private filterService: FilterService,
 	private searchFiltersService: SearchFiltersService,
 	public translate: TranslateService,
-	private titleService: Title
+	private titleService: Title,
+	private metaService: Meta
   ) {}
 
   /* ------------------- Lifecycle ------------------- */
@@ -344,6 +345,11 @@ export class Search implements OnInit, OnDestroy {
 	  : 'Rechercher un sujet de thèse — Doctorat.gouv.fr';
 	this.titleService.setTitle(titre);
 
+	const description = this.translate.currentLang === 'en'
+	  ? 'Search for PhD thesis topics and doctoral offers on the national PhD platform. Filter by discipline, location, research laboratory and more.'
+	  : 'Recherchez des sujets de thèse et offres de doctorat sur la plateforme nationale du doctorat. Filtrez par discipline, localisation, laboratoire de recherche et bien plus.';
+	this.metaService.updateTag({ name: 'description', content: description });
+
     this.filterSub = this.filterChanges$
       .pipe(debounceTime(300))
       .subscribe(() => {
@@ -372,6 +378,17 @@ export class Search implements OnInit, OnDestroy {
   }
 
 
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    const activeEl = document.activeElement;
+    const panel = activeEl?.closest('.dropdown-panel');
+    this.closeAllDropdowns();
+    if (panel) {
+      const btn = panel.parentElement?.querySelector<HTMLElement>('.dropdown-btn');
+      if (btn) btn.focus();
+    }
+  }
+
   ngOnDestroy(): void {
     if (this.filterSub) this.filterSub.unsubscribe();
 	document.removeEventListener('click', this.handleClickOutside.bind(this));
@@ -396,6 +413,13 @@ export class Search implements OnInit, OnDestroy {
 
     if (isOpening) {
       (this as any)[panel] = true;
+
+      setTimeout(() => {
+        const openPanel = document.querySelector<HTMLElement>('.dropdown-panel');
+        if (!openPanel) return;
+        const input = openPanel.querySelector<HTMLElement>('input.search-input, input[type="checkbox"]');
+        if (input) input.focus();
+      });
     }
   }
   

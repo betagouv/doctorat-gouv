@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/propositions-these/**").permitAll()
                 .requestMatchers("/api/filters/**").permitAll()
                 .requestMatchers("/api/contact/**").permitAll()
+                .requestMatchers("/sitemap.xml").permitAll()
 
                 // Fichiers statiques Angular
                 .requestMatchers(

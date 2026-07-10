@@ -1,6 +1,7 @@
 {
   "CONTACT": {
     "TITLE": "Contact form",
+    "META_DESCRIPTION": "Contact thesis supervisors to apply for a PhD topic through the contact form on the Doctorat.gouv.fr platform.",
     "REQUIRED_FIELDS": "Fields marked with an asterisk (*) are required.",
 
     "INFO_TITLE": "To be put in touch, please fill in the form below and provide the requested documents:",

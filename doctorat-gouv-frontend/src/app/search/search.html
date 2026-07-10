@@ -551,7 +551,7 @@
 					<span class="intent-chip-parens" *ngIf="key !== 'core'">({{ getIntentCount(key) }})</span>
 				</span>
 				<span class="tooltip-container" *ngIf="activeIntentFilter.length === 0">
-					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true"></span>
+					<span class="fr-icon-information-line intents-info-icon" aria-hidden="true" tabindex="0"></span>
 					<span class="tooltip-bubble">{{ 'SEARCH.SCALEWAY_INTENTS_FILTER_HINT' | translate }}</span>
 				</span>
 				<span class="intent-chip-reset fr-tag"
@@ -641,7 +641,7 @@
 	    <li *ngFor="let d of discipline">
 	      <span class="fr-tag">
 	        {{ getDisciplineLabel(d) }}
-	        <button class="fr-tag__btn" (click)="removeValue('discipline', d)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('discipline', d)" title="Supprimer" [attr.aria-label]="'Supprimer ' + getDisciplineLabel(d)">×</button>
 	      </span>
 	    </li>
 
@@ -649,7 +649,7 @@
 	    <li *ngFor="let d of defisSociete">
 	      <span class="fr-tag">
 	        {{ getDefisSocieteLabel(d) }}
-	        <button class="fr-tag__btn" (click)="removeValue('defisSociete', d)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('defisSociete', d)" title="Supprimer" [attr.aria-label]="'Supprimer ' + getDefisSocieteLabel(d)">×</button>
 	      </span>
 	    </li>
 
@@ -657,7 +657,7 @@
 	    <li *ngFor="let loc of localisation">
 	      <span class="fr-tag">
 	        {{ loc }}
-	        <button class="fr-tag__btn" (click)="removeValue('localisation', loc)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('localisation', loc)" title="Supprimer" [attr.aria-label]="'Supprimer ' + loc">×</button>
 	      </span>
 	    </li>
 
@@ -665,7 +665,7 @@
 	    <li *ngFor="let lab of laboratoire">
 	      <span class="fr-tag">
 	        {{ lab }}
-	        <button class="fr-tag__btn" (click)="removeValue('laboratoire', lab)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('laboratoire', lab)" title="Supprimer" [attr.aria-label]="'Supprimer ' + lab">×</button>
 	      </span>
 	    </li>
 
@@ -673,7 +673,7 @@
 	    <li *ngFor="let e of ecole">
 	      <span class="fr-tag">
 	        {{ e }}
-	        <button class="fr-tag__btn" (click)="removeValue('ecole', e)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('ecole', e)" title="Supprimer" [attr.aria-label]="'Supprimer ' + e">×</button>
 	      </span>
 	    </li>
 
@@ -681,7 +681,7 @@
 	    <li *ngIf="ecoleDoctoraleNumero">
 	      <span class="fr-tag">
 	        École doctorale : {{ ecoleDoctoraleNumero }}
-	        <button class="fr-tag__btn" (click)="removeFilter('ecoleDoctoraleNumero')" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeFilter('ecoleDoctoraleNumero')" title="Supprimer" [attr.aria-label]="'Supprimer École doctorale : ' + ecoleDoctoraleNumero">×</button>
 	      </span>
 	    </li>
 
@@ -689,7 +689,7 @@
 	    <li *ngIf="etablissementRor">
 	      <span class="fr-tag">
 	        Établissement ROR : {{ etablissementRor }}
-	        <button class="fr-tag__btn" (click)="removeFilter('etablissementRor')" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeFilter('etablissementRor')" title="Supprimer" [attr.aria-label]="'Supprimer Établissement ROR : ' + etablissementRor">×</button>
 	      </span>
 	    </li>
 
@@ -697,7 +697,7 @@
 	    <li *ngFor="let y of annee">
 	      <span class="fr-tag">
 	        {{ formatAcademicYear(y) }}
-	        <button class="fr-tag__btn" (click)="removeValue('annee', y)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('annee', y)" title="Supprimer" [attr.aria-label]="'Supprimer ' + formatAcademicYear(y)">×</button>
 	      </span>
 	    </li>
 
@@ -751,7 +751,7 @@
 	<ng-template #cardTemplate let-thesis>
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
 
-        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
+        <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
 
           <div class="fr-card__img">
             <img [src]="getImageForThesis(thesis)"
@@ -874,18 +874,20 @@
 
 	<!-- Template de carte pour le carrousel (sans wrapper grille DSFR) -->
 	<ng-template #carouselCardTemplate let-thesis>
-      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)" role="button" tabindex="0" (keydown.enter)="thesis.id && goToDetail(thesis.id)" (keydown.space)="thesis.id && goToDetail(thesis.id); $event.preventDefault()">
+      <div class="fr-card fr-card--shadow fr-card--sm card-clickable" (click)="thesis.id && goToDetail(thesis.id)">
 
         <div class="fr-card__img">
           <img [src]="getImageForThesis(thesis)"
                alt="Illustration de la thèse" />
 
+          <!-- Badge de score Albert -->
           <span class="albert-score-badge"
                 *ngIf="isAlbertSearchActive && hasAlbertScore(thesis)"
                 [ngClass]="getScoreColor(getAlbertScore(thesis))">
             {{ formatScore(getAlbertScore(thesis)) }}
           </span>
 
+          <!-- Badge de score composite Scaleway (vectoriel + keywords) -->
           <span class="albert-score-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayScore(thesis))"
@@ -893,6 +895,7 @@
             {{ getScalewayScore(thesis) | percent:'1.0-0' }}
           </span>
 
+          <!-- Badge de score vectoriel Scaleway (similarité cosinus) -->
           <span class="scaleway-vector-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && getScalewayVectorScore(thesis) > 0"
                 [ngClass]="getScoreColor(getScalewayVectorScore(thesis))"
@@ -900,6 +903,7 @@
             V.{{ getScalewayVectorScore(thesis) | percent:'1.0-0' }}
           </span>
 
+          <!-- Badge de niveau de pertinence Scaleway -->
           <span class="scaleway-relevance-badge"
                 *ngIf="showScoreBadges && isScalewayActive && !isScalewayLoading && hasScalewayRelevance(thesis)"
                 [ngClass]="getScalewayRelevanceClass(thesis)">
