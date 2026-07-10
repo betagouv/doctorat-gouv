@@ -641,7 +641,7 @@
 	    <li *ngFor="let d of discipline">
 	      <span class="fr-tag">
 	        {{ getDisciplineLabel(d) }}
-	        <button class="fr-tag__btn" (click)="removeValue('discipline', d)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('discipline', d)" title="Supprimer" [attr.aria-label]="'Supprimer ' + getDisciplineLabel(d)">×</button>
 	      </span>
 	    </li>
 
@@ -649,7 +649,7 @@
 	    <li *ngFor="let d of defisSociete">
 	      <span class="fr-tag">
 	        {{ getDefisSocieteLabel(d) }}
-	        <button class="fr-tag__btn" (click)="removeValue('defisSociete', d)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('defisSociete', d)" title="Supprimer" [attr.aria-label]="'Supprimer ' + getDefisSocieteLabel(d)">×</button>
 	      </span>
 	    </li>
 
@@ -657,7 +657,7 @@
 	    <li *ngFor="let loc of localisation">
 	      <span class="fr-tag">
 	        {{ loc }}
-	        <button class="fr-tag__btn" (click)="removeValue('localisation', loc)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('localisation', loc)" title="Supprimer" [attr.aria-label]="'Supprimer ' + loc">×</button>
 	      </span>
 	    </li>
 
@@ -665,7 +665,7 @@
 	    <li *ngFor="let lab of laboratoire">
 	      <span class="fr-tag">
 	        {{ lab }}
-	        <button class="fr-tag__btn" (click)="removeValue('laboratoire', lab)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('laboratoire', lab)" title="Supprimer" [attr.aria-label]="'Supprimer ' + lab">×</button>
 	      </span>
 	    </li>
 
@@ -673,7 +673,7 @@
 	    <li *ngFor="let e of ecole">
 	      <span class="fr-tag">
 	        {{ e }}
-	        <button class="fr-tag__btn" (click)="removeValue('ecole', e)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('ecole', e)" title="Supprimer" [attr.aria-label]="'Supprimer ' + e">×</button>
 	      </span>
 	    </li>
 
@@ -681,7 +681,7 @@
 	    <li *ngIf="ecoleDoctoraleNumero">
 	      <span class="fr-tag">
 	        École doctorale : {{ ecoleDoctoraleNumero }}
-	        <button class="fr-tag__btn" (click)="removeFilter('ecoleDoctoraleNumero')" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeFilter('ecoleDoctoraleNumero')" title="Supprimer" [attr.aria-label]="'Supprimer École doctorale : ' + ecoleDoctoraleNumero">×</button>
 	      </span>
 	    </li>
 
@@ -689,7 +689,7 @@
 	    <li *ngIf="etablissementRor">
 	      <span class="fr-tag">
 	        Établissement ROR : {{ etablissementRor }}
-	        <button class="fr-tag__btn" (click)="removeFilter('etablissementRor')" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeFilter('etablissementRor')" title="Supprimer" [attr.aria-label]="'Supprimer Établissement ROR : ' + etablissementRor">×</button>
 	      </span>
 	    </li>
 
@@ -697,7 +697,7 @@
 	    <li *ngFor="let y of annee">
 	      <span class="fr-tag">
 	        {{ formatAcademicYear(y) }}
-	        <button class="fr-tag__btn" (click)="removeValue('annee', y)" title="Supprimer">×</button>
+	<button class="fr-tag__btn" (click)="removeValue('annee', y)" title="Supprimer" [attr.aria-label]="'Supprimer ' + formatAcademicYear(y)">×</button>
 	      </span>
 	    </li>
 
