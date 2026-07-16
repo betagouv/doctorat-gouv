@@ -28,6 +28,7 @@ import fr.dinum.beta.gouv.doctorat.model.FresqTokenResponse;
 import fr.dinum.beta.gouv.doctorat.model.FresqSearchResult;
 import fr.dinum.beta.gouv.doctorat.model.FresqSearchContent;
 import fr.dinum.beta.gouv.doctorat.model.FresqEtablissementResult;
+import fr.dinum.beta.gouv.doctorat.model.FresqEtablissement;
 import fr.dinum.beta.gouv.doctorat.model.FresqDiplomeDetail;
 
 @Service
@@ -235,29 +236,66 @@ public class FresqApiService {
 	}
 	
 	/**
-	 * Récupère toutes les écoles doctorales depuis Fresq (pagination automatique).
+	 * Recherche tous les établissements dans Fresq avec pagination.
 	 */
-	public List<FresqSearchContent> recupererToutesLesEcolesDoctorales() {
-		List<FresqSearchContent> toutesLesEcoles = new ArrayList<>();
-		int pageNumber = 0;
+	public FresqEtablissementResult rechercherEtablissements(int pageSize, int pageOffset) {
+		String token = getAccessToken();
+		if (token == null) {
+			log.error("Impossible d'obtenir le token Fresq pour la recherche d'établissements");
+			return null;
+		}
+		
+		String url = String.format("%s/operateurs/etablissement_ecole?pageSize=%d&pageOffset=%d", 
+				properties.getBaseUrl(), pageSize, pageOffset);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+		
+		HttpEntity<Void> request = new HttpEntity<>(headers);
+		
+		try {
+			ResponseEntity<FresqEtablissementResult> response = restTemplate.exchange(
+					url,
+					HttpMethod.GET,
+					request,
+					FresqEtablissementResult.class
+			);
+			
+			FresqEtablissementResult result = response.getBody();
+			if (result != null) {
+				log.info("Recherche établissements offset {}: {} résultat(s)", pageOffset, 
+						result.getDatas() != null ? result.getDatas().size() : 0);
+			}
+			return result;
+		} catch (Exception e) {
+			log.error("Erreur lors de la recherche d'établissements Fresq: {}", e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	/**
+	 * Récupère tous les établissements depuis Fresq (pagination automatique).
+	 */
+	public List<FresqEtablissement> recupererTousLesEtablissements() {
+		List<FresqEtablissement> tousLesEtablissements = new ArrayList<>();
 		int pageSize = 100;
+		int pageOffset = 0;
 		boolean hasNextPage = true;
 		
 		while (hasNextPage) {
-			FresqSearchResult result = rechercherDiplomesDoctorat(pageSize, pageNumber);
-			if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
-				log.info("Plus de pages à récupérer (page {})", pageNumber);
+			FresqEtablissementResult result = rechercherEtablissements(pageSize, pageOffset);
+			if (result == null || result.getDatas() == null || result.getDatas().isEmpty()) {
+				log.info("Plus de pages à récupérer (offset {})", pageOffset);
 				hasNextPage = false;
 			} else {
-				toutesLesEcoles.addAll(result.getContent());
-				pageNumber++;
-				hasNextPage = pageNumber < result.getTotalPages();
-				log.info("Page {} récupérée, {} écoles doctorales au total sur {} pages", 
-						pageNumber, toutesLesEcoles.size(), result.getTotalPages());
+				tousLesEtablissements.addAll(result.getDatas());
+				pageOffset += pageSize;
+				hasNextPage = result.getNextPageOffset() != null;
+				log.info("Offset {} récupéré, {} établissements au total", pageOffset, tousLesEtablissements.size());
 			}
 		}
 		
-		log.info("Total des écoles doctorales récupérées depuis Fresq: {}", toutesLesEcoles.size());
-		return toutesLesEcoles;
+		log.info("Total des établissements récupérés depuis Fresq: {}", tousLesEtablissements.size());
+		return tousLesEtablissements;
 	}
 }

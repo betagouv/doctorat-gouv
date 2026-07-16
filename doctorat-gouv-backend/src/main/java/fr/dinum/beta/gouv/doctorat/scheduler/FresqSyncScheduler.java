@@ -2,7 +2,6 @@ package fr.dinum.beta.gouv.doctorat.scheduler;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import fr.dinum.beta.gouv.doctorat.entity.EcoleDoctorale;
-import fr.dinum.beta.gouv.doctorat.model.FresqSearchContent;
+import fr.dinum.beta.gouv.doctorat.model.FresqEtablissement;
 import fr.dinum.beta.gouv.doctorat.repository.EcoleDoctoraleRepository;
 import fr.dinum.beta.gouv.doctorat.service.FresqApiService;
 
@@ -37,14 +36,14 @@ public class FresqSyncScheduler {
 		log.info("Début de la synchronisation des écoles doctorales depuis Fresq");
 		
 		try {
-			List<FresqSearchContent> ecolesFresq = fresqApiService.recupererToutesLesEcolesDoctorales();
+			List<FresqEtablissement> etablissementsFresq = fresqApiService.recupererTousLesEtablissements();
 			
-			if (ecolesFresq == null || ecolesFresq.isEmpty()) {
-				log.warn("Aucune école doctorale récupérée depuis Fresq");
+			if (etablissementsFresq == null || etablissementsFresq.isEmpty()) {
+				log.warn("Aucun établissement récupéré depuis Fresq");
 				return;
 			}
 			
-			log.info("Nombre d'écoles doctorales récupérées depuis Fresq: {}", ecolesFresq.size());
+			log.info("Nombre d'établissements récupérés depuis Fresq: {}", etablissementsFresq.size());
 			
 			int nbAjoutes = 0;
 			int nbMisAJour = 0;
@@ -58,73 +57,46 @@ public class FresqSyncScheduler {
 			}
 			ecoleDoctoraleRepository.saveAll(ecolesExistantes);
 			
-			// Traiter chaque école doctorale de Fresq
-			for (FresqSearchContent contenu : ecolesFresq) {
-				Map<String, Object> data = contenu.getData();
-				if (data == null) {
-					log.debug("École doctorale ignorée (data null): recordId={}", contenu.getRecordId());
+			// Traiter chaque établissement de Fresq
+			for (FresqEtablissement etablissement : etablissementsFresq) {
+				String uai = etablissement.getUai();
+				String nom = etablissement.getNom();
+				
+				if (uai == null || nom == null) {
+					log.debug("Établissement ignoré (uai ou nom null): uai={}, nom={}", uai, nom);
 					continue;
 				}
 				
-				String numero = (String) data.get("numero_ed");
-				String libelle = (String) data.get("libelle_ed");
-				
-				if (numero == null || libelle == null) {
-					log.debug("École doctorale ignorée (numéro ou libellé manquant): {}", data);
-					continue;
-				}
-				
-				Optional<EcoleDoctorale> existanteOpt = ecoleDoctoraleRepository.findByNumero(numero);
+				// Chercher si l'école doctorale existe déjà par UAI
+				List<EcoleDoctorale> existantes = ecoleDoctoraleRepository.findByUai(uai);
+				Optional<EcoleDoctorale> existanteOpt = existantes.isEmpty() ? Optional.empty() : Optional.of(existantes.get(0));
 				
 				if (existanteOpt.isPresent()) {
 					// Mise à jour
 					EcoleDoctorale existante = existanteOpt.get();
-					log.info("Mise à jour école doctorale {}: {} -> {}", numero, existante.getLibelle(), libelle);
-					existante.setLibelle(libelle);
-					existante.setFresqRecordId(contenu.getRecordId());
+					log.info("Mise à jour école doctorale UAI {}: {} -> {}", uai, existante.getLibelle(), nom);
+					existante.setLibelle(nom);
 					existante.setDateSynchronisation(LocalDateTime.now());
 					existante.setActive(true);
 					
-					// Mettre à jour d'autres champs si disponibles
-					if (data.get("uai") != null) {
-						existante.setUai((String) data.get("uai"));
-					}
-					if (data.get("academie") != null) {
-						existante.setAcademie((String) data.get("academie"));
-					}
-					if (data.get("region_academie") != null) {
-						existante.setRegionAcademie((String) data.get("region_academie"));
-					}
-					if (data.get("secteur") != null) {
-						existante.setSecteur((String) data.get("secteur"));
-					}
-					if (data.get("specialite") != null) {
-						existante.setSpecialite((String) data.get("specialite"));
-					}
-					if (data.get("etablissement_ror") != null) {
-						existante.setEtablissementRor((String) data.get("etablissement_ror"));
-					}
-					if (data.get("etablissement_libelle") != null) {
-						existante.setEtablissementLibelle((String) data.get("etablissement_libelle"));
+					if (etablissement.getSigle() != null) {
+						existante.setEtablissementLibelle(etablissement.getSigle());
 					}
 					
 					nbMisAJour++;
 				} else {
 					// Nouvelle création
-					log.info("Nouvelle école doctorale créée: {} - {}", numero, libelle);
+					log.info("Nouvelle école doctorale créée: UAI {} - {}", uai, nom);
 					EcoleDoctorale nouvelle = new EcoleDoctorale();
-					nouvelle.setNumero(numero);
-					nouvelle.setLibelle(libelle);
-					nouvelle.setFresqRecordId(contenu.getRecordId());
+					nouvelle.setNumero(uai.length() > 3 ? uai.substring(0, 3) : uai);
+					nouvelle.setLibelle(nom);
+					nouvelle.setUai(uai);
 					nouvelle.setDateSynchronisation(LocalDateTime.now());
 					nouvelle.setActive(true);
-					nouvelle.setUai((String) data.get("uai"));
-					nouvelle.setAcademie((String) data.get("academie"));
-					nouvelle.setRegionAcademie((String) data.get("region_academie"));
-					nouvelle.setSecteur((String) data.get("secteur"));
-					nouvelle.setSpecialite((String) data.get("specialite"));
-					nouvelle.setEtablissementRor((String) data.get("etablissement_ror"));
-					nouvelle.setEtablissementLibelle((String) data.get("etablissement_libelle"));
+					
+					if (etablissement.getSigle() != null) {
+						nouvelle.setEtablissementLibelle(etablissement.getSigle());
+					}
 					
 					ecoleDoctoraleRepository.save(nouvelle);
 					nbAjoutes++;
