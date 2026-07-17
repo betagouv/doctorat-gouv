@@ -108,10 +108,15 @@ public class ExportService {
                 entity.getCollaborationsEnvisagees(),
                 entity.getValorisationTravaux(),
                 entity.getDomainesImpact(),
+                entity.getDomainesImpactListe(),
                 entity.getObjectifsDeveloppementDurable(),
+                entity.getObjectifsDeveloppementDurableListe(),
                 entity.getFinancementEtat(),
+                entity.getFinancementTypes(),
                 entity.getFinancementEmployeur(),
                 entity.getFinancementOrigine(),
+                entity.getFinancementDateDebut(),
+                entity.getFinancementDateFin(),
                 entity.getFinancementDetails(),
                 entity.getProfilRecherche(),
                 entity.getProfilRechercheAnglais(),
@@ -123,13 +128,19 @@ public class ExportService {
                 entity.getUrlCandidature(),
                 entity.getSujetAttribue(),
                 entity.getConfidentiel(),
-                entity.getAnnee(),
+                entity.getDeposantOrcid(),
+                entity.getDeposantNom(),
+                entity.getDeposantPrenom(),
+                entity.getDeposantEmail(),
+                entity.getDateDebutThese(),
+                entity.getAnneeUniversitaire(),
+                entity.getMotsCles(),
+                entity.getMotsClesAnglais(),
                 entity.getDateCreation(),
                 entity.getDateMaj(),
                 entity.getDateSoumission(),
                 entity.getDateMiseEnLigne(),
-                entity.getDateLimiteCandidature(),
-                entity.getActive()
+                entity.getDateLimiteCandidature()
         );
     }
 }

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ExportPropositionTheseDTO(
@@ -51,10 +54,15 @@ public record ExportPropositionTheseDTO(
         String collaborationsEnvisagees,
         String valorisationTravaux,
         String domainesImpact,
+        List<String> domainesImpactListe,
         String objectifsDeveloppementDurable,
+        List<String> objectifsDeveloppementDurableListe,
         String financementEtat,
+        List<String> financementTypes,
         String financementEmployeur,
         String financementOrigine,
+        LocalDate financementDateDebut,
+        LocalDate financementDateFin,
         String financementDetails,
         String profilRecherche,
         String profilRechercheAnglais,
@@ -66,7 +74,14 @@ public record ExportPropositionTheseDTO(
         String urlCandidature,
         String sujetAttribue,
         String confidentiel,
-        Integer annee,
+        String deposantOrcid,
+        String deposantNom,
+        String deposantPrenom,
+        String deposantEmail,
+        LocalDate dateDebutThese,
+        String anneeUniversitaire,
+        Map<String, String> motsCles,
+        Map<String, String> motsClesAnglais,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime dateCreation,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -76,6 +91,5 @@ public record ExportPropositionTheseDTO(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime dateMiseEnLigne,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime dateLimiteCandidature,
-        Boolean active
+        LocalDateTime dateLimiteCandidature
 ) {}
