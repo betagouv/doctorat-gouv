@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -267,7 +268,10 @@ public class EuraxessFeedMapper {
 		if (value == null) {
 			return null;
 		}
-		return DATATYPE_FACTORY.newXMLGregorianCalendar(value.toString());
+		return DATATYPE_FACTORY.newXMLGregorianCalendar(
+				value.getYear(), value.getMonthValue(), value.getDayOfMonth(),
+				value.getHour(), value.getMinute(), value.getSecond(),
+				DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED);
 	}
 
 	private static DatatypeFactory newDatatypeFactory() {
