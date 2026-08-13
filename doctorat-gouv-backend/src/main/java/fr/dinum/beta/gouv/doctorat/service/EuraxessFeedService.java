@@ -60,6 +60,11 @@ public class EuraxessFeedService {
 		var propositions = propositionTheseRepository.findByActiveTrue(
 				PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "dateMaj"))).getContent();
 
+		if (propositions.isEmpty()) {
+			log.warn("Flux EURAXESS : aucune offre active en base, flux vide émis (isIncremental=true)");
+			root.setIsIncremental(true);
+		}
+
 		int excluded = 0;
 		for (PropositionThese p : propositions) {
 			JobOpportunity job = mapper.toJobOpportunity(p);

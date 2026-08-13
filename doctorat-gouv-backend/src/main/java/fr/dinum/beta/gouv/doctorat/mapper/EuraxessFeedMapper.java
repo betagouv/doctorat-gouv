@@ -9,6 +9,8 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import fr.dinum.beta.gouv.doctorat.config.EuraxessProperties;
@@ -41,6 +43,8 @@ import fr.dinum.beta.gouv.doctorat.euraxess.jaxb.WorkLocation;
  */
 @Component
 public class EuraxessFeedMapper {
+
+	private static final Logger log = LoggerFactory.getLogger(EuraxessFeedMapper.class);
 
 	private static final int MAX_SHORT = 255;
 	private static final int MAX_MEDIUM = 512;
@@ -102,11 +106,15 @@ public class EuraxessFeedMapper {
 		if (jobOrganisation == null) {
 			return null;
 		}
+		if (isBlank(p.getUniteRechercheLibelle())) {
+			log.warn("Repli R3 : unité de recherche absente, organisation sur établissement : matricule={}", p.getMatricule());
+		}
 
 		JobOpportunity job = new JobOpportunity();
 		job.setOrganisationIDKey(properties.getOrganisationIdKey());
 		XMLGregorianCalendar lastModified = toXmlDateTime(p.getDateMaj());
 		if (lastModified == null) {
+			log.warn("Repli R3 : date de mise à jour absente, dernière modification = maintenant : matricule={}", p.getMatricule());
 			lastModified = toXmlDateTime(java.time.LocalDateTime.now());
 		}
 		job.setLastmodifieddate(lastModified);
@@ -125,7 +133,11 @@ public class EuraxessFeedMapper {
 		Description d = new Description();
 		d.setJobTitle(jobTitle);
 		d.setJobDescription(jobDescription);
-		d.setJobSummary(truncate(sanitizeXml(firstNonBlank(p.getResumeAnglais(), p.getTheseTitreAnglais())), MAX_LONG));
+		String summary = firstNonBlank(p.getResumeAnglais(), p.getTheseTitreAnglais());
+		if (isBlank(p.getResumeAnglais()) && summary != null) {
+			log.warn("Repli R3 : résumé anglais absent, summary sur titre anglais : matricule={}", p.getMatricule());
+		}
+		d.setJobSummary(truncate(sanitizeXml(summary), MAX_LONG));
 		d.setApplicationDeadline(deadline);
 		d.getResearcherProfile().add(ResearcherProfileEnum.FIRST_STAGE_RESEARCHER_R_1);
 		d.setTypeOfContract(TypeOfContractEnum.TEMPORARY);
@@ -168,10 +180,16 @@ public class EuraxessFeedMapper {
 		h.setPostalCode(truncate(sanitizeXml(p.getEtablissementCodePostal()), MAX_MEDIUM));
 		String email = firstNonBlank(p.getDeposantEmail(), properties.getContactEmail());
 		if (email != null) {
+			if (isBlank(p.getDeposantEmail())) {
+				log.warn("Repli R3 : e-mail déposant absent, e-mail de contact config : matricule={}", p.getMatricule());
+			}
 			h.getEMail().add(truncate(email.trim(), MAX_MEDIUM));
 		}
 		String website = firstNonBlank(p.getUrlInfosComplementaires(), p.getUrlPdf());
 		if (website != null) {
+			if (isBlank(p.getUrlInfosComplementaires())) {
+				log.warn("Repli R3 : URL infos complémentaires absente, website sur URL PDF : matricule={}", p.getMatricule());
+			}
 			h.getWebsite().add(truncate(website.trim(), MAX_MEDIUM));
 		}
 		return h;
@@ -187,6 +205,9 @@ public class EuraxessFeedMapper {
 			a.setHowToApply(HowToApplyEnum.E_MAIL);
 			String email = firstNonBlank(p.getDeposantEmail(), p.getDirectionTheseEmail());
 			if (email != null) {
+				if (isBlank(p.getDeposantEmail())) {
+					log.warn("Repli R3 : e-mail déposant absent, application sur e-mail direction de thèse : matricule={}", p.getMatricule());
+				}
 				a.setApplicationEmail(truncate(email.trim(), MAX_MEDIUM));
 			}
 		}
