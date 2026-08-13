@@ -41,13 +41,19 @@ public class EuraxessFeedService {
 	/**
 	 * Génère le flux XML EURAXESS (racine {@code job-opportunities}) à partir
 	 * des propositions de thèse actives.
+	 *
+	 * @throws EuraxessEmptyFeedException si aucune offre n'est à publier
 	 */
 	public String generateFeed() {
 		long start = System.currentTimeMillis();
 		JobOpportunities root = buildRoot();
+		if (root.getJobOpportunity() == null || root.getJobOpportunity().isEmpty()) {
+			throw new EuraxessEmptyFeedException(
+					"Aucune offre active à publier dans le flux EURAXESS");
+		}
 		String xml = marshal(root);
 		log.info("Flux EURAXESS généré : {} offres, {} ms",
-				root.getJobOpportunity() == null ? 0 : root.getJobOpportunity().size(),
+				root.getJobOpportunity().size(),
 				System.currentTimeMillis() - start);
 		return xml;
 	}
@@ -59,11 +65,6 @@ public class EuraxessFeedService {
 
 		var propositions = propositionTheseRepository.findByActiveTrue(
 				PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "dateMaj"))).getContent();
-
-		if (propositions.isEmpty()) {
-			log.warn("Flux EURAXESS : aucune offre active en base, flux vide émis (isIncremental=true)");
-			root.setIsIncremental(true);
-		}
 
 		int excluded = 0;
 		for (PropositionThese p : propositions) {
@@ -78,6 +79,9 @@ public class EuraxessFeedService {
 		}
 		if (excluded > 0) {
 			log.warn("Flux EURAXESS : {} offre(s) exclue(s) sur {}", excluded, propositions.size());
+		}
+		if (propositions.isEmpty()) {
+			log.warn("Flux EURAXESS : aucune offre active en base");
 		}
 		return root;
 	}
