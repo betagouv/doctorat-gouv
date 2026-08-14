@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  version: '0.3.9',
+  version: '0.4.0-beta',
   matomoSiteId: 249,
   apiUrl: 'http://localhost:8080/api' // URL de dev
 };
