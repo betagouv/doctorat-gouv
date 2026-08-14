@@ -52,6 +52,26 @@
   margin-right: 2rem;
 }
 
+/* Bouton Se connecter */
+.fr-header__tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  gap: 0.5rem;
+}
+
+.header-login-btn {
+  white-space: nowrap;
+}
+
+.mobile-login-btn {
+  width: 100%;
+  justify-content: center;
+  margin: 0.5rem 0 1rem 0;
+}
+
 /* Le menu déroulant */
 .fr-translate .fr-collapse {
   position: absolute;

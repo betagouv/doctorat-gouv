@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { I18nService } from '../services/i18n-service';
 
@@ -10,6 +11,7 @@ import { I18nService } from '../services/i18n-service';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
 	TranslateModule
   ],
   templateUrl: './header.html',
