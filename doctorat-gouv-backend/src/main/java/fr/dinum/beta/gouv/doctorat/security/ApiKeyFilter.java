@@ -21,6 +21,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Value("${API_KEY_EXPORT:}")
     private String expectedApiKey;
 
+    @Value("${EURAXESS_API_KEY:}")
+    private String euraxessApiKey;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -28,6 +31,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String apiKey = request.getHeader("X-API-KEY");
+        String expectedKey = expectedKeyFor(request);
 
         if (apiKey == null || apiKey.isBlank()) {
             log.warn("Requête vers {} sans header X-API-KEY", request.getRequestURI());
@@ -35,13 +39,21 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!apiKey.equals(expectedApiKey)) {
+        if (!apiKey.equals(expectedKey)) {
             log.warn("Requête vers {} avec API Key invalide", request.getRequestURI());
             sendUnauthorized(response, "API Key invalide");
             return;
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String expectedKeyFor(HttpServletRequest request) {
+        return isEuraxessFeed(request) ? euraxessApiKey : expectedApiKey;
+    }
+
+    private static boolean isEuraxessFeed(HttpServletRequest request) {
+        return request.getRequestURI().equals("/api/euraxess/feed");
     }
 
     private void sendUnauthorized(HttpServletResponse response, String message) throws IOException {
@@ -52,6 +64,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getRequestURI().startsWith("/api/export/");
+        String uri = request.getRequestURI();
+        return !(uri.startsWith("/api/export/") || isEuraxessFeed(request));
     }
 }
