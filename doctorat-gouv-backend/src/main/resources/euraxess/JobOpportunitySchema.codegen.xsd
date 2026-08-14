@@ -1,0 +1,1312 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.1">
+	<xs:element name="job-opportunities">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="job-opportunity" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="isMigration" type="shortTextInputType"/>
+			<xs:attribute name="isIncremental" type="xs:boolean" default="false"/>
+			<xs:attribute name="datasourceKey" type="shortTextInputType"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="job-opportunity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="job-id" type="textInputID" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="description" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="additional-information" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="required-research-experiences" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="additional-requirements" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="eu-funding" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="work-location" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="hiring-org-inst" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="application-details" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="organisationIDKey" type="shortTextInputType" use="required"/>
+			<xs:attribute name="lastmodifieddate" type="xs:dateTime" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="description">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="job-title" type="mandatoryShortTextInputType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="job-summary" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-description" type="descriptionInputType" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="research-field" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element name="researcher-profile" type="researcherProfileEnum" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element name="type-of-contract" type="typeOfContractEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="job-status" type="jobStatusEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="hours-per-week" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-start-date" nillable="true" minOccurs="0" maxOccurs="1">
+					<xs:simpleType>
+						<xs:list itemType="xs:date"/>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="application-deadline" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="science4refugees" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="positions" type="jobPositionsEnum" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="additional-information" nillable="true">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="benefits" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="eligibility-criteria" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="selection-process" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="comment" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="info-website" type="mediumTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="required-research-experiences">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="main-research-field" type="disciplineEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="research-sub-field" type="researchFieldEnum" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="years-of-research-experience" type="yearsOfExperienceEnum" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="additional-requirements" nillable="true">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="required-education-level" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="skills" type="longTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="specific-requirements" type="longTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="required-languages" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eu-funding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="framework-programme" type="researchFrameworkProgrammeEnum" default="No" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="cofund-nr-job-position" minOccurs="0" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:integer">
+							<xs:minInclusive value="1"/>
+							<xs:maxInclusive value="999"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="cofund-destination-countries" type="destinationCountriesEnum" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="sesam-agreement-number" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-reference-number" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="work-location">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="nr-job-positions" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:integer">
+							<xs:minInclusive value="1"/>
+							<xs:maxInclusive value="999"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="job-organisation-institute" type="mandatoryMediumTextInputType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="job-country" type="countriesEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="job-state-province" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-city" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-postal-code" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="job-street" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hiring-org-inst">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="organisation-institute" type="mandatoryMediumTextInputType" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="organisation-institute-type" type="organisationTypeEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="division-faculty" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="country" type="countriesEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="city" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="state-province" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="postal-code" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="street" type="mediumTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="e-mail" type="shortTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="website" type="mediumTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="phone" type="mediumTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="mobile-phone" type="mediumTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="fax" type="mediumTextInputType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="application-details">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="how-to-apply" type="howToApplyEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="application-email" type="shortTextInputType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="application-website" type="longTextInputType" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="research-field">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="main-research-field" type="disciplineEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="sub-research-field" type="researchFieldEnum" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="required-education-level">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="degree" type="degreeEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="discipline" type="disciplineEnum" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="required-languages">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="language" type="languagesEnum" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="language-level" type="languagesLevelEnum" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="destinationCountriesEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="European Union"/>
+			<xs:enumeration value="Afghanistan"/>
+			<xs:enumeration value="Africa"/>
+			<xs:enumeration value="Åland Islands"/>
+			<xs:enumeration value="Albania"/>
+			<xs:enumeration value="Algeria"/>
+			<xs:enumeration value="American Samoa"/>
+			<xs:enumeration value="Americas"/>
+			<xs:enumeration value="Andorra"/>
+			<xs:enumeration value="Angola"/>
+			<xs:enumeration value="Anguilla"/>
+			<xs:enumeration value="Antigua and Barbuda"/>
+			<xs:enumeration value="Argentina"/>
+			<xs:enumeration value="Armenia"/>
+			<xs:enumeration value="Aruba"/>
+			<xs:enumeration value="Asia"/>
+			<xs:enumeration value="Australia"/>
+			<xs:enumeration value="Australia and New Zealand"/>
+			<xs:enumeration value="Austria"/>
+			<xs:enumeration value="Azerbaijan"/>
+			<xs:enumeration value="Bahamas"/>
+			<xs:enumeration value="Bahrain"/>
+			<xs:enumeration value="Bangladesh"/>
+			<xs:enumeration value="Barbados"/>
+			<xs:enumeration value="Belarus"/>
+			<xs:enumeration value="Belgium"/>
+			<xs:enumeration value="Belize"/>
+			<xs:enumeration value="Benin"/>
+			<xs:enumeration value="Bermuda"/>
+			<xs:enumeration value="Bhutan"/>
+			<xs:enumeration value="Bolivia"/>
+			<xs:enumeration value="Bosnia and Herzegovina"/>
+			<xs:enumeration value="Botswana"/>
+			<xs:enumeration value="Brazil"/>
+			<xs:enumeration value="British Virgin Islands"/>
+			<xs:enumeration value="Brunei"/>
+			<xs:enumeration value="Bulgaria"/>
+			<xs:enumeration value="Burkina Faso"/>
+			<xs:enumeration value="Burundi"/>
+			<xs:enumeration value="Cambodia"/>
+			<xs:enumeration value="Cameroon"/>
+			<xs:enumeration value="Canada"/>
+			<xs:enumeration value="Cape Verde"/>
+			<xs:enumeration value="Cayman Islands"/>
+			<xs:enumeration value="Central African Republic"/>
+			<xs:enumeration value="Central America"/>
+			<xs:enumeration value="Central Asia"/>
+			<xs:enumeration value="Chad"/>
+			<xs:enumeration value="Chile"/>
+			<xs:enumeration value="China"/>
+			<xs:enumeration value="Colombia"/>
+			<xs:enumeration value="Comoros"/>
+			<xs:enumeration value="Congo"/>
+			<xs:enumeration value="Cook Islands"/>
+			<xs:enumeration value="Costa Rica"/>
+			<xs:enumeration value="Côte d’Ivoire"/>
+			<xs:enumeration value="Croatia"/>
+			<xs:enumeration value="Cuba"/>
+			<xs:enumeration value="Curaçao"/>
+			<xs:enumeration value="Cyprus"/>
+			<xs:enumeration value="Czech Republic"/>
+			<xs:enumeration value="Democratic Republic of the Congo"/>
+			<xs:enumeration value="Denmark"/>
+			<xs:enumeration value="Djibouti"/>
+			<xs:enumeration value="Dominica"/>
+			<xs:enumeration value="Dominican Republic"/>
+			<xs:enumeration value="Eastern Africa"/>
+			<xs:enumeration value="Eastern Asia"/>
+			<xs:enumeration value="Eastern Europe"/>
+			<xs:enumeration value="Ecuador"/>
+			<xs:enumeration value="Egypt"/>
+			<xs:enumeration value="El Salvador"/>
+			<xs:enumeration value="Equatorial Guinea"/>
+			<xs:enumeration value="Eritrea"/>
+			<xs:enumeration value="Estonia"/>
+			<xs:enumeration value="Ethiopia"/>
+			<xs:enumeration value="Europe"/>
+			<xs:enumeration value="Faroe Islands"/>
+			<xs:enumeration value="Falkland Islands"/>
+			<xs:enumeration value="Fiji"/>
+			<xs:enumeration value="Finland"/>
+			<xs:enumeration value="former Yugoslav Republic of Macedonia, the"/>
+			<xs:enumeration value="North Macedonia"/>
+			<xs:enumeration value="France"/>
+			<xs:enumeration value="French Guiana"/>
+			<xs:enumeration value="French Polynesia"/>
+			<xs:enumeration value="Gabon"/>
+			<xs:enumeration value="Gambia"/>
+			<xs:enumeration value="Georgia"/>
+			<xs:enumeration value="Germany"/>
+			<xs:enumeration value="Ghana"/>
+			<xs:enumeration value="Gibraltar"/>
+			<xs:enumeration value="Greece"/>
+			<xs:enumeration value="Greenland"/>
+			<xs:enumeration value="Grenada"/>
+			<xs:enumeration value="Guadeloupe"/>
+			<xs:enumeration value="Guam"/>
+			<xs:enumeration value="Guatemala"/>
+			<xs:enumeration value="Guernsey"/>
+			<xs:enumeration value="Guinea"/>
+			<xs:enumeration value="Guinea-Bissau"/>
+			<xs:enumeration value="Guyana"/>
+			<xs:enumeration value="Haiti"/>
+			<xs:enumeration value="Holy See"/>
+			<xs:enumeration value="Honduras"/>
+			<xs:enumeration value="Hong Kong"/>
+			<xs:enumeration value="Hungary"/>
+			<xs:enumeration value="Iceland"/>
+			<xs:enumeration value="India"/>
+			<xs:enumeration value="Indonesia"/>
+			<xs:enumeration value="Iran"/>
+			<xs:enumeration value="Iraq"/>
+			<xs:enumeration value="Ireland"/>
+			<xs:enumeration value="Isle of Man"/>
+			<xs:enumeration value="Israel"/>
+			<xs:enumeration value="Italy"/>
+			<xs:enumeration value="Jamaica"/>
+			<xs:enumeration value="Japan"/>
+			<xs:enumeration value="Jersey"/>
+			<xs:enumeration value="Jordan"/>
+			<xs:enumeration value="Kazakhstan"/>
+			<xs:enumeration value="Kenya"/>
+			<xs:enumeration value="Kiribati"/>
+			<xs:enumeration value="Kuwait"/>
+			<xs:enumeration value="Kyrgyzstan"/>
+			<xs:enumeration value="Laos"/>
+			<xs:enumeration value="Latin America and the Caribbean"/>
+			<xs:enumeration value="Latvia"/>
+			<xs:enumeration value="Lebanon"/>
+			<xs:enumeration value="Lesotho"/>
+			<xs:enumeration value="Liberia"/>
+			<xs:enumeration value="Libya"/>
+			<xs:enumeration value="Liechtenstein"/>
+			<xs:enumeration value="Lithuania"/>
+			<xs:enumeration value="Luxembourg"/>
+			<xs:enumeration value="Macao"/>
+			<xs:enumeration value="Madagascar"/>
+			<xs:enumeration value="Malawi"/>
+			<xs:enumeration value="Malaysia"/>
+			<xs:enumeration value="Maldives"/>
+			<xs:enumeration value="Mali"/>
+			<xs:enumeration value="Malta"/>
+			<xs:enumeration value="Marshall Islands"/>
+			<xs:enumeration value="Martinique"/>
+			<xs:enumeration value="Mauritania"/>
+			<xs:enumeration value="Mauritius"/>
+			<xs:enumeration value="Mayotte"/>
+			<xs:enumeration value="Melanesia"/>
+			<xs:enumeration value="Mexico"/>
+			<xs:enumeration value="Micronesia"/>
+			<xs:enumeration value="Middle Africa"/>
+			<xs:enumeration value="Moldova"/>
+			<xs:enumeration value="Monaco"/>
+			<xs:enumeration value="Mongolia"/>
+			<xs:enumeration value="Montenegro"/>
+			<xs:enumeration value="Montserrat"/>
+			<xs:enumeration value="Morocco"/>
+			<xs:enumeration value="Mozambique"/>
+			<xs:enumeration value="Myanmar/Burma"/>
+			<xs:enumeration value="Namibia"/>
+			<xs:enumeration value="Nauru"/>
+			<xs:enumeration value="Nepal"/>
+			<xs:enumeration value="Netherlands"/>
+			<xs:enumeration value="New Caledonia"/>
+			<xs:enumeration value="New Zealand"/>
+			<xs:enumeration value="Nicaragua"/>
+			<xs:enumeration value="Niger"/>
+			<xs:enumeration value="Nigeria"/>
+			<xs:enumeration value="Niue"/>
+			<xs:enumeration value="Norfolk Island"/>
+			<xs:enumeration value="North Korea"/>
+			<xs:enumeration value="Northern Africa"/>
+			<xs:enumeration value="Northern America"/>
+			<xs:enumeration value="Northern Europe"/>
+			<xs:enumeration value="Northern Mariana Islands"/>
+			<xs:enumeration value="Norway"/>
+			<xs:enumeration value="Oceania"/>
+			<xs:enumeration value="Oman"/>
+			<xs:enumeration value="Pakistan"/>
+			<xs:enumeration value="Palau"/>
+			<xs:enumeration value="Panama"/>
+			<xs:enumeration value="Papua New Guinea"/>
+			<xs:enumeration value="Paraguay"/>
+			<xs:enumeration value="Peru"/>
+			<xs:enumeration value="Philippines"/>
+			<xs:enumeration value="Pitcairn"/>
+			<xs:enumeration value="Poland"/>
+			<xs:enumeration value="Polynesia"/>
+			<xs:enumeration value="Portugal"/>
+			<xs:enumeration value="Puerto Rico"/>
+			<xs:enumeration value="Qatar"/>
+			<xs:enumeration value="Réunion"/>
+			<xs:enumeration value="Romania"/>
+			<xs:enumeration value="Russia"/>
+			<xs:enumeration value="Rwanda"/>
+			<xs:enumeration value="Saint Barthélemy"/>
+			<xs:enumeration value="Saint Helena"/>
+			<xs:enumeration value="Saint Kitts and Nevis"/>
+			<xs:enumeration value="Saint Lucia"/>
+			<xs:enumeration value="Saint Martin"/>
+			<xs:enumeration value="Saint Pierre and Miquelon"/>
+			<xs:enumeration value="Saint Vincent and the Grenadines"/>
+			<xs:enumeration value="Samoa"/>
+			<xs:enumeration value="San Marino"/>
+			<xs:enumeration value="São Tomé and Príncipe"/>
+			<xs:enumeration value="Saudi Arabia"/>
+			<xs:enumeration value="Senegal"/>
+			<xs:enumeration value="Serbia"/>
+			<xs:enumeration value="Seychelles"/>
+			<xs:enumeration value="Sierra Leone"/>
+			<xs:enumeration value="Singapore"/>
+			<xs:enumeration value="Sint Maarten"/>
+			<xs:enumeration value="Slovakia"/>
+			<xs:enumeration value="Slovenia"/>
+			<xs:enumeration value="Solomon Islands"/>
+			<xs:enumeration value="Somalia"/>
+			<xs:enumeration value="South Africa"/>
+			<xs:enumeration value="South America"/>
+			<xs:enumeration value="South Korea"/>
+			<xs:enumeration value="South Sudan"/>
+			<xs:enumeration value="South-Eastern Asia"/>
+			<xs:enumeration value="Southern Africa"/>
+			<xs:enumeration value="Southern Asia"/>
+			<xs:enumeration value="Southern Europe"/>
+			<xs:enumeration value="Spain"/>
+			<xs:enumeration value="Sri Lanka"/>
+			<xs:enumeration value="State of Palestine"/>
+			<xs:enumeration value="Sudan"/>
+			<xs:enumeration value="Suriname"/>
+			<xs:enumeration value="Svalbard and Jan Mayen"/>
+			<xs:enumeration value="Swaziland"/>
+			<xs:enumeration value="Sweden"/>
+			<xs:enumeration value="Switzerland"/>
+			<xs:enumeration value="Syria"/>
+			<xs:enumeration value="Tajikistan"/>
+			<xs:enumeration value="Thailand"/>
+			<xs:enumeration value="Timor-Leste"/>
+			<xs:enumeration value="Togo"/>
+			<xs:enumeration value="Tokelau"/>
+			<xs:enumeration value="Tonga"/>
+			<xs:enumeration value="Trinidad and Tobago"/>
+			<xs:enumeration value="Tunisia"/>
+      <xs:enumeration value="Türkiye"/>
+      <xs:enumeration value="Turkey"/>
+			<xs:enumeration value="Turkmenistan"/>
+			<xs:enumeration value="Turks and Caicos Islands"/>
+			<xs:enumeration value="Tuvalu"/>
+			<xs:enumeration value="Uganda"/>
+			<xs:enumeration value="Ukraine"/>
+			<xs:enumeration value="United Arab Emirates"/>
+			<xs:enumeration value="United Kingdom"/>
+			<xs:enumeration value="United Republic of Tanzania"/>
+			<xs:enumeration value="United States"/>
+			<xs:enumeration value="Uruguay"/>
+			<xs:enumeration value="US Virgin Islands"/>
+			<xs:enumeration value="Uzbekistan"/>
+			<xs:enumeration value="Vanuatu"/>
+			<xs:enumeration value="Venezuela"/>
+			<xs:enumeration value="Vietnam"/>
+			<xs:enumeration value="Wallis and Futuna Islands"/>
+			<xs:enumeration value="Western Africa"/>
+			<xs:enumeration value="Western Asia"/>
+			<xs:enumeration value="Western Europe"/>
+			<xs:enumeration value="Western Sahara"/>
+			<xs:enumeration value="Yemen"/>
+			<xs:enumeration value="Zambia"/>
+			<xs:enumeration value="Zimbabwe"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="countriesEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Europe"/>
+			<xs:enumeration value="Afghanistan"/>
+			<xs:enumeration value="Åland Islands"/>
+			<xs:enumeration value="Albania"/>
+			<xs:enumeration value="Algeria"/>
+			<xs:enumeration value="American Samoa"/>
+			<xs:enumeration value="Andorra"/>
+			<xs:enumeration value="Angola"/>
+			<xs:enumeration value="Anguilla"/>
+			<xs:enumeration value="Antigua and Barbuda"/>
+			<xs:enumeration value="Argentina"/>
+			<xs:enumeration value="Armenia"/>
+			<xs:enumeration value="Aruba"/>
+			<xs:enumeration value="Australia"/>
+			<xs:enumeration value="Austria"/>
+			<xs:enumeration value="Azerbaijan"/>
+			<xs:enumeration value="Bahamas"/>
+			<xs:enumeration value="Bahrain"/>
+			<xs:enumeration value="Bangladesh"/>
+			<xs:enumeration value="Barbados"/>
+			<xs:enumeration value="Belarus"/>
+			<xs:enumeration value="Belgium"/>
+			<xs:enumeration value="Belize"/>
+			<xs:enumeration value="Benin"/>
+			<xs:enumeration value="Bermuda"/>
+			<xs:enumeration value="Bhutan"/>
+			<xs:enumeration value="Bolivia"/>
+			<xs:enumeration value="Bosnia and Herzegovina"/>
+			<xs:enumeration value="Botswana"/>
+			<xs:enumeration value="Brazil"/>
+			<xs:enumeration value="British Virgin Islands"/>
+			<xs:enumeration value="Brunei"/>
+			<xs:enumeration value="Bulgaria"/>
+			<xs:enumeration value="Burkina Faso"/>
+			<xs:enumeration value="Burundi"/>
+			<xs:enumeration value="Cambodia"/>
+			<xs:enumeration value="Cameroon"/>
+			<xs:enumeration value="Canada"/>
+			<xs:enumeration value="Cape Verde"/>
+			<xs:enumeration value="Cayman Islands"/>
+			<xs:enumeration value="Central African Republic"/>
+			<xs:enumeration value="Chad"/>
+			<xs:enumeration value="Chile"/>
+			<xs:enumeration value="China"/>
+			<xs:enumeration value="Colombia"/>
+			<xs:enumeration value="Comoros"/>
+			<xs:enumeration value="Congo"/>
+			<xs:enumeration value="Cook Islands"/>
+			<xs:enumeration value="Costa Rica"/>
+			<xs:enumeration value="Côte d’Ivoire"/>
+			<xs:enumeration value="Croatia"/>
+			<xs:enumeration value="Cuba"/>
+			<xs:enumeration value="Curaçao"/>
+			<xs:enumeration value="Cyprus"/>
+			<xs:enumeration value="Czech Republic"/>
+			<xs:enumeration value="Democratic Republic of the Congo"/>
+			<xs:enumeration value="Denmark"/>
+			<xs:enumeration value="Djibouti"/>
+			<xs:enumeration value="Dominica"/>
+			<xs:enumeration value="Dominican Republic"/>
+			<xs:enumeration value="Ecuador"/>
+			<xs:enumeration value="Egypt"/>
+			<xs:enumeration value="El Salvador"/>
+			<xs:enumeration value="Equatorial Guinea"/>
+			<xs:enumeration value="Eritrea"/>
+			<xs:enumeration value="Estonia"/>
+			<xs:enumeration value="Ethiopia"/>
+			<xs:enumeration value="Faroe Islands"/>
+			<xs:enumeration value="Falkland Islands"/>
+			<xs:enumeration value="Fiji"/>
+			<xs:enumeration value="Finland"/>
+			<xs:enumeration value="former Yugoslav Republic of Macedonia, the"/>
+			<xs:enumeration value="North Macedonia"/>
+			<xs:enumeration value="France"/>
+			<xs:enumeration value="French Guiana"/>
+			<xs:enumeration value="French Polynesia"/>
+			<xs:enumeration value="Gabon"/>
+			<xs:enumeration value="Gambia"/>
+			<xs:enumeration value="Georgia"/>
+			<xs:enumeration value="Germany"/>
+			<xs:enumeration value="Ghana"/>
+			<xs:enumeration value="Gibraltar"/>
+			<xs:enumeration value="Greece"/>
+			<xs:enumeration value="Greenland"/>
+			<xs:enumeration value="Grenada"/>
+			<xs:enumeration value="Guadeloupe"/>
+			<xs:enumeration value="Guam"/>
+			<xs:enumeration value="Guatemala"/>
+			<xs:enumeration value="Guernsey"/>
+			<xs:enumeration value="Guinea"/>
+			<xs:enumeration value="Guinea-Bissau"/>
+			<xs:enumeration value="Guyana"/>
+			<xs:enumeration value="Haiti"/>
+			<xs:enumeration value="Holy See"/>
+			<xs:enumeration value="Honduras"/>
+			<xs:enumeration value="Hong Kong"/>
+			<xs:enumeration value="Hungary"/>
+			<xs:enumeration value="Iceland"/>
+			<xs:enumeration value="India"/>
+			<xs:enumeration value="Indonesia"/>
+			<xs:enumeration value="Iran"/>
+			<xs:enumeration value="Iraq"/>
+			<xs:enumeration value="Ireland"/>
+			<xs:enumeration value="Isle of Man"/>
+			<xs:enumeration value="Israel"/>
+			<xs:enumeration value="Italy"/>
+			<xs:enumeration value="Jamaica"/>
+			<xs:enumeration value="Japan"/>
+			<xs:enumeration value="Jersey"/>
+			<xs:enumeration value="Jordan"/>
+			<xs:enumeration value="Kazakhstan"/>
+			<xs:enumeration value="Kenya"/>
+			<xs:enumeration value="Kiribati"/>
+			<xs:enumeration value="Kuwait"/>
+			<xs:enumeration value="Kyrgyzstan"/>
+			<xs:enumeration value="Laos"/>
+			<xs:enumeration value="Latvia"/>
+			<xs:enumeration value="Lebanon"/>
+			<xs:enumeration value="Lesotho"/>
+			<xs:enumeration value="Liberia"/>
+			<xs:enumeration value="Libya"/>
+			<xs:enumeration value="Liechtenstein"/>
+			<xs:enumeration value="Lithuania"/>
+			<xs:enumeration value="Luxembourg"/>
+			<xs:enumeration value="Macao"/>
+			<xs:enumeration value="Madagascar"/>
+			<xs:enumeration value="Malawi"/>
+			<xs:enumeration value="Malaysia"/>
+			<xs:enumeration value="Maldives"/>
+			<xs:enumeration value="Mali"/>
+			<xs:enumeration value="Malta"/>
+			<xs:enumeration value="Marshall Islands"/>
+			<xs:enumeration value="Martinique"/>
+			<xs:enumeration value="Mauritania"/>
+			<xs:enumeration value="Mauritius"/>
+			<xs:enumeration value="Mayotte"/>
+			<xs:enumeration value="Mexico"/>
+			<xs:enumeration value="Micronesia"/>
+			<xs:enumeration value="Moldova"/>
+			<xs:enumeration value="Monaco"/>
+			<xs:enumeration value="Mongolia"/>
+			<xs:enumeration value="Montenegro"/>
+			<xs:enumeration value="Montserrat"/>
+			<xs:enumeration value="Morocco"/>
+			<xs:enumeration value="Mozambique"/>
+			<xs:enumeration value="Myanmar/Burma"/>
+			<xs:enumeration value="Namibia"/>
+			<xs:enumeration value="Nauru"/>
+			<xs:enumeration value="Nepal"/>
+			<xs:enumeration value="Netherlands"/>
+			<xs:enumeration value="New Caledonia"/>
+			<xs:enumeration value="New Zealand"/>
+			<xs:enumeration value="Nicaragua"/>
+			<xs:enumeration value="Niger"/>
+			<xs:enumeration value="Nigeria"/>
+			<xs:enumeration value="Niue"/>
+			<xs:enumeration value="Norfolk Island"/>
+			<xs:enumeration value="North Korea"/>
+			<xs:enumeration value="Northern Mariana Islands"/>
+			<xs:enumeration value="Norway"/>
+			<xs:enumeration value="Oman"/>
+			<xs:enumeration value="Pakistan"/>
+			<xs:enumeration value="Palau"/>
+			<xs:enumeration value="Panama"/>
+			<xs:enumeration value="Papua New Guinea"/>
+			<xs:enumeration value="Paraguay"/>
+			<xs:enumeration value="Peru"/>
+			<xs:enumeration value="Philippines"/>
+			<xs:enumeration value="Pitcairn"/>
+			<xs:enumeration value="Poland"/>
+			<xs:enumeration value="Portugal"/>
+			<xs:enumeration value="Puerto Rico"/>
+			<xs:enumeration value="Qatar"/>
+			<xs:enumeration value="Réunion"/>
+			<xs:enumeration value="Romania"/>
+			<xs:enumeration value="Russia"/>
+			<xs:enumeration value="Rwanda"/>
+			<xs:enumeration value="Saint Barthélemy"/>
+			<xs:enumeration value="Saint Helena"/>
+			<xs:enumeration value="Saint Kitts and Nevis"/>
+			<xs:enumeration value="Saint Lucia"/>
+			<xs:enumeration value="Saint Martin"/>
+			<xs:enumeration value="Saint Pierre and Miquelon"/>
+			<xs:enumeration value="Saint Vincent and the Grenadines"/>
+			<xs:enumeration value="Samoa"/>
+			<xs:enumeration value="San Marino"/>
+			<xs:enumeration value="São Tomé and Príncipe"/>
+			<xs:enumeration value="Saudi Arabia"/>
+			<xs:enumeration value="Senegal"/>
+			<xs:enumeration value="Serbia"/>
+			<xs:enumeration value="Seychelles"/>
+			<xs:enumeration value="Sierra Leone"/>
+			<xs:enumeration value="Singapore"/>
+			<xs:enumeration value="Sint Maarten"/>
+			<xs:enumeration value="Slovakia"/>
+			<xs:enumeration value="Slovenia"/>
+			<xs:enumeration value="Solomon Islands"/>
+			<xs:enumeration value="Somalia"/>
+			<xs:enumeration value="South Africa"/>
+			<xs:enumeration value="South Korea"/>
+			<xs:enumeration value="South Sudan"/>
+			<xs:enumeration value="Spain"/>
+			<xs:enumeration value="Sri Lanka"/>
+			<xs:enumeration value="State of Palestine"/>
+			<xs:enumeration value="Sudan"/>
+			<xs:enumeration value="Suriname"/>
+			<xs:enumeration value="Svalbard and Jan Mayen"/>
+			<xs:enumeration value="Swaziland"/>
+			<xs:enumeration value="Sweden"/>
+			<xs:enumeration value="Switzerland"/>
+			<xs:enumeration value="Syria"/>
+			<xs:enumeration value="Tajikistan"/>
+			<xs:enumeration value="Thailand"/>
+			<xs:enumeration value="Timor-Leste"/>
+			<xs:enumeration value="Togo"/>
+			<xs:enumeration value="Tokelau"/>
+			<xs:enumeration value="Tonga"/>
+			<xs:enumeration value="Trinidad and Tobago"/>
+			<xs:enumeration value="Tunisia"/>
+      <xs:enumeration value="Türkiye"/>
+      <xs:enumeration value="Turkey"/>
+			<xs:enumeration value="Turkmenistan"/>
+			<xs:enumeration value="Turks and Caicos Islands"/>
+			<xs:enumeration value="Tuvalu"/>
+			<xs:enumeration value="Uganda"/>
+			<xs:enumeration value="Ukraine"/>
+			<xs:enumeration value="United Arab Emirates"/>
+			<xs:enumeration value="United Kingdom"/>
+			<xs:enumeration value="United Republic of Tanzania"/>
+			<xs:enumeration value="United States"/>
+			<xs:enumeration value="Uruguay"/>
+			<xs:enumeration value="US Virgin Islands"/>
+			<xs:enumeration value="Uzbekistan"/>
+			<xs:enumeration value="Vanuatu"/>
+			<xs:enumeration value="Venezuela"/>
+			<xs:enumeration value="Vietnam"/>
+			<xs:enumeration value="Wallis and Futuna Islands"/>
+			<xs:enumeration value="Western Sahara"/>
+			<xs:enumeration value="Yemen"/>
+			<xs:enumeration value="Zambia"/>
+			<xs:enumeration value="Zimbabwe"/>
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="organisationTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Higher Education Institute"/>
+			<xs:enumeration value="International / Intergovernmental Organisation"/>
+			<xs:enumeration value="Large Company"/>
+			<xs:enumeration value="Private with public mission"/>
+			<xs:enumeration value="Public Research Institution"/>
+			<xs:enumeration value="Research Laboratory"/>
+			<xs:enumeration value="Small Medium Enterprise, Start-up"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="researchFieldEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Agricultural products"/>
+			<xs:enumeration value="Agronomics"/>
+			<xs:enumeration value="Enology"/>
+			<xs:enumeration value="Forest sciences"/>
+			<xs:enumeration value="Phytotechny"/>
+			<xs:enumeration value="Soil science"/>
+			<xs:enumeration value="Temperate agriculture"/>
+			<xs:enumeration value="Tropical agriculture"/>
+			<xs:enumeration value="Zootechnics"/>
+			<xs:enumeration value="Communication anthropology"/>
+			<xs:enumeration value="Cultural anthropology"/>
+			<xs:enumeration value="Ethnology"/>
+			<xs:enumeration value="Medical anthropology"/>
+			<xs:enumeration value="Physical anthropology"/>
+			<xs:enumeration value="Social anthropology"/>
+			<xs:enumeration value="Design"/>
+			<xs:enumeration value="Landscape architecture"/>
+			<xs:enumeration value="Naval architecture"/>
+			<xs:enumeration value="Arts management"/>
+			<xs:enumeration value="Fashion studies"/>
+			<xs:enumeration value="Fine arts"/>
+			<xs:enumeration value="Handicrafts"/>
+			<xs:enumeration value="Performing arts"/>
+			<xs:enumeration value="Visual arts"/>
+			<xs:enumeration value="Astrophysics"/>
+			<xs:enumeration value="Cosmology"/>
+			<xs:enumeration value="Biodiversity"/>
+			<xs:enumeration value="Biological engineering"/>
+			<xs:enumeration value="Biology"/>
+			<xs:enumeration value="Botany"/>
+			<xs:enumeration value="Laboratory animal science"/>
+			<xs:enumeration value="Nutritional sciences"/>
+			<xs:enumeration value="Zoology"/>
+			<xs:enumeration value="Analytical chemistry"/>
+			<xs:enumeration value="Applied chemistry"/>
+			<xs:enumeration value="Biochemistry"/>
+			<xs:enumeration value="Combinatorial chemistry"/>
+			<xs:enumeration value="Computational chemistry"/>
+			<xs:enumeration value="Heterogeneous catalysis"/>
+			<xs:enumeration value="Homogeneous catalysis"/>
+			<xs:enumeration value="Inorganic chemistry"/>
+			<xs:enumeration value="Instrumental analysis"/>
+			<xs:enumeration value="Instrumental techniques"/>
+			<xs:enumeration value="Molecular chemistry"/>
+			<xs:enumeration value="Organic chemistry"/>
+			<xs:enumeration value="Physical chemistry"/>
+			<xs:enumeration value="Reaction mechanisms and dynamics"/>
+			<xs:enumeration value="Solar chemistry"/>
+			<xs:enumeration value="Structural chemistry"/>
+			<xs:enumeration value="Audiovisual communication"/>
+			<xs:enumeration value="Business communication"/>
+			<xs:enumeration value="Editing"/>
+			<xs:enumeration value="Graphic communication"/>
+			<xs:enumeration value="Journalism"/>
+			<xs:enumeration value="Media studies"/>
+			<xs:enumeration value="On-line information services"/>
+			<xs:enumeration value="Public relations"/>
+			<xs:enumeration value="Publishing"/>
+			<xs:enumeration value="Science communication"/>
+			<xs:enumeration value="Speech communication"/>
+			<xs:enumeration value="Autonomic computing"/>
+			<xs:enumeration value="Computer architecture"/>
+			<xs:enumeration value="Computer hardware"/>
+			<xs:enumeration value="Computer systems"/>
+			<xs:enumeration value="Cybernetics"/>
+			<xs:enumeration value="Database management"/>
+			<xs:enumeration value="Digital systems"/>
+			<xs:enumeration value="Informatics"/>
+			<xs:enumeration value="Modelling tools"/>
+			<xs:enumeration value="Programming"/>
+			<xs:enumeration value="Systems design"/>
+			<xs:enumeration value="3 D modelling"/>
+			<xs:enumeration value="African studies"/>
+			<xs:enumeration value="American studies"/>
+			<xs:enumeration value="Ancient studies"/>
+			<xs:enumeration value="Anglo Saxon studies"/>
+			<xs:enumeration value="Arabic studies"/>
+			<xs:enumeration value="Asian studies"/>
+			<xs:enumeration value="Byzantine studies"/>
+			<xs:enumeration value="Coptic studies"/>
+			<xs:enumeration value="Eskimo studies"/>
+			<xs:enumeration value="European studies"/>
+			<xs:enumeration value="Islamic studies"/>
+			<xs:enumeration value="Jewish studies"/>
+			<xs:enumeration value="Middle Ages studies"/>
+			<xs:enumeration value="Middle East studies"/>
+			<xs:enumeration value="Oriental studies"/>
+			<xs:enumeration value="Regional studies"/>
+			<xs:enumeration value="Renaissance studies"/>
+			<xs:enumeration value="Russian studies"/>
+			<xs:enumeration value="Third world studies"/>
+			<xs:enumeration value="Administrative sciences"/>
+			<xs:enumeration value="Agricultural economics"/>
+			<xs:enumeration value="Applied economics"/>
+			<xs:enumeration value="Banking"/>
+			<xs:enumeration value="Business economics"/>
+			<xs:enumeration value="Cadastral survey"/>
+			<xs:enumeration value="Commercial economics"/>
+			<xs:enumeration value="Construction economics"/>
+			<xs:enumeration value="Consumer economics"/>
+			<xs:enumeration value="Cyclical economics"/>
+			<xs:enumeration value="Econometrics"/>
+			<xs:enumeration value="Economic policy"/>
+			<xs:enumeration value="Economic systems"/>
+			<xs:enumeration value="Economic theory"/>
+			<xs:enumeration value="Economics of development"/>
+			<xs:enumeration value="Environmental economics"/>
+			<xs:enumeration value="Financial science"/>
+			<xs:enumeration value="Fishery economy"/>
+			<xs:enumeration value="Food economics"/>
+			<xs:enumeration value="Health economics"/>
+			<xs:enumeration value="Home economics"/>
+			<xs:enumeration value="Industrial economics"/>
+			<xs:enumeration value="International economics"/>
+			<xs:enumeration value="Knowledge economy"/>
+			<xs:enumeration value="Labour economics"/>
+			<xs:enumeration value="Labour market economics"/>
+			<xs:enumeration value="Land economy"/>
+			<xs:enumeration value="Local public economics"/>
+			<xs:enumeration value="Macroeconomics"/>
+			<xs:enumeration value="Management studies"/>
+			<xs:enumeration value="Marketing"/>
+			<xs:enumeration value="Microeconomics"/>
+			<xs:enumeration value="Political economy"/>
+			<xs:enumeration value="Production economics"/>
+			<xs:enumeration value="Social economics"/>
+			<xs:enumeration value="Tourism studies"/>
+			<xs:enumeration value="Transport economics"/>
+			<xs:enumeration value="Valuation"/>
+			<xs:enumeration value="Veterinary economics"/>
+			<xs:enumeration value="Education"/>
+			<xs:enumeration value="Learning studies"/>
+			<xs:enumeration value="Research methodology"/>
+			<xs:enumeration value="Teaching methods"/>
+			<xs:enumeration value="Aerospace engineering"/>
+			<xs:enumeration value="Agricultural engineering"/>
+			<xs:enumeration value="Biomaterial engineering"/>
+			<xs:enumeration value="Biomedical engineering"/>
+			<xs:enumeration value="Chemical engineering"/>
+			<xs:enumeration value="Civil engineering"/>
+			<xs:enumeration value="Communication engineering"/>
+			<xs:enumeration value="Computer engineering"/>
+			<xs:enumeration value="Control engineering"/>
+			<xs:enumeration value="Design engineering"/>
+			<xs:enumeration value="Electrical engineering"/>
+			<xs:enumeration value="Electronic engineering"/>
+			<xs:enumeration value="Geological engineering"/>
+			<xs:enumeration value="Industrial engineering"/>
+			<xs:enumeration value="Knowledge engineering"/>
+			<xs:enumeration value="Maritime engineering"/>
+			<xs:enumeration value="Materials engineering"/>
+			<xs:enumeration value="Mechanical engineering"/>
+			<xs:enumeration value="Microengineering"/>
+			<xs:enumeration value="Nuclear engineering"/>
+			<xs:enumeration value="Precision engineering"/>
+			<xs:enumeration value="Process engineering"/>
+			<xs:enumeration value="Project engineering"/>
+			<xs:enumeration value="Simulation engineering"/>
+			<xs:enumeration value="Sound engineering"/>
+			<xs:enumeration value="Surveying"/>
+			<xs:enumeration value="Systems engineering"/>
+			<xs:enumeration value="Thermal engineering"/>
+			<xs:enumeration value="Water resources engineering"/>
+			<xs:enumeration value="Earth science"/>
+			<xs:enumeration value="Ecology"/>
+			<xs:enumeration value="Global change"/>
+			<xs:enumeration value="Natural resources management"/>
+			<xs:enumeration value="Water science"/>
+			<xs:enumeration value="Cartography"/>
+			<xs:enumeration value="Economic geography"/>
+			<xs:enumeration value="Geopolitics"/>
+			<xs:enumeration value="Historical geography"/>
+			<xs:enumeration value="Human geography"/>
+			<xs:enumeration value="Regional geography"/>
+			<xs:enumeration value="Social geography"/>
+			<xs:enumeration value="Ancient history"/>
+			<xs:enumeration value="Archaeology"/>
+			<xs:enumeration value="Art history"/>
+			<xs:enumeration value="Church history"/>
+			<xs:enumeration value="Contemporary history"/>
+			<xs:enumeration value="Economic history"/>
+			<xs:enumeration value="Genealogy"/>
+			<xs:enumeration value="Heraldry"/>
+			<xs:enumeration value="History of agriculture"/>
+			<xs:enumeration value="History of design"/>
+			<xs:enumeration value="History of law"/>
+			<xs:enumeration value="History of performance"/>
+			<xs:enumeration value="History of philosophy"/>
+			<xs:enumeration value="History of religions"/>
+			<xs:enumeration value="History of science"/>
+			<xs:enumeration value="History of social sciences"/>
+			<xs:enumeration value="Local history"/>
+			<xs:enumeration value="Medieval history"/>
+			<xs:enumeration value="Modern history"/>
+			<xs:enumeration value="Music history"/>
+			<xs:enumeration value="Numismatics"/>
+			<xs:enumeration value="Paleography"/>
+			<xs:enumeration value="Political history"/>
+			<xs:enumeration value="Prehistory"/>
+			<xs:enumeration value="Sigillography"/>
+			<xs:enumeration value="Social history"/>
+			<xs:enumeration value="Archivistics"/>
+			<xs:enumeration value="Diplomatics"/>
+			<xs:enumeration value="Documentation"/>
+			<xs:enumeration value="Information management"/>
+			<xs:enumeration value="Library science"/>
+			<xs:enumeration value="Agrarian law"/>
+			<xs:enumeration value="Canon law"/>
+			<xs:enumeration value="Comparative law"/>
+			<xs:enumeration value="Criminal law"/>
+			<xs:enumeration value="Environmental law"/>
+			<xs:enumeration value="European law"/>
+			<xs:enumeration value="Finance law"/>
+			<xs:enumeration value="Fiscal law"/>
+			<xs:enumeration value="Health law"/>
+			<xs:enumeration value="Informatic law"/>
+			<xs:enumeration value="International law"/>
+			<xs:enumeration value="Judicial law"/>
+			<xs:enumeration value="Juvenile law"/>
+			<xs:enumeration value="Labour law"/>
+			<xs:enumeration value="Media law"/>
+			<xs:enumeration value="Medical law"/>
+			<xs:enumeration value="Private law"/>
+			<xs:enumeration value="Public law"/>
+			<xs:enumeration value="Roman law"/>
+			<xs:enumeration value="Social law"/>
+			<xs:enumeration value="Transportation law"/>
+			<xs:enumeration value="Languages"/>
+			<xs:enumeration value="Linguistics"/>
+			<xs:enumeration value="Philology"/>
+			<xs:enumeration value="African literature"/>
+			<xs:enumeration value="American literature"/>
+			<xs:enumeration value="Asian literature"/>
+			<xs:enumeration value="Austronesian literature"/>
+			<xs:enumeration value="Comparative literature"/>
+			<xs:enumeration value="European literature"/>
+			<xs:enumeration value="Greek literature"/>
+			<xs:enumeration value="Hamito-semitic literature"/>
+			<xs:enumeration value="Literary criticism"/>
+			<xs:enumeration value="Writing"/>
+			<xs:enumeration value="Algebra"/>
+			<xs:enumeration value="Algorithms"/>
+			<xs:enumeration value="Applied mathematics"/>
+			<xs:enumeration value="Chaos theory"/>
+			<xs:enumeration value="Combinatorial analysis"/>
+			<xs:enumeration value="Computational mathematics"/>
+			<xs:enumeration value="Discrete mathematics"/>
+			<xs:enumeration value="Geometry"/>
+			<xs:enumeration value="Mathematical analysis"/>
+			<xs:enumeration value="Mathematical logic"/>
+			<xs:enumeration value="Number theory"/>
+			<xs:enumeration value="Probability theory"/>
+			<xs:enumeration value="Statistics"/>
+			<xs:enumeration value="Medicine"/>
+			<xs:enumeration value="Veterinary medicine"/>
+			<xs:enumeration value="Neurobiology"/>
+			<xs:enumeration value="Neurochemistry"/>
+			<xs:enumeration value="Neuroinformatics"/>
+			<xs:enumeration value="Neurology"/>
+			<xs:enumeration value="Neurophysiology"/>
+			<xs:enumeration value="Neuropsychology"/>
+			<xs:enumeration value="Clinical pharmacology"/>
+			<xs:enumeration value="Cosmetology"/>
+			<xs:enumeration value="Pharmacognosy"/>
+			<xs:enumeration value="Pharmacy"/>
+			<xs:enumeration value="Toxicology"/>
+			<xs:enumeration value="Veterinary pharmacology"/>
+			<xs:enumeration value="Aesthetics"/>
+			<xs:enumeration value="Epistemology"/>
+			<xs:enumeration value="Ethics"/>
+			<xs:enumeration value="Logic"/>
+			<xs:enumeration value="Metaphysics"/>
+			<xs:enumeration value="Phenomenology"/>
+			<xs:enumeration value="Philosophical anthropology"/>
+			<xs:enumeration value="Philosophy of law"/>
+			<xs:enumeration value="Philosophy of science"/>
+			<xs:enumeration value="Semiotics"/>
+			<xs:enumeration value="Systematic philosophy"/>
+			<xs:enumeration value="Acoustics"/>
+			<xs:enumeration value="Applied physics"/>
+			<xs:enumeration value="Biophysics"/>
+			<xs:enumeration value="Chemical physics"/>
+			<xs:enumeration value="Classical mechanics"/>
+			<xs:enumeration value="Computational physics"/>
+			<xs:enumeration value="Condensed matter properties"/>
+			<xs:enumeration value="Electromagnetism"/>
+			<xs:enumeration value="Electronics"/>
+			<xs:enumeration value="Mathematical physics"/>
+			<xs:enumeration value="Metrology"/>
+			<xs:enumeration value="Neutron physics"/>
+			<xs:enumeration value="Optics"/>
+			<xs:enumeration value="Quantum mechanics"/>
+			<xs:enumeration value="Relativity"/>
+			<xs:enumeration value="Solid state physics"/>
+			<xs:enumeration value="Statics"/>
+			<xs:enumeration value="Statistical physics"/>
+			<xs:enumeration value="Surface physics"/>
+			<xs:enumeration value="Thermodynamics"/>
+			<xs:enumeration value="Governance"/>
+			<xs:enumeration value="Policy studies"/>
+			<xs:enumeration value="Public awareness of science"/>
+			<xs:enumeration value="Public policy"/>
+			<xs:enumeration value="Science and society"/>
+			<xs:enumeration value="Behavioural sciences"/>
+			<xs:enumeration value="Cognitive science"/>
+			<xs:enumeration value="Psychoanalytic studies"/>
+			<xs:enumeration value="Psychology"/>
+			<xs:enumeration value="Biblical studies"/>
+			<xs:enumeration value="Church studies"/>
+			<xs:enumeration value="Comparative religion"/>
+			<xs:enumeration value="Non-Christian religions"/>
+			<xs:enumeration value="Pastoral studies"/>
+			<xs:enumeration value="Theology"/>
+			<xs:enumeration value="Educational sociology"/>
+			<xs:enumeration value="Macrosociology"/>
+			<xs:enumeration value="Rural sociology"/>
+			<xs:enumeration value="Social changes"/>
+			<xs:enumeration value="Social shaping of technology"/>
+			<xs:enumeration value="Societal behaviour"/>
+			<xs:enumeration value="Socio-economic research"/>
+			<xs:enumeration value="Sociology of enterprise"/>
+			<xs:enumeration value="Sociology of labour"/>
+			<xs:enumeration value="Sociology of religion"/>
+			<xs:enumeration value="Urban sociology"/>
+			<xs:enumeration value="Biotechnology"/>
+			<xs:enumeration value="Chemical technology"/>
+			<xs:enumeration value="Communication technology"/>
+			<xs:enumeration value="Computer technology"/>
+			<xs:enumeration value="Construction technology"/>
+			<xs:enumeration value="Dating techniques"/>
+			<xs:enumeration value="Electrical technology"/>
+			<xs:enumeration value="Energy technology"/>
+			<xs:enumeration value="Environmental technology"/>
+			<xs:enumeration value="Future technology"/>
+			<xs:enumeration value="Graphic techniques"/>
+			<xs:enumeration value="High vacuum technology"/>
+			<xs:enumeration value="Industrial technology"/>
+			<xs:enumeration value="Information technology"/>
+			<xs:enumeration value="Instrumentation technology"/>
+			<xs:enumeration value="Interface technology"/>
+			<xs:enumeration value="Internet technology"/>
+			<xs:enumeration value="Knowledge technology"/>
+			<xs:enumeration value="Laboratory technology"/>
+			<xs:enumeration value="Marine technology"/>
+			<xs:enumeration value="Materials technology"/>
+			<xs:enumeration value="Measurement technology"/>
+			<xs:enumeration value="Medical technology"/>
+			<xs:enumeration value="Micro-technology"/>
+			<xs:enumeration value="Military technology"/>
+			<xs:enumeration value="Mining"/>
+			<xs:enumeration value="Nanotechnology"/>
+			<xs:enumeration value="Nuclear technology"/>
+			<xs:enumeration value="Optronics"/>
+			<xs:enumeration value="Pharmaceutical technology"/>
+			<xs:enumeration value="Production technology"/>
+			<xs:enumeration value="Quantum technology"/>
+			<xs:enumeration value="Remote sensing"/>
+			<xs:enumeration value="Safety technology"/>
+			<xs:enumeration value="Sound technology"/>
+			<xs:enumeration value="Space technology"/>
+			<xs:enumeration value="Standardisation of technologies"/>
+			<xs:enumeration value="Telecommunications technology"/>
+			<xs:enumeration value="Transport technology"/>
+			<xs:enumeration value="Vacuum technology"/>
+			<xs:enumeration value="Water technology"/>
+			<xs:enumeration value="Geology"/>
+			<xs:enumeration value="Hydrology"/>
+      <xs:enumeration value="Crystal growth"/>
+      <xs:enumeration value="Health sciences"/>
+      <xs:enumeration value="Epidemiology"/>
+      <xs:enumeration value="Cancer research"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="yearsOfExperienceEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="1 - 4"/>
+			<xs:enumeration value="4 - 10"/>
+			<xs:enumeration value="More than 10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="degreeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Bachelor Degree or equivalent"/>
+			<xs:enumeration value="Master Degree or equivalent"/>
+			<xs:enumeration value="PhD or equivalent"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="disciplineEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Agricultural sciences"/>
+			<xs:enumeration value="Anthropology"/>
+			<xs:enumeration value="Architecture"/>
+			<xs:enumeration value="Arts"/>
+			<xs:enumeration value="Astronomy"/>
+			<xs:enumeration value="Biological sciences"/>
+			<xs:enumeration value="Chemistry"/>
+			<xs:enumeration value="Communication sciences"/>
+			<xs:enumeration value="Computer science"/>
+			<xs:enumeration value="Criminology"/>
+			<xs:enumeration value="Cultural studies"/>
+			<xs:enumeration value="Demography"/>
+			<xs:enumeration value="Economics"/>
+			<xs:enumeration value="Educational sciences"/>
+			<xs:enumeration value="Engineering"/>
+			<xs:enumeration value="Environmental science"/>
+			<xs:enumeration value="Ethics in health sciences"/>
+			<xs:enumeration value="Ethics in natural sciences"/>
+			<xs:enumeration value="Ethics in physical sciences"/>
+			<xs:enumeration value="Ethics in social sciences"/>
+			<xs:enumeration value="Geography"/>
+			<xs:enumeration value="History"/>
+			<xs:enumeration value="Information science"/>
+			<xs:enumeration value="Juridical sciences"/>
+			<xs:enumeration value="Language sciences"/>
+			<xs:enumeration value="Literature"/>
+			<xs:enumeration value="Management sciences"/>
+			<xs:enumeration value="Mathematics"/>
+			<xs:enumeration value="Medical sciences"/>
+			<xs:enumeration value="Neurosciences"/>
+			<xs:enumeration value="Pharmacological sciences"/>
+			<xs:enumeration value="Philosophy"/>
+			<xs:enumeration value="Physics"/>
+			<xs:enumeration value="Political sciences"/>
+			<xs:enumeration value="Psychological sciences"/>
+			<xs:enumeration value="Religious sciences"/>
+			<xs:enumeration value="Sociology"/>
+			<xs:enumeration value="Technology"/>
+			<xs:enumeration value="Geosciences"/>
+			<xs:enumeration value="Other"/>
+			<xs:enumeration value="All"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="languagesEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Albanian"/>
+			<xs:enumeration value="Arabic"/>
+			<xs:enumeration value="Bosnian"/>
+			<xs:enumeration value="Bulgarian"/>
+			<xs:enumeration value="Chinese"/>
+			<xs:enumeration value="Croatian"/>
+			<xs:enumeration value="Czech"/>
+			<xs:enumeration value="Danish"/>
+			<xs:enumeration value="Dutch"/>
+			<xs:enumeration value="English"/>
+			<xs:enumeration value="Estonian"/>
+			<xs:enumeration value="Finnish"/>
+			<xs:enumeration value="French"/>
+			<xs:enumeration value="German"/>
+			<xs:enumeration value="Greek"/>
+			<xs:enumeration value="Hebrew"/>
+			<xs:enumeration value="Hungarian"/>
+			<xs:enumeration value="Icelandic"/>
+			<xs:enumeration value="Irish"/>
+			<xs:enumeration value="Italian"/>
+			<xs:enumeration value="Japanese"/>
+			<xs:enumeration value="Latvian"/>
+			<xs:enumeration value="Lithuanian"/>
+			<xs:enumeration value="Macedonian"/>
+			<xs:enumeration value="Maltese"/>
+			<xs:enumeration value="Norwegian"/>
+			<xs:enumeration value="Other"/>
+			<xs:enumeration value="Polish"/>
+			<xs:enumeration value="Portuguese"/>
+			<xs:enumeration value="Romanian"/>
+			<xs:enumeration value="Russian"/>
+			<xs:enumeration value="Serbian"/>
+			<xs:enumeration value="Slovak"/>
+			<xs:enumeration value="Slovenian"/>
+			<xs:enumeration value="Spanish"/>
+			<xs:enumeration value="Swedish"/>
+			<xs:enumeration value="Turkish"/>
+			<xs:enumeration value="Latin"/>
+			<xs:enumeration value="Ancient Greek"/>
+      <xs:enumeration value="Catalan"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="languagesLevelEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Basic"/>
+			<xs:enumeration value="Good"/>
+			<xs:enumeration value="Excellent"/>
+			<xs:enumeration value="Mother Tongue"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="howToApplyEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="e-mail"/>
+			<xs:enumeration value="website"/>
+		</xs:restriction>
+	</xs:simpleType>
+  <xs:simpleType name="jobPositionsEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Undergraduate Positions"/>
+      <xs:enumeration value="Bachelor Positions"/>
+      <xs:enumeration value="Master Positions"/>
+      <xs:enumeration value="PhD Positions"/>
+      <xs:enumeration value="Postdoc Positions"/>
+      <xs:enumeration value="Research Support Positions"/>
+      <xs:enumeration value="Other Positions"/>
+    </xs:restriction>
+  </xs:simpleType>
+	<xs:simpleType name="researcherProfileEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="First Stage Researcher (R1)"/>
+			<xs:enumeration value="Recognised Researcher (R2)"/>
+			<xs:enumeration value="Established Researcher (R3)"/>
+			<xs:enumeration value="Leading Researcher (R4)"/>
+			<xs:enumeration value="Other Profession"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typeOfContractEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Permanent"/>
+			<xs:enumeration value="Temporary"/>
+			<xs:enumeration value="To be defined"/>
+			<xs:enumeration value="Other"/>
+			<xs:enumeration value="Not Applicable"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="jobStatusEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Full-time"/>
+			<xs:enumeration value="Part-time"/>
+			<xs:enumeration value="Negotiable"/>
+			<xs:enumeration value="Other"/>
+			<xs:enumeration value="Not Applicable"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="researchFrameworkProgrammeEnum">
+		<xs:restriction base="xs:string">
+      <xs:enumeration value="Horizon Europe - ERC"/>
+      <xs:enumeration value="Horizon Europe - EIC"/>
+      <xs:enumeration value="Horizon Europe - EIT"/>
+      <xs:enumeration value="Horizon Europe - MSCA"/>
+      <xs:enumeration value="Horizon Europe – COFUND"/>
+      <xs:enumeration value="Horizon Europe (other)"/>
+      <xs:enumeration value="Horizon Europe"/>
+      <xs:enumeration value="Horizon Europe - SME Innovation Associate"/>
+      <xs:enumeration value="Horizon 2020"/>
+      <xs:enumeration value="NextGenerationEU"/>
+      <xs:enumeration value="Other EU programme"/>
+      <xs:enumeration value="LIFE Programme"/>
+			<xs:enumeration value="Digital Europe"/>
+			<xs:enumeration value="European Union / Next Generation EU"/>
+			<xs:enumeration value="ERASMUS+"/>
+			<xs:enumeration value="Interreg"/>
+			<xs:enumeration value="HE"/>
+			<xs:enumeration value="HE / ERC"/>
+			<xs:enumeration value="HE / EIC"/>
+			<xs:enumeration value="HE / EIT"/>
+			<xs:enumeration value="HE / MSCA"/>
+			<xs:enumeration value="HE / MSCA COFUND"/>
+			<xs:enumeration value="HE / SME Innovation Associate"/>
+			<xs:enumeration value="H2020"/>
+			<xs:enumeration value="H2020 / ERC"/>
+			<xs:enumeration value="H2020 / Marie Skłodowska-Curie Actions"/>
+			<xs:enumeration value="H2020 / Marie Skłodowska-Curie Actions COFUND"/>
+			<xs:enumeration value="H2020 / EIT"/>
+			<xs:enumeration value="H2020 / SME Innovation Associate"/>
+			<xs:enumeration value="FP7"/>
+			<xs:enumeration value="FP7 / Ideas-ERC"/>
+			<xs:enumeration value="FP7 / People-Marie Curie Actions"/>
+			<xs:enumeration value="FP7 / People-Marie Curie Actions COFUND"/>
+			<xs:enumeration value="FP7 / JRC"/>
+			<xs:enumeration value="No"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="shortTextInputType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="mandatoryShortTextInputType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="mediumTextInputType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="512"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="mandatoryMediumTextInputType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="512"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="longTextInputType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="textInputID">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+			<xs:pattern value="[A-Za-z\d\s(-_)]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="descriptionInputType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50000"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
+
