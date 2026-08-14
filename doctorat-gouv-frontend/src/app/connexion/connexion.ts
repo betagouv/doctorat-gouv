@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-connexion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './connexion.html',
   styleUrl: './connexion.scss',
 })
@@ -26,5 +25,9 @@ export class Connexion implements OnInit {
       ? 'Log in to the national PhD platform with FranceConnect or your account.'
       : 'Connectez-vous à la plateforme nationale du doctorat via FranceConnect ou avec votre compte.';
     this.metaService.updateTag({ name: 'description', content: description });
+  }
+
+  onSubmit(): void {
+    // Squelette temporaire — ne fait rien. Réel traitement à l'étape 3.
   }
 }

@@ -1,3 +1,15 @@
-<main id="main-content" class="connexion-page">
-  <!-- Squelette étape 2 — contenu réel à l'étape 3 -->
+<main id="main-content">
+  <h1>Page de connexion</h1>
+
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label for="email">E-mail</label>
+      <input id="email" name="email" type="email" />
+    </div>
+    <div>
+      <label for="password">Mot de passe</label>
+      <input id="password" name="password" type="password" />
+    </div>
+    <button type="submit">Se connecter</button>
+  </form>
 </main>

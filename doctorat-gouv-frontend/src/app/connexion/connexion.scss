@@ -1,4 +1,15 @@
-/* Squelette étape 2 — styles à l'étape 3 */
+/* Squelette temporaire — sera entièrement refait à l'étape 3. */
 .connexion-page {
   min-height: 100vh;
+}
+
+form div {
+  margin-bottom: 1rem;
+}
+
+form input {
+  display: block;
+  margin-top: 0.25rem;
+  padding: 0.35rem;
+  border: 1px solid #999;
 }
