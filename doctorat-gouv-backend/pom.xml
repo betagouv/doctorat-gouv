@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fr.beta.gouv.doctorat</groupId>
 		<artifactId>doctorat-gouv</artifactId>
-		<version>0.3.8</version>
+		<version>0.3.9-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -34,6 +34,8 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
 	<dependencyManagement>
@@ -79,6 +81,16 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-vector</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- JAXB : marshalling XML du flux EURAXESS -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<!-- Base embarquée H2 pour les tests -->
@@ -166,6 +178,34 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<!-- JAXB xjc : génération des classes Java depuis le schéma EURAXESS -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sources>
+						<source>src/main/resources/euraxess/JobOpportunitySchema.codegen.xsd</source>
+					</sources>
+					<packageName>fr.dinum.beta.gouv.doctorat.euraxess.jaxb</packageName>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-xjc</artifactId>
+						<version>4.0.5</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 		</plugins>
