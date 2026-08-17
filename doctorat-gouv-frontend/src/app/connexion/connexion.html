@@ -19,58 +19,65 @@
     <!-- ============ BLOC DROIT : Connexion ============ -->
     <div class="fr-col-12 fr-col-lg-6 login-column">
       <div class="login-card">
-        <h2>{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
 
-        <!-- FranceConnect -->
+        <!-- 2.1 Section "Connectez-vous" -->
+        <h2 class="fr-text--bold fr-text--lg fr-mb-2w">Connectez-vous</h2>
+        <p class="fr-text--sm fr-mb-3w">
+          FranceConnect est la solution proposée par l'État pour sécuriser et simplifier la connexion aux services en ligne.
+        </p>
         <a href="#"
-           class="fr-btn fr-btn--icon-left fr-icon-lock-line login-fc-btn">
-          {{ 'CONNEXION.FC_BUTTON' | translate }}
+           class="fr-btn fr-btn--icon-left fr-icon-lock-line fr-btn--primary login-fc-btn">
+          S'identifier avec FranceConnect
         </a>
-        <p class="fr-mt-2w">
-          <a href="#">{{ 'CONNEXION.FC_HELP' | translate }}</a>
+        <p class="fr-mt-1w">
+          <a href="#" class="fr-link fr-text--sm" target="_blank" rel="noopener">Qu'est-ce que FranceConnect ?</a>
         </p>
 
-        <hr class="fr-mt-3w fr-mb-3w" />
+        <!-- Séparateur "ou" -->
+        <hr class="fr-hr fr-mt-3w">
+        <p class="fr-text--sm fr-text--italic fr-mb-3w separator-ou">ou</p>
 
-        <!-- Formulaire manuel -->
+        <!-- 2.2 Section "Connectez-vous manuellement" -->
+        <h3 class="fr-text--bold fr-text--lg fr-mb-1w">Connectez-vous manuellement</h3>
+        <p class="fr-text--sm fr-mb-2w">Les champs marqués du symbole * sont obligatoires.</p>
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
           <!-- E-mail -->
           <div class="form-field">
             <label class="fr-label" for="connexion-email">
-              {{ 'CONNEXION.FIELD_EMAIL' | translate }}
+              Adresse électronique <span class="required-star">*</span>
             </label>
             <input
-              class="fr-input"
+              class="fr-input fr-mb-2w"
               id="connexion-email"
               type="email"
+              placeholder="Votre adresse e-mail"
               formControlName="email" />
           </div>
 
           <!-- Mot de passe -->
-          <div class="form-field fr-mt-2w">
+          <div class="form-field">
             <label class="fr-label" for="connexion-password">
-              {{ 'CONNEXION.FIELD_PASSWORD' | translate }}
+              Mot de passe <span class="required-star">*</span>
             </label>
-            <div class="password-wrapper">
-              <input
-                class="fr-input"
-                id="connexion-password"
-                [type]="showPassword ? 'text' : 'password'"
-                formControlName="password" />
-              <button
-                type="button"
-                class="fr-btn fr-btn--tertiary fr-btn--sm"
-                (click)="togglePassword()"
-                [attr.aria-pressed]="showPassword">
-                {{ (showPassword ? 'CONNEXION.HIDE_PASSWORD' : 'CONNEXION.SHOW_PASSWORD') | translate }}
-              </button>
-            </div>
+            <input
+              class="fr-input fr-mb-1w"
+              id="connexion-password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Votre mot de passe"
+              formControlName="password" />
+          </div>
+
+          <!-- Checkbox Afficher -->
+          <div class="fr-checkbox-group fr-mb-2w">
+            <input type="checkbox" id="show-password" (change)="togglePassword()">
+            <label class="fr-label" for="show-password">Afficher</label>
           </div>
 
           <!-- Mot de passe oublié -->
-          <p class="fr-mt-2w">
-            <a routerLink="/mot-de-passe-oublie">{{ 'CONNEXION.FORGOT_PASSWORD' | translate }}</a>
+          <p class="fr-mb-3w">
+            <a routerLink="/mot-de-passe-oublie" class="fr-link fr-text--sm">Mot de passe oublié ?</a>
           </p>
 
           <!-- Erreur globale -->
@@ -78,22 +85,27 @@
             class="fr-alert fr-alert--error fr-mt-2w"
             role="alert"
             *ngIf="globalError">
-            {{ globalError | translate }}
+            {{ globalError }}
           </div>
 
           <!-- Bouton Se connecter -->
           <button
             type="submit"
-            class="fr-btn fr-btn--primary fr-btn--lg fr-mt-3w">
-            {{ 'CONNEXION.SUBMIT' | translate }}
+            class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w">
+            Se connecter →
           </button>
         </form>
 
-        <!-- Section secondaire -->
-        <p class="fr-mt-4w">{{ 'CONNEXION.NO_ACCOUNT' | translate }}</p>
-        <a routerLink="/inscription" class="fr-btn fr-btn--secondary">
-          {{ 'CONNEXION.CREATE_ACCOUNT' | translate }}
-        </a>
+        <!-- 2.3 Section "Créer un compte" -->
+        <div class="create-account-block fr-mt-4w">
+          <h3 class="fr-text--bold fr-text--lg fr-mb-1w">Vous n'avez pas encore de compte ?</h3>
+          <p class="fr-text--sm fr-mb-2w">Créez votre compte dès maintenant pour rejoindre la plateforme.</p>
+          <a routerLink="/inscription"
+             class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-account-line fr-mt-1w">
+            Créer un compte
+          </a>
+        </div>
+
       </div>
     </div>
 

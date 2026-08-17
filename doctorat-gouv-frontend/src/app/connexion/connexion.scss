@@ -60,31 +60,28 @@
   max-width: 26rem;
 }
 
-.login-card h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
 .login-fc-btn {
   width: 100%;
   justify-content: center;
 }
 
-/* --- Formulaire --- */
-.password-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+/* Séparateur "ou" centré */
+.separator-ou {
+  text-align: center;
 }
 
-.password-wrapper .fr-input {
-  flex: 1;
+/* Étoile obligatoire */
+.required-star {
+  color: #161616;
+  font-size: 0.75rem;
+  margin-left: 0.15rem;
 }
 
-.form-field .fr-label {
-  font-size: 0.9rem;
-  font-weight: 600;
+/* Bloc "Créer un compte" beige */
+.create-account-block {
+  background-color: #F5F0EB;
+  padding: 1.5rem;
+  border-radius: 4px;
 }
 
 /* --- Desktop : 2 colonnes --- */
