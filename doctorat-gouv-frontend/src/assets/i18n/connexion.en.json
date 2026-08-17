@@ -14,6 +14,10 @@
     "FORGOT_PASSWORD": "Forgot password?",
     "SUBMIT": "Log in",
     "NO_ACCOUNT": "Don't have an account yet?",
-    "CREATE_ACCOUNT": "Create an account"
+    "CREATE_ACCOUNT": "Create an account",
+    "ERROR_EMAIL_REQUIRED": "Please enter your email address.",
+    "ERROR_EMAIL_INVALID": "Please enter a valid email address.",
+    "ERROR_PASSWORD_REQUIRED": "Please enter your password.",
+    "ERROR_SERVICE_UNAVAILABLE": "Login is temporarily unavailable. Please try again later."
   }
 }
