@@ -18,6 +18,13 @@
     "ERROR_EMAIL_REQUIRED": "Veuillez saisir votre adresse électronique.",
     "ERROR_EMAIL_INVALID": "Veuillez saisir une adresse électronique valide.",
     "ERROR_PASSWORD_REQUIRED": "Veuillez saisir votre mot de passe.",
+    "FC_DESCRIPTION": "FranceConnect est la solution proposée par l'État pour sécuriser et simplifier la connexion aux services en ligne.",
+    "SEPARATOR_OU": "ou",
+    "MANUAL_TITLE": "Connectez-vous manuellement",
+    "REQUIRED_FIELDS_NOTE": "Les champs marqués du symbole * sont obligatoires.",
+    "PLACEHOLDER_EMAIL": "Votre adresse e-mail",
+    "PLACEHOLDER_PASSWORD": "Votre mot de passe",
+    "CREATE_ACCOUNT_DESCRIPTION": "Créez votre compte dès maintenant pour rejoindre la plateforme.",
     "ERROR_SERVICE_UNAVAILABLE": "La connexion est temporairement indisponible. Merci de réessayer ultérieurement."
   }
 }

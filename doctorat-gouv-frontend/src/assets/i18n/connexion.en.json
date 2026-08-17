@@ -18,6 +18,13 @@
     "ERROR_EMAIL_REQUIRED": "Please enter your email address.",
     "ERROR_EMAIL_INVALID": "Please enter a valid email address.",
     "ERROR_PASSWORD_REQUIRED": "Please enter your password.",
+    "FC_DESCRIPTION": "FranceConnect is the solution offered by the French government to securely and easily log in to online services.",
+    "SEPARATOR_OU": "or",
+    "MANUAL_TITLE": "Log in manually",
+    "REQUIRED_FIELDS_NOTE": "Fields marked with * are required.",
+    "PLACEHOLDER_EMAIL": "Your email address",
+    "PLACEHOLDER_PASSWORD": "Your password",
+    "CREATE_ACCOUNT_DESCRIPTION": "Create your account now to join the platform.",
     "ERROR_SERVICE_UNAVAILABLE": "Login is temporarily unavailable. Please try again later."
   }
 }
