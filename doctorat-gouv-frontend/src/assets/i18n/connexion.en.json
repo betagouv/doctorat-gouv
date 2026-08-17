@@ -1,6 +1,19 @@
 {
   "CONNEXION": {
     "META_TITLE": "Login — Doctorat.gouv.fr",
-    "META_DESCRIPTION": "Log in to the national PhD platform with FranceConnect or your account."
+    "META_DESCRIPTION": "Log in to the national PhD platform with FranceConnect or your account.",
+    "PRESENTATION_TITLE": "The national PhD platform",
+    "PRESENTATION_SUBTITLE": "From defining a research topic to career progression",
+    "LOGIN_TITLE": "Log in",
+    "FC_BUTTON": "Log in with FranceConnect",
+    "FC_HELP": "What is FranceConnect?",
+    "FIELD_EMAIL": "Email address",
+    "FIELD_PASSWORD": "Password",
+    "SHOW_PASSWORD": "Show",
+    "HIDE_PASSWORD": "Hide",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "SUBMIT": "Log in",
+    "NO_ACCOUNT": "Don't have an account yet?",
+    "CREATE_ACCOUNT": "Create an account"
   }
 }

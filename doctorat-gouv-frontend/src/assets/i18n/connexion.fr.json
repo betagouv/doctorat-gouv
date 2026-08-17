@@ -1,6 +1,19 @@
 {
   "CONNEXION": {
     "META_TITLE": "Connexion — Doctorat.gouv.fr",
-    "META_DESCRIPTION": "Connectez-vous à la plateforme nationale du doctorat via FranceConnect ou avec votre compte."
+    "META_DESCRIPTION": "Connectez-vous à la plateforme nationale du doctorat via FranceConnect ou avec votre compte.",
+    "PRESENTATION_TITLE": "La plateforme nationale du doctorat",
+    "PRESENTATION_SUBTITLE": "De la définition du sujet de recherche à la poursuite de carrière",
+    "LOGIN_TITLE": "Connectez-vous",
+    "FC_BUTTON": "S'identifier avec FranceConnect",
+    "FC_HELP": "Qu'est-ce que FranceConnect ?",
+    "FIELD_EMAIL": "Adresse électronique",
+    "FIELD_PASSWORD": "Mot de passe",
+    "SHOW_PASSWORD": "Afficher",
+    "HIDE_PASSWORD": "Masquer",
+    "FORGOT_PASSWORD": "Mot de passe oublié ?",
+    "SUBMIT": "Se connecter",
+    "NO_ACCOUNT": "Vous n'avez pas encore de compte ?",
+    "CREATE_ACCOUNT": "Créer un compte"
   }
 }

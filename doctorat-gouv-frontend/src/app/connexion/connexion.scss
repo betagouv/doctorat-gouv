@@ -1,15 +1,112 @@
-/* Squelette temporaire — sera entièrement refait à l'étape 3. */
+/* ========================================================= */
+/*   Page de connexion                                       */
+/* ========================================================= */
+
 .connexion-page {
+  width: 90%;
+  max-width: 90% !important;
+  margin: 0 auto;
+  padding: 2rem 0;
   min-height: 100vh;
 }
 
-form div {
-  margin-bottom: 1rem;
+.connexion-layout {
+  min-height: 100vh;
 }
 
-form input {
-  display: block;
-  margin-top: 0.25rem;
-  padding: 0.35rem;
-  border: 1px solid #999;
+/* --- Bloc gauche : présentation --- */
+.presentation-column {
+  background-color: #E5E5FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: 60vh;
+}
+
+.presentation-content {
+  text-align: center;
+  max-width: 28rem;
+}
+
+.presentation-content h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.presentation-subtitle {
+  font-size: 1.1rem;
+  color: #161616;
+  margin-bottom: 2rem;
+}
+
+.presentation-illustration {
+  max-width: 260px;
+  height: auto;
+}
+
+/* --- Bloc droit : connexion --- */
+.login-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background-color: #fff;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.login-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.login-fc-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* --- Formulaire --- */
+.password-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.password-wrapper .fr-input {
+  flex: 1;
+}
+
+.form-field .fr-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* --- Desktop : 2 colonnes --- */
+@media (min-width: 992px) {
+  .connexion-layout {
+    flex-direction: row;
+  }
+
+  .presentation-column,
+  .login-column {
+    min-height: 80vh;
+  }
+}
+
+/* --- Mobile : empilé --- */
+@media (max-width: 991px) {
+  .presentation-column {
+    min-height: auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .login-column {
+    padding: 2rem 1.5rem;
+  }
 }

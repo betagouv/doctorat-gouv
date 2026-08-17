@@ -1,19 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-connexion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './connexion.html',
   styleUrl: './connexion.scss',
 })
 export class Connexion implements OnInit {
 
-  constructor(private translate: TranslateService, private titleService: Title, private metaService: Meta) {}
+  loginForm: FormGroup;
+  showPassword = false;
+  globalError: string | null = null;
+  isSubmitting = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private translate: TranslateService,
+    private titleService: Title,
+    private metaService: Meta
+  ) {
+    this.loginForm = this.fb.group({
+      email: [''],
+      password: ['']
+    });
+  }
 
   ngOnInit(): void {
     const titre = this.translate.currentLang === 'en'
@@ -27,7 +43,11 @@ export class Connexion implements OnInit {
     this.metaService.updateTag({ name: 'description', content: description });
   }
 
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit(): void {
-    // Squelette temporaire — ne fait rien. Réel traitement à l'étape 3.
+    // Phase 3 — stub pour l'instant
   }
 }

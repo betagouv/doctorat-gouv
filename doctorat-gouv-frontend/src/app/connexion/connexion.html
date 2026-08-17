@@ -1,15 +1,101 @@
-<main id="main-content">
-  <h1>Page de connexion</h1>
+<main id="main-content" class="connexion-page">
+  <div class="connexion-layout fr-grid-row">
 
-  <form (ngSubmit)="onSubmit()">
-    <div>
-      <label for="email">E-mail</label>
-      <input id="email" name="email" type="email" />
+    <!-- ============ BLOC GAUCHE : Présentation ============ -->
+    <div class="fr-col-12 fr-col-lg-6 presentation-column">
+      <div class="presentation-content">
+        <h1>{{ 'CONNEXION.PRESENTATION_TITLE' | translate }}</h1>
+        <p class="presentation-subtitle">
+          {{ 'CONNEXION.PRESENTATION_SUBTITLE' | translate }}
+        </p>
+        <img
+          src="assets/images/connexion-illustration.svg"
+          alt=""
+          aria-hidden="true"
+          class="presentation-illustration" />
+      </div>
     </div>
-    <div>
-      <label for="password">Mot de passe</label>
-      <input id="password" name="password" type="password" />
+
+    <!-- ============ BLOC DROIT : Connexion ============ -->
+    <div class="fr-col-12 fr-col-lg-6 login-column">
+      <div class="login-card">
+        <h2>{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
+
+        <!-- FranceConnect -->
+        <a href="#"
+           class="fr-btn fr-btn--icon-left fr-icon-lock-line login-fc-btn">
+          {{ 'CONNEXION.FC_BUTTON' | translate }}
+        </a>
+        <p class="fr-mt-2w">
+          <a href="#">{{ 'CONNEXION.FC_HELP' | translate }}</a>
+        </p>
+
+        <hr class="fr-mt-3w fr-mb-3w" />
+
+        <!-- Formulaire manuel -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+          <!-- E-mail -->
+          <div class="form-field">
+            <label class="fr-label" for="connexion-email">
+              {{ 'CONNEXION.FIELD_EMAIL' | translate }}
+            </label>
+            <input
+              class="fr-input"
+              id="connexion-email"
+              type="email"
+              formControlName="email" />
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="form-field fr-mt-2w">
+            <label class="fr-label" for="connexion-password">
+              {{ 'CONNEXION.FIELD_PASSWORD' | translate }}
+            </label>
+            <div class="password-wrapper">
+              <input
+                class="fr-input"
+                id="connexion-password"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password" />
+              <button
+                type="button"
+                class="fr-btn fr-btn--tertiary fr-btn--sm"
+                (click)="togglePassword()"
+                [attr.aria-pressed]="showPassword">
+                {{ (showPassword ? 'CONNEXION.HIDE_PASSWORD' : 'CONNEXION.SHOW_PASSWORD') | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Mot de passe oublié -->
+          <p class="fr-mt-2w">
+            <a routerLink="/mot-de-passe-oublie">{{ 'CONNEXION.FORGOT_PASSWORD' | translate }}</a>
+          </p>
+
+          <!-- Erreur globale -->
+          <div
+            class="fr-alert fr-alert--error fr-mt-2w"
+            role="alert"
+            *ngIf="globalError">
+            {{ globalError | translate }}
+          </div>
+
+          <!-- Bouton Se connecter -->
+          <button
+            type="submit"
+            class="fr-btn fr-btn--primary fr-btn--lg fr-mt-3w">
+            {{ 'CONNEXION.SUBMIT' | translate }}
+          </button>
+        </form>
+
+        <!-- Section secondaire -->
+        <p class="fr-mt-4w">{{ 'CONNEXION.NO_ACCOUNT' | translate }}</p>
+        <a routerLink="/inscription" class="fr-btn fr-btn--secondary">
+          {{ 'CONNEXION.CREATE_ACCOUNT' | translate }}
+        </a>
+      </div>
     </div>
-    <button type="submit">Se connecter</button>
-  </form>
+
+  </div>
 </main>
