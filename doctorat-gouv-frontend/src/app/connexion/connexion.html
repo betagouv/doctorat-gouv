@@ -90,7 +90,7 @@
 
           <!-- Checkbox Afficher -->
           <div class="fr-checkbox-group fr-mb-2w">
-            <input type="checkbox" id="show-password" (change)="togglePassword()">
+            <input type="checkbox" id="show-password" [checked]="showPassword" (change)="togglePassword()">
             <label class="fr-label" for="show-password">{{ 'CONNEXION.SHOW_PASSWORD' | translate }}</label>
           </div>
 
