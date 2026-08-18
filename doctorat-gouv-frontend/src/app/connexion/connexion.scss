@@ -49,7 +49,7 @@
 /* --- Bloc droit : connexion --- */
 .login-column {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   padding: 3rem 2rem 3rem 4rem;
   background-color: #fff;
@@ -58,6 +58,7 @@
 .login-card {
   width: 100%;
   max-width: 100%;
+  flex: 1;
 }
 
 .login-fc-btn {
@@ -138,9 +139,8 @@
 
 /* Bloc "Créer un compte" beige */
 .create-account-block {
-  background-color: #F5F0EB;
-  padding: 1.5rem;
-  border-radius: 4px;
+  background-color: #F6F3EE;
+  padding: 1.5rem 2rem;
 }
 
 /* --- Desktop : 2 colonnes --- */
@@ -153,6 +153,15 @@
   .login-column {
     min-height: 80vh;
   }
+
+  .create-account-block {
+    margin-left: -4rem;
+    margin-right: -2rem;
+    margin-bottom: -3rem;
+    padding-left: 4rem;
+    padding-right: 2rem;
+    padding-bottom: 2rem;
+  }
 }
 
 /* --- Mobile : empilé --- */
@@ -164,5 +173,14 @@
 
   .login-column {
     padding: 2rem 1.5rem;
+  }
+
+  .create-account-block {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    margin-bottom: -2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 2rem;
   }
 }
