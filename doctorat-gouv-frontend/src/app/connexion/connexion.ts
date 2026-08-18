@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
@@ -26,8 +26,8 @@ export class Connexion implements OnInit {
     private metaService: Meta
   ) {
     this.loginForm = this.fb.group({
-      email: [''],
-      password: ['']
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
     });
   }
 
@@ -47,7 +47,21 @@ export class Connexion implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
+  }
+
   onSubmit(): void {
-    // Phase 3 — stub pour l'instant
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+    this.isSubmitting = true;
+    this.globalError = this.translate.instant('CONNEXION.ERROR_SERVICE_UNAVAILABLE');
+    this.isSubmitting = false;
   }
 }

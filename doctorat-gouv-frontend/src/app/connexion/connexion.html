@@ -51,29 +51,41 @@
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
           <!-- E-mail -->
-          <div class="form-field">
+          <div class="form-field" [class.fr-input-group--error]="email?.invalid && email?.touched">
             <label class="fr-label" for="connexion-email">
               {{ 'CONNEXION.FIELD_EMAIL' | translate }} <span class="required-star">*</span>
             </label>
             <input
               class="fr-input fr-mb-2w"
+              [class.fr-input--error]="email?.invalid && email?.touched"
               id="connexion-email"
               type="email"
               [placeholder]="'CONNEXION.PLACEHOLDER_EMAIL' | translate"
-              formControlName="email" />
+              formControlName="email"
+              [attr.aria-invalid]="email?.invalid && email?.touched ? 'true' : null"
+              aria-describedby="connexion-email-error" />
+            <p class="fr-error-text" id="connexion-email-error" *ngIf="email?.invalid && email?.touched">
+              {{ (email?.errors?.['required'] ? 'CONNEXION.ERROR_EMAIL_REQUIRED' : 'CONNEXION.ERROR_EMAIL_INVALID') | translate }}
+            </p>
           </div>
 
           <!-- Mot de passe -->
-          <div class="form-field">
+          <div class="form-field" [class.fr-input-group--error]="password?.invalid && password?.touched">
             <label class="fr-label" for="connexion-password">
               {{ 'CONNEXION.FIELD_PASSWORD' | translate }} <span class="required-star">*</span>
             </label>
             <input
               class="fr-input fr-mb-1w"
+              [class.fr-input--error]="password?.invalid && password?.touched"
               id="connexion-password"
               [type]="showPassword ? 'text' : 'password'"
               [placeholder]="'CONNEXION.PLACEHOLDER_PASSWORD' | translate"
-              formControlName="password" />
+              formControlName="password"
+              [attr.aria-invalid]="password?.invalid && password?.touched ? 'true' : null"
+              aria-describedby="connexion-password-error" />
+            <p class="fr-error-text" id="connexion-password-error" *ngIf="password?.invalid && password?.touched">
+              {{ 'CONNEXION.ERROR_PASSWORD_REQUIRED' | translate }}
+            </p>
           </div>
 
           <!-- Checkbox Afficher -->
@@ -98,7 +110,8 @@
           <!-- Bouton Se connecter -->
           <button
             type="submit"
-            class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w">
+            class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w"
+            [disabled]="isSubmitting">
             {{ 'CONNEXION.SUBMIT' | translate }}
             <span class="fr-ml-1w" aria-hidden="true">→</span>
           </button>
