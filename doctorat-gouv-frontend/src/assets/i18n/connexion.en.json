@@ -6,6 +6,8 @@
     "PRESENTATION_SUBTITLE": "From defining a research topic to career progression",
     "LOGIN_TITLE": "Log in",
     "FC_BUTTON": "Log in with FranceConnect",
+    "FC_BUTTON_LINE1": "Log in with",
+    "FC_BUTTON_LINE2": "FranceConnect",
     "FC_HELP": "What is FranceConnect?",
     "FIELD_EMAIL": "Email address",
     "FIELD_PASSWORD": "Password",
