@@ -1,79 +1,121 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.dinum.beta.gouv.doctorat.config.JwtConfig;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionResponse;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
-import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
+import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
-    /**
-     * Inscrit un nouvel utilisateur.
-     * TODO: remplacer par la vraie implémentation (hash BCrypt, vérification unicité email)
-     */
+    private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtConfig jwtConfig;
+
+    public AuthService(UtilisateurRepository utilisateurRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtConfig jwtConfig) {
+        this.utilisateurRepository = utilisateurRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtConfig = jwtConfig;
+    }
+
     public UtilisateurDto inscrire(InscriptionRequest request) {
-        log.info("AuthService.bouchonné - inscription de {}", request.getEmail());
+        log.info("Inscription de {}", request.getEmail());
 
-        UtilisateurDto dto = new UtilisateurDto();
-        dto.setId(UUID.randomUUID().toString());
-        dto.setEmail(request.getEmail());
-        dto.setPrenom(request.getPrenom());
-        dto.setNom(request.getNom());
-        dto.setRole(request.getRole());
-        dto.setSourceAuth(SourceAuth.MANUEL);
-        dto.setActif(true);
-        dto.setDateCreation(LocalDateTime.now());
-        return dto;
+        if (utilisateurRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Un compte existe déjà avec cet email");
+        }
+
+        Utilisateur utilisateur = Utilisateur.builder()
+                .email(request.getEmail())
+                .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
+                .prenom(request.getPrenom())
+                .nom(request.getNom())
+                .role(request.getRole())
+                .sourceAuth(SourceAuth.MANUEL)
+                .actif(true)
+                .dateCreation(LocalDateTime.now())
+                .build();
+
+        utilisateur = utilisateurRepository.save(utilisateur);
+        return toDto(utilisateur);
     }
 
-    /**
-     * Authentifie un utilisateur.
-     * TODO: remplacer par la vraie implémentation (vérification credentials, génération JWT)
-     */
     public ConnexionResponse connecter(ConnexionRequest request) {
-        log.info("AuthService.bouchonné - connexion de {}", request.getEmail());
+        log.info("Connexion de {}", request.getEmail());
 
-        UtilisateurDto dto = new UtilisateurDto();
-        dto.setId(UUID.randomUUID().toString());
-        dto.setEmail(request.getEmail());
-        dto.setPrenom("Prénom");
-        dto.setNom("Nom");
-        dto.setRole(RoleUtilisateur.CANDIDAT);
-        dto.setSourceAuth(SourceAuth.MANUEL);
-        dto.setActif(true);
-        dto.setDateCreation(LocalDateTime.now());
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Email ou mot de passe incorrect"));
 
-        return new ConnexionResponse(dto);
+        if (!passwordEncoder.matches(request.getMotDePasse(), utilisateur.getMotDePasse())) {
+            throw new IllegalArgumentException("Email ou mot de passe incorrect");
+        }
+
+        String token = genererToken(utilisateur);
+        UtilisateurDto dto = toDto(utilisateur);
+
+        return new ConnexionResponse(dto, token, jwtConfig.getExpirationMs());
     }
 
-    /**
-     * Récupère un utilisateur par son ID.
-     * TODO: remplacer par la vraie implémentation (requête BDD)
-     */
     public UtilisateurDto getUtilisateur(String id) {
-        log.info("AuthService.bouchonné - getUtilisateur {}", id);
+        log.info("Récupération utilisateur {}", id);
 
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+
+        return toDto(utilisateur);
+    }
+
+    public String genererToken(Utilisateur utilisateur) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + jwtConfig.getExpirationMs());
+
+        return Jwts.builder()
+                .subject(utilisateur.getId())
+                .claim("email", utilisateur.getEmail())
+                .claim("role", utilisateur.getRole().name())
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes()))
+                .compact();
+    }
+
+    public Claims parserToken(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private UtilisateurDto toDto(Utilisateur u) {
         UtilisateurDto dto = new UtilisateurDto();
-        dto.setId(id);
-        dto.setEmail("utilisateur@exemple.fr");
-        dto.setPrenom("Prénom");
-        dto.setNom("Nom");
-        dto.setRole(RoleUtilisateur.CANDIDAT);
-        dto.setSourceAuth(SourceAuth.MANUEL);
-        dto.setActif(true);
-        dto.setDateCreation(LocalDateTime.now());
+        dto.setId(u.getId());
+        dto.setEmail(u.getEmail());
+        dto.setPrenom(u.getPrenom());
+        dto.setNom(u.getNom());
+        dto.setRole(u.getRole());
+        dto.setSourceAuth(u.getSourceAuth());
+        dto.setActif(u.getActif());
+        dto.setDateCreation(u.getDateCreation());
         return dto;
     }
 }
