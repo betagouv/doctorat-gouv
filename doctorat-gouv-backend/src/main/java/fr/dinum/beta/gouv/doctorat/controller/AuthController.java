@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,9 +50,9 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getUtilisateurCourant() {
         log.info("GET /api/me");
-        // TODO: extraire l'ID de l'utilisateur depuis le SecurityContext une fois le JWT en place
-        // Pour le moment, bouchonné avec un ID fixe
-        UtilisateurDto utilisateur = authService.getUtilisateur("bouchon-id");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName();
+        UtilisateurDto utilisateur = authService.getUtilisateur(userId);
         return ResponseEntity.ok(utilisateur);
     }
 

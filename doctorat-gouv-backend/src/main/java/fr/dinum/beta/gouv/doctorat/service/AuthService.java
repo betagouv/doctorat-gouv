@@ -44,16 +44,15 @@ public class AuthService {
             throw new IllegalArgumentException("Un compte existe déjà avec cet email");
         }
 
-        Utilisateur utilisateur = Utilisateur.builder()
-                .email(request.getEmail())
-                .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
-                .prenom(request.getPrenom())
-                .nom(request.getNom())
-                .role(request.getRole())
-                .sourceAuth(SourceAuth.MANUEL)
-                .actif(true)
-                .dateCreation(LocalDateTime.now())
-                .build();
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setEmail(request.getEmail());
+        utilisateur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
+        utilisateur.setPrenom(request.getPrenom());
+        utilisateur.setNom(request.getNom());
+        utilisateur.setRole(request.getRole());
+        utilisateur.setSourceAuth(SourceAuth.MANUEL);
+        utilisateur.setActif(true);
+        utilisateur.setDateCreation(LocalDateTime.now());
 
         utilisateur = utilisateurRepository.save(utilisateur);
         return toDto(utilisateur);

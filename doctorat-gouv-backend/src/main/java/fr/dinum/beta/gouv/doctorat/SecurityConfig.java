@@ -9,14 +9,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import fr.dinum.beta.gouv.doctorat.security.ApiKeyFilter;
+import fr.dinum.beta.gouv.doctorat.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
     private final ApiKeyFilter apiKeyFilter;
+    private final JwtAuthenticationFilter jwtFilter;
 
-    public SecurityConfig(ApiKeyFilter apiKeyFilter) {
+    public SecurityConfig(ApiKeyFilter apiKeyFilter, JwtAuthenticationFilter jwtFilter) {
         this.apiKeyFilter = apiKeyFilter;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -29,13 +32,20 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 // API publiques
                 .requestMatchers("/api/propositions-these/**").permitAll()
                 .requestMatchers("/api/filters/**").permitAll()
                 .requestMatchers("/api/contact/**").permitAll()
                 .requestMatchers("/api/euraxess/**").permitAll()
+                .requestMatchers("/api/inscription").permitAll()
+                .requestMatchers("/api/connexion").permitAll()
                 .requestMatchers("/sitemap.xml").permitAll()
+
+                // API protégées (JWT requis)
+                .requestMatchers("/api/me").authenticated()
+                .requestMatchers("/api/deconnexion").authenticated()
 
                 // Fichiers statiques Angular
                 .requestMatchers(
@@ -75,4 +85,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
