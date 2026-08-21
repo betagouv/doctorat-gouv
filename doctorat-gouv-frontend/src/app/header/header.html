@@ -68,10 +68,13 @@
 	
 	<!-- Menu Langue -->
 	<div class="fr-header__tools">
-	  <!-- Bouton Se connecter -->
-	  <a routerLink="/connexion" class="fr-btn fr-btn--secondary fr-mr-2w header-login-btn">
+	  <!-- Bouton Se connecter / Se déconnecter -->
+	  <a *ngIf="!authService.isLoggedIn()" routerLink="/connexion" class="fr-btn fr-btn--secondary fr-mr-2w header-login-btn">
 	    {{ 'HEADER.SE_CONNECTER' | translate }}
 	  </a>
+	  <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="fr-btn fr-btn--secondary fr-mr-2w header-login-btn">
+	    {{ 'HEADER.SE_DECONNECTER' | translate }}
+	  </button>
 
 	  <div class="fr-translate" [class.fr-translate--expanded]="langMenuOpen">
 	    
@@ -143,10 +146,13 @@
 <div class="mobile-menu">
   <button class="mobile-menu-close" aria-label="Fermer le menu">{{ 'MOBILE.CLOSE' | translate }} ×</button>
 
-  <!-- Bouton Se connecter mobile -->
-  <a routerLink="/connexion" class="fr-btn fr-btn--secondary mobile-login-btn">
+  <!-- Bouton Se connecter / Se déconnecter mobile -->
+  <a *ngIf="!authService.isLoggedIn()" routerLink="/connexion" class="fr-btn fr-btn--secondary mobile-login-btn">
     {{ 'HEADER.SE_CONNECTER' | translate }}
   </a>
+  <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="fr-btn fr-btn--secondary mobile-login-btn">
+    {{ 'HEADER.SE_DECONNECTER' | translate }}
+  </button>
 
   
   <!-- Menu langue mobile -->

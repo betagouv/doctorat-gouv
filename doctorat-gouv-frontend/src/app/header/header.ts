@@ -1,9 +1,10 @@
 import { Component, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { I18nService } from '../services/i18n-service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -25,7 +26,7 @@ export class Header implements AfterViewInit {
   langMenuOpenMobile = false;
 
 
-  constructor(private i18n: I18nService) { }
+  constructor(private i18n: I18nService, public authService: AuthService, private router: Router) { }
 
   ngAfterViewInit(): void {
     const burger = document.querySelector(".mobile-burger") as HTMLElement;
@@ -89,6 +90,11 @@ export class Header implements AfterViewInit {
 
   closeBanner() {
     this.showBanner = false;
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 
   private closeMobileMenuAndReturnFocus(): void {

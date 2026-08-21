@@ -9,7 +9,8 @@
     "BETA": "BETA",
 	"ACCUEIL": "Accueil",
 	"RETOUR_AUX_OFFRES": "Toutes les offres",
-	"SE_CONNECTER": "Se connecter"
+	"SE_CONNECTER": "Se connecter",
+	"SE_DECONNECTER": "Se déconnecter"
   },
   "INFO": {
     "LAUNCH_TITLE": "Lancement de la plateforme : le site est encore en phase d'expérimentation, n'hésitez pas à",

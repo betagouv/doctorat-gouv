@@ -9,7 +9,8 @@
     "BETA": "BETA",
 	"ACCUEIL": "Home",
 	"RETOUR_AUX_OFFRES": "PhD opportunities",
-	"SE_CONNECTER": "Log in"
+	"SE_CONNECTER": "Log in",
+	"SE_DECONNECTER": "Log out"
   },
   "INFO": {
      "LAUNCH_TITLE": "Platform launch: The website is still in beta.",
