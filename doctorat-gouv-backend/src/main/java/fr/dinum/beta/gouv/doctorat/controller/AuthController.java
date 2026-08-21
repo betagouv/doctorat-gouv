@@ -36,15 +36,23 @@ public class AuthController {
     @PostMapping("/inscription")
     public ResponseEntity<?> inscrire(@Valid @RequestBody InscriptionRequest request) {
         log.info("POST /api/inscription - email: {}", request.getEmail());
-        UtilisateurDto utilisateur = authService.inscrire(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(utilisateur);
+        try {
+            UtilisateurDto utilisateur = authService.inscrire(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(utilisateur);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/connexion")
     public ResponseEntity<?> connecter(@Valid @RequestBody ConnexionRequest request) {
         log.info("POST /api/connexion - email: {}", request.getEmail());
-        ConnexionResponse response = authService.connecter(request);
-        return ResponseEntity.ok(response);
+        try {
+            ConnexionResponse response = authService.connecter(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/me")
