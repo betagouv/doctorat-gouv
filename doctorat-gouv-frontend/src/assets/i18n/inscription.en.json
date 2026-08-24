@@ -21,7 +21,7 @@
     "ERROR_EMAIL_REQUIRED": "Email address is required.",
     "ERROR_EMAIL_INVALID": "Email address is not valid.",
     "ERROR_PASSWORD_REQUIRED": "Password is required.",
-    "ERROR_PASSWORD_MIN_LENGTH": "Password must be at least 8 characters.",
+    "ERROR_PASSWORD_MIN_LENGTH": "Password must be at least 12 characters.",
     "ERROR_PASSWORD_MISMATCH": "Passwords do not match.",
     "ALREADY_ACCOUNT": "Already have an account?",
     "LOGIN_DESCRIPTION": "Log in with your email and password.",

@@ -32,7 +32,7 @@ export class Inscription implements OnInit {
       prenom: ['', [Validators.required]],
       nom: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      motDePasse: ['', [Validators.required, Validators.minLength(8)]],
+      motDePasse: ['', [Validators.required, Validators.minLength(12)]],
       confirmationMotDePasse: ['', [Validators.required]],
       role: ['CANDIDAT', [Validators.required]],
     }, { validators: this.passwordMatchValidator });
@@ -93,7 +93,18 @@ export class Inscription implements OnInit {
       error: (err) => {
         this.isSubmitting = false;
         if (err.status === 400) {
-          this.globalError = err.error?.error || 'Une erreur est survenue lors de l\'inscription.';
+          const body = err.error;
+          if (body?.error) {
+            this.globalError = body.error;
+          } else if (body?.errors?.length) {
+            this.globalError = body.errors.map((e: any) => e.defaultMessage).join('. ');
+          } else if (body?.message) {
+            this.globalError = body.message;
+          } else if (typeof body === 'string') {
+            this.globalError = body;
+          } else {
+            this.globalError = 'Données invalides. Veuillez vérifier le formulaire.';
+          }
         } else {
           this.globalError = 'Service temporairement indisponible. Veuillez réessayer.';
         }
