@@ -37,7 +37,7 @@ public class AuthService {
         this.jwtConfig = jwtConfig;
     }
 
-    public UtilisateurDto inscrire(InscriptionRequest request) {
+    public ConnexionResponse inscrire(InscriptionRequest request) {
         log.info("Inscription de {}", request.getEmail());
 
         if (utilisateurRepository.existsByEmail(request.getEmail())) {
@@ -55,7 +55,10 @@ public class AuthService {
         utilisateur.setDateCreation(LocalDateTime.now());
 
         utilisateur = utilisateurRepository.save(utilisateur);
-        return toDto(utilisateur);
+
+        String token = genererToken(utilisateur);
+        UtilisateurDto dto = toDto(utilisateur);
+        return new ConnexionResponse(dto, token, jwtConfig.getExpirationMs());
     }
 
     public ConnexionResponse connecter(ConnexionRequest request) {

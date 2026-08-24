@@ -28,8 +28,12 @@ export class AuthService {
     );
   }
 
-  inscription(request: InscriptionRequest): Observable<Utilisateur> {
-    return this.http.post<Utilisateur>(`${this.apiUrl}/inscription`, request);
+  inscription(request: InscriptionRequest): Observable<ConnexionResponse> {
+    return this.http.post<ConnexionResponse>(`${this.apiUrl}/inscription`, request).pipe(
+      tap(response => {
+        this.setSession(response);
+      })
+    );
   }
 
   logout(): void {

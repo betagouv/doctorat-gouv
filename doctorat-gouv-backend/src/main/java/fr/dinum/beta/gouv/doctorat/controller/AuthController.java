@@ -37,8 +37,8 @@ public class AuthController {
     public ResponseEntity<?> inscrire(@Valid @RequestBody InscriptionRequest request) {
         log.info("POST /api/inscription - email: {}", request.getEmail());
         try {
-            UtilisateurDto utilisateur = authService.inscrire(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(utilisateur);
+            ConnexionResponse response = authService.inscrire(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

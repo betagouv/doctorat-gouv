@@ -1,0 +1,169 @@
+<main id="main-content" class="inscription-page">
+  <div class="inscription-layout fr-grid-row">
+
+    <!-- ============ BLOC GAUCHE : Présentation ============ -->
+    <div class="fr-col-12 fr-col-lg-6 presentation-column">
+      <div class="presentation-content">
+        <h1>{{ 'INSCRIPTION.PRESENTATION_TITLE' | translate }}</h1>
+        <p class="presentation-subtitle">
+          {{ 'INSCRIPTION.PRESENTATION_SUBTITLE' | translate }}
+        </p>
+        <img
+          src="assets/images/connexion-illustration.svg"
+          alt=""
+          aria-hidden="true"
+          class="presentation-illustration" />
+      </div>
+    </div>
+
+    <!-- ============ BLOC DROIT : Inscription ============ -->
+    <div class="fr-col-12 fr-col-lg-6 login-column">
+      <div class="login-card">
+
+        <h2 class="fr-text--bold fr-text--lg fr-mb-2w">{{ 'INSCRIPTION.TITLE' | translate }}</h2>
+        <p class="fr-text--sm fr-mb-3w">{{ 'INSCRIPTION.DESCRIPTION' | translate }}</p>
+
+        <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()">
+
+          <!-- Prénom -->
+          <div class="form-field" [class.fr-input-group--error]="prenom?.invalid && prenom?.touched">
+            <label class="fr-label" for="inscription-prenom">
+              {{ 'INSCRIPTION.FIELD_PRENOM' | translate }} <span class="required-star">*</span>
+            </label>
+            <input
+              class="fr-input fr-mb-2w"
+              [class.fr-input--error]="prenom?.invalid && prenom?.touched"
+              id="inscription-prenom"
+              type="text"
+              formControlName="prenom"
+              [attr.aria-invalid]="prenom?.invalid && prenom?.touched ? 'true' : null"
+              aria-describedby="inscription-prenom-error" />
+            <p class="fr-error-text" id="inscription-prenom-error" *ngIf="prenom?.invalid && prenom?.touched">
+              {{ 'INSCRIPTION.ERROR_PRENOM_REQUIRED' | translate }}
+            </p>
+          </div>
+
+          <!-- Nom -->
+          <div class="form-field" [class.fr-input-group--error]="nom?.invalid && nom?.touched">
+            <label class="fr-label" for="inscription-nom">
+              {{ 'INSCRIPTION.FIELD_NOM' | translate }} <span class="required-star">*</span>
+            </label>
+            <input
+              class="fr-input fr-mb-2w"
+              [class.fr-input--error]="nom?.invalid && nom?.touched"
+              id="inscription-nom"
+              type="text"
+              formControlName="nom"
+              [attr.aria-invalid]="nom?.invalid && nom?.touched ? 'true' : null"
+              aria-describedby="inscription-nom-error" />
+            <p class="fr-error-text" id="inscription-nom-error" *ngIf="nom?.invalid && nom?.touched">
+              {{ 'INSCRIPTION.ERROR_NOM_REQUIRED' | translate }}
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div class="form-field" [class.fr-input-group--error]="email?.invalid && email?.touched">
+            <label class="fr-label" for="inscription-email">
+              {{ 'INSCRIPTION.FIELD_EMAIL' | translate }} <span class="required-star">*</span>
+            </label>
+            <input
+              class="fr-input fr-mb-2w"
+              [class.fr-input--error]="email?.invalid && email?.touched"
+              id="inscription-email"
+              type="email"
+              formControlName="email"
+              [attr.aria-invalid]="email?.invalid && email?.touched ? 'true' : null"
+              aria-describedby="inscription-email-error" />
+            <p class="fr-error-text" id="inscription-email-error" *ngIf="email?.invalid && email?.touched">
+              {{ (email?.errors?.['required'] ? 'INSCRIPTION.ERROR_EMAIL_REQUIRED' : 'INSCRIPTION.ERROR_EMAIL_INVALID') | translate }}
+            </p>
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="form-field" [class.fr-input-group--error]="motDePasse?.invalid && motDePasse?.touched">
+            <label class="fr-label" for="inscription-motDePasse">
+              {{ 'INSCRIPTION.FIELD_PASSWORD' | translate }} <span class="required-star">*</span>
+            </label>
+            <input
+              class="fr-input fr-mb-2w"
+              [class.fr-input--error]="motDePasse?.invalid && motDePasse?.touched"
+              id="inscription-motDePasse"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="motDePasse"
+              [attr.aria-invalid]="motDePasse?.invalid && motDePasse?.touched ? 'true' : null"
+              aria-describedby="inscription-motDePasse-error" />
+            <p class="fr-error-text" id="inscription-motDePasse-error" *ngIf="motDePasse?.invalid && motDePasse?.touched">
+              {{ (motDePasse?.errors?.['required'] ? 'INSCRIPTION.ERROR_PASSWORD_REQUIRED' : 'INSCRIPTION.ERROR_PASSWORD_MIN_LENGTH') | translate }}
+            </p>
+          </div>
+
+          <!-- Confirmation mot de passe -->
+          <div class="form-field" [class.fr-input-group--error]="confirmationMotDePasse?.invalid && confirmationMotDePasse?.touched">
+            <label class="fr-label" for="inscription-confirmationMotDePasse">
+              {{ 'INSCRIPTION.FIELD_CONFIRM_PASSWORD' | translate }} <span class="required-star">*</span>
+            </label>
+            <input
+              class="fr-input fr-mb-2w"
+              [class.fr-input--error]="confirmationMotDePasse?.invalid && confirmationMotDePasse?.touched"
+              id="inscription-confirmationMotDePasse"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="confirmationMotDePasse"
+              [attr.aria-invalid]="confirmationMotDePasse?.invalid && confirmationMotDePasse?.touched ? 'true' : null"
+              aria-describedby="inscription-confirmationMotDePasse-error" />
+            <p class="fr-error-text" id="inscription-confirmationMotDePasse-error" *ngIf="confirmationMotDePasse?.errors?.['passwordMismatch'] && confirmationMotDePasse?.touched">
+              {{ 'INSCRIPTION.ERROR_PASSWORD_MISMATCH' | translate }}
+            </p>
+          </div>
+
+          <!-- Checkbox Afficher mot de passe -->
+          <div class="fr-checkbox-group fr-mb-3w">
+            <input type="checkbox" id="show-password-inscription" [checked]="showPassword" (change)="togglePassword()">
+            <label class="fr-label" for="show-password-inscription">{{ 'INSCRIPTION.SHOW_PASSWORD' | translate }}</label>
+          </div>
+
+          <!-- Rôle -->
+          <div class="form-field fr-mb-3w">
+            <label class="fr-label" for="inscription-role">
+              {{ 'INSCRIPTION.FIELD_ROLE' | translate }} <span class="required-star">*</span>
+            </label>
+            <select class="fr-select" id="inscription-role" formControlName="role">
+              <option value="CANDIDAT">{{ 'INSCRIPTION.ROLE_CANDIDAT' | translate }}</option>
+              <option value="DIRECTEUR_THESE">{{ 'INSCRIPTION.ROLE_DIRECTEUR' | translate }}</option>
+              <option value="ECOLE_DOCTORALE">{{ 'INSCRIPTION.ROLE_ECOLE' | translate }}</option>
+              <option value="LABORATOIRE">{{ 'INSCRIPTION.ROLE_LABO' | translate }}</option>
+            </select>
+          </div>
+
+          <!-- Erreur globale -->
+          <div
+            class="fr-alert fr-alert--error fr-mt-2w"
+            role="alert"
+            *ngIf="globalError">
+            {{ globalError }}
+          </div>
+
+          <!-- Bouton S'inscrire -->
+          <button
+            type="submit"
+            class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w"
+            [disabled]="isSubmitting">
+            {{ 'INSCRIPTION.SUBMIT' | translate }}
+            <span class="fr-ml-1w" aria-hidden="true">→</span>
+          </button>
+        </form>
+
+      </div>
+
+      <!-- Lien vers connexion -->
+      <div class="create-account-block">
+        <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'INSCRIPTION.ALREADY_ACCOUNT' | translate }}</h3>
+        <p class="fr-text--sm fr-mb-2w">{{ 'INSCRIPTION.LOGIN_DESCRIPTION' | translate }}</p>
+        <a routerLink="/connexion"
+           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-left-line">
+          {{ 'INSCRIPTION.GO_LOGIN' | translate }}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>

@@ -1,0 +1,30 @@
+{
+  "INSCRIPTION": {
+    "PRESENTATION_TITLE": "Create your account",
+    "PRESENTATION_SUBTITLE": "Sign up to apply for PhD positions and track your applications.",
+    "TITLE": "Sign up",
+    "DESCRIPTION": "Fill in the form below to create your account.",
+    "FIELD_PRENOM": "First name",
+    "FIELD_NOM": "Last name",
+    "FIELD_EMAIL": "Email address",
+    "FIELD_PASSWORD": "Password",
+    "FIELD_CONFIRM_PASSWORD": "Confirm password",
+    "FIELD_ROLE": "I am a",
+    "ROLE_CANDIDAT": "PhD candidate",
+    "ROLE_DIRECTEUR": "PhD supervisor",
+    "ROLE_ECOLE": "Doctoral school",
+    "ROLE_LABO": "Research lab",
+    "SHOW_PASSWORD": "Show password",
+    "SUBMIT": "Sign up",
+    "ERROR_PRENOM_REQUIRED": "First name is required.",
+    "ERROR_NOM_REQUIRED": "Last name is required.",
+    "ERROR_EMAIL_REQUIRED": "Email address is required.",
+    "ERROR_EMAIL_INVALID": "Email address is not valid.",
+    "ERROR_PASSWORD_REQUIRED": "Password is required.",
+    "ERROR_PASSWORD_MIN_LENGTH": "Password must be at least 8 characters.",
+    "ERROR_PASSWORD_MISMATCH": "Passwords do not match.",
+    "ALREADY_ACCOUNT": "Already have an account?",
+    "LOGIN_DESCRIPTION": "Log in with your email and password.",
+    "GO_LOGIN": "Log in"
+  }
+}

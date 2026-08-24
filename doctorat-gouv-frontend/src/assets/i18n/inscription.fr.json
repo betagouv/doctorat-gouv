@@ -1,0 +1,30 @@
+{
+  "INSCRIPTION": {
+    "PRESENTATION_TITLE": "Créez votre compte",
+    "PRESENTATION_SUBTITLE": "Inscrivez-vous pour postuler à des sujets de thèse et suivre vos candidatures.",
+    "TITLE": "Inscription",
+    "DESCRIPTION": "Remplissez le formulaire ci-dessous pour créer votre compte.",
+    "FIELD_PRENOM": "Prénom",
+    "FIELD_NOM": "Nom",
+    "FIELD_EMAIL": "Adresse e-mail",
+    "FIELD_PASSWORD": "Mot de passe",
+    "FIELD_CONFIRM_PASSWORD": "Confirmer le mot de passe",
+    "FIELD_ROLE": "Vous êtes",
+    "ROLE_CANDIDAT": "Candidat",
+    "ROLE_DIRECTEUR": "Directeur de thèse",
+    "ROLE_ECOLE": "École doctorale",
+    "ROLE_LABO": "Laboratoire",
+    "SHOW_PASSWORD": "Afficher le mot de passe",
+    "SUBMIT": "S'inscrire",
+    "ERROR_PRENOM_REQUIRED": "Le prénom est obligatoire.",
+    "ERROR_NOM_REQUIRED": "Le nom est obligatoire.",
+    "ERROR_EMAIL_REQUIRED": "L'adresse e-mail est obligatoire.",
+    "ERROR_EMAIL_INVALID": "L'adresse e-mail n'est pas valide.",
+    "ERROR_PASSWORD_REQUIRED": "Le mot de passe est obligatoire.",
+    "ERROR_PASSWORD_MIN_LENGTH": "Le mot de passe doit contenir au moins 8 caractères.",
+    "ERROR_PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas.",
+    "ALREADY_ACCOUNT": "Déjà un compte ?",
+    "LOGIN_DESCRIPTION": "Connectez-vous avec votre email et votre mot de passe.",
+    "GO_LOGIN": "Se connecter"
+  }
+}
