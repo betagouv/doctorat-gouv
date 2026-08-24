@@ -79,17 +79,22 @@ class AuthServiceTest {
             u.setId("uuid-genere");
             return u;
         });
+        when(jwtConfig.getExpirationMs()).thenReturn(86400000L);
+        when(jwtConfig.getSecret()).thenReturn("VGhpc0lzQVZlcnlMb25nU2VjcmV0S2V5Rm9ySlRXVGVzdGluZ1B1cnBvc2Vz");
 
-        UtilisateurDto result = authService.inscrire(request);
+        ConnexionResponse result = authService.inscrire(request);
 
         assertNotNull(result);
-        assertEquals("nouveau@exemple.fr", result.getEmail());
-        assertEquals("Marie", result.getPrenom());
-        assertEquals("Curie", result.getNom());
-        assertEquals(RoleUtilisateur.CANDIDAT, result.getRole());
-        assertEquals(SourceAuth.MANUEL, result.getSourceAuth());
-        assertEquals(true, result.getActif());
-        assertNotNull(result.getDateCreation());
+        assertNotNull(result.getToken());
+        assertNotNull(result.getUtilisateur());
+        assertEquals("nouveau@exemple.fr", result.getUtilisateur().getEmail());
+        assertEquals("Marie", result.getUtilisateur().getPrenom());
+        assertEquals("Curie", result.getUtilisateur().getNom());
+        assertEquals(RoleUtilisateur.CANDIDAT, result.getUtilisateur().getRole());
+        assertEquals(SourceAuth.MANUEL, result.getUtilisateur().getSourceAuth());
+        assertEquals(true, result.getUtilisateur().getActif());
+        assertNotNull(result.getUtilisateur().getDateCreation());
+        assertEquals(86400000L, result.getExpiresIn());
 
         verify(utilisateurRepository).existsByEmail("nouveau@exemple.fr");
         verify(passwordEncoder).encode("MotDePasse1234!");
