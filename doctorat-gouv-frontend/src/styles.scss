@@ -50,3 +50,125 @@ main {
   font-weight: bold;
   font-size: 1.5rem;
 }
+
+/* ========================================================= */
+/*   Mise en page partagée (connexion / inscription)         */
+/* ========================================================= */
+.connexion-page,
+.inscription-page {
+  width: 90%;
+  max-width: 90% !important;
+  margin: 0 auto;
+  padding: 2rem 0;
+  min-height: 100vh;
+}
+
+.connexion-layout,
+.inscription-layout {
+  min-height: 100vh;
+}
+
+.presentation-column {
+  background-color: #E5E5FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: 60vh;
+}
+
+.presentation-content {
+  text-align: center;
+  max-width: 28rem;
+}
+
+.presentation-content h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.presentation-subtitle {
+  font-size: 1.1rem;
+  color: #161616;
+  margin-bottom: 2rem;
+}
+
+.presentation-illustration {
+  max-width: 260px;
+  height: auto;
+}
+
+.login-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2rem 3rem 4rem;
+  background-color: #fff;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+}
+
+.form-field {
+  width: 75%;
+}
+
+.required-star {
+  color: #161616;
+  font-size: 0.75rem;
+  margin-left: 0.15rem;
+}
+
+.create-account-block {
+  background-color: #F6F3EE;
+  padding: 1.5rem 2rem;
+}
+
+@media (min-width: 992px) {
+  .connexion-layout,
+  .inscription-layout {
+    flex-direction: row;
+  }
+
+  .presentation-column,
+  .login-column {
+    min-height: 80vh;
+  }
+
+  .create-account-block {
+    margin-left: -4rem;
+    margin-right: -2rem;
+    margin-bottom: -3rem;
+    padding-left: 4rem;
+    padding-right: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .presentation-column {
+    min-height: auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .login-column {
+    padding: 2rem 1.5rem;
+  }
+
+  .form-field {
+    width: 100%;
+  }
+
+  .create-account-block {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    margin-bottom: -2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 2rem;
+  }
+}

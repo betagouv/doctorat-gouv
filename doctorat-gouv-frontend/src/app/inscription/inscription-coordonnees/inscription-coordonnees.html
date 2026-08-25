@@ -1,0 +1,154 @@
+<main id="main-content" class="inscription-page">
+  <div class="inscription-layout fr-grid-row">
+
+    <!-- ============ BLOC GAUCHE : Présentation ============ -->
+    <div class="fr-col-12 fr-col-lg-6 presentation-column">
+      <div class="presentation-content">
+        <h1>{{ 'INSCRIPTION.STEP1_TITLE' | translate }}</h1>
+        <p class="presentation-subtitle">
+          {{ 'INSCRIPTION.STEP1_SUBTITLE' | translate }}
+        </p>
+        <img
+          src="assets/images/connexion-illustration.svg"
+          alt=""
+          aria-hidden="true"
+          class="presentation-illustration" />
+      </div>
+    </div>
+
+    <!-- ============ BLOC DROIT : Coordonnées ============ -->
+    <div class="fr-col-12 fr-col-lg-6 login-column">
+      <div class="login-card">
+
+        <p class="fr-badge fr-badge--info fr-mb-2w">{{ 'INSCRIPTION.STEP1_INDICATOR' | translate }}</p>
+
+        <h2 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'INSCRIPTION.STEP1_SUBTITLE' | translate }}</h2>
+        <p class="fr-text--sm fr-mb-1w">{{ 'INSCRIPTION.STEP1_INTRO_1' | translate }}</p>
+        <p class="fr-text--sm fr-mb-3w">{{ 'INSCRIPTION.STEP1_INTRO_2' | translate }}</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Démarche -->
+          <fieldset class="fr-fieldset fr-mb-3w">
+            <legend class="fr-label">
+              {{ 'INSCRIPTION.SECTION_DEMARCHE' | translate }} <span class="required-star">*</span>
+            </legend>
+            <div class="fr-radio-group">
+              <input type="radio" id="demarche-doctorat" formControlName="demarche" value="DOCTORAT">
+              <label for="demarche-doctorat">{{ 'INSCRIPTION.DEMARCHE_DOCTORAT' | translate }}</label>
+            </div>
+            <div class="fr-radio-group">
+              <input type="radio" id="demarche-partenariat" formControlName="demarche" value="PARTENARIAT">
+              <label for="demarche-partenariat">{{ 'INSCRIPTION.DEMARCHE_PARTENARIAT' | translate }}</label>
+            </div>
+          </fieldset>
+
+          <!-- Nom -->
+          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="nom?.invalid && nom?.touched">
+            <label class="fr-label" for="nom">
+              {{ 'INSCRIPTION.FIELD_NOM' | translate }} <span class="required-star">*</span>
+            </label>
+            <input class="fr-input" id="nom" type="text" formControlName="nom"
+                   [attr.aria-invalid]="nom?.invalid && nom?.touched ? 'true' : null"
+                   aria-describedby="nom-error" />
+            <p class="fr-error-text" id="nom-error" *ngIf="nom?.invalid && nom?.touched">
+              {{ (nom?.errors?.['required'] ? 'INSCRIPTION.ERROR_FIELD_REQUIRED' : 'INSCRIPTION.ERROR_FIELD_MAX') | translate:{ max: 100 } }}
+            </p>
+          </div>
+
+          <!-- Prénom -->
+          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="prenom?.invalid && prenom?.touched">
+            <label class="fr-label" for="prenom">
+              {{ 'INSCRIPTION.FIELD_PRENOM' | translate }} <span class="required-star">*</span>
+            </label>
+            <input class="fr-input" id="prenom" type="text" formControlName="prenom"
+                   [attr.aria-invalid]="prenom?.invalid && prenom?.touched ? 'true' : null"
+                   aria-describedby="prenom-error" />
+            <p class="fr-error-text" id="prenom-error" *ngIf="prenom?.invalid && prenom?.touched">
+              {{ (prenom?.errors?.['required'] ? 'INSCRIPTION.ERROR_FIELD_REQUIRED' : 'INSCRIPTION.ERROR_FIELD_MAX') | translate:{ max: 100 } }}
+            </p>
+          </div>
+
+          <!-- Civilité -->
+          <div class="form-field fr-mb-2w">
+            <label class="fr-label" for="civilite">{{ 'INSCRIPTION.FIELD_CIVILITE' | translate }}</label>
+            <select class="fr-select" id="civilite" formControlName="civilite">
+              <option value="" disabled selected>{{ 'INSCRIPTION.CIVILITE_PLACEHOLDER' | translate }}</option>
+              <option value="Madame">{{ 'INSCRIPTION.CIVILITE_MADAME' | translate }}</option>
+              <option value="Monsieur">{{ 'INSCRIPTION.CIVILITE_MONSIEUR' | translate }}</option>
+              <option value="Autre">{{ 'INSCRIPTION.CIVILITE_AUTRE' | translate }}</option>
+            </select>
+          </div>
+
+          <!-- Situation actuelle -->
+          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="situation?.invalid && situation?.touched">
+            <label class="fr-label" for="situation">
+              {{ 'INSCRIPTION.FIELD_SITUATION' | translate }} <span class="required-star">*</span>
+            </label>
+            <select class="fr-select" id="situation" formControlName="situation"
+                    [attr.aria-invalid]="situation?.invalid && situation?.touched ? 'true' : null"
+                    aria-describedby="situation-error">
+              <option value="" disabled selected>{{ 'INSCRIPTION.SITUATION_PLACEHOLDER' | translate }}</option>
+              <option value="ETUDIANT_MASTER">{{ 'INSCRIPTION.SITUATION_ETUDIANT_MASTER' | translate }}</option>
+              <option value="TITULAIRE_MASTER">{{ 'INSCRIPTION.SITUATION_TITULAIRE_MASTER' | translate }}</option>
+              <option value="DOCTORANT">{{ 'INSCRIPTION.SITUATION_DOCTORANT' | translate }}</option>
+              <option value="PROFESSIONNEL">{{ 'INSCRIPTION.SITUATION_PROFESSIONNEL' | translate }}</option>
+            </select>
+            <p class="fr-error-text" id="situation-error" *ngIf="situation?.invalid && situation?.touched">
+              {{ 'INSCRIPTION.ERROR_SITUATION_REQUIRED' | translate }}
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="email?.invalid && email?.touched">
+            <label class="fr-label" for="email">
+              {{ 'INSCRIPTION.FIELD_EMAIL' | translate }} <span class="required-star">*</span>
+            </label>
+            <input class="fr-input" id="email" type="email" formControlName="email"
+                   [attr.aria-invalid]="email?.invalid && email?.touched ? 'true' : null"
+                   aria-describedby="email-error" />
+            <p class="fr-error-text" id="email-error" *ngIf="email?.invalid && email?.touched">
+              {{ (email?.errors?.['required'] ? 'INSCRIPTION.ERROR_FIELD_REQUIRED' : 'INSCRIPTION.ERROR_EMAIL_INVALID') | translate }}
+            </p>
+          </div>
+
+          <!-- Téléphone -->
+          <div class="form-field fr-mb-2w">
+            <label class="fr-label" for="telephone">{{ 'INSCRIPTION.FIELD_TELEPHONE' | translate }}</label>
+            <input class="fr-input" id="telephone" type="tel" formControlName="telephone" />
+          </div>
+
+          <!-- Checkbox Master -->
+          <div class="fr-checkbox-group fr-mb-3w" [class.fr-input-group--error]="masterConfirme?.invalid && masterConfirme?.touched">
+            <input type="checkbox" id="master" formControlName="masterConfirme"
+                   [attr.aria-invalid]="masterConfirme?.invalid && masterConfirme?.touched ? 'true' : null"
+                   aria-describedby="master-error" />
+            <label class="fr-label" for="master">{{ 'INSCRIPTION.LABEL_MASTER' | translate }} <span class="required-star">*</span></label>
+            <p class="fr-error-text" id="master-error" *ngIf="masterConfirme?.invalid && masterConfirme?.touched">
+              {{ 'INSCRIPTION.ERROR_MASTER_REQUIRED' | translate }}
+            </p>
+          </div>
+
+          <!-- Bouton Continuer -->
+          <button type="submit"
+                  class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w"
+                  [disabled]="form.invalid">
+            {{ 'INSCRIPTION.BTN_CONTINUER' | translate }}
+          </button>
+        </form>
+
+      </div>
+
+      <!-- Lien vers connexion -->
+      <div class="create-account-block">
+        <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'INSCRIPTION.STEP1_ALREADY_ACCOUNT' | translate }}</h3>
+        <p class="fr-text--sm fr-mb-2w">{{ 'INSCRIPTION.STEP1_LOGIN_DESCRIPTION' | translate }}</p>
+        <a routerLink="/connexion"
+           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-left-line">
+          {{ 'INSCRIPTION.STEP1_GO_LOGIN' | translate }}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
