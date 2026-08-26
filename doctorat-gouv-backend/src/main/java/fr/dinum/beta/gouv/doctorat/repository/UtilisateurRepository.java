@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 
+/**
+ * Repository Spring Data pour l'entité Utilisateur.
+ * Fournit les requêtes de recherche par email, par franceConnectId et l'existence par email.
+ */
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, String> {
 

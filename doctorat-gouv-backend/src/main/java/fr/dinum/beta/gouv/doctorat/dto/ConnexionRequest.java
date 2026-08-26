@@ -3,6 +3,7 @@ package fr.dinum.beta.gouv.doctorat.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+/** DTO d'entrée pour la connexion (email + mot de passe). */
 public class ConnexionRequest {
 
     @NotBlank(message = "L'email est obligatoire")

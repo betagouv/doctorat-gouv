@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 
+/** DTO de entrada pour l'inscription d'un nouvel utilisateur (email, mot de passe, prénom, nom, rôle). */
 public class InscriptionRequest {
 
     @NotBlank(message = "L'email est obligatoire")

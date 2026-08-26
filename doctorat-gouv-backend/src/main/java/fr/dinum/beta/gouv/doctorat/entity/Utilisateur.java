@@ -19,6 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entité JPA représentant un utilisateur de la plateforme (candidat, directeur, école doctorale, labo, admin).
+ * Identifiant : UUID généré automatiquement. Le mot de passe est stocké hashé (BCrypt).
+ */
 @Entity
 @Table(name = "utilisateur", uniqueConstraints = {
     @UniqueConstraint(columnNames = "email")
