@@ -1,3 +1,4 @@
+/** Modèle utilisateur retourné par le backend (sans le mot de passe). */
 export interface Utilisateur {
   id: string;
   email: string;
@@ -9,12 +10,14 @@ export interface Utilisateur {
   dateCreation: string;
 }
 
+/** Réponse du backend après connexion ou inscription : token JWT + infos utilisateur. */
 export interface ConnexionResponse {
   utilisateur: Utilisateur;
   token: string;
   expiresIn: number;
 }
 
+/** Données envoyées au backend pour l'inscription d'un nouvel utilisateur. */
 export interface InscriptionRequest {
   email: string;
   motDePasse: string;
@@ -23,6 +26,7 @@ export interface InscriptionRequest {
   role: string;
 }
 
+/** Données envoyées au backend pour la connexion (email + mot de passe). */
 export interface ConnexionRequest {
   email: string;
   motDePasse: string;

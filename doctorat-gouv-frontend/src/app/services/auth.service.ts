@@ -4,6 +4,11 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Utilisateur, ConnexionResponse, ConnexionRequest, InscriptionRequest } from '../models/utilisateur.model';
 
+/**
+ * Service d'authentification côté frontend.
+ * Gère la connexion, l'inscription, la déconnexion et la persistance de la session
+ * via JWT dans le localStorage. Expose un signal Angular pour l'état utilisateur courant.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
