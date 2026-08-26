@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import fr.dinum.beta.gouv.doctorat.config.JwtConfig;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionRequest;
+import fr.dinum.beta.gouv.doctorat.service.InscriptionFileService;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionResponse;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
@@ -41,6 +42,9 @@ class AuthServiceTest {
 
     @Mock
     private JwtConfig jwtConfig;
+
+    @Mock
+    private InscriptionFileService inscriptionFileService;
 
     @InjectMocks
     private AuthService authService;

@@ -2,6 +2,10 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +15,11 @@ import org.springframework.stereotype.Service;
 import fr.dinum.beta.gouv.doctorat.config.JwtConfig;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionResponse;
+import fr.dinum.beta.gouv.doctorat.dto.InscriptionCompletRequest;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import io.jsonwebtoken.Claims;
@@ -28,13 +34,16 @@ public class AuthService {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final InscriptionFileService inscriptionFileService;
 
     public AuthService(UtilisateurRepository utilisateurRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtConfig jwtConfig) {
+                       JwtConfig jwtConfig,
+                       InscriptionFileService inscriptionFileService) {
         this.utilisateurRepository = utilisateurRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtConfig = jwtConfig;
+        this.inscriptionFileService = inscriptionFileService;
     }
 
     public ConnexionResponse inscrire(InscriptionRequest request) {
@@ -59,6 +68,51 @@ public class AuthService {
         String token = genererToken(utilisateur);
         UtilisateurDto dto = toDto(utilisateur);
         return new ConnexionResponse(dto, token, jwtConfig.getExpirationMs());
+    }
+
+    /**
+     * Inscription complète (multipart) : crée le compte via {@link #inscrire(InscriptionRequest)}
+     * puis stocke les coordonnées supplémentaires et les fichiers uploadés (CV + pièces).
+     * Retourne un ConnexionResponse (token) pour auto-connecter l'utilisateur.
+     */
+    public ConnexionResponse inscrireComplet(InscriptionCompletRequest request,
+                                             MultipartFile cv,
+                                             List<MultipartFile> pieces) {
+        log.info("Inscription complète de {}", request.getEmail());
+
+        InscriptionRequest base = new InscriptionRequest();
+        base.setEmail(request.getEmail());
+        base.setMotDePasse(request.getMotDePasse() != null && !request.getMotDePasse().isBlank()
+                ? request.getMotDePasse()
+                : genererMotDePasseTemporaire());
+        base.setPrenom(request.getPrenom());
+        base.setNom(request.getNom());
+        base.setRole(RoleUtilisateur.CANDIDAT);
+
+        ConnexionResponse response = inscrire(base);
+        String userId = response.getUtilisateur().getId();
+
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable après inscription"));
+
+        utilisateur.setDemarche(request.getDemarche());
+        utilisateur.setCivilite(request.getCivilite());
+        utilisateur.setSituation(request.getSituation());
+        utilisateur.setTelephone(request.getTelephone());
+        utilisateur.setMasterConfirme(request.getMasterConfirme());
+
+        String cvPath = inscriptionFileService.storeCv(userId, cv);
+        utilisateur.setCvFilename(cvPath);
+        List<String> piecePaths = inscriptionFileService.storePieces(userId, pieces);
+        utilisateur.setPiecesFilenames(piecePaths);
+
+        utilisateurRepository.save(utilisateur);
+
+        return response;
+    }
+
+    private String genererMotDePasseTemporaire() {
+        return UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString();
     }
 
     public ConnexionResponse connecter(ConnexionRequest request) {

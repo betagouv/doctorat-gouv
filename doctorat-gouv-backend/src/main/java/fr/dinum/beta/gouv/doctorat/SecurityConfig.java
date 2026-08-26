@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/contact/**").permitAll()
                 .requestMatchers("/api/euraxess/**").permitAll()
                 .requestMatchers("/api/inscription").permitAll()
+                .requestMatchers("/api/inscription/complet").permitAll()
                 .requestMatchers("/api/connexion").permitAll()
                 .requestMatchers("/sitemap.xml").permitAll()
 

@@ -4,17 +4,23 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import fr.dinum.beta.gouv.doctorat.enums.DemarcheType;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -61,6 +67,34 @@ public class Utilisateur {
 
     @Column(name = "france_connect_id", length = 255)
     private String franceConnectId;
+
+    // --- Coordonnées d'inscription (profil candidat) ---
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private DemarcheType demarche;
+
+    @Column(length = 20)
+    private String civilite;
+
+    @Column(length = 50)
+    private String situation;
+
+    @Column(length = 20)
+    private String telephone;
+
+    @Column(name = "master_confirme")
+    private Boolean masterConfirme;
+
+    // --- Liens vers les fichiers uploadés ---
+
+    @Column(name = "cv_filename", length = 500)
+    private String cvFilename;
+
+    @ElementCollection
+    @CollectionTable(name = "utilisateur_pieces", joinColumns = @JoinColumn(name = "utilisateur_id"))
+    @Column(name = "piece_path", length = 500)
+    private List<String> piecesFilenames = new ArrayList<>();
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "date_creation", nullable = false)
@@ -140,6 +174,62 @@ public class Utilisateur {
 
     public void setFranceConnectId(String franceConnectId) {
         this.franceConnectId = franceConnectId;
+    }
+
+    public DemarcheType getDemarche() {
+        return demarche;
+    }
+
+    public void setDemarche(DemarcheType demarche) {
+        this.demarche = demarche;
+    }
+
+    public String getCivilite() {
+        return civilite;
+    }
+
+    public void setCivilite(String civilite) {
+        this.civilite = civilite;
+    }
+
+    public String getSituation() {
+        return situation;
+    }
+
+    public void setSituation(String situation) {
+        this.situation = situation;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public Boolean getMasterConfirme() {
+        return masterConfirme;
+    }
+
+    public void setMasterConfirme(Boolean masterConfirme) {
+        this.masterConfirme = masterConfirme;
+    }
+
+    public String getCvFilename() {
+        return cvFilename;
+    }
+
+    public void setCvFilename(String cvFilename) {
+        this.cvFilename = cvFilename;
+    }
+
+    public List<String> getPiecesFilenames() {
+        return piecesFilenames;
+    }
+
+    public void setPiecesFilenames(List<String> piecesFilenames) {
+        this.piecesFilenames = piecesFilenames;
     }
 
     public LocalDateTime getDateCreation() {
