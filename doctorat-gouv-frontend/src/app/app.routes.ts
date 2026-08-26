@@ -7,6 +7,7 @@ import { InscriptionCoordonnees } from './inscription/inscription-coordonnees/in
 import { InscriptionDocuments } from './inscription/inscription-documents/inscription-documents';
 import { InscriptionTerminee } from './inscription/inscription-terminee/inscription-terminee';
 import { inscriptionGuard } from './inscription/inscription.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: Search },
@@ -17,5 +18,5 @@ export const routes: Routes = [
   { path: 'inscription', redirectTo: 'inscription/coordonnees', pathMatch: 'full' },
   { path: 'inscription/coordonnees', component: InscriptionCoordonnees },
   { path: 'inscription/documents', component: InscriptionDocuments, canActivate: [inscriptionGuard] },
-  { path: 'inscription/terminee', component: InscriptionTerminee },
+  { path: 'inscription/terminee', component: InscriptionTerminee, canActivate: [authGuard] },
 ];
