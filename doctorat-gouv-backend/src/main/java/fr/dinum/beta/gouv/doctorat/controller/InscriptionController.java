@@ -14,9 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,14 +45,15 @@ public class InscriptionController {
     }
 
     @PostMapping(value = "/inscription/complet", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> inscrireComplet(
-            @RequestPart("coordonnees") MultipartFile coordonneesFile,
-            @RequestPart("cv") MultipartFile cv,
-            @RequestPart(value = "piecesComplementaires", required = false) List<MultipartFile> pieces) {
+    public ResponseEntity<?> inscrireComplet(MultipartHttpServletRequest request) {
+        String coordonneesJson = extraireCoordonnees(request);
+        if (coordonneesJson == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Les coordonnées sont obligatoires"));
+        }
+
         InscriptionCompletRequest coordonnees;
         try {
-            String json = new String(coordonneesFile.getBytes(), StandardCharsets.UTF_8);
-            coordonnees = objectMapper.readValue(json, InscriptionCompletRequest.class);
+            coordonnees = objectMapper.readValue(coordonneesJson, InscriptionCompletRequest.class);
         } catch (IOException e) {
             log.warn("Coordonnees JSON invalide", e);
             return ResponseEntity.badRequest().body(Map.of("error", "Le format des coordonnées est invalide"));
@@ -66,6 +67,13 @@ public class InscriptionController {
             return ResponseEntity.badRequest().body(Map.of("error", message));
         }
 
+        MultipartFile cv = request.getFile("cv");
+        if (cv == null || cv.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Le CV est obligatoire"));
+        }
+
+        List<MultipartFile> pieces = request.getMultiFileMap().get("piecesComplementaires");
+
         log.info("POST /api/inscription/complet - email: {}", coordonnees.getEmail());
         try {
             ConnexionResponse response = authService.inscrireComplet(coordonnees, cv, pieces);
@@ -73,5 +81,18 @@ public class InscriptionController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    private String extraireCoordonnees(MultipartHttpServletRequest request) {
+        MultipartFile file = request.getFile("coordonnees");
+        if (file != null && !file.isEmpty()) {
+            try {
+                return new String(file.getBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                log.warn("Lecture de la partie coordonnees impossible", e);
+                return null;
+            }
+        }
+        return request.getParameter("coordonnees");
     }
 }

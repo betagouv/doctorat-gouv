@@ -140,8 +140,7 @@ export class InscriptionDocuments implements OnInit {
     this.globalError = null;
 
     const formData = new FormData();
-    const coordonneesBlob = new Blob([JSON.stringify(coordonnees)], { type: 'application/json' });
-    formData.append('coordonnees', coordonneesBlob, 'coordonnees.json');
+    formData.append('coordonnees', JSON.stringify(coordonnees));
     formData.append('cv', this.cv as File);
     this.pieces.forEach(p => formData.append('piecesComplementaires', p.file));
 
