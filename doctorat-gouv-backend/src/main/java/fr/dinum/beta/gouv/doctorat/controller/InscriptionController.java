@@ -36,12 +36,11 @@ public class InscriptionController {
     private static final Logger log = LoggerFactory.getLogger(InscriptionController.class);
 
     private final AuthService authService;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Validator validator;
 
-    public InscriptionController(AuthService authService, ObjectMapper objectMapper, Validator validator) {
+    public InscriptionController(AuthService authService, Validator validator) {
         this.authService = authService;
-        this.objectMapper = objectMapper;
         this.validator = validator;
     }
 
