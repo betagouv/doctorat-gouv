@@ -1,0 +1,109 @@
+<main id="main-content" class="inscription-page">
+  <div class="inscription-layout fr-grid-row">
+
+    <!-- ============ BLOC GAUCHE : Présentation ============ -->
+    <div class="fr-col-12 fr-col-lg-6 presentation-column">
+      <div class="presentation-content">
+        <h1>{{ 'INSCRIPTION.STEP1_TITLE' | translate }}</h1>
+        <p class="presentation-subtitle">
+          {{ 'INSCRIPTION.PRESENTATION_SUBTITLE' | translate }}
+        </p>
+        <img
+          src="assets/images/connexion-illustration.svg"
+          alt=""
+          aria-hidden="true"
+          class="presentation-illustration" />
+      </div>
+    </div>
+
+    <!-- ============ BLOC DROIT : Documents ============ -->
+    <div class="fr-col-12 fr-col-lg-6 login-column">
+      <div class="login-card">
+
+        <p class="fr-badge fr-badge--info fr-mb-2w">{{ 'INSCRIPTION.STEP2_INDICATOR' | translate }}</p>
+
+        <h2 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'INSCRIPTION.STEP2_TITLE' | translate }}</h2>
+        <p class="fr-text--sm fr-mb-1w">{{ 'INSCRIPTION.STEP2_INTRO_1' | translate }}</p>
+        <p class="fr-text--sm fr-mb-3w">{{ 'INSCRIPTION.STEP2_INTRO_2' | translate }}</p>
+
+        <!-- ============ CV ============ -->
+        <div class="fr-upload-group fr-mb-3w" [class.fr-input-group--error]="cvErreur">
+          <label class="fr-label" for="cv">
+            {{ 'INSCRIPTION.FIELD_CV' | translate }} <span class="required-star">*</span>
+          </label>
+          <p class="fr-hint-text fr-mb-1w">{{ 'INSCRIPTION.CV_HELP' | translate }}</p>
+
+          <input
+            class="fr-input"
+            type="file"
+            id="cv"
+            accept=".pdf,application/pdf"
+            (change)="onCvSelected($event)"
+            [attr.aria-invalid]="cvErreur ? 'true' : null"
+            aria-describedby="cv-error" />
+
+          <p class="fr-error-text" id="cv-error" *ngIf="cvErreur">{{ cvErreur }}</p>
+
+          <div class="fr-download fr-download--card" *ngIf="cv">
+            <p class="fr-download__title">
+              {{ cv.name }} ({{ formatTaille(cv.size) }})
+            </p>
+            <button type="button" class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-delete-line"
+                    (click)="supprimerCv()">
+              {{ 'INSCRIPTION.DELETE_FILE' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ Pièces complémentaires ============ -->
+        <div class="fr-upload-group fr-mb-3w" [class.fr-input-group--error]="pieceErreur">
+          <label class="fr-label" for="pieces">
+            {{ 'INSCRIPTION.FIELD_PIECES' | translate }} <span class="required-star">*</span>
+          </label>
+          <p class="fr-hint-text fr-mb-1w">{{ 'INSCRIPTION.PIECES_HELP' | translate }}</p>
+
+          <input
+            class="fr-input"
+            type="file"
+            id="pieces"
+            accept=".pdf,application/pdf"
+            multiple
+            (change)="onPiecesSelected($event)"
+            [attr.aria-invalid]="pieceErreur ? 'true' : null"
+            aria-describedby="pieces-error" />
+
+          <p class="fr-error-text" id="pieces-error" *ngIf="pieceErreur">{{ pieceErreur }}</p>
+
+          <ul class="fr-mt-2w file-list" *ngIf="pieces.length > 0">
+            <li class="fr-download fr-download--card" *ngFor="let piece of pieces; let i = index">
+              <p class="fr-download__title" [class.fr-download__title--error]="piece.erreur">
+                {{ piece.file.name }} ({{ formatTaille(piece.file.size) }})
+                <span *ngIf="piece.erreur" class="file-error"> — {{ piece.erreur }}</span>
+              </p>
+              <button type="button" class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-delete-line"
+                      (click)="supprimerPiece(i)">
+                {{ 'INSCRIPTION.DELETE_FILE' | translate }}
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Erreur globale -->
+        <div class="fr-alert fr-alert--error fr-mt-2w" role="alert" *ngIf="globalError">
+          {{ globalError }}
+        </div>
+
+        <!-- Bouton Continuer -->
+        <button type="button"
+                class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-3w"
+                [disabled]="!formulaireValide || isSubmitting"
+                (click)="onSubmit()">
+          {{ 'INSCRIPTION.BTN_CONTINUER' | translate }}
+          <span class="fr-ml-1w" aria-hidden="true">→</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</main>

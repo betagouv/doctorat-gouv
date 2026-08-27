@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.termine-steps {
+  padding-left: 1.25rem;
+}
+
+.termine-steps li {
+  margin-bottom: 0.5rem;
+}
+
+.termine-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

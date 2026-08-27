@@ -41,6 +41,14 @@ export class AuthService {
     );
   }
 
+  inscrireComplet(formData: FormData): Observable<ConnexionResponse> {
+    return this.http.post<ConnexionResponse>(`${this.apiUrl}/inscription/complet`, formData).pipe(
+      tap(response => {
+        this.setSession(response);
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);

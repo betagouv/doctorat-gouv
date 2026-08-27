@@ -1,0 +1,39 @@
+<main id="main-content" class="inscription-page">
+  <div class="inscription-layout fr-grid-row">
+
+    <div class="fr-col-12 fr-col-lg-6 presentation-column">
+      <div class="presentation-content">
+        <h1>{{ 'INSCRIPTION.TERMINE_TITLE' | translate }}</h1>
+        <p class="presentation-subtitle">{{ 'INSCRIPTION.TERMINE_INTRO' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="fr-col-12 fr-col-lg-6 login-column">
+      <div class="login-card">
+
+        <div class="fr-alert fr-alert--success fr-mb-3w" role="status">
+          <h2 class="fr-alert__title">{{ 'INSCRIPTION.TERMINE_ALERT_TITLE' | translate }}</h2>
+          <p>{{ 'INSCRIPTION.TERMINE_ALERT_TEXT' | translate }}</p>
+        </div>
+
+        <p class="fr-text--sm fr-mb-2w">{{ 'INSCRIPTION.TERMINE_NEXT' | translate }}</p>
+        <ul class="fr-mb-3w termine-steps">
+          <li>{{ 'INSCRIPTION.TERMINE_NEXT_1' | translate }}</li>
+          <li>{{ 'INSCRIPTION.TERMINE_NEXT_2' | translate }}</li>
+        </ul>
+
+        <div class="termine-actions">
+          <a class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line"
+             routerLink="/search">
+            {{ 'INSCRIPTION.TERMINE_BTN_SEARCH' | translate }}
+          </a>
+          <a class="fr-btn fr-btn--secondary" routerLink="/">
+            {{ 'INSCRIPTION.TERMINE_BTN_HOME' | translate }}
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
