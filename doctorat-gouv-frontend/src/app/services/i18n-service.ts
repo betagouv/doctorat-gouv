@@ -26,7 +26,7 @@ export class I18nService {
 	document.documentElement.lang = lang;
 	this.applicationRef.tick();
 	
-	const files = ['header', 'search', 'detail', 'contact', 'connexion', 'inscription'];
+    const files = ['header', 'search', 'detail', 'contact', 'connexion', 'inscription', 'espace-candidat'];
     let loaded = 0;
 
     files.forEach(file => {
