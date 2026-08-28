@@ -3,6 +3,7 @@ package fr.dinum.beta.gouv.doctorat.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,11 +66,12 @@ public class InscriptionFileService {
 
     private String store(MultipartFile file, Path dir) {
         try {
-            Files.createDirectories(dir);
+            Path absoluteDir = dir.toAbsolutePath();
+            Files.createDirectories(absoluteDir);
             String safeName = System.currentTimeMillis() + "_"
                     + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
-            Path target = dir.resolve(safeName);
-            file.transferTo(target.toFile());
+            Path target = absoluteDir.resolve(safeName);
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             return target.toString();
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors du stockage du fichier", e);
