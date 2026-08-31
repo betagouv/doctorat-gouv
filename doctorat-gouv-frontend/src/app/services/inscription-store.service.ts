@@ -10,6 +10,7 @@ export interface InscriptionCoordonnees {
   situation?: string;
   email: string;
   telephone?: string;
+  motDePasse: string;
   masterConfirme: boolean;
 }
 

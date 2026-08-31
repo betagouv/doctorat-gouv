@@ -118,6 +118,46 @@
             <input class="fr-input" id="telephone" type="tel" formControlName="telephone" />
           </div>
 
+          <!-- Mot de passe -->
+          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="motDePasse?.invalid && motDePasse?.touched">
+            <label class="fr-label" for="motDePasse">
+              {{ 'INSCRIPTION.FIELD_PASSWORD' | translate }} <span class="required-star">*</span>
+            </label>
+            <div class="fr-password">
+              <input class="fr-input" id="motDePasse" [type]="showPassword ? 'text' : 'password'"
+                     formControlName="motDePasse"
+                     [attr.aria-invalid]="motDePasse?.invalid && motDePasse?.touched ? 'true' : null"
+                     aria-describedby="mdp-error" />
+              <button type="button"
+                      class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-eye-line fr-ml-1w"
+                      [attr.aria-label]="'INSCRIPTION.SHOW_PASSWORD' | translate"
+                      (click)="showPassword = !showPassword">
+              </button>
+            </div>
+            <p class="fr-error-text" id="mdp-error" *ngIf="motDePasse?.invalid && motDePasse?.touched">
+              {{ (motDePasse?.errors?.['required'] ? 'INSCRIPTION.ERROR_PASSWORD_REQUIRED' : 'INSCRIPTION.ERROR_PASSWORD_MIN_LENGTH') | translate }}
+            </p>
+          </div>
+
+          <!-- Confirmation mot de passe -->
+          <div class="form-field fr-mb-2w"
+               [class.fr-input-group--error]="(confirmationMdp?.invalid && confirmationMdp?.touched) || (form.errors?.['passwordMismatch'] && confirmationMdp?.touched)">
+            <label class="fr-label" for="confirmationMdp">
+              {{ 'INSCRIPTION.FIELD_CONFIRM_PASSWORD' | translate }} <span class="required-star">*</span>
+            </label>
+            <input class="fr-input" id="confirmationMdp" [type]="showPassword ? 'text' : 'password'"
+                   formControlName="confirmationMdp"
+                   [attr.aria-invalid]="confirmationMdp?.invalid && confirmationMdp?.touched ? 'true' : null"
+                   aria-describedby="conf-error" />
+            <p class="fr-error-text" id="conf-error" *ngIf="confirmationMdp?.invalid && confirmationMdp?.touched">
+              {{ 'INSCRIPTION.ERROR_PASSWORD_REQUIRED' | translate }}
+            </p>
+            <p class="fr-error-text"
+               *ngIf="form.errors?.['passwordMismatch'] && confirmationMdp?.touched">
+              {{ 'INSCRIPTION.ERROR_PASSWORD_MISMATCH' | translate }}
+            </p>
+          </div>
+
           <!-- Checkbox Master -->
           <div class="fr-checkbox-group fr-mb-3w" [class.fr-input-group--error]="masterConfirme?.invalid && masterConfirme?.touched">
             <input type="checkbox" id="master" formControlName="masterConfirme"

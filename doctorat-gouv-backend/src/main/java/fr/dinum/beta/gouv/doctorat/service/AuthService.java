@@ -112,7 +112,7 @@ public class AuthService {
     }
 
     private String genererMotDePasseTemporaire() {
-        return UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     public ConnexionResponse connecter(ConnexionRequest request) {

@@ -17,6 +17,8 @@ export class InscriptionCoordonnees implements OnInit {
 
   form: FormGroup;
 
+  showPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService,
@@ -33,8 +35,10 @@ export class InscriptionCoordonnees implements OnInit {
       situation: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.maxLength(20), Validators.pattern(/^[\d\s+().-]+$/)]],
+      motDePasse: ['', [Validators.required, Validators.minLength(12)]],
+      confirmationMdp: ['', [Validators.required]],
       masterConfirme: [false, [Validators.requiredTrue]],
-    });
+    }, { validators: [motsDePasseIdentiques] });
   }
 
   ngOnInit(): void {
@@ -57,6 +61,8 @@ export class InscriptionCoordonnees implements OnInit {
   get situation() { return this.form.get('situation'); }
   get email() { return this.form.get('email'); }
   get telephone() { return this.form.get('telephone'); }
+  get motDePasse() { return this.form.get('motDePasse'); }
+  get confirmationMdp() { return this.form.get('confirmationMdp'); }
   get masterConfirme() { return this.form.get('masterConfirme'); }
 
   onSubmit(): void {
@@ -74,10 +80,17 @@ export class InscriptionCoordonnees implements OnInit {
       situation: value.situation,
       email: value.email,
       telephone: value.telephone || undefined,
+      motDePasse: value.motDePasse,
       masterConfirme: value.masterConfirme,
     };
 
     this.store.setCoordonnees(coordonnees);
     this.router.navigate(['/inscription/documents']);
   }
+}
+
+function motsDePasseIdentiques(group: AbstractControl): ValidationErrors | null {
+  const mdp = group.get('motDePasse')?.value;
+  const conf = group.get('confirmationMdp')?.value;
+  return mdp && conf && mdp !== conf ? { passwordMismatch: true } : null;
 }
