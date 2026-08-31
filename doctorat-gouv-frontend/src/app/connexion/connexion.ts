@@ -77,7 +77,7 @@ export class Connexion implements OnInit {
       motDePasse: this.loginForm.value.password
     }).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/espace-candidat';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
