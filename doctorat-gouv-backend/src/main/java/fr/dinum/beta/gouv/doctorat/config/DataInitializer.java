@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,6 +21,9 @@ public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
+    @Value("${DEV_DEFAULT_PASSWORD}")
+    private String defaultPassword;
+
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -33,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
         if (utilisateurRepository.count() == 0) {
             Utilisateur candidat = new Utilisateur();
             candidat.setEmail("candidat@doctorat.gouv.fr");
-            candidat.setMotDePasse(passwordEncoder.encode("MotDePasse123!"));
+            candidat.setMotDePasse(passwordEncoder.encode(defaultPassword));
             candidat.setPrenom("Marie");
             candidat.setNom("Curie");
             candidat.setRole(RoleUtilisateur.CANDIDAT);
@@ -44,7 +48,7 @@ public class DataInitializer implements CommandLineRunner {
 
             Utilisateur directeur = new Utilisateur();
             directeur.setEmail("directeur@doctorat.gouv.fr");
-            directeur.setMotDePasse(passwordEncoder.encode("MotDePasse123!"));
+            directeur.setMotDePasse(passwordEncoder.encode(defaultPassword));
             directeur.setPrenom("Jean");
             directeur.setNom("Pierre");
             directeur.setRole(RoleUtilisateur.DIRECTEUR_THESE);
@@ -53,7 +57,7 @@ public class DataInitializer implements CommandLineRunner {
             directeur.setDateCreation(LocalDateTime.now());
             utilisateurRepository.save(directeur);
 
-            log.info("Utilisateurs de test créés : candidat@doctorat.gouv.fr / directeur@doctorat.gouv.fr (MDP: MotDePasse123!)");
+            log.info("Utilisateurs de test créés : candidat@doctorat.gouv.fr / directeur@doctorat.gouv.fr (MDP via DEV_DEFAULT_PASSWORD)");
         }
     }
 }
