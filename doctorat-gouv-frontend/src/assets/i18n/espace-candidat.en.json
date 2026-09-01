@@ -1,6 +1,26 @@
 {
   "ESPACE_CANDIDAT": {
     "TITLE": "Candidate space",
-    "INTRO": "Welcome to your personal space. The dashboard will be available soon."
+    "WELCOME": "Welcome, {{prenom}} {{nom}}.",
+    "INTRO": "Welcome to your personal space. The dashboard will be available soon.",
+    "PROFIL_TITLE": "My profile",
+    "PROFIL_EDIT": "Edit",
+    "PROFIL_SAVE": "Save",
+    "PROFIL_CANCEL": "Cancel",
+    "PROFIL_SUCCESS": "Profile updated successfully.",
+    "FIELD_CIVILITE": "Title",
+    "FIELD_NOM": "Last name",
+    "FIELD_PRENOM": "First name",
+    "FIELD_SITUATION": "Current situation",
+    "FIELD_EMAIL": "Email address",
+    "FIELD_TELEPHONE": "Phone",
+    "CIVILITE_NONE": "—",
+    "CIVILITE_M": "Mr",
+    "CIVILITE_MME": "Mrs",
+    "ERROR_NOM_REQUIRED": "Last name is required.",
+    "ERROR_PRENOM_REQUIRED": "First name is required.",
+    "ERROR_SITUATION_REQUIRED": "Situation is required.",
+    "ERROR_EMAIL_REQUIRED": "Email address is required.",
+    "ERROR_EMAIL_INVALID": "Email address is not valid."
   }
 }
