@@ -23,6 +23,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -39,6 +40,7 @@ public class SecurityConfig {
 
                 // API protégées (JWT requis)
                 .requestMatchers("/api/me").authenticated()
+                .requestMatchers("/api/candidat/**").authenticated()
                 .requestMatchers("/api/deconnexion").authenticated()
 
                 // Fichiers statiques Angular
