@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class CandidatService {
         utilisateur.setSituation(request.getSituation());
         utilisateur.setEmail(request.getEmail());
         utilisateur.setTelephone(request.getTelephone());
+        if (request.getCompetences() != null) {
+            utilisateur.setCompetences(new ArrayList<>(request.getCompetences()));
+        }
         utilisateur.setDateModification(LocalDateTime.now());
 
         Utilisateur saved = utilisateurRepository.save(utilisateur);
@@ -44,8 +48,37 @@ public class CandidatService {
         return toProfilResponse(saved);
     }
 
+    public ProfilResponse addCompetence(String userId, String competence) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+
+        if (utilisateur.getCompetences() == null) {
+            utilisateur.setCompetences(new ArrayList<>());
+        }
+        if (!utilisateur.getCompetences().contains(competence)) {
+            utilisateur.getCompetences().add(competence);
+            utilisateur.setDateModification(LocalDateTime.now());
+            utilisateurRepository.save(utilisateur);
+            log.info("Compétence '{}' ajoutée pour l'utilisateur {}", competence, userId);
+        }
+        return toProfilResponse(utilisateur);
+    }
+
+    public ProfilResponse removeCompetence(String userId, String competence) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+
+        if (utilisateur.getCompetences() != null) {
+            utilisateur.getCompetences().remove(competence);
+            utilisateur.setDateModification(LocalDateTime.now());
+            utilisateurRepository.save(utilisateur);
+            log.info("Compétence '{}' supprimée pour l'utilisateur {}", competence, userId);
+        }
+        return toProfilResponse(utilisateur);
+    }
+
     private ProfilResponse toProfilResponse(Utilisateur u) {
-        return new ProfilResponse(
+        ProfilResponse response = new ProfilResponse(
             u.getCivilite(),
             u.getNom(),
             u.getPrenom(),
@@ -53,5 +86,9 @@ public class CandidatService {
             u.getEmail(),
             u.getTelephone()
         );
+        response.setPhotoUrl(u.getPhotoUrl());
+        response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
+        response.setNbCandidatures(u.getNbCandidatures() != null ? u.getNbCandidatures() : 0);
+        return response;
     }
 }

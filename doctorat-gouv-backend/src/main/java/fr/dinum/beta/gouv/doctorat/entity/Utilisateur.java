@@ -86,6 +86,23 @@ public class Utilisateur {
     @Column(name = "master_confirme")
     private Boolean masterConfirme;
 
+    // --- Photo ---
+
+    @Column(name = "photo_url", length = 500)
+    private String photoUrl;
+
+    // --- Compétences ---
+
+    @ElementCollection
+    @CollectionTable(name = "utilisateur_competences", joinColumns = @JoinColumn(name = "utilisateur_id"))
+    @Column(name = "competence", length = 255)
+    private List<String> competences = new ArrayList<>();
+
+    // --- Nombre de candidatures ---
+
+    @Column(name = "nb_candidatures")
+    private Integer nbCandidatures = 0;
+
     // --- Liens vers les fichiers uploadés ---
 
     @Column(name = "cv_filename", length = 500)
@@ -222,6 +239,30 @@ public class Utilisateur {
 
     public void setCvFilename(String cvFilename) {
         this.cvFilename = cvFilename;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public List<String> getCompetences() {
+        return competences;
+    }
+
+    public void setCompetences(List<String> competences) {
+        this.competences = competences;
+    }
+
+    public Integer getNbCandidatures() {
+        return nbCandidatures;
+    }
+
+    public void setNbCandidatures(Integer nbCandidatures) {
+        this.nbCandidatures = nbCandidatures;
     }
 
     public List<String> getPiecesFilenames() {

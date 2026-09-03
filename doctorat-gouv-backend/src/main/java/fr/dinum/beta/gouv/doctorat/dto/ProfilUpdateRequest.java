@@ -1,5 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +31,8 @@ public class ProfilUpdateRequest {
     @Size(max = 20, message = "Le téléphone ne doit pas dépasser 20 caractères")
     private String telephone;
 
+    private List<String> competences;
+
     public String getCivilite() { return civilite; }
     public void setCivilite(String civilite) { this.civilite = civilite; }
 
@@ -46,4 +50,7 @@ public class ProfilUpdateRequest {
 
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public List<String> getCompetences() { return competences; }
+    public void setCompetences(List<String> competences) { this.competences = competences; }
 }

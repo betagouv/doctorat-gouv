@@ -1,5 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.dto;
 
+import java.util.List;
+
 /**
  * DTO de réponse contenant les coordonnées du profil candidat.
  */
@@ -11,6 +13,9 @@ public class ProfilResponse {
     private String situation;
     private String email;
     private String telephone;
+    private String photoUrl;
+    private List<String> competences;
+    private int nbCandidatures;
 
     public ProfilResponse() {}
 
@@ -40,4 +45,13 @@ public class ProfilResponse {
 
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    public List<String> getCompetences() { return competences; }
+    public void setCompetences(List<String> competences) { this.competences = competences; }
+
+    public int getNbCandidatures() { return nbCandidatures; }
+    public void setNbCandidatures(int nbCandidatures) { this.nbCandidatures = nbCandidatures; }
 }

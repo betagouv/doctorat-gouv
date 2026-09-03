@@ -1,11 +1,15 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +46,30 @@ public class CandidatController {
         String userId = getCurrentUserId();
         log.info("Mise à jour du profil pour l'utilisateur {}", userId);
         ProfilResponse response = candidatService.updateProfil(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/competences")
+    public ResponseEntity<ProfilResponse> addCompetence(@RequestBody Map<String, String> body) {
+        String userId = getCurrentUserId();
+        String competence = body.get("competence");
+        if (competence == null || competence.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        log.info("Ajout compétence '{}' pour l'utilisateur {}", competence, userId);
+        ProfilResponse response = candidatService.addCompetence(userId, competence.trim());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/competences")
+    public ResponseEntity<ProfilResponse> removeCompetence(@RequestBody Map<String, String> body) {
+        String userId = getCurrentUserId();
+        String competence = body.get("competence");
+        if (competence == null || competence.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        log.info("Suppression compétence '{}' pour l'utilisateur {}", competence, userId);
+        ProfilResponse response = candidatService.removeCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
     }
 
