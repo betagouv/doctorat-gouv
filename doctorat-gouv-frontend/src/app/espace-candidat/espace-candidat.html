@@ -1,139 +1,292 @@
 <main id="main-content" class="espace-candidat-page">
-  <div class="fr-container">
+  <div class="ec-layout">
 
-    <h1>{{ 'ESPACE_CANDIDAT.TITLE' | translate }}</h1>
-    <p class="fr-text--lead fr-mb-4w">
-      {{ 'ESPACE_CANDIDAT.WELCOME' | translate:{ prenom: prenom, nom: nom } }}
-    </p>
-
-    <!-- Messages -->
-    <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="successMessage" role="alert">
-      {{ successMessage }}
-    </div>
-    <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
-      {{ errorMessage }}
-    </div>
-
-    <!-- ============ BLOC PROFIL ============ -->
-    <section class="fr-card fr-mb-4w">
-      <div class="fr-card__body">
-        <div class="fr-card__header fr-mb-2w">
-          <h2 class="fr-card__title">{{ 'ESPACE_CANDIDAT.PROFIL_TITLE' | translate }}</h2>
-        </div>
-
-        <!-- Vue lecture -->
-        <div *ngIf="!isEditing && profil">
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_CIVILITE' | translate }}</strong></p>
-              <p>{{ profil.civilite || '—' }}</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_NOM' | translate }}</strong></p>
-              <p>{{ profil.nom }}</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_PRENOM' | translate }}</strong></p>
-              <p>{{ profil.prenom }}</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_SITUATION' | translate }}</strong></p>
-              <p>{{ profil.situation }}</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }}</strong></p>
-              <p>{{ profil.email }}</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="fr-text--sm fr-mb-1w"><strong>{{ 'ESPACE_CANDIDAT.FIELD_TELEPHONE' | translate }}</strong></p>
-              <p>{{ profil.telephone || '—' }}</p>
-            </div>
-          </div>
-          <button class="fr-btn fr-btn--secondary fr-mt-2w" (click)="startEdit()">
-            {{ 'ESPACE_CANDIDAT.PROFIL_EDIT' | translate }}
+    <!-- ======== BARRE LATÉRALE GAUCHE ======== -->
+    <aside class="ec-sidebar">
+      <div class="ec-sidebar__card">
+        <div class="ec-sidebar__photo-wrapper">
+          <img [src]="photoUrl"
+               [alt]="fullName"
+               class="ec-sidebar__photo"
+               (error)="onPhotoError($event)" />
+          <button class="ec-sidebar__photo-edit"
+                  (click)="onPhotoEdit()"
+                  aria-label="Modifier la photo">
+            <span class="fr-icon-edit-line" aria-hidden="true"></span>
           </button>
         </div>
+        <div class="ec-sidebar__info">
+          <h2 class="ec-sidebar__name">{{ fullName }}</h2>
+          <p class="ec-sidebar__role">Candidat</p>
+        </div>
+        <div class="ec-sidebar__candidatures">
+          <span class="ec-sidebar__candidatures-count">{{ candidaturesCount }}</span>
+          <span class="ec-sidebar__candidatures-label">candidature(s)</span>
+        </div>
+      </div>
+    </aside>
 
-        <!-- Vue édition -->
-        <form *ngIf="isEditing" [formGroup]="profilForm" (ngSubmit)="saveProfil()">
-          <div class="fr-grid-row fr-grid-row--gutters">
+    <!-- ======== ZONE PRINCIPALE ======== -->
+    <div class="ec-main">
 
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="edit-civilite">{{ 'ESPACE_CANDIDAT.FIELD_CIVILITE' | translate }}</label>
-                <select class="fr-select" id="edit-civilite" formControlName="civilite">
-                  <option value="">{{ 'ESPACE_CANDIDAT.CIVILITE_NONE' | translate }}</option>
-                  <option value="M">{{ 'ESPACE_CANDIDAT.CIVILITE_M' | translate }}</option>
-                  <option value="Mme">{{ 'ESPACE_CANDIDAT.CIVILITE_MME' | translate }}</option>
-                </select>
+      <!-- Messages -->
+      <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="successMessage" role="alert">
+        {{ successMessage }}
+      </div>
+      <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Onglets de navigation -->
+      <nav class="ec-tabs" role="tablist" aria-label="Espace candidat">
+        <button class="ec-tabs__tab"
+                [class.ec-tabs__tab--active]="activeTab === 'profil'"
+                (click)="switchTab('profil')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'profil'">
+          Votre profil
+        </button>
+        <button class="ec-tabs__tab"
+                [class.ec-tabs__tab--active]="activeTab === 'motdepasse'"
+                (click)="switchTab('motdepasse')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'motdepasse'">
+          Mot de passe
+        </button>
+        <button class="ec-tabs__tab"
+                [class.ec-tabs__tab--active]="activeTab === 'notifications'"
+                (click)="switchTab('notifications')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'notifications'">
+          Notifications
+        </button>
+        <button class="ec-tabs__tab"
+                [class.ec-tabs__tab--active]="activeTab === 'alertes'"
+                (click)="switchTab('alertes')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'alertes'">
+          Alertes
+        </button>
+      </nav>
+
+      <!-- ============ ONGLET : VOTRE PROFIL ============ -->
+      <div *ngIf="activeTab === 'profil'" class="ec-tab-content">
+
+        <!-- Section : Informations personnelles -->
+        <section class="ec-card">
+          <div class="ec-card__header">
+            <div class="ec-card__header-row">
+              <div>
+                <h2 class="ec-card__title">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Informations personnelles
+                </h2>
+                <p class="ec-card__desc">Renseignez vos coordonnées et informations de contact.</p>
               </div>
+              <button *ngIf="!isEditing" class="ec-btn-secondary" (click)="startEdit()">
+                <span class="fr-icon-edit-line" aria-hidden="true"></span>
+                Modifier
+              </button>
             </div>
-
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
-                <label class="fr-label" for="edit-nom">{{ 'ESPACE_CANDIDAT.FIELD_NOM' | translate }} <span class="required-star">*</span></label>
-                <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
-                       [attr.aria-invalid]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched ? 'true' : null" />
-                <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
-                  {{ 'ESPACE_CANDIDAT.ERROR_NOM_REQUIRED' | translate }}
-                </p>
-              </div>
-            </div>
-
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                <label class="fr-label" for="edit-prenom">{{ 'ESPACE_CANDIDAT.FIELD_PRENOM' | translate }} <span class="required-star">*</span></label>
-                <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
-                       [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
-                <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                  {{ 'ESPACE_CANDIDAT.ERROR_PRENOM_REQUIRED' | translate }}
-                </p>
-              </div>
-            </div>
-
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                <label class="fr-label" for="edit-situation">{{ 'ESPACE_CANDIDAT.FIELD_SITUATION' | translate }} <span class="required-star">*</span></label>
-                <input class="fr-input" id="edit-situation" type="text" formControlName="situation"
-                       [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null" />
-                <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                  {{ 'ESPACE_CANDIDAT.ERROR_SITUATION_REQUIRED' | translate }}
-                </p>
-              </div>
-            </div>
-
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                <label class="fr-label" for="edit-email">{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }} <span class="required-star">*</span></label>
-                <input class="fr-input" id="edit-email" type="email" formControlName="email"
-                       [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
-                <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                  {{ (profilForm.get('email')?.errors?.['required'] ? 'ESPACE_CANDIDAT.ERROR_EMAIL_REQUIRED' : 'ESPACE_CANDIDAT.ERROR_EMAIL_INVALID') | translate }}
-                </p>
-              </div>
-            </div>
-
-            <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="edit-telephone">{{ 'ESPACE_CANDIDAT.FIELD_TELEPHONE' | translate }}</label>
-                <input class="fr-input" id="edit-telephone" type="tel" formControlName="telephone" />
-              </div>
-            </div>
-
           </div>
 
-          <div class="fr-mt-3w">
-            <button type="submit" class="fr-btn fr-mr-2w" [disabled]="isSaving">
-              {{ 'ESPACE_CANDIDAT.PROFIL_SAVE' | translate }}
-            </button>
-            <button type="button" class="fr-btn fr-btn--secondary" (click)="cancelEdit()" [disabled]="isSaving">
-              {{ 'ESPACE_CANDIDAT.PROFIL_CANCEL' | translate }}
-            </button>
+          <div class="ec-card__body">
+
+            <!-- Vue lecture -->
+            <div *ngIf="!isEditing && profil" class="ec-profil">
+              <div class="ec-form-grid">
+                <div class="ec-field">
+                  <span class="ec-field__label">Prénom</span>
+                  <span class="ec-field__value">{{ profil.prenom }}</span>
+                </div>
+                <div class="ec-field">
+                  <span class="ec-field__label">Nom</span>
+                  <span class="ec-field__value">{{ profil.nom }}</span>
+                </div>
+                <div class="ec-field">
+                  <span class="ec-field__label">Civilité</span>
+                  <span class="ec-field__value">{{ profil.civilite || '—' }}</span>
+                </div>
+                <div class="ec-field">
+                  <span class="ec-field__label">Situation actuelle</span>
+                  <span class="ec-field__value">{{ profil.situation }}</span>
+                </div>
+                <div class="ec-field">
+                  <span class="ec-field__label">E-mail</span>
+                  <span class="ec-field__value">{{ profil.email }}</span>
+                </div>
+                <div class="ec-field">
+                  <span class="ec-field__label">Téléphone mobile</span>
+                  <span class="ec-field__value">{{ profil.telephone || '—' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vue édition -->
+            <form *ngIf="isEditing" [formGroup]="profilForm" (ngSubmit)="saveProfil()" class="ec-profil">
+              <div class="ec-form-grid">
+
+                <!-- Ligne 1 : Prénom / Nom -->
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                  <label class="fr-label" for="edit-prenom">Prénom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
+                         [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                    Le prénom est obligatoire.
+                  </p>
+                </div>
+
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
+                  <label class="fr-label" for="edit-nom">Nom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
+                         [attr.aria-invalid]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
+                    Le nom est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 2 : Civilité / Situation -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="edit-civilite">Civilité</label>
+                  <select class="fr-select" id="edit-civilite" formControlName="civilite">
+                    <option value="">—</option>
+                    <option value="M">Monsieur</option>
+                    <option value="Mme">Madame</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+
+                <div class="fr-select-group" [class.fr-select-group--error]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
+                  <label class="fr-label" for="edit-situation">Situation actuelle <span class="required-star">*</span></label>
+                  <select class="fr-select" id="edit-situation" formControlName="situation"
+                          [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null">
+                    <option value="">—</option>
+                    <option value="Étudiant au sein d'un master français">Étudiant au sein d'un master français</option>
+                    <option value="Doctorant">Doctorant</option>
+                    <option value="Chercheur">Chercheur</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                  <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
+                    La situation est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 3 : Email / Téléphone -->
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
+                  <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-email" type="email" formControlName="email"
+                         [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
+                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse électronique est obligatoire." : "L'adresse électronique n'est pas valide." }}
+                  </p>
+                </div>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="edit-telephone">Téléphone mobile</label>
+                  <input class="fr-input" id="edit-telephone" type="tel" formControlName="telephone" />
+                </div>
+
+              </div>
+
+              <div class="ec-actions">
+                <button type="submit" class="ec-btn-primary" [disabled]="isSaving">
+                  <span class="fr-icon-check-line" aria-hidden="true"></span>
+                  Enregistrer
+                </button>
+                <button type="button" class="ec-btn-secondary" (click)="cancelEdit()" [disabled]="isSaving">
+                  Annuler
+                </button>
+              </div>
+            </form>
+
           </div>
-        </form>
+        </section>
+
+        <!-- Section : Compétences -->
+        <section class="ec-card">
+          <div class="ec-card__header">
+            <div class="ec-card__header-row">
+              <div>
+                <h2 class="ec-card__title">
+                  <span class="fr-icon-award-line" aria-hidden="true"></span>
+                  Compétences particulières et domaines de prédilection
+                </h2>
+                <p class="ec-card__desc">Renseignez vos expertises spécifiques, savoir-faire particuliers ou domaines dans lesquels vous êtes spécialisé.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ec-card__body">
+            <div class="ec-competences">
+              <!-- Liste des compétences -->
+              <div class="ec-competences__list" *ngIf="competences.length > 0">
+                <div class="ec-competences__item" *ngFor="let comp of competences">
+                  <span class="ec-competences__label">{{ comp }}</span>
+                  <button class="ec-competences__delete"
+                          (click)="removeCompetence(comp)"
+                          aria-label="Supprimer la compétence"
+                          title="Supprimer la compétence">
+                    <span class="fr-icon-delete-line" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+              <p class="ec-competences__empty" *ngIf="competences.length === 0">
+                Aucune compétence renseignée.
+              </p>
+
+              <!-- Ajout de compétence -->
+              <div class="ec-competences__add">
+                <div class="fr-input-group"
+                     [class.fr-input-group--error]="!!competenceError">
+                  <input class="fr-input"
+                         type="text"
+                         [(ngModel)]="newCompetence"
+                         placeholder="Nouvelle compétence"
+                         (keyup.enter)="addCompetence()"
+                         [disabled]="isAddingCompetence"
+                         [attr.aria-invalid]="competenceError ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="competenceError">{{ competenceError }}</p>
+                </div>
+                <button class="ec-competences__add-btn"
+                        (click)="addCompetence()"
+                        [disabled]="isAddingCompetence">
+                  <span class="fr-icon-add-line" aria-hidden="true"></span>
+                  Ajouter une compétence
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
       </div>
-    </section>
 
+      <!-- ============ ONGLET : MOT DE PASSE ============ -->
+      <div *ngIf="activeTab === 'motdepasse'" class="ec-tab-content">
+        <section class="ec-card">
+          <div class="ec-card__body">
+            <p>Mot de passe</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ ONGLET : NOTIFICATIONS ============ -->
+      <div *ngIf="activeTab === 'notifications'" class="ec-tab-content">
+        <section class="ec-card">
+          <div class="ec-card__body">
+            <p>Notifications</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ ONGLET : ALERTES ============ -->
+      <div *ngIf="activeTab === 'alertes'" class="ec-tab-content">
+        <section class="ec-card">
+          <div class="ec-card__body">
+            <p>Alertes</p>
+          </div>
+        </section>
+      </div>
+
+    </div>
   </div>
 </main>

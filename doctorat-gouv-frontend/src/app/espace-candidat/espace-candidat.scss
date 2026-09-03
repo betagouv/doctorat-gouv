@@ -2,10 +2,593 @@
   display: block;
 }
 
+/* ======== Contrer le style global main { max-width: 960px } ======== */
+main.espace-candidat-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+/* ======== Palette DSFR ======== */
+$color-page-bg: #F9F8F6;
+$color-white: #FFFFFF;
+$color-text-primary: #161616;
+$color-text-secondary: #666666;
+$color-blue-france: #000091;
+$color-tab-active-bg: #E3E3FD;
+$color-tab-inactive-bg: #F5F5F5;
+$color-border: #DDDDDD;
+$color-tag-bg: #F5F5F5;
+$color-focus-shadow: #E3E3FD;
+
+/* ======== Grille & espacement ======== */
+$sidebar-width: 260px;
+$column-gap: 32px;
+$page-margin-x: 48px;
+$section-spacing: 40px;
+$container-padding: 32px;
+$field-gap-h: 16px;
+$field-gap-v: 24px;
+$label-gap: 4px;
+
+/* ======== Typographie ======== */
+$font-family: 'Marianne', arial, sans-serif;
+
+/* ======== Fond page ======== */
 .espace-candidat-page {
-  padding: 2rem 0;
+  background: $color-page-bg;
+  min-height: 100vh;
+  padding: 3rem 0 4rem;
 }
 
 .required-star {
   color: var(--text-default-error);
+}
+
+/* ======== Layout 2 colonnes ======== */
+.ec-layout {
+  display: flex;
+  gap: $column-gap;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 $page-margin-x;
+}
+
+.ec-sidebar {
+  flex: 0 0 $sidebar-width;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.ec-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ======== Barre latérale ======== */
+.ec-sidebar__card {
+  background: $color-white;
+  text-align: center;
+  padding: $container-padding 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid $color-border;
+}
+
+.ec-sidebar__photo-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.ec-sidebar__photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid $color-border;
+}
+
+.ec-sidebar__photo-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $color-blue-france;
+  color: $color-white;
+  border: 2px solid $color-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.ec-sidebar__name {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin-bottom: 0.25rem;
+}
+
+.ec-sidebar__role {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+  margin-bottom: 1rem;
+}
+
+.ec-sidebar__candidatures {
+  padding-top: 1rem;
+  border-top: 1px solid $color-border;
+}
+
+.ec-sidebar__candidatures-count {
+  display: block;
+  font-family: $font-family;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-blue-france;
+}
+
+.ec-sidebar__candidatures-label {
+  display: block;
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+/* ======== Onglets de navigation ======== */
+.ec-tabs {
+  display: flex;
+  gap: 4px;
+  background: $color-tab-inactive-bg;
+  border-radius: 8px 8px 0 0;
+  padding: 4px 4px 0;
+  margin-bottom: 0;
+}
+
+.ec-tabs__tab {
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($color-blue-france, 0.05);
+  }
+
+  &--active {
+    background: $color-tab-active-bg;
+    font-weight: 600;
+    color: $color-blue-france;
+  }
+}
+
+.ec-tab-content {
+  /* pas d'animation pour éviter le tremblement de la sidebar sticky */
+}
+
+/* ======== Carte profil ======== */
+.ec-card {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  margin-bottom: $section-spacing;
+  min-height: 600px;
+}
+
+.ec-card .ec-card__body {
+  padding: 2rem !important;
+}
+
+.ec-card .ec-card__header {
+  padding: 2rem 2rem 1rem !important;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: 2rem;
+}
+
+.ec-card__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ec-card__header-row .fr-card__title {
+  display: flex;
+  align-items: center;
+  font-family: $font-family;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.ec-card__desc {
+  font-family: $font-family;
+  font-size: 14px;
+  color: $color-text-secondary;
+  margin-top: 4px;
+}
+
+/* ======== Formulaire - Champs ======== */
+.ec-profil {
+  padding-top: 16px;
+}
+
+.ec-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $field-gap-v $field-gap-h;
+}
+
+.ec-form-grid__full {
+  grid-column: 1 / -1;
+}
+
+/* Champs en lecture */
+.ec-field {
+  margin-bottom: 0;
+}
+
+.ec-field__label {
+  display: block;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $label-gap;
+}
+
+.ec-field__value {
+  display: block;
+  font-family: $font-family;
+  font-size: 15px;
+  color: $color-text-secondary;
+  font-weight: 400;
+}
+
+/* Champs édition -surcharge DSFR */
+.ec-form-grid .fr-input-group,
+.ec-form-grid .fr-select-group {
+  margin-bottom: 0;
+}
+
+.ec-form-grid .fr-label {
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $label-gap;
+}
+
+.ec-form-grid .fr-input,
+.ec-form-grid .fr-select {
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid $color-border;
+  padding: 8px 12px;
+  font-family: $font-family;
+  font-size: 15px;
+  color: $color-text-primary;
+  background: $color-white;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: $color-blue-france;
+    box-shadow: 0 0 0 2px $color-focus-shadow;
+    outline: none;
+  }
+}
+
+.ec-form-grid .fr-select {
+  appearance: auto;
+}
+
+/* ======== Compétences ======== */
+.ec-competences {
+  padding-top: 0;
+}
+
+.ec-competences__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+}
+
+.ec-competences__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: $color-tag-bg;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-primary;
+  font-weight: 400;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $color-blue-france;
+  }
+}
+
+.ec-competences__label {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ec-competences__delete {
+  padding: 0 !important;
+  min-height: auto !important;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: $color-blue-france;
+  }
+}
+
+.ec-competences__empty {
+  font-family: $font-family;
+  font-size: 14px;
+  font-style: italic;
+  color: $color-text-secondary;
+  margin-bottom: 16px;
+}
+
+.ec-competences__add {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid $color-border;
+
+  .fr-input-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .fr-input {
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid $color-border;
+    padding: 8px 12px;
+    font-family: $font-family;
+    font-size: 15px;
+
+    &:focus {
+      border-color: $color-blue-france;
+      box-shadow: 0 0 0 2px $color-focus-shadow;
+      outline: none;
+    }
+  }
+}
+
+.ec-competences__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid $color-blue-france;
+  border-radius: 4px;
+  color: $color-blue-france;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $color-blue-france;
+    color: $color-white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ======== Boutons d'action ======== */
+.ec-actions {
+  margin-top: $section-spacing;
+  padding-top: 1.5rem;
+  border-top: 1px solid $color-border;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.ec-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  background: $color-blue-france;
+  border: none;
+  border-radius: 4px;
+  color: $color-white;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ec-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  color: $color-text-primary;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $color-tab-inactive-bg;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ======== Responsive ======== */
+
+/* < 992px : champs côte à côte → pile */
+@media (max-width: 992px) {
+  .ec-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* < 768px : sidebar réduite */
+@media (max-width: 768px) {
+  .espace-candidat-page {
+    padding: 1.5rem 0 3rem;
+  }
+
+  .ec-layout {
+    padding: 0 24px;
+  }
+
+  .ec-sidebar {
+    flex: 0 0 200px;
+  }
+
+  .ec-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ec-tabs__tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .ec-card__header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ec-actions {
+    flex-direction: column;
+  }
+
+  .ec-btn-primary,
+  .ec-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* < 576px : sidebar masquée */
+@media (max-width: 576px) {
+  .espace-candidat-page {
+    padding: 1rem 0 2rem;
+  }
+
+  .ec-layout {
+    flex-direction: column;
+    padding: 0 16px;
+  }
+
+  .ec-sidebar {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+
+  .ec-sidebar__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .ec-sidebar__photo-wrapper {
+    margin-bottom: 0;
+  }
+
+  .ec-sidebar__photo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .ec-sidebar__info {
+    flex: 1;
+  }
+
+  .ec-sidebar__candidatures {
+    border-top: none;
+    border-left: 1px solid $color-border;
+    padding-top: 0;
+    padding-left: 1rem;
+    margin-left: auto;
+  }
+
+  .ec-sidebar__candidatures-count {
+    font-size: 1.25rem;
+  }
+
+  .ec-card {
+    min-height: auto;
+  }
+
+  .ec-competences__add {
+    flex-direction: column;
+  }
+
+  .ec-competences__add .ec-competences__add-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

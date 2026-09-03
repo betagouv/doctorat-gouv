@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { CandidatService } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
@@ -10,7 +9,7 @@ import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 @Component({
   selector: 'app-espace-candidat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './espace-candidat.html',
   styleUrl: './espace-candidat.scss',
 })
@@ -23,11 +22,20 @@ export class EspaceCandidat implements OnInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
+  activeTab: 'profil' | 'motdepasse' | 'notifications' | 'alertes' = 'profil';
+
+  newCompetence = '';
+  competenceError: string | null = null;
+  isAddingCompetence = false;
+
+  readonly defaultAvatar = 'data:image/svg+xml,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23DDDDDD"><rect width="100" height="100" rx="50"/><text x="50" y="55" text-anchor="middle" fill="%23999" font-size="40" font-family="Arial">?</text></svg>'
+  );
+
   constructor(
     private fb: FormBuilder,
     private candidatService: CandidatService,
     private authService: AuthService,
-    private translate: TranslateService,
     private titleService: Title,
   ) {
     this.profilForm = this.fb.group({
@@ -41,9 +49,7 @@ export class EspaceCandidat implements OnInit {
   }
 
   ngOnInit(): void {
-    this.titleService.setTitle(
-      this.translate.currentLang === 'en' ? 'Candidate space — Doctorat.gouv.fr' : 'Espace candidat — Doctorat.gouv.fr'
-    );
+    this.titleService.setTitle('Espace candidat — Doctorat.gouv.fr');
     this.loadProfil();
   }
 
@@ -53,6 +59,22 @@ export class EspaceCandidat implements OnInit {
 
   get nom(): string {
     return this.profil?.nom ?? '';
+  }
+
+  get fullName(): string {
+    return `${this.prenom} ${this.nom}`;
+  }
+
+  get photoUrl(): string {
+    return this.profil?.photoUrl ?? this.defaultAvatar;
+  }
+
+  get candidaturesCount(): number {
+    return this.profil?.nbCandidatures ?? 0;
+  }
+
+  get competences(): string[] {
+    return this.profil?.competences ?? [];
   }
 
   loadProfil(): void {
@@ -65,6 +87,12 @@ export class EspaceCandidat implements OnInit {
         this.errorMessage = 'Erreur lors du chargement du profil.';
       }
     });
+  }
+
+  switchTab(tab: 'profil' | 'motdepasse' | 'notifications' | 'alertes'): void {
+    this.activeTab = tab;
+    this.successMessage = null;
+    this.errorMessage = null;
   }
 
   startEdit(): void {
@@ -93,24 +121,72 @@ export class EspaceCandidat implements OnInit {
     this.isSaving = true;
     this.errorMessage = null;
 
-    const request: ProfilUpdateRequest = this.profilForm.value;
+    const request: ProfilUpdateRequest = {
+      ...this.profilForm.value,
+      competences: this.competences,
+    };
 
     this.candidatService.updateProfil(request).subscribe({
       next: (data) => {
         this.profil = data;
         this.isEditing = false;
         this.isSaving = false;
-        this.successMessage = this.translate.currentLang === 'en'
-          ? 'Profile updated successfully.'
-          : 'Profil mis à jour avec succès.';
+        this.successMessage = 'Profil mis à jour avec succès.';
       },
       error: () => {
         this.isSaving = false;
-        this.errorMessage = this.translate.currentLang === 'en'
-          ? 'An error occurred. Please try again.'
-          : 'Une erreur est survenue. Veuillez réessayer.';
+        this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
       }
     });
+  }
+
+  addCompetence(): void {
+    const trimmed = this.newCompetence.trim();
+    if (!trimmed) {
+      this.competenceError = 'Veuillez saisir une compétence.';
+      return;
+    }
+    if (this.competences.includes(trimmed)) {
+      this.competenceError = 'Cette compétence existe déjà.';
+      return;
+    }
+
+    this.isAddingCompetence = true;
+    this.competenceError = null;
+
+    this.candidatService.addCompetence(trimmed).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.newCompetence = '';
+        this.isAddingCompetence = false;
+      },
+      error: () => {
+        this.isAddingCompetence = false;
+        this.errorMessage = "Erreur lors de l'ajout de la compétence.";
+      }
+    });
+  }
+
+  removeCompetence(competence: string): void {
+    this.candidatService.removeCompetence(competence).subscribe({
+      next: (data) => {
+        this.profil = data;
+      },
+      error: () => {
+        this.errorMessage = 'Erreur lors de la suppression de la compétence.';
+      }
+    });
+  }
+
+  onPhotoEdit(): void {
+    // TODO: open photo edit module
+  }
+
+  onPhotoError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.dataset['fallback']) return;
+    img.dataset['fallback'] = '1';
+    img.src = this.defaultAvatar;
   }
 
   private populateForm(data: ProfilResponse): void {
