@@ -6,6 +6,9 @@ export interface ProfilResponse {
   situation: string;
   email: string;
   telephone: string | null;
+  photoUrl: string | null;
+  competences: string[];
+  nbCandidatures: number;
 }
 
 /** Données envoyées au backend pour modifier le profil. */
@@ -16,4 +19,5 @@ export interface ProfilUpdateRequest {
   situation: string;
   email: string;
   telephone: string | null;
+  competences: string[];
 }

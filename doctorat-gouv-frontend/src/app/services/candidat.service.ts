@@ -18,4 +18,12 @@ export class CandidatService {
   updateProfil(request: ProfilUpdateRequest): Observable<ProfilResponse> {
     return this.http.put<ProfilResponse>(`${this.apiUrl}/profil`, request);
   }
+
+  addCompetence(competence: string): Observable<ProfilResponse> {
+    return this.http.post<ProfilResponse>(`${this.apiUrl}/competences`, { competence });
+  }
+
+  removeCompetence(competence: string): Observable<ProfilResponse> {
+    return this.http.delete<ProfilResponse>(`${this.apiUrl}/competences`, { body: { competence } });
+  }
 }
