@@ -6,8 +6,10 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
@@ -19,9 +21,11 @@ public class CandidatService {
     private static final Logger log = LoggerFactory.getLogger(CandidatService.class);
 
     private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CandidatService(UtilisateurRepository utilisateurRepository) {
+    public CandidatService(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<ProfilResponse> getProfil(String userId) {
@@ -75,6 +79,24 @@ public class CandidatService {
             log.info("Compétence '{}' supprimée pour l'utilisateur {}", competence, userId);
         }
         return toProfilResponse(utilisateur);
+    }
+
+    public void changerMotDePasse(String userId, ChangementMotDePasseRequest request) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+
+        if (!passwordEncoder.matches(request.getMotDePasseActuel(), utilisateur.getMotDePasse())) {
+            throw new IllegalArgumentException("Le mot de passe actuel est incorrect");
+        }
+
+        if (!request.getNouveauMotDePasse().equals(request.getConfirmationMotDePasse())) {
+            throw new IllegalArgumentException("Les mots de passe ne correspondent pas");
+        }
+
+        utilisateur.setMotDePasse(passwordEncoder.encode(request.getNouveauMotDePasse()));
+        utilisateur.setDateModification(LocalDateTime.now());
+        utilisateurRepository.save(utilisateur);
+        log.info("Mot de passe modifié pour l'utilisateur {}", userId);
     }
 
     private ProfilResponse toProfilResponse(Utilisateur u) {

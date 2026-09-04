@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.service.CandidatService;
@@ -71,6 +72,14 @@ public class CandidatController {
         log.info("Suppression compétence '{}' pour l'utilisateur {}", competence, userId);
         ProfilResponse response = candidatService.removeCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/mot-de-passe")
+    public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Changement de mot de passe pour l'utilisateur {}", userId);
+        candidatService.changerMotDePasse(userId, request);
+        return ResponseEntity.ok().build();
     }
 
     private String getCurrentUserId() {
