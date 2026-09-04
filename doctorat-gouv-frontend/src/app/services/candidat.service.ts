@@ -26,4 +26,14 @@ export class CandidatService {
   removeCompetence(competence: string): Observable<ProfilResponse> {
     return this.http.delete<ProfilResponse>(`${this.apiUrl}/competences`, { body: { competence } });
   }
+
+  changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+}
+
+export interface ChangementMotDePasseRequest {
+  motDePasseActuel: string;
+  nouveauMotDePasse: string;
+  confirmationMotDePasse: string;
 }

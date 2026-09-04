@@ -263,8 +263,113 @@
       <!-- ============ ONGLET : MOT DE PASSE ============ -->
       <div *ngIf="activeTab === 'motdepasse'" class="ec-tab-content">
         <section class="ec-card">
+          <div class="ec-card__header">
+            <h2 class="ec-card__title">
+              Gestion du mot de passe
+            </h2>
+          </div>
           <div class="ec-card__body">
-            <p>Mot de passe</p>
+
+            <!-- Messages -->
+            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="passwordSuccessMessage" role="alert">
+              {{ passwordSuccessMessage }}
+            </div>
+            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="passwordErrorMessage" role="alert">
+              {{ passwordErrorMessage }}
+            </div>
+
+            <form [formGroup]="motDePasseForm" (ngSubmit)="changerMotDePasse()" class="ec-mdp-form">
+
+              <!-- Mot de passe actuel -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
+                <label class="fr-label" for="mdp-actuel">Mot de passe actuel <span class="required-star">*</span></label>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showCurrentPassword ? 'text' : 'password'"
+                         id="mdp-actuel"
+                         formControlName="motDePasseActuel"
+                         autocomplete="current-password"
+                         [attr.aria-invalid]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
+                  Le mot de passe actuel est obligatoire.
+                </p>
+              </div>
+
+              <!-- Nouveau mot de passe -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
+                <div class="ec-mdp-label-row">
+                  <label class="fr-label" for="mdp-nouveau">Nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-checkbox-group fr-checkbox-group--sm">
+                    <input type="checkbox"
+                           [checked]="showNewPassword"
+                           (change)="toggleNewPassword()" />
+                    <span class="fr-checkbox-group__label">Afficher</span>
+                  </label>
+                </div>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showNewPassword ? 'text' : 'password'"
+                         id="mdp-nouveau"
+                         formControlName="nouveauMotDePasse"
+                         autocomplete="new-password"
+                         [attr.aria-invalid]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
+                  Le nouveau mot de passe est obligatoire (12 caractères minimum).
+                </p>
+                <p class="fr-hint-text">Votre mot de passe doit être différent des 5 derniers mots de passe.</p>
+                <div class="ec-mdp-constraints">
+                  <p class="ec-mdp-constraints__title">
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    Votre mot de passe doit contenir au moins :
+                  </p>
+                  <ul class="ec-mdp-constraints__list">
+                    <li>12 caractères minimum</li>
+                    <li>1 lettre en majuscule</li>
+                    <li>1 chiffre minimum</li>
+                    <li>Les caractères spéciaux suivants sont autorisés % &amp; &lt; &gt; = |</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Confirmation -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
+                <div class="ec-mdp-label-row">
+                  <label class="fr-label" for="mdp-confirmation">Confirmation du nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-checkbox-group fr-checkbox-group--sm">
+                    <input type="checkbox"
+                           [checked]="showConfirmPassword"
+                           (change)="toggleConfirmPassword()" />
+                    <span class="fr-checkbox-group__label">Afficher</span>
+                  </label>
+                </div>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showConfirmPassword ? 'text' : 'password'"
+                         id="mdp-confirmation"
+                         formControlName="confirmationMotDePasse"
+                         autocomplete="new-password"
+                         [attr.aria-invalid]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
+                  La confirmation du mot de passe est obligatoire.
+                </p>
+              </div>
+
+              <!-- Bouton Enregistrer -->
+              <div class="ec-mdp-actions">
+                <button type="submit" class="ec-btn-primary" [disabled]="isSavingPassword">
+                  <span class="fr-icon-check-line" aria-hidden="true"></span>
+                  Enregistrer
+                </button>
+              </div>
+
+            </form>
+
           </div>
         </section>
       </div>
