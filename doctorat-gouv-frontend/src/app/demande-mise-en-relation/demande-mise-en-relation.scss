@@ -1,0 +1,241 @@
+/* --- Layout général --- */
+.page-background {
+  background: linear-gradient(to bottom, rgb(200, 200, 255) 0%, rgb(230, 230, 249) 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+  max-width: none;
+  margin: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* --- Alerte succès --- */
+.info-alert {
+  max-width: 100%;
+  margin: 0 auto 1.5rem auto;
+  background-color: white;
+  box-shadow: 0 2px 2px rgb(100, 100, 100);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.info-alert .fr-alert__icon {
+  color: #18753c;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.info-alert .fr-alert__body {
+  flex: 1;
+}
+
+.info-alert .fr-alert__title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 0.15rem 0;
+  color: #161616;
+}
+
+.info-alert .fr-alert__desc {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #161616;
+}
+
+/* --- Carte sujet --- */
+.card-sujet {
+  background: white;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
+}
+
+.sujet-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.4rem 0;
+}
+
+.sujet-titre {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #161616;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* --- Carte formulaire --- */
+.card-form {
+  background: white;
+  padding: 2rem 2rem 2.5rem 2rem;
+  box-shadow: 0 4px 4px rgb(100, 100, 100);
+}
+
+/* --- Titre section formulaire --- */
+.form-section-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #161616;
+  margin: 0 0 0.25rem 0;
+}
+
+.form-description {
+  font-size: 0.95rem;
+  color: #161616;
+  margin: 0 0 0.25rem 0;
+}
+
+.required-notice {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 1.5rem 0;
+}
+
+/* --- Champs de formulaire --- */
+.form-field {
+  margin-bottom: 1.75rem;
+}
+
+.required-star {
+  color: #c00;
+  margin-left: 0.1rem;
+  font-weight: 700;
+}
+
+.textarea-wrapper {
+  position: relative;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  pointer-events: none;
+}
+
+.char-counter.warning {
+  color: #c00;
+}
+
+.char-counter .fr-icon-warning-line {
+  font-size: 1rem;
+  color: #c00;
+}
+
+/* --- Champ RGPD --- */
+.rgpd-field {
+  margin-top: 0.5rem;
+}
+
+.rgpd-field .fr-label {
+  max-width: 100%;
+  display: inline;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.rgpd-field a {
+  color: #000091;
+}
+
+/* --- Séparateur --- */
+.separator {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 1.5rem 0 1.25rem 0;
+}
+
+/* --- Footer du formulaire --- */
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.brouillon-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.brouillon-hint {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.brouillon-section .fr-link {
+  font-size: 0.9rem;
+  color: #000091;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* --- Bouton envoi --- */
+.submit-btn {
+  background-color: #161616;
+  color: white;
+  border: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.submit-btn:hover {
+  background-color: #333;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-btn .fr-icon-mail-line {
+  font-size: 1.1rem;
+}
+
+/* --- Champs DSFR --- */
+.fr-input,
+textarea.fr-input {
+  background-color: #ffffff !important;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .form-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .brouillon-section {
+    align-items: center;
+    text-align: center;
+  }
+
+  .submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1100px) {
+  .container {
+    width: 60%;
+  }
+}
