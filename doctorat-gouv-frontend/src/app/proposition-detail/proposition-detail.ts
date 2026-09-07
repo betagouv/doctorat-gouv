@@ -4,6 +4,8 @@ import { RouterModule, Router, ActivatedRoute} from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { ContactContextService } from '../services/contact-context-service';
+import { DemandeMiseEnRelationContextService } from '../services/demande-mise-en-relation-context.service';
+import { AuthService } from '../services/auth.service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { DynamicDatePipe } from '../pipes/dynamic-date-pipe';
 import { DefaultValuePipe } from '../pipes/default-value-pipe';
@@ -70,6 +72,8 @@ export class PropositionDetail {
 		private router: Router,
 		private propositionTheseService: PropositionTheseService,
 		private contactContextService: ContactContextService,
+		private demandeContextService: DemandeMiseEnRelationContextService,
+		public authService: AuthService,
 		public translate: TranslateService,
 		private titleService: Title,
 		private metaService: Meta
@@ -145,7 +149,21 @@ export class PropositionDetail {
 	  // 3 - Navigation vers la page contact
 	  this.router.navigate(['/contact']);
 	}
-	
+
+	goToDemandeMiseEnRelation() {
+	  if (!this.thesis || !this.thesisId || this.thesisId === 0) {
+	    return;
+	  }
+
+	  this.demandeContextService.setContext(
+	    this.thesisId,
+	    this.thesis.theseTitre ?? null,
+	    this.thesis.typeProposition ?? null
+	  );
+
+	  this.router.navigate(['/demande-mise-en-relation']);
+	}
+
 	getThesisTitle(thesis: any): string {
 	  const lang = this.translate.currentLang;
 

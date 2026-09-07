@@ -152,33 +152,42 @@
 						</div>
 					</div>
 
-					<!-- ========================= -->
-					<!-- BOUTON REDIRECTION - MOBILE -->
-					<!-- ========================= -->
-					<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
-					  <button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
-					          (click)="openUrl(thesis.urlCandidature || '')">
-					    {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
-					  </button>
+				<!-- ========================= -->
+				<!-- BOUTON REDIRECTION - MOBILE -->
+				<!-- ========================= -->
+				<div *ngIf="thesis?.urlCandidature" class="btn-wrapper mobile-only">
+				  <button class="fr-btn fr-btn--lg fr-btn--secondary full-btn"
+				          (click)="openUrl(thesis.urlCandidature || '')">
+				    {{ 'DETAIL.VOIR_OFFRE_ETABLISSEMENT' | translate }}
+				  </button>
 
-					  <button class="tooltip-btn"
-					          (click)="toggleTooltip('amethis')">
-					    <span class="fr-icon-information-line" aria-hidden="true"></span>
-					  </button>
+				  <button class="tooltip-btn"
+				          (click)="toggleTooltip('amethis')">
+				    <span class="fr-icon-information-line" aria-hidden="true"></span>
+				  </button>
 
-					  <span class="fr-tooltip"
-					        id="tooltip-amethis"
-					        [class.open]="openTooltip === 'amethis'">
-					    {{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
-					  </span>
-					</div>
+				  <span class="fr-tooltip"
+				        id="tooltip-amethis"
+				        [class.open]="openTooltip === 'amethis'">
+				    {{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
+				  </span>
+				</div>
 
+				<!-- ========================= -->
+				<!-- BOUTON DEMANDE MISE EN RELATION -->
+				<!-- ========================= -->
+				<div *ngIf="authService.isLoggedIn()" class="btn-wrapper tooltip-container full-width-btn">
+					<button class="fr-btn fr-btn--lg fr-btn--primary full-btn"
+						(click)="goToDemandeMiseEnRelation()">
+						{{ 'DETAIL.DEMANDER_MISE_EN_RELATION' | translate }}
+					</button>
 				</div>
 
 			</div>
 		</div>
+	</div>
 
-		<!-- Deuxième card -->
+	<!-- Deuxième card -->
 		<div class="card shadow">
 			<div class="card-body">
 
@@ -359,6 +368,16 @@
 						<span class="fr-tooltip fr-placement" id="tooltip-amethis">
 							{{ 'DETAIL.TOOLTIP_AMETHIS' | translate }}
 						</span>
+					</div>
+
+					<!-- ========================= -->
+					<!-- BOUTON DEMANDE MISE EN RELATION -->
+					<!-- ========================= -->
+					<div *ngIf="authService.isLoggedIn()" class="btn-wrapper tooltip-container full-width-btn">
+						<button class="fr-btn fr-btn--lg fr-btn--primary full-btn"
+							(click)="goToDemandeMiseEnRelation()">
+							{{ 'DETAIL.DEMANDER_MISE_EN_RELATION' | translate }}
+						</button>
 					</div>
 
 
