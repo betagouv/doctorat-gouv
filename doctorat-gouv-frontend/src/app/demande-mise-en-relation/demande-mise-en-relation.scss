@@ -9,87 +9,104 @@
 
 .container {
   width: 90%;
-  max-width: 900px;
+  max-width: 700px;
   margin: 0 auto;
+  padding: 0;
+}
+
+/* --- Panel unique --- */
+.panel {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem 2.5rem 2.5rem 2.5rem;
+  box-shadow: 0 4px 12px rgb(160, 160, 190);
+}
+
+/* --- Bloc alerte + sujet --- */
+.header-block {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  overflow: hidden;
 }
 
 /* --- Alerte succès --- */
-.info-alert {
-  max-width: 100%;
-  margin: 0 auto 1.5rem auto;
-  background-color: white;
-  box-shadow: 0 2px 2px rgb(100, 100, 100);
+.alert-success-card {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #f5f5ff;
 }
 
-.info-alert .fr-alert__icon {
-  color: #18753c;
-  font-size: 1.5rem;
+.alert-icon {
   flex-shrink: 0;
-  margin-top: 0.15rem;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
 }
 
-.info-alert .fr-alert__body {
+.alert-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.alert-body {
   flex: 1;
 }
 
-.info-alert .fr-alert__title {
+.alert-title {
   font-weight: 700;
   font-size: 1rem;
   margin: 0 0 0.15rem 0;
   color: #161616;
 }
 
-.info-alert .fr-alert__desc {
+.alert-desc {
   font-size: 0.95rem;
   margin: 0;
   color: #161616;
 }
 
-/* --- Carte sujet --- */
-.card-sujet {
-  background: white;
-  padding: 1.5rem 2rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 4px rgb(100, 100, 100);
+/* --- Séparateur header --- */
+.header-separator {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 0;
+}
+
+/* --- Section sujet --- */
+.sujet-section {
+  padding: 1.25rem 1.5rem;
+  text-align: center;
 }
 
 .sujet-label {
   font-size: 0.9rem;
   color: #666;
-  margin: 0 0 0.4rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .sujet-titre {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #161616;
   margin: 0;
-  line-height: 1.4;
-}
-
-/* --- Carte formulaire --- */
-.card-form {
-  background: white;
-  padding: 2rem 2rem 2.5rem 2rem;
-  box-shadow: 0 4px 4px rgb(100, 100, 100);
+  line-height: 1.45;
 }
 
 /* --- Titre section formulaire --- */
 .form-section-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #161616;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.35rem 0;
 }
 
 .form-description {
   font-size: 0.95rem;
   color: #161616;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.15rem 0;
 }
 
 .required-notice {
@@ -109,29 +126,43 @@
   font-weight: 700;
 }
 
-.textarea-wrapper {
-  position: relative;
+/* --- Ligne header hint + compteur --- */
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.field-header .fr-hint-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .char-counter {
-  position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
   font-size: 0.85rem;
-  color: #666;
+  color: #c00;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  pointer-events: none;
+  gap: 0.25rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .char-counter.warning {
   color: #c00;
 }
 
-.char-counter .fr-icon-warning-line {
-  font-size: 1rem;
+.warning-icon {
   color: #c00;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* --- Textarea motivations --- */
+.textarea-motivations {
+  min-height: 120px;
 }
 
 /* --- Champ RGPD --- */
@@ -139,10 +170,10 @@
   margin-top: 0.5rem;
 }
 
-.rgpd-field .fr-label {
+.rgpd-field .fr-checkbox-group .fr-label {
   max-width: 100%;
   display: inline;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: 0.9rem;
 }
 
@@ -153,7 +184,7 @@
 /* --- Séparateur --- */
 .separator {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e0e0e0;
   margin: 1.5rem 0 1.25rem 0;
 }
 
@@ -167,7 +198,7 @@
 .brouillon-section {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .brouillon-hint {
@@ -176,12 +207,19 @@
   margin: 0;
 }
 
-.brouillon-section .fr-link {
+.brouillon-link {
   font-size: 0.9rem;
   color: #000091;
   cursor: pointer;
   text-decoration: underline;
+  background: none;
+  border: none;
   padding: 0;
+  font-family: inherit;
+}
+
+.brouillon-link:hover {
+  color: #0000cd;
 }
 
 /* --- Bouton envoi --- */
@@ -189,11 +227,15 @@
   background-color: #161616;
   color: white;
   border: none;
+  border-radius: 6px;
   font-weight: 600;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  gap: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .submit-btn:hover {
@@ -205,18 +247,36 @@
   cursor: not-allowed;
 }
 
-.submit-btn .fr-icon-mail-line {
-  font-size: 1.1rem;
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  width: 18px;
+  height: 18px;
 }
 
 /* --- Champs DSFR --- */
 .fr-input,
 textarea.fr-input {
+  background-color: #f6f6f6 !important;
+  border: 1px solid #e0e0e0;
+}
+
+.fr-input:focus,
+textarea.fr-input:focus {
   background-color: #ffffff !important;
+  border-color: #000091;
 }
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
+
+  .panel {
+    padding: 1.5rem 1.25rem 2rem 1.25rem;
+  }
+
   .form-footer {
     flex-direction: column-reverse;
     align-items: stretch;
@@ -236,6 +296,6 @@ textarea.fr-input {
 
 @media (min-width: 1100px) {
   .container {
-    width: 60%;
+    width: 55%;
   }
 }

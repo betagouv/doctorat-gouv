@@ -2,27 +2,35 @@
 
 	<div class="container">
 
-		<!-- Bandeau de confirmation profil complet -->
-		<div class="fr-alert fr-alert--success info-alert" role="alert">
-			<span class="fr-icon-checkbox-circle-line fr-alert__icon" aria-hidden="true"></span>
-			<div class="fr-alert__body">
-				<p class="fr-alert__title">Félicitations {{prenom}}, votre profil est complet.</p>
-				<p class="fr-alert__desc">Finalisez votre demande de mise en relation.</p>
+		<div class="panel">
+
+		<!-- Alerte + Sujet dans un même bloc -->
+		<div class="header-block">
+			<div class="alert-success-card" role="alert">
+				<span class="alert-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="12" cy="12" r="11" stroke="#000091" stroke-width="1.5" fill="white"/>
+						<path d="M8 12.5L10.5 15L16 9.5" stroke="#000091" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</span>
+				<div class="alert-body">
+					<p class="alert-title">Félicitations {{prenom}}, votre profil est complet.</p>
+					<p class="alert-desc">Finalisez votre demande de mise en relation.</p>
+				</div>
+			</div>
+
+			<hr class="header-separator">
+
+			<div class="sujet-section">
+				<p class="sujet-label">Mise en relation avec la direction de thèse</p>
+				<h2 class="sujet-titre">{{ titreSujet }}</h2>
 			</div>
 		</div>
 
-		<!-- Résumé du sujet -->
-		<div class="card card-sujet">
-			<p class="sujet-label">Mise en relation avec la direction de thèse</p>
-			<h2 class="sujet-titre">{{ titreSujet }}</h2>
-		</div>
-
-		<!-- Formulaire -->
-		<div class="card card-form">
-
+			<!-- Formulaire -->
 			<h3 class="form-section-title">Quelques mots sur vos motivations</h3>
 			<p class="form-description">Présentez votre intérêt et ce qui vous motive à rejoindre le projet.</p>
-			<p class="fr-text--sm required-notice">Les champs marqués du symbole * sont obligatoires.</p>
+			<p class="required-notice">Les champs marqués du symbole * sont obligatoires.</p>
 
 			<form [formGroup]="demandeForm" (ngSubmit)="onSubmit()">
 
@@ -31,20 +39,20 @@
 					<label class="fr-label" for="motivations">
 						Vos motivations <span class="required-star">*</span>
 					</label>
-					<p class="fr-hint-text">Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel</p>
-					<div class="textarea-wrapper">
-						<textarea
-							class="fr-input"
-							id="motivations"
-							formControlName="motivations"
-							rows="5"
-							[attr.aria-invalid]="demandeForm.get('motivations')?.touched && demandeForm.get('motivations')?.invalid ? 'true' : null"
-						></textarea>
+					<div class="field-header">
+						<p class="fr-hint-text">Intérêt scientifique, compétences pertinentes, disponibilité, projet professionnel</p>
 						<div class="char-counter" [class.warning]="motivationsLength >= 3500">
-							<span class="fr-icon-warning-line" *ngIf="motivationsLength >= 3500" aria-hidden="true"></span>
+							<span class="warning-icon" *ngIf="motivationsLength >= 3500" aria-hidden="true">&#9888;</span>
 							( {{ motivationsLength }} / 3500 )
 						</div>
 					</div>
+					<textarea
+						class="fr-input textarea-motivations"
+						id="motivations"
+						formControlName="motivations"
+						rows="5"
+						[attr.aria-invalid]="demandeForm.get('motivations')?.touched && demandeForm.get('motivations')?.invalid ? 'true' : null"
+					></textarea>
 					<p class="fr-error-text" role="alert"
 						*ngIf="demandeForm.get('motivations')?.touched && demandeForm.get('motivations')?.invalid">
 						Veuillez saisir vos motivations (obligatoire).
@@ -92,13 +100,17 @@
 				<div class="form-footer">
 					<div class="brouillon-section">
 						<p class="brouillon-hint">Besoin de reprendre cette étape plus tard ?</p>
-						<a class="fr-link" (click)="saveBrouillon()" role="button">
+						<a class="brouillon-link" (click)="saveBrouillon()" role="button">
 							Enregistrer en brouillon
 						</a>
 					</div>
 
-					<button class="fr-btn fr-btn--lg submit-btn" type="submit" [disabled]="isSubmitting">
-						<span class="fr-icon-mail-line" aria-hidden="true"></span>
+					<button class="submit-btn" type="submit" [disabled]="isSubmitting">
+						<span class="btn-icon" aria-hidden="true">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</span>
 						{{ isSubmitting ? 'Envoi en cours...' : 'Envoyez ma demande' }}
 					</button>
 				</div>
