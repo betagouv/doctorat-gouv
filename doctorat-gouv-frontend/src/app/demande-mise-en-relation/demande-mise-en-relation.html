@@ -59,24 +59,6 @@
 					</p>
 				</div>
 
-				<!-- Biais algorithmiques -->
-				<div class="form-field">
-					<label class="fr-label" for="biaisAlgorithmiques">
-						Comment comptez-vous limiter les biais algorithmiques dans votre recherche ? <span class="required-star">*</span>
-					</label>
-					<textarea
-						class="fr-input"
-						id="biaisAlgorithmiques"
-						formControlName="biaisAlgorithmiques"
-						rows="3"
-						[attr.aria-invalid]="demandeForm.get('biaisAlgorithmiques')?.touched && demandeForm.get('biaisAlgorithmiques')?.invalid ? 'true' : null"
-					></textarea>
-					<p class="fr-error-text" role="alert"
-						*ngIf="demandeForm.get('biaisAlgorithmiques')?.touched && demandeForm.get('biaisAlgorithmiques')?.invalid">
-						Veuillez répondre à cette question (obligatoire).
-					</p>
-				</div>
-
 				<!-- Consentement RGPD -->
 				<div class="form-field rgpd-field">
 					<div class="fr-checkbox-group">

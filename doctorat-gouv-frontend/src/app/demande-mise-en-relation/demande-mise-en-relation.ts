@@ -33,7 +33,6 @@ export class DemandeMiseEnRelation implements OnInit {
 	) {
 		this.demandeForm = this.fb.group({
 			motivations: ['', [Validators.required, Validators.maxLength(3500)]],
-			biaisAlgorithmiques: ['', [Validators.required]],
 			rgpdConsent: [false, Validators.requiredTrue],
 		});
 	}
