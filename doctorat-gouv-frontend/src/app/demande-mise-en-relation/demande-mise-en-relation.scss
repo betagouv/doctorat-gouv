@@ -267,6 +267,24 @@ textarea.fr-input:focus {
   border-color: #000091;
 }
 
+/* --- Message confirmation brouillon --- */
+.brouillon-success {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  background-color: #e6f6e6;
+  border-radius: 6px;
+  color: #18753c;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.brouillon-success .fr-icon-checkbox-circle-line {
+  font-size: 1.1rem;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   .container {
