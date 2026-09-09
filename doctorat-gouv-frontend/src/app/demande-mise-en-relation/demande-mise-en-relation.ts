@@ -29,6 +29,7 @@ export class DemandeMiseEnRelation implements OnInit {
 
 	titreSujet: string = '';
 	idPropositionThese: number | null = null;
+	demandeId: number | null = null;
 
 	constructor(
 		private fb: FormBuilder,
@@ -56,7 +57,7 @@ export class DemandeMiseEnRelation implements OnInit {
 		this.idPropositionThese = ctx.id;
 		this.titreSujet = ctx.titre || 'Sujet non renseigné';
 
-		this.loadBrouillon();
+		this.chargerDemandeExistante();
 	}
 
 	get prenom(): string {
@@ -100,34 +101,52 @@ export class DemandeMiseEnRelation implements OnInit {
 	}
 
 	saveBrouillon(): void {
-		const formValue = this.demandeForm.value;
-		const brouillon = {
-			idPropositionThese: this.idPropositionThese,
-			motivations: formValue.motivations,
-			rgpdConsent: formValue.rgpdConsent,
-		};
-		sessionStorage.setItem('demandeBrouillon', JSON.stringify(brouillon));
+		if (this.isSubmitting) return;
 
-		this.brouillonSaved = true;
-		setTimeout(() => {
-			this.brouillonSaved = false;
-		}, 3000);
+		this.isSubmitting = true;
+		this.errorMessage = null;
+
+		const payload = {
+			idPropositionThese: this.idPropositionThese,
+			motivations: this.demandeForm.value.motivations || '',
+			rgpdConsent: this.demandeForm.value.rgpdConsent || false,
+		};
+
+		this.http.post<{ message: string; id: number }>(
+				`${this.apiUrl}/candidat/demande-mise-en-relation/brouillon`, payload)
+			.subscribe({
+				next: (res) => {
+					this.isSubmitting = false;
+					this.demandeId = res.id;
+					this.brouillonSaved = true;
+					setTimeout(() => {
+						this.brouillonSaved = false;
+					}, 3000);
+				},
+				error: (err) => {
+					this.isSubmitting = false;
+					this.errorMessage = err.error?.message || 'Erreur lors de la sauvegarde du brouillon.';
+				}
+			});
 	}
 
-	private loadBrouillon(): void {
-		const saved = sessionStorage.getItem('demandeBrouillon');
-		if (!saved) return;
-
-		try {
-			const brouillon = JSON.parse(saved);
-			if (brouillon.idPropositionThese === this.idPropositionThese) {
-				this.demandeForm.patchValue({
-					motivations: brouillon.motivations || '',
-					rgpdConsent: brouillon.rgpdConsent || false,
-				});
-			}
-		} catch {
-			// brouillon corrompu, on ignore
-		}
+	private chargerDemandeExistante(): void {
+		this.http.get<{ success: boolean; motivations?: string; rgpdConsent?: boolean; statut?: string }>(
+				`${this.apiUrl}/candidat/demande-mise-en-relation`, {
+					params: { propositionTheseId: String(this.idPropositionThese) }
+				})
+			.subscribe({
+				next: (res) => {
+					if (res.success && res.motivations != null) {
+						this.demandeForm.patchValue({
+							motivations: res.motivations,
+							rgpdConsent: res.rgpdConsent ?? false,
+						});
+					}
+				},
+				error: () => {
+					// pas de brouillon existant, on reste sur le formulaire vide
+				}
+			});
 	}
 }
