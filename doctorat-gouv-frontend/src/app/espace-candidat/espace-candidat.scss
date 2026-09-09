@@ -148,6 +148,29 @@ $font-family: 'Marianne', arial, sans-serif;
   color: $color-text-secondary;
 }
 
+/* ======== Lien tableau de bord ======== */
+.ec-sidebar__dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1rem;
+  padding: 10px 16px;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: $color-blue-france;
+    border-color: $color-blue-france;
+  }
+}
+
 /* ======== Onglets de navigation ======== */
 .ec-tabs {
   display: flex;

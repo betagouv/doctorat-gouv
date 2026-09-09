@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService, ChangementMotDePasseRequest } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
@@ -9,7 +10,7 @@ import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 @Component({
   selector: 'app-espace-candidat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './espace-candidat.html',
   styleUrl: './espace-candidat.scss',
 })

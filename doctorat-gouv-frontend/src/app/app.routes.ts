@@ -7,6 +7,7 @@ import { InscriptionCoordonnees } from './inscription/inscription-coordonnees/in
 import { InscriptionDocuments } from './inscription/inscription-documents/inscription-documents';
 import { InscriptionTerminee } from './inscription/inscription-terminee/inscription-terminee';
 import { EspaceCandidat } from './espace-candidat/espace-candidat';
+import { TableauDeBordCandidat } from './espace-candidat/tableau-de-bord-candidat/tableau-de-bord-candidat';
 import { DemandeMiseEnRelation } from './demande-mise-en-relation/demande-mise-en-relation';
 import { inscriptionGuard } from './inscription/inscription.guard';
 import { authGuard } from './guards/auth.guard';
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'inscription/documents', component: InscriptionDocuments, canActivate: [inscriptionGuard] },
   { path: 'inscription/terminee', component: InscriptionTerminee, canActivate: [authGuard] },
   { path: 'espace-candidat', component: EspaceCandidat, canActivate: [authGuard] },
+  { path: 'tableau-de-bord-candidat', component: TableauDeBordCandidat, canActivate: [authGuard] },
   { path: 'demande-mise-en-relation', component: DemandeMiseEnRelation, canActivate: [authGuard] },
 ];
