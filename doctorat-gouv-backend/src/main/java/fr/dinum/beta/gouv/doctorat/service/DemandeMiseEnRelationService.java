@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +14,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
+import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
+import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @Service
@@ -26,26 +30,94 @@ public class DemandeMiseEnRelationService {
 
     private final PropositionTheseService propositionTheseService;
     private final UtilisateurRepository utilisateurRepository;
+    private final DemandeMiseEnRelationRepository demandeRepository;
     private final BrevoEmailService emailService;
 
     public DemandeMiseEnRelationService(
             PropositionTheseService propositionTheseService,
             UtilisateurRepository utilisateurRepository,
+            DemandeMiseEnRelationRepository demandeRepository,
             BrevoEmailService emailService) {
         this.propositionTheseService = propositionTheseService;
         this.utilisateurRepository = utilisateurRepository;
+        this.demandeRepository = demandeRepository;
         this.emailService = emailService;
     }
 
-    public void traiterDemande(String userId, DemandeMiseEnRelationRequest request) {
-        // 1 - Récupérer l'utilisateur candidat
+    /**
+     * Charge la demande existante pour un candidat et une proposition.
+     */
+    public Optional<DemandeMiseEnRelation> chargerDemande(String userId, long propositionTheseId) {
+        return demandeRepository.findByCandidatIdAndPropositionTheseId(userId, propositionTheseId);
+    }
+
+    /**
+     * Sauvegarde ou met à jour la demande en statut BROUILLON.
+     */
+    public DemandeMiseEnRelation sauvegarderBrouillon(String userId, DemandeMiseEnRelationRequest request) {
+        Optional<DemandeMiseEnRelation> existing = demandeRepository
+                .findByCandidatIdAndPropositionTheseId(userId, request.getIdPropositionThese());
+
+        DemandeMiseEnRelation demande;
+        if (existing.isPresent()) {
+            demande = existing.get();
+            if (demande.getStatut() == StatutDemandeMiseEnRelation.CREE) {
+                throw new IllegalArgumentException(
+                        "Une demande a déjà été envoyée pour cette thèse. Impossible de modifier le brouillon.");
+            }
+            demande.setMotivations(request.getMotivations());
+            demande.setRgpdConsent(request.getRgpdConsent());
+            demande.setUpdatedAt(LocalDateTime.now());
+        } else {
+            demande = new DemandeMiseEnRelation(
+                    userId,
+                    request.getIdPropositionThese(),
+                    request.getMotivations(),
+                    request.getRgpdConsent(),
+                    StatutDemandeMiseEnRelation.BROUILLON);
+        }
+
+        DemandeMiseEnRelation saved = demandeRepository.save(demande);
+        log.info("Brouillon sauvegardé (id={}) pour candidat {} et thèse {}",
+                saved.getId(), userId, request.getIdPropositionThese());
+        return saved;
+    }
+
+    /**
+     * Met à jour la demande en statut CREE et envoie les emails.
+     */
+    public void envoyerDemande(String userId, DemandeMiseEnRelationRequest request) {
+        Optional<DemandeMiseEnRelation> existing = demandeRepository
+                .findByCandidatIdAndPropositionTheseId(userId, request.getIdPropositionThese());
+
+        DemandeMiseEnRelation demande;
+        if (existing.isPresent()) {
+            demande = existing.get();
+            if (demande.getStatut() == StatutDemandeMiseEnRelation.CREE) {
+                throw new IllegalArgumentException("Une demande a déjà été envoyée pour cette thèse.");
+            }
+            demande.setMotivations(request.getMotivations());
+            demande.setRgpdConsent(request.getRgpdConsent());
+            demande.setStatut(StatutDemandeMiseEnRelation.CREE);
+            demande.setUpdatedAt(LocalDateTime.now());
+        } else {
+            demande = new DemandeMiseEnRelation(
+                    userId,
+                    request.getIdPropositionThese(),
+                    request.getMotivations(),
+                    request.getRgpdConsent(),
+                    StatutDemandeMiseEnRelation.CREE);
+        }
+
+        demandeRepository.save(demande);
+        log.info("Demande envoyée (id={}) pour candidat {} et thèse {}",
+                demande.getId(), userId, request.getIdPropositionThese());
+
+        // Récupérer les données pour les emails
         Utilisateur candidat = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
-
-        // 2 - Récupérer la proposition de thèse
         PropositionTheseDto these = propositionTheseService.findById(request.getIdPropositionThese());
 
-        // 3 - Envoyer les emails
         if (mailEnabled) {
             envoyerMailEncadrant(candidat, these, request);
             envoyerMailCandidat(candidat, these);
@@ -54,7 +126,8 @@ public class DemandeMiseEnRelationService {
         }
     }
 
-    private void envoyerMailEncadrant(Utilisateur candidat, PropositionTheseDto these, DemandeMiseEnRelationRequest request) {
+    private void envoyerMailEncadrant(Utilisateur candidat, PropositionTheseDto these,
+            DemandeMiseEnRelationRequest request) {
         log.info("Préparation du mail de demande de mise en relation pour l'encadrant");
 
         Map<String, Object> params = new HashMap<>();
@@ -71,7 +144,8 @@ public class DemandeMiseEnRelationService {
         try {
             if (isValidEmail(these.getDirectionTheseEmail())) {
                 emailService.sendTemplateEmail(these.getDirectionTheseEmail(), 31, params);
-                log.info("Mail de demande de mise en relation envoyé à l'encadrant {}", these.getDirectionTheseEmail());
+                log.info("Mail de demande de mise en relation envoyé à l'encadrant {}",
+                        these.getDirectionTheseEmail());
             } else {
                 log.warn("Email encadrant invalide ou absent pour la thèse {}", these.getId());
             }
@@ -87,7 +161,8 @@ public class DemandeMiseEnRelationService {
         params.put("prenom", candidat.getPrenom());
         params.put("titre_sujet", these.getTheseTitre());
         params.put("nom_plateforme", "Doctorat.gouv");
-        params.put("url_sujet", String.format("https://app.doctorat.gouv.fr/proposition?id=%s", these.getId()));
+        params.put("url_sujet",
+                String.format("https://app.doctorat.gouv.fr/proposition?id=%s", these.getId()));
 
         try {
             if (isValidEmail(candidat.getEmail())) {

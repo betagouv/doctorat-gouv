@@ -1,17 +1,22 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationResponse;
+import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.service.DemandeMiseEnRelationService;
 
 @RestController
@@ -26,18 +31,59 @@ public class DemandeMiseEnRelationController {
         this.service = service;
     }
 
+    @GetMapping
+    public ResponseEntity<DemandeMiseEnRelationResponse> chargerDemande(
+            @RequestParam long propositionTheseId) {
+
+        String userId = getCurrentUserId();
+        log.info("Chargement demande pour candidat {} et thèse {}", userId, propositionTheseId);
+
+        Optional<DemandeMiseEnRelation> demande = service.chargerDemande(userId, propositionTheseId);
+
+        if (demande.isEmpty()) {
+            return ResponseEntity.ok(new DemandeMiseEnRelationResponse(
+                    "Aucune demande existante", false));
+        }
+
+        DemandeMiseEnRelation d = demande.get();
+        DemandeMiseEnRelationResponse response = new DemandeMiseEnRelationResponse(
+                "Demande chargée", true);
+        response.setId(d.getId());
+        response.setMotivations(d.getMotivations());
+        response.setRgpdConsent(d.getRgpdConsent());
+        response.setStatut(d.getStatut().name());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/brouillon")
+    public ResponseEntity<DemandeMiseEnRelationResponse> sauvegarderBrouillon(
+            @RequestBody DemandeMiseEnRelationRequest request) {
+
+        String userId = getCurrentUserId();
+        log.info("Sauvegarde brouillon pour candidat {} et thèse {}", userId, request.getIdPropositionThese());
+
+        validateRequest(request);
+
+        DemandeMiseEnRelation demande = service.sauvegarderBrouillon(userId, request);
+
+        DemandeMiseEnRelationResponse response = new DemandeMiseEnRelationResponse(
+                "Brouillon enregistré", true);
+        response.setId(demande.getId());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<DemandeMiseEnRelationResponse> envoyerDemande(
             @RequestBody DemandeMiseEnRelationRequest request) {
 
         String userId = getCurrentUserId();
-        log.info("Demande de mise en relation reçue pour l'utilisateur {}", userId);
+        log.info("Envoi demande pour candidat {} et thèse {}", userId, request.getIdPropositionThese());
 
-        // Validation basique
         validateRequest(request);
 
-        // Traitement
-        service.traiterDemande(userId, request);
+        service.envoyerDemande(userId, request);
 
         return ResponseEntity.ok(new DemandeMiseEnRelationResponse(
                 "Demande de mise en relation envoyée avec succès", true));
