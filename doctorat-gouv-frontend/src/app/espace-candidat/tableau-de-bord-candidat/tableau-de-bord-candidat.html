@@ -1,11 +1,149 @@
-<section class="ec-card">
-  <div class="ec-card__header">
-    <h2 class="ec-card__title">
-      <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
-      Tableau de bord
-    </h2>
+<main class="tdb-page">
+  <div class="tdb-container">
+
+    <!-- ======== EN-TÊTE ======== -->
+    <header class="tdb-header">
+      <div class="tdb-header__greeting">
+        <div class="tdb-header__icon">
+          <img src="assets/logo_plateforme.png" alt="" aria-hidden="true" />
+        </div>
+        <div>
+          <h1 class="tdb-header__title">Ravi de vous voir {{ prenom }}</h1>
+          <p class="tdb-header__subtitle">Un rapide coup d'oeil sur votre activité</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======== SUIVI DES MISES EN RELATION ======== -->
+    <section class="tdb-section">
+      <div class="tdb-section__header">
+        <h2 class="tdb-section__title">Suivi des mises en relation</h2>
+        <div class="tdb-section__filters">
+          <button class="tdb-filter-btn"
+                  [class.tdb-filter-btn--active]="activeFilter === 'en_cours'"
+                  (click)="setFilter('en_cours')">
+            En cours
+          </button>
+          <button class="tdb-filter-btn"
+                  [class.tdb-filter-btn--active]="activeFilter === 'archivees'"
+                  (click)="setFilter('archivees')">
+            Archivées
+          </button>
+        </div>
+      </div>
+
+      <!-- ======== KANBAN ======== -->
+      <div class="tdb-kanban">
+
+        <!-- Colonne BROUILLON -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            BROUILLON <span class="tdb-column__count">({{ brouillons.length }})</span>
+          </h3>
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of brouillons"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: item.id }">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
+                <button class="tdb-card__edit" aria-label="Modifier le brouillon">
+                  <span class="fr-icon-edit-line" aria-hidden="true"></span>
+                </button>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Encadré par {{ item.encadrantNom }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Colonne EN ATTENTE -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            EN ATTENTE <span class="tdb-column__count">({{ enAttente.length }})</span>
+          </h3>
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of enAttente"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: item.id }">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Encadré par {{ item.encadrantNom }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Colonne MISES EN RELATION -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            MISES EN RELATION <span class="tdb-column__count">({{ misesEnRelation.length }})</span>
+          </h3>
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of misesEnRelation"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: item.id }">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
+                <span *ngIf="item.candidatureEnvoyee" class="tdb-card__candidature">
+                  <span class="tdb-card__candidature-dot"></span>
+                  Candidaté
+                </span>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Encadré par {{ item.encadrantNom }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span *ngIf="item.nbMessages" class="tdb-card__messages">
+                  <span class="fr-icon-mail-line" aria-hidden="true"></span>
+                  {{ item.nbMessages }} message{{ item.nbMessages > 1 ? 's' : '' }}
+                </span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </div>
-  <div class="ec-card__body">
-    <p>Le tableau de bord sera disponible prochainement.</p>
-  </div>
-</section>
+</main>
