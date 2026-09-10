@@ -59,11 +59,13 @@ $font-family: 'Marianne', arial, sans-serif;
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -87,7 +89,9 @@ $font-family: 'Marianne', arial, sans-serif;
   background: transparent;
   border: 1px solid $color-border;
   border-radius: 8px;
-  padding: 1.5rem 2rem 2rem;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .tdb-section__header {
@@ -95,6 +99,11 @@ $font-family: 'Marianne', arial, sans-serif;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .tdb-section__title {
@@ -139,6 +148,10 @@ $font-family: 'Marianne', arial, sans-serif;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
   align-items: flex-start;
+  background: $color-page-bg;
+  border: none;
+  border-radius: 0;
+  padding: 1.5rem;
 }
 
 /* ======== Colonne ======== */
@@ -338,7 +351,12 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 
   .tdb-section {
-    padding: 1rem 1.25rem 1.5rem;
+    padding: 0;
+  }
+
+  .tdb-kanban {
+    padding: 1rem;
+    gap: 1rem;
   }
 
   .tdb-section__header {
