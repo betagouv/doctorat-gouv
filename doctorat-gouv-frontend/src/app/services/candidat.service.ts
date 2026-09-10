@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { TableauDeBordCandidatItemBackend } from '../models/mise-en-relation.model';
 
 @Injectable({ providedIn: 'root' })
 export class CandidatService {
@@ -29,6 +30,10 @@ export class CandidatService {
 
   changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+
+  getDemandesMiseEnRelation(): Observable<TableauDeBordCandidatItemBackend[]> {
+    return this.http.get<TableauDeBordCandidatItemBackend[]>(`${this.apiUrl}/demande-mise-en-relation/mes-demandes`);
   }
 }
 
