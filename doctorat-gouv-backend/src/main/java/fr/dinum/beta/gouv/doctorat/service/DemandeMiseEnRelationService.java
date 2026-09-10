@@ -1,7 +1,9 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
+import fr.dinum.beta.gouv.doctorat.dto.TableauDeBordCandidatItemDto;
 import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
@@ -49,6 +52,50 @@ public class DemandeMiseEnRelationService {
      */
     public Optional<DemandeMiseEnRelation> chargerDemande(String userId, long propositionTheseId) {
         return demandeRepository.findByCandidatIdAndPropositionTheseId(userId, propositionTheseId);
+    }
+
+    /**
+     * Liste les demandes du candidat pour le tableau de bord, enrichies
+     * avec les données de la thèse.
+     * Mapping colonnes : BROUILLON -> Brouillon, CREE -> En attente.
+     */
+    public List<TableauDeBordCandidatItemDto> listerDemandesParCandidat(String userId) {
+        List<DemandeMiseEnRelation> demandes = demandeRepository.findByCandidatIdOrderByUpdatedAtDesc(userId);
+        if (demandes.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> propositionIds = demandes.stream()
+                .map(DemandeMiseEnRelation::getPropositionTheseId)
+                .distinct()
+                .toList();
+        Map<Long, PropositionTheseDto> theses = propositionTheseService.findByIdInAsMap(propositionIds);
+
+        List<TableauDeBordCandidatItemDto> result = new ArrayList<>();
+        for (DemandeMiseEnRelation demande : demandes) {
+            PropositionTheseDto these = theses.get(demande.getPropositionTheseId());
+            if (these == null) {
+                log.warn("Thèse {} introuvable pour la demande {}", demande.getPropositionTheseId(), demande.getId());
+                continue;
+            }
+            String encadrantNom = buildEncadrantNom(these);
+            result.add(new TableauDeBordCandidatItemDto(
+                    demande.getId(),
+                    demande.getPropositionTheseId(),
+                    these.getTheseTitre(),
+                    these.getEtablissementLibelle(),
+                    encadrantNom,
+                    demande.getUpdatedAt(),
+                    demande.getStatut().name()));
+        }
+        return result;
+    }
+
+    private String buildEncadrantNom(PropositionTheseDto these) {
+        String prenom = these.getDirectionThesePrenom() != null ? these.getDirectionThesePrenom().trim() : "";
+        String nom = these.getDirectionTheseNom() != null ? these.getDirectionTheseNom().trim() : "";
+        String fullName = (prenom + " " + nom).trim();
+        return fullName.isEmpty() ? "—" : fullName;
     }
 
     /**

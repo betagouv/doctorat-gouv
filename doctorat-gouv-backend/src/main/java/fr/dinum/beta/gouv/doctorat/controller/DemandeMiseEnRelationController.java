@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationResponse;
+import fr.dinum.beta.gouv.doctorat.dto.TableauDeBordCandidatItemDto;
 import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.service.DemandeMiseEnRelationService;
 
@@ -29,6 +31,13 @@ public class DemandeMiseEnRelationController {
 
     public DemandeMiseEnRelationController(DemandeMiseEnRelationService service) {
         this.service = service;
+    }
+
+    @GetMapping("/mes-demandes")
+    public ResponseEntity<List<TableauDeBordCandidatItemDto>> mesDemandes() {
+        String userId = getCurrentUserId();
+        log.info("Chargement tableau de bord pour candidat {}", userId);
+        return ResponseEntity.ok(service.listerDemandesParCandidat(userId));
     }
 
     @GetMapping
