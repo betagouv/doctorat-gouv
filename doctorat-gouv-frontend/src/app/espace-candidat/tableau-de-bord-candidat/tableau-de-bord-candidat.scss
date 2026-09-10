@@ -56,16 +56,16 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-header__icon {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 
   img {
-    width: 40px;
-    height: 40px;
+    width: 72px;
+    height: 72px;
   }
 }
 
@@ -74,14 +74,14 @@ $font-family: 'Marianne', arial, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: $color-text-primary;
-  margin: 0 0 0.25rem;
+  margin: 0;
 }
 
 .tdb-header__subtitle {
   font-family: $font-family;
   font-size: 0.9375rem;
   color: $color-text-secondary;
-  margin: 0;
+  margin: -0.25rem 0 0;
 }
 
 /* ======== Section ======== */
