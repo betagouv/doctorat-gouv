@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface DemandeMiseEnRelationRepository extends JpaRepository<DemandeMi
     Optional<DemandeMiseEnRelation> findByCandidatIdAndPropositionTheseId(String candidatId, Long propositionTheseId);
 
     boolean existsByCandidatIdAndPropositionTheseId(String candidatId, Long propositionTheseId);
+
+    List<DemandeMiseEnRelation> findByCandidatIdOrderByUpdatedAtDesc(String candidatId);
 }
