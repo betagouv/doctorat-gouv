@@ -2,6 +2,13 @@
   display: block;
 }
 
+main.tdb-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
 /* ======== Palette ======== */
 $color-page-bg: #F9F8F6;
 $color-white: #FFFFFF;
@@ -32,9 +39,9 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 4rem;
 }
 
 /* ======== En-tête ======== */
@@ -77,7 +84,7 @@ $font-family: 'Marianne', arial, sans-serif;
 
 /* ======== Section ======== */
 .tdb-section {
-  background: $color-white;
+  background: transparent;
   border: 1px solid $color-border;
   border-radius: 8px;
   padding: 1.5rem 2rem 2rem;
