@@ -157,6 +157,14 @@ $font-family: 'Marianne', arial, sans-serif;
   gap: 1rem;
 }
 
+.tdb-column__empty {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: $color-text-muted;
+  margin: 0 0 1rem;
+}
+
 /* ======== Carte ======== */
 .tdb-card {
   display: block;

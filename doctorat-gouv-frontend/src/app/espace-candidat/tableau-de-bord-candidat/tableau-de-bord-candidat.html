@@ -32,19 +32,27 @@
         </div>
       </div>
 
+      <div class="fr-alert fr-alert--info fr-mb-3w" *ngIf="isLoading" role="status">
+        Chargement du tableau de bord...
+      </div>
+      <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+      </div>
+
       <!-- ======== KANBAN ======== -->
-      <div class="tdb-kanban">
+      <div class="tdb-kanban" *ngIf="!isLoading && !errorMessage">
 
         <!-- Colonne BROUILLON -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
             BROUILLON <span class="tdb-column__count">({{ brouillons.length }})</span>
           </h3>
+          <p class="tdb-column__empty" *ngIf="brouillons.length === 0">Aucun brouillon.</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of brouillons"
                class="tdb-card"
                [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.id }">
+               [queryParams]="{ id: item.propositionTheseId }">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
                 <button class="tdb-card__edit" aria-label="Modifier le brouillon">
@@ -75,11 +83,12 @@
           <h3 class="tdb-column__header">
             EN ATTENTE <span class="tdb-column__count">({{ enAttente.length }})</span>
           </h3>
+          <p class="tdb-column__empty" *ngIf="enAttente.length === 0">Aucune demande en attente.</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of enAttente"
                class="tdb-card"
                [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.id }">
+               [queryParams]="{ id: item.propositionTheseId }">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
               </div>
@@ -107,11 +116,12 @@
           <h3 class="tdb-column__header">
             MISES EN RELATION <span class="tdb-column__count">({{ misesEnRelation.length }})</span>
           </h3>
+          <p class="tdb-column__empty" *ngIf="misesEnRelation.length === 0">Aucune mise en relation.</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of misesEnRelation"
                class="tdb-card"
                [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.id }">
+               [queryParams]="{ id: item.propositionTheseId }">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
                 <span *ngIf="item.candidatureEnvoyee" class="tdb-card__candidature">
