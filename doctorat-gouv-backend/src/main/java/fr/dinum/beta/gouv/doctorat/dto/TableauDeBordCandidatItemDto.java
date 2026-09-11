@@ -11,12 +11,14 @@ public class TableauDeBordCandidatItemDto {
     private String encadrantNom;
     private LocalDateTime dateContact;
     private String statut;
+    private boolean archivee;
 
     public TableauDeBordCandidatItemDto() {
     }
 
     public TableauDeBordCandidatItemDto(Long id, Long propositionTheseId, String titreSujet,
-            String etablissement, String encadrantNom, LocalDateTime dateContact, String statut) {
+            String etablissement, String encadrantNom, LocalDateTime dateContact, String statut,
+            boolean archivee) {
         this.id = id;
         this.propositionTheseId = propositionTheseId;
         this.titreSujet = titreSujet;
@@ -24,6 +26,7 @@ public class TableauDeBordCandidatItemDto {
         this.encadrantNom = encadrantNom;
         this.dateContact = dateContact;
         this.statut = statut;
+        this.archivee = archivee;
     }
 
     public Long getId() {
@@ -80,5 +83,13 @@ public class TableauDeBordCandidatItemDto {
 
     public void setStatut(String statut) {
         this.statut = statut;
+    }
+
+    public boolean isArchivee() {
+        return archivee;
+    }
+
+    public void setArchivee(boolean archivee) {
+        this.archivee = archivee;
     }
 }

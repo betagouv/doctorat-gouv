@@ -40,6 +40,9 @@ public class DemandeMiseEnRelation {
     @Column(nullable = false, length = 20)
     private StatutDemandeMiseEnRelation statut;
 
+    @Column(name = "archivee")
+    private Boolean archivee = Boolean.FALSE;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -106,6 +109,14 @@ public class DemandeMiseEnRelation {
 
     public void setStatut(StatutDemandeMiseEnRelation statut) {
         this.statut = statut;
+    }
+
+    public Boolean getArchivee() {
+        return archivee;
+    }
+
+    public void setArchivee(Boolean archivee) {
+        this.archivee = archivee;
     }
 
     public LocalDateTime getCreatedAt() {

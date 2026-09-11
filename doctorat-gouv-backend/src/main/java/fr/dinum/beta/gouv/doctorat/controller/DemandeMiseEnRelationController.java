@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,6 +82,24 @@ public class DemandeMiseEnRelationController {
         response.setId(demande.getId());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/archiver")
+    public ResponseEntity<DemandeMiseEnRelationResponse> archiverDemande(
+            @PathVariable long id) {
+
+        String userId = getCurrentUserId();
+        log.info("Archivage demande {} pour candidat {}", id, userId);
+
+        try {
+            DemandeMiseEnRelation demande = service.archiverDemande(userId, id);
+            DemandeMiseEnRelationResponse response = new DemandeMiseEnRelationResponse(
+                    "Demande archivée", true);
+            response.setId(demande.getId());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping

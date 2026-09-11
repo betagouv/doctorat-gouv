@@ -86,9 +86,24 @@ public class DemandeMiseEnRelationService {
                     these.getEtablissementLibelle(),
                     encadrantNom,
                     demande.getUpdatedAt(),
-                    demande.getStatut().name()));
+                    demande.getStatut().name(),
+                    Boolean.TRUE.equals(demande.getArchivee())));
         }
         return result;
+    }
+
+    /**
+     * Archive une demande du candidat. Les lignes existantes sans valeur
+     * (archivee NULL) sont traitées comme non archivées.
+     */
+    public DemandeMiseEnRelation archiverDemande(String userId, long demandeId) {
+        DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        demande.setArchivee(Boolean.TRUE);
+        demande.setUpdatedAt(LocalDateTime.now());
+        DemandeMiseEnRelation saved = demandeRepository.save(demande);
+        log.info("Demande archivée (id={}) pour candidat {}", saved.getId(), userId);
+        return saved;
     }
 
     private String buildEncadrantNom(PropositionTheseDto these) {
