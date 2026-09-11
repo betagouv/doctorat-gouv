@@ -19,16 +19,12 @@
       <div class="tdb-section__header">
         <h2 class="tdb-section__title">Suivi des mises en relation</h2>
         <div class="tdb-section__filters">
-          <button class="tdb-filter-btn"
-                  [class.tdb-filter-btn--active]="activeFilter === 'en_cours'"
-                  (click)="setFilter('en_cours')">
+          <button class="tdb-filter-btn tdb-filter-btn--active">
             En cours
           </button>
-          <button class="tdb-filter-btn"
-                  [class.tdb-filter-btn--active]="activeFilter === 'archivees'"
-                  (click)="setFilter('archivees')">
+          <a routerLink="/archive" class="tdb-filter-btn">
             Archivées
-          </button>
+          </a>
         </div>
       </div>
 

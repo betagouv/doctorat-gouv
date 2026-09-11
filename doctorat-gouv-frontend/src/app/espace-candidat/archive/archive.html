@@ -1,0 +1,84 @@
+<main class="tdb-page">
+  <div class="tdb-container">
+
+    <!-- ======== EN-TÊTE ======== -->
+    <header class="tdb-header">
+      <div class="tdb-header__greeting">
+        <div class="tdb-header__icon">
+          <img src="assets/icons/picto-tableau-loupe.png" alt="" width="72" height="72" aria-hidden="true"/>
+        </div>
+        <div>
+          <h1 class="tdb-header__title">Ravi de vous voir {{ prenom }}</h1>
+          <p class="tdb-header__subtitle">Un rapide coup d'oeil sur votre activité</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======== SECTION ARCHIVES ======== -->
+    <section class="tdb-section">
+      <div class="tdb-section__header">
+        <h2 class="tdb-section__title">Suivi des mises en relation</h2>
+        <div class="tdb-section__filters">
+          <a routerLink="/tableau-de-bord-candidat" class="tdb-filter-btn">
+            En cours
+          </a>
+          <span class="tdb-filter-btn tdb-filter-btn--active">
+            Archivées
+          </span>
+        </div>
+      </div>
+
+      <div class="fr-alert fr-alert--info fr-mb-3w" *ngIf="isLoading" role="status">
+        Chargement des archives...
+      </div>
+      <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <!-- ======== LISTE ======== -->
+      <div class="tdb-kanban" *ngIf="!isLoading && !errorMessage && !hasNoResults" style="grid-template-columns: 1fr;">
+        <div class="tdb-column">
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of archives"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: item.propositionTheseId }">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Encadré par {{ item.encadrantNom }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== ÉTAT VIDE ======== -->
+      <div class="tdb-empty" *ngIf="hasNoResults">
+        <div class="tdb-empty__icon">
+          <span class="fr-icon-archive-line" aria-hidden="true"></span>
+        </div>
+        <h3 class="tdb-empty__title">Aucune archive pour le moment</h3>
+        <p class="tdb-empty__text">
+          Vous n'avez pas encore archivé de demande de mise en relation.<br/>
+          Les demandes archivées apparaîtront ici.
+        </p>
+        <a routerLink="/tableau-de-bord-candidat" class="tdb-empty__btn">Retour au tableau de bord</a>
+      </div>
+    </section>
+
+  </div>
+</main>
