@@ -1,6 +1,6 @@
 export type StatutMiseEnRelation = 'brouillon' | 'en_attente' | 'mise_en_relation' | 'archive';
 
-export type StatutDemandeBackend = 'BROUILLON' | 'CREE' | 'ARCHIVE';
+export type StatutDemandeBackend = 'BROUILLON' | 'CREE';
 
 export interface TableauDeBordCandidatItemBackend {
   id: number;
@@ -10,6 +10,7 @@ export interface TableauDeBordCandidatItemBackend {
   encadrantNom: string | null;
   dateContact: string | null;
   statut: StatutDemandeBackend;
+  archivee: boolean;
 }
 
 export interface MiseEnRelationDto {

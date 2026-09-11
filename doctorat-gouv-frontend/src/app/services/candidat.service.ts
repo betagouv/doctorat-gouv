@@ -35,6 +35,10 @@ export class CandidatService {
   getDemandesMiseEnRelation(): Observable<TableauDeBordCandidatItemBackend[]> {
     return this.http.get<TableauDeBordCandidatItemBackend[]>(`${this.apiUrl}/demande-mise-en-relation/mes-demandes`);
   }
+
+  archiverDemande(demandeId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/demande-mise-en-relation/${demandeId}/archiver`, {});
+  }
 }
 
 export interface ChangementMotDePasseRequest {

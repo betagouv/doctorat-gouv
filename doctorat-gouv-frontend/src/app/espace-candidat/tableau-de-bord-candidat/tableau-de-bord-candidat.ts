@@ -23,6 +23,7 @@ export class TableauDeBordCandidat implements OnInit {
   enAttente: MiseEnRelationDto[] = [];
   misesEnRelation: MiseEnRelationDto[] = [];
   archives: MiseEnRelationDto[] = [];
+  archivageEnCours = new Set<number>();
 
   private allItems: TableauDeBordCandidatItemBackend[] = [];
 
@@ -78,6 +79,7 @@ export class TableauDeBordCandidat implements OnInit {
     this.archives = [];
 
     for (const item of this.allItems) {
+      const archivee = item.archivee === true;
       const mapped: MiseEnRelationDto = {
         id: item.id,
         propositionTheseId: item.propositionTheseId,
@@ -85,16 +87,40 @@ export class TableauDeBordCandidat implements OnInit {
         etablissement: item.etablissement?.trim() ? item.etablissement : '—',
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
-        statut: item.statut === 'BROUILLON' ? 'brouillon' : item.statut === 'ARCHIVE' ? 'archive' : 'en_attente',
+        statut: archivee ? 'archive' : item.statut === 'BROUILLON' ? 'brouillon' : 'en_attente',
       };
-      if (item.statut === 'BROUILLON') {
-        this.brouillons.push(mapped);
-      } else if (item.statut === 'ARCHIVE') {
+      if (archivee) {
         this.archives.push(mapped);
+      } else if (item.statut === 'BROUILLON') {
+        this.brouillons.push(mapped);
       } else {
         this.enAttente.push(mapped);
       }
     }
+  }
+
+  archiver(item: MiseEnRelationDto, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (this.archivageEnCours.has(item.id)) {
+      return;
+    }
+    this.archivageEnCours.add(item.id);
+    this.errorMessage = null;
+    this.candidatService.archiverDemande(item.id).subscribe({
+      next: () => {
+        this.archivageEnCours.delete(item.id);
+        const backendItem = this.allItems.find(i => i.id === item.id);
+        if (backendItem) {
+          backendItem.archivee = true;
+        }
+        this.reorganiser();
+      },
+      error: () => {
+        this.archivageEnCours.delete(item.id);
+        this.errorMessage = "Erreur lors de l'archivage de la demande.";
+      },
+    });
   }
 
   get hasNoResults(): boolean {

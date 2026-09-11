@@ -59,7 +59,7 @@
                   <button class="tdb-card__edit" aria-label="Modifier le brouillon">
                     <span class="fr-icon-edit-line" aria-hidden="true"></span>
                   </button>
-                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
                       <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
@@ -101,7 +101,7 @@
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
                       <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
@@ -147,7 +147,7 @@
                   Candidaté
                 </span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
                       <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
