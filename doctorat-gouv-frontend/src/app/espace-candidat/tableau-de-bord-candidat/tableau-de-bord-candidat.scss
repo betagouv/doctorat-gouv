@@ -206,8 +206,15 @@ $font-family: 'Marianne', arial, sans-serif;
 .tdb-card__badges {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.tdb-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
 }
 
 .tdb-badge {
@@ -237,6 +244,20 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-card__edit {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+
+  &:hover {
+    color: $color-blue-france;
+  }
+}
+
+.tdb-card__archive {
   background: none;
   border: none;
   padding: 0.25rem;
@@ -328,6 +349,7 @@ $font-family: 'Marianne', arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: $color-candidature-dot;
+  flex-shrink: 0;
 }
 
 .tdb-card__candidature-dot {

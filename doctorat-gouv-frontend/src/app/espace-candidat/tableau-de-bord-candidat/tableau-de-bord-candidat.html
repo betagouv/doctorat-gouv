@@ -55,9 +55,18 @@
                [queryParams]="{ id: item.propositionTheseId }">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
-                <button class="tdb-card__edit" aria-label="Modifier le brouillon">
-                  <span class="fr-icon-edit-line" aria-hidden="true"></span>
-                </button>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__edit" aria-label="Modifier le brouillon">
+                    <span class="fr-icon-edit-line" aria-hidden="true"></span>
+                  </button>
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M6 7V11H10V7H6Z" stroke="#000091" stroke-width="1.2"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">
@@ -91,6 +100,15 @@
                [queryParams]="{ id: item.propositionTheseId }">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M6 7V11H10V7H6Z" stroke="#000091" stroke-width="1.2"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">
@@ -128,6 +146,15 @@
                   <span class="tdb-card__candidature-dot"></span>
                   Candidaté
                 </span>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
+                      <path d="M6 7V11H10V7H6Z" stroke="#000091" stroke-width="1.2"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">
