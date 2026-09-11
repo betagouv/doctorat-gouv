@@ -86,7 +86,7 @@ public class DemandeMiseEnRelationController {
 
     @PostMapping("/{id}/archiver")
     public ResponseEntity<DemandeMiseEnRelationResponse> archiverDemande(
-            @PathVariable long id) {
+            @PathVariable("id") long id) {
 
         String userId = getCurrentUserId();
         log.info("Archivage demande {} pour candidat {}", id, userId);
