@@ -86,6 +86,10 @@ export class TableauDeBordCandidat implements OnInit {
     }
   }
 
+  get hasNoResults(): boolean {
+    return !this.isLoading && !this.errorMessage && this.brouillons.length === 0 && this.enAttente.length === 0 && this.misesEnRelation.length === 0;
+  }
+
   private formatDate(isoDate: string | null): string {
     if (!isoDate) {
       return '—';

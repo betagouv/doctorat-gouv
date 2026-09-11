@@ -40,7 +40,7 @@
       </div>
 
       <!-- ======== KANBAN ======== -->
-      <div class="tdb-kanban" *ngIf="!isLoading && !errorMessage">
+      <div class="tdb-kanban" *ngIf="!isLoading && !errorMessage && !hasNoResults">
 
         <!-- Colonne BROUILLON -->
         <div class="tdb-column">
@@ -152,6 +152,19 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- ======== ÉTAT VIDE ======== -->
+      <div class="tdb-empty" *ngIf="hasNoResults">
+        <div class="tdb-empty__icon">
+          <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+        </div>
+        <h3 class="tdb-empty__title">Aucune demande pour le moment</h3>
+        <p class="tdb-empty__text">
+          Vous n'avez pas encore envoyé de demande de mise en relation avec une direction de thèse.<br/>
+          Dès votre première demande, vous pourrez suivre son avancement depuis ce tableau de bord.
+        </p>
+        <a routerLink="/search" class="tdb-empty__btn">Explorer les offres</a>
       </div>
     </section>
 
