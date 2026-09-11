@@ -24,6 +24,8 @@ $color-badge-attente-bg: #E3E3FD;
 $color-badge-attente-text: #000091;
 $color-badge-mer-bg: #D6F6D6;
 $color-badge-mer-text: #18753C;
+$color-badge-archive-bg: #E5E5E5;
+$color-badge-archive-text: #666666;
 $color-candidature-dot: #18753C;
 $color-messages-bg: #D6F6D6;
 $color-messages-border: #18753C;
@@ -241,6 +243,11 @@ $font-family: 'Marianne', arial, sans-serif;
   &--mise-en-relation {
     background: $color-badge-mer-bg;
     color: $color-badge-mer-text;
+  }
+
+  &--archive {
+    background: $color-badge-archive-bg;
+    color: $color-badge-archive-text;
   }
 }
 

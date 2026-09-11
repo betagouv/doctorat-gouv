@@ -19,12 +19,16 @@
       <div class="tdb-section__header">
         <h2 class="tdb-section__title">Suivi des mises en relation</h2>
         <div class="tdb-section__filters">
-          <button class="tdb-filter-btn tdb-filter-btn--active">
+          <button class="tdb-filter-btn"
+                  [class.tdb-filter-btn--active]="activeFilter === 'en_cours'"
+                  (click)="setFilter('en_cours')">
             En cours
           </button>
-          <a routerLink="/archive" class="tdb-filter-btn">
+          <button class="tdb-filter-btn"
+                  [class.tdb-filter-btn--active]="activeFilter === 'archivees'"
+                  (click)="setFilter('archivees')">
             Archivées
-          </a>
+          </button>
         </div>
       </div>
 
@@ -35,8 +39,8 @@
         {{ errorMessage }}
       </div>
 
-      <!-- ======== KANBAN ======== -->
-      <div class="tdb-kanban" *ngIf="!isLoading && !errorMessage && !hasNoResults">
+      <!-- ======== KANBAN (En cours) ======== -->
+      <div class="tdb-kanban" *ngIf="activeFilter === 'en_cours' && !isLoading && !errorMessage && !hasNoResults">
 
         <!-- Colonne BROUILLON -->
         <div class="tdb-column">
@@ -175,6 +179,37 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- ======== ARCHIVES (liste) ======== -->
+      <div class="tdb-kanban" *ngIf="activeFilter === 'archivees' && !isLoading && !errorMessage && !hasNoResults" style="grid-template-columns: 1fr;">
+        <div class="tdb-column">
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of archives"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: item.propositionTheseId }">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Encadré par {{ item.encadrantNom }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- ======== ÉTAT VIDE ======== -->

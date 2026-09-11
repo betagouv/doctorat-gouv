@@ -22,6 +22,9 @@ export class TableauDeBordCandidat implements OnInit {
   brouillons: MiseEnRelationDto[] = [];
   enAttente: MiseEnRelationDto[] = [];
   misesEnRelation: MiseEnRelationDto[] = [];
+  archives: MiseEnRelationDto[] = [];
+
+  private allItems: TableauDeBordCandidatItemBackend[] = [];
 
   constructor(
     private titleService: Title,
@@ -64,11 +67,17 @@ export class TableauDeBordCandidat implements OnInit {
   }
 
   private repartirDemandes(items: TableauDeBordCandidatItemBackend[]): void {
+    this.allItems = items;
+    this.reorganiser();
+  }
+
+  private reorganiser(): void {
     this.brouillons = [];
     this.enAttente = [];
     this.misesEnRelation = [];
+    this.archives = [];
 
-    for (const item of items) {
+    for (const item of this.allItems) {
       const mapped: MiseEnRelationDto = {
         id: item.id,
         propositionTheseId: item.propositionTheseId,
@@ -76,10 +85,12 @@ export class TableauDeBordCandidat implements OnInit {
         etablissement: item.etablissement?.trim() ? item.etablissement : '—',
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
-        statut: item.statut === 'BROUILLON' ? 'brouillon' : 'en_attente',
+        statut: item.statut === 'BROUILLON' ? 'brouillon' : item.statut === 'ARCHIVE' ? 'archive' : 'en_attente',
       };
       if (item.statut === 'BROUILLON') {
         this.brouillons.push(mapped);
+      } else if (item.statut === 'ARCHIVE') {
+        this.archives.push(mapped);
       } else {
         this.enAttente.push(mapped);
       }
@@ -87,6 +98,9 @@ export class TableauDeBordCandidat implements OnInit {
   }
 
   get hasNoResults(): boolean {
+    if (this.activeFilter === 'archivees') {
+      return !this.isLoading && !this.errorMessage && this.archives.length === 0;
+    }
     return !this.isLoading && !this.errorMessage && this.brouillons.length === 0 && this.enAttente.length === 0 && this.misesEnRelation.length === 0;
   }
 
