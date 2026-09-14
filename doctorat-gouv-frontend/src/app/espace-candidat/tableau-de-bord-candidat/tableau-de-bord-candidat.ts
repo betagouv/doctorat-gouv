@@ -23,6 +23,9 @@ export class TableauDeBordCandidat implements OnInit {
   enAttente: MiseEnRelationDto[] = [];
   misesEnRelation: MiseEnRelationDto[] = [];
   archives: MiseEnRelationDto[] = [];
+  archivesBrouillons: MiseEnRelationDto[] = [];
+  archivesEnAttente: MiseEnRelationDto[] = [];
+  archivesMisesEnRelation: MiseEnRelationDto[] = [];
   archivageEnCours = new Set<number>();
 
   private allItems: TableauDeBordCandidatItemBackend[] = [];
@@ -77,9 +80,13 @@ export class TableauDeBordCandidat implements OnInit {
     this.enAttente = [];
     this.misesEnRelation = [];
     this.archives = [];
+    this.archivesBrouillons = [];
+    this.archivesEnAttente = [];
+    this.archivesMisesEnRelation = [];
 
     for (const item of this.allItems) {
       const archivee = item.archivee === true;
+      const isBrouillon = item.statut === 'BROUILLON';
       const mapped: MiseEnRelationDto = {
         id: item.id,
         propositionTheseId: item.propositionTheseId,
@@ -87,11 +94,16 @@ export class TableauDeBordCandidat implements OnInit {
         etablissement: item.etablissement?.trim() ? item.etablissement : '—',
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
-        statut: archivee ? 'archive' : item.statut === 'BROUILLON' ? 'brouillon' : 'en_attente',
+        statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : 'en_attente',
       };
       if (archivee) {
         this.archives.push(mapped);
-      } else if (item.statut === 'BROUILLON') {
+        if (isBrouillon) {
+          this.archivesBrouillons.push(mapped);
+        } else {
+          this.archivesEnAttente.push(mapped);
+        }
+      } else if (isBrouillon) {
         this.brouillons.push(mapped);
       } else {
         this.enAttente.push(mapped);
