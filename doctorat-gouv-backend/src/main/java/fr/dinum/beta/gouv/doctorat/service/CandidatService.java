@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @Service
@@ -21,10 +23,14 @@ public class CandidatService {
     private static final Logger log = LoggerFactory.getLogger(CandidatService.class);
 
     private final UtilisateurRepository utilisateurRepository;
+    private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CandidatService(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {
+    public CandidatService(UtilisateurRepository utilisateurRepository,
+                           ProfilCandidatRepository profilCandidatRepository,
+                           PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
+        this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -36,20 +42,24 @@ public class CandidatService {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
-        utilisateur.setCivilite(request.getCivilite());
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
-        utilisateur.setSituation(request.getSituation());
         utilisateur.setEmail(request.getEmail());
-        utilisateur.setTelephone(request.getTelephone());
         if (request.getCompetences() != null) {
             utilisateur.setCompetences(new ArrayList<>(request.getCompetences()));
         }
         utilisateur.setDateModification(LocalDateTime.now());
+        utilisateurRepository.save(utilisateur);
 
-        Utilisateur saved = utilisateurRepository.save(utilisateur);
+        ProfilCandidat profil = profilCandidatRepository.findByUtilisateurId(userId)
+            .orElseGet(() -> ProfilCandidat.builder().utilisateur(utilisateur).build());
+        profil.setCivilite(request.getCivilite());
+        profil.setSituation(request.getSituation());
+        profil.setTelephone(request.getTelephone());
+        profilCandidatRepository.save(profil);
+
         log.info("Profil mis à jour pour l'utilisateur {}", userId);
-        return toProfilResponse(saved);
+        return toProfilResponse(utilisateur);
     }
 
     public ProfilResponse addCompetence(String userId, String competence) {
@@ -100,13 +110,15 @@ public class CandidatService {
     }
 
     private ProfilResponse toProfilResponse(Utilisateur u) {
+        ProfilCandidat profil = profilCandidatRepository.findByUtilisateurId(u.getId()).orElse(null);
+
         ProfilResponse response = new ProfilResponse(
-            u.getCivilite(),
+            profil != null ? profil.getCivilite() : null,
             u.getNom(),
             u.getPrenom(),
-            u.getSituation(),
+            profil != null ? profil.getSituation() : null,
             u.getEmail(),
-            u.getTelephone()
+            profil != null ? profil.getTelephone() : null
         );
         response.setPhotoUrl(u.getPhotoUrl());
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());

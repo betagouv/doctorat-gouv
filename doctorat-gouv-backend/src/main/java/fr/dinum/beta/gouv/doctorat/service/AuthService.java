@@ -18,9 +18,11 @@ import fr.dinum.beta.gouv.doctorat.dto.ConnexionResponse;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionCompletRequest;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -32,15 +34,18 @@ public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UtilisateurRepository utilisateurRepository;
+    private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
     private final InscriptionFileService inscriptionFileService;
 
     public AuthService(UtilisateurRepository utilisateurRepository,
+                       ProfilCandidatRepository profilCandidatRepository,
                        PasswordEncoder passwordEncoder,
                        JwtConfig jwtConfig,
                        InscriptionFileService inscriptionFileService) {
         this.utilisateurRepository = utilisateurRepository;
+        this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtConfig = jwtConfig;
         this.inscriptionFileService = inscriptionFileService;
@@ -96,17 +101,21 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable après inscription"));
 
         utilisateur.setDemarche(request.getDemarche());
-        utilisateur.setCivilite(request.getCivilite());
-        utilisateur.setSituation(request.getSituation());
-        utilisateur.setTelephone(request.getTelephone());
-        utilisateur.setMasterConfirme(request.getMasterConfirme());
+
+        ProfilCandidat profilCandidat = ProfilCandidat.builder()
+                .utilisateur(utilisateur)
+                .civilite(request.getCivilite())
+                .situation(request.getSituation())
+                .telephone(request.getTelephone())
+                .masterConfirme(request.getMasterConfirme())
+                .build();
 
         String cvPath = inscriptionFileService.storeCv(userId, cv);
-        utilisateur.setCvFilename(cvPath);
+        profilCandidat.setCvFilename(cvPath);
         List<String> piecePaths = inscriptionFileService.storePieces(userId, pieces);
-        utilisateur.setPiecesFilenames(piecePaths);
+        profilCandidat.setPiecesFilenames(piecePaths);
 
-        utilisateurRepository.save(utilisateur);
+        profilCandidatRepository.save(profilCandidat);
 
         return response;
     }

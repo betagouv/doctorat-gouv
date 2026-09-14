@@ -74,18 +74,6 @@ public class Utilisateur {
     @Column(length = 20)
     private DemarcheType demarche;
 
-    @Column(length = 20)
-    private String civilite;
-
-    @Column(length = 50)
-    private String situation;
-
-    @Column(length = 20)
-    private String telephone;
-
-    @Column(name = "master_confirme")
-    private Boolean masterConfirme;
-
     // --- Photo ---
 
     @Column(name = "photo_url", length = 500)
@@ -102,16 +90,6 @@ public class Utilisateur {
 
     @Column(name = "nb_candidatures")
     private Integer nbCandidatures = 0;
-
-    // --- Liens vers les fichiers uploadés ---
-
-    @Column(name = "cv_filename", length = 500)
-    private String cvFilename;
-
-    @ElementCollection
-    @CollectionTable(name = "utilisateur_pieces", joinColumns = @JoinColumn(name = "utilisateur_id"))
-    @Column(name = "piece_path", length = 500)
-    private List<String> piecesFilenames = new ArrayList<>();
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "date_creation", nullable = false)
@@ -201,46 +179,6 @@ public class Utilisateur {
         this.demarche = demarche;
     }
 
-    public String getCivilite() {
-        return civilite;
-    }
-
-    public void setCivilite(String civilite) {
-        this.civilite = civilite;
-    }
-
-    public String getSituation() {
-        return situation;
-    }
-
-    public void setSituation(String situation) {
-        this.situation = situation;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public Boolean getMasterConfirme() {
-        return masterConfirme;
-    }
-
-    public void setMasterConfirme(Boolean masterConfirme) {
-        this.masterConfirme = masterConfirme;
-    }
-
-    public String getCvFilename() {
-        return cvFilename;
-    }
-
-    public void setCvFilename(String cvFilename) {
-        this.cvFilename = cvFilename;
-    }
-
     public String getPhotoUrl() {
         return photoUrl;
     }
@@ -263,14 +201,6 @@ public class Utilisateur {
 
     public void setNbCandidatures(Integer nbCandidatures) {
         this.nbCandidatures = nbCandidatures;
-    }
-
-    public List<String> getPiecesFilenames() {
-        return piecesFilenames;
-    }
-
-    public void setPiecesFilenames(List<String> piecesFilenames) {
-        this.piecesFilenames = piecesFilenames;
     }
 
     public LocalDateTime getDateCreation() {
