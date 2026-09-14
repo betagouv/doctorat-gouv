@@ -1,5 +1,5 @@
 -- Migration V3 : Extraire le profil candidat dans une table dédiée
--- À exécuter après que Hibernate a créé la table profil_candidat (ddl-auto=update)
+-- Phase 1 : Copier les données (à exécuter AVANT de supprimer les colonnes)
 
 -- 1. Copier les données candidat depuis utilisateur vers profil_candidat
 INSERT INTO profil_candidat (id, civilite, situation, telephone, master_confirme, cv_filename)
@@ -14,10 +14,14 @@ SELECT up.utilisateur_id, up.piece_path
 FROM utilisateur_pieces up
 INNER JOIN profil_candidat pc ON pc.id = up.utilisateur_id;
 
--- 3. Supprimer les anciennes colonnes de utilisateur (optionnel, à faire après vérification)
--- ALTER TABLE utilisateur DROP COLUMN civilite;
--- ALTER TABLE utilisateur DROP COLUMN situation;
--- ALTER TABLE utilisateur DROP COLUMN telephone;
--- ALTER TABLE utilisateur DROP COLUMN master_confirme;
--- ALTER TABLE utilisateur DROP COLUMN cv_filename;
--- DROP TABLE utilisateur_pieces;
+-- Phase 2 : Nettoyer l'ancien schéma (à exécuter APRÈS vérification des données)
+
+-- 3. Supprimer les anciennes colonnes candidat de utilisateur
+ALTER TABLE utilisateur DROP COLUMN IF EXISTS civilite;
+ALTER TABLE utilisateur DROP COLUMN IF EXISTS situation;
+ALTER TABLE utilisateur DROP COLUMN IF EXISTS telephone;
+ALTER TABLE utilisateur DROP COLUMN IF EXISTS master_confirme;
+ALTER TABLE utilisateur DROP COLUMN IF EXISTS cv_filename;
+
+-- 4. Supprimer l'ancienne table de pièces jointes
+DROP TABLE IF EXISTS utilisateur_pieces;

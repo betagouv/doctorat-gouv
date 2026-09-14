@@ -13,7 +13,6 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 /**
@@ -24,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "profil_candidat")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ProfilCandidat {
 
     @Id
@@ -53,7 +51,6 @@ public class ProfilCandidat {
     @ElementCollection
     @CollectionTable(name = "profil_candidat_pieces", joinColumns = @JoinColumn(name = "profil_candidat_id"))
     @Column(name = "piece_path", length = 500)
-    @Builder.Default
     private List<String> piecesFilenames = new ArrayList<>();
 
     public String getId() { return id; }

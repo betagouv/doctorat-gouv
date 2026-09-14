@@ -52,7 +52,10 @@ public class CandidatService {
         utilisateurRepository.save(utilisateur);
 
         ProfilCandidat profil = profilCandidatRepository.findByUtilisateurId(userId)
-            .orElseGet(() -> ProfilCandidat.builder().utilisateur(utilisateur).build());
+            .orElse(new ProfilCandidat());
+        if (profil.getUtilisateur() == null) {
+            profil.setUtilisateur(utilisateur);
+        }
         profil.setCivilite(request.getCivilite());
         profil.setSituation(request.getSituation());
         profil.setTelephone(request.getTelephone());

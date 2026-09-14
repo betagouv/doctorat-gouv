@@ -102,13 +102,12 @@ public class AuthService {
 
         utilisateur.setDemarche(request.getDemarche());
 
-        ProfilCandidat profilCandidat = ProfilCandidat.builder()
-                .utilisateur(utilisateur)
-                .civilite(request.getCivilite())
-                .situation(request.getSituation())
-                .telephone(request.getTelephone())
-                .masterConfirme(request.getMasterConfirme())
-                .build();
+        ProfilCandidat profilCandidat = new ProfilCandidat();
+        profilCandidat.setUtilisateur(utilisateur);
+        profilCandidat.setCivilite(request.getCivilite());
+        profilCandidat.setSituation(request.getSituation());
+        profilCandidat.setTelephone(request.getTelephone());
+        profilCandidat.setMasterConfirme(request.getMasterConfirme());
 
         String cvPath = inscriptionFileService.storeCv(userId, cv);
         profilCandidat.setCvFilename(cvPath);
