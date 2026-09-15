@@ -1,8 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 
 export type Demarche = 'DOCTORAT' | 'PARTENARIAT';
+export type RoleSelection = 'CANDIDAT' | 'DIRECTEUR_THESE';
 
 export interface InscriptionCoordonnees {
+  role: RoleSelection;
   demarche: Demarche;
   nom: string;
   prenom: string;

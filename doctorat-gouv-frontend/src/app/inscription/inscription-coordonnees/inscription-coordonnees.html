@@ -26,10 +26,43 @@
         <p class="fr-text--sm fr-mb-1w">{{ 'INSCRIPTION.STEP1_INTRO_1' | translate }}</p>
         <p class="fr-text--sm fr-mb-3w">{{ 'INSCRIPTION.STEP1_INTRO_2' | translate }}</p>
 
+        <!-- Erreur globale -->
+        <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="globalError" role="alert">
+          <p>{{ globalError }}</p>
+        </div>
+
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-          <!-- Démarche -->
+          <!-- Sélection du rôle -->
           <fieldset class="fr-fieldset fr-mb-3w">
+            <legend class="fr-label">
+              Qui êtes-vous ? <span class="required-star">*</span>
+            </legend>
+            <div class="role-selection">
+              <button type="button"
+                      class="role-card"
+                      [class.role-card--active]="role?.value === 'CANDIDAT'"
+                      (click)="role?.setValue('CANDIDAT'); onRoleChange()"
+                      [attr.aria-pressed]="role?.value === 'CANDIDAT'">
+                <span class="fr-icon-user-line fr-icon--lg role-card__icon" aria-hidden="true"></span>
+                <span class="role-card__label">Candidat au doctorat</span>
+                <span class="role-card__desc">Je souhaite candidater sur une offre de thèse</span>
+              </button>
+              <button type="button"
+                      class="role-card"
+                      [class.role-card--active]="role?.value === 'DIRECTEUR_THESE'"
+                      (click)="role?.setValue('DIRECTEUR_THESE'); onRoleChange()"
+                      [attr.aria-pressed]="role?.value === 'DIRECTEUR_THESE'">
+                <span class="fr-icon-team-line fr-icon--lg role-card__icon" aria-hidden="true"></span>
+                <span class="role-card__label">Directeur de thèse</span>
+                <span class="role-card__desc">Je propose un sujet et encadre un doctorant</span>
+              </button>
+            </div>
+            <input type="hidden" formControlName="role" aria-hidden="true">
+          </fieldset>
+
+          <!-- Démarche (candidat seulement) -->
+          <fieldset class="fr-fieldset fr-mb-3w" *ngIf="!isDirecteur">
             <legend class="fr-label">
               {{ 'INSCRIPTION.SECTION_DEMARCHE' | translate }} <span class="required-star">*</span>
             </legend>
@@ -69,8 +102,8 @@
             </p>
           </div>
 
-          <!-- Civilité -->
-          <div class="form-field fr-mb-2w">
+          <!-- Civilité (candidat seulement) -->
+          <div class="form-field fr-mb-2w" *ngIf="!isDirecteur">
             <label class="fr-label" for="civilite">{{ 'INSCRIPTION.FIELD_CIVILITE' | translate }}</label>
             <select class="fr-select" id="civilite" formControlName="civilite">
               <option value="" disabled selected>{{ 'INSCRIPTION.CIVILITE_PLACEHOLDER' | translate }}</option>
@@ -80,8 +113,9 @@
             </select>
           </div>
 
-          <!-- Situation actuelle -->
-          <div class="form-field fr-mb-2w" [class.fr-input-group--error]="situation?.invalid && situation?.touched">
+          <!-- Situation actuelle (candidat seulement) -->
+          <div class="form-field fr-mb-2w" *ngIf="!isDirecteur"
+               [class.fr-input-group--error]="situation?.invalid && situation?.touched">
             <label class="fr-label" for="situation">
               {{ 'INSCRIPTION.FIELD_SITUATION' | translate }} <span class="required-star">*</span>
             </label>
@@ -112,8 +146,8 @@
             </p>
           </div>
 
-          <!-- Téléphone -->
-          <div class="form-field fr-mb-2w">
+          <!-- Téléphone (candidat seulement) -->
+          <div class="form-field fr-mb-2w" *ngIf="!isDirecteur">
             <label class="fr-label" for="telephone">{{ 'INSCRIPTION.FIELD_TELEPHONE' | translate }}</label>
             <input class="fr-input" id="telephone" type="tel" formControlName="telephone" />
           </div>
@@ -158,8 +192,9 @@
             </p>
           </div>
 
-          <!-- Checkbox Master -->
-          <div class="fr-checkbox-group fr-mb-3w" [class.fr-input-group--error]="masterConfirme?.invalid && masterConfirme?.touched">
+          <!-- Checkbox Master (candidat seulement) -->
+          <div class="fr-checkbox-group fr-mb-3w" *ngIf="!isDirecteur"
+               [class.fr-input-group--error]="masterConfirme?.invalid && masterConfirme?.touched">
             <input type="checkbox" id="master" formControlName="masterConfirme"
                    [attr.aria-invalid]="masterConfirme?.invalid && masterConfirme?.touched ? 'true' : null"
                    aria-describedby="master-error" />
@@ -172,8 +207,9 @@
           <!-- Bouton Continuer -->
           <button type="submit"
                   class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w"
-                  [disabled]="form.invalid">
-            {{ 'INSCRIPTION.BTN_CONTINUER' | translate }}
+                  [disabled]="form.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">{{ isDirecteur ? "S'inscrire" : ('INSCRIPTION.BTN_CONTINUER' | translate) }}</span>
+            <span *ngIf="isSubmitting">Inscription en cours…</span>
           </button>
         </form>
 

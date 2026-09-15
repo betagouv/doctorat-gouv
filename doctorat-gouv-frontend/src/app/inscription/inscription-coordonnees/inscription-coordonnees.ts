@@ -4,7 +4,9 @@ import { FormBuilder, ReactiveFormsModule, FormGroup, Validators, AbstractContro
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
-import { InscriptionStoreService, InscriptionCoordonnees as InscriptionCoordonneesData, Demarche } from '../../services/inscription-store.service';
+import { InscriptionStoreService, InscriptionCoordonnees as InscriptionCoordonneesData, Demarche, RoleSelection } from '../../services/inscription-store.service';
+import { AuthService } from '../../services/auth.service';
+import { InscriptionRequest } from '../../models/utilisateur.model';
 
 @Component({
   selector: 'app-inscription-coordonnees',
@@ -18,6 +20,8 @@ export class InscriptionCoordonnees implements OnInit {
   form: FormGroup;
 
   showPassword = false;
+  isSubmitting = false;
+  globalError: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,8 +30,10 @@ export class InscriptionCoordonnees implements OnInit {
     private metaService: Meta,
     private store: InscriptionStoreService,
     private router: Router,
+    private authService: AuthService,
   ) {
     this.form = this.fb.group({
+      role: ['CANDIDAT', [Validators.required]],
       demarche: ['DOCTORAT', [Validators.required]],
       nom: ['', [Validators.required, Validators.maxLength(100)]],
       prenom: ['', [Validators.required, Validators.maxLength(100)]],
@@ -54,6 +60,7 @@ export class InscriptionCoordonnees implements OnInit {
     });
   }
 
+  get role() { return this.form.get('role'); }
   get demarche() { return this.form.get('demarche'); }
   get nom() { return this.form.get('nom'); }
   get prenom() { return this.form.get('prenom'); }
@@ -65,6 +72,31 @@ export class InscriptionCoordonnees implements OnInit {
   get confirmationMdp() { return this.form.get('confirmationMdp'); }
   get masterConfirme() { return this.form.get('masterConfirme'); }
 
+  get isDirecteur(): boolean {
+    return this.role?.value === 'DIRECTEUR_THESE';
+  }
+
+  onRoleChange(): void {
+    if (this.isDirecteur) {
+      this.situation?.clearValidators();
+      this.situation?.setValue('');
+      this.masterConfirme?.clearValidators();
+      this.masterConfirme?.setValue(false);
+      this.demarche?.clearValidators();
+      this.demarche?.setValue('DOCTORAT');
+    } else {
+      this.situation?.setValidators([Validators.required]);
+      this.situation?.markAsPristine();
+      this.masterConfirme?.setValidators([Validators.requiredTrue]);
+      this.masterConfirme?.markAsPristine();
+      this.demarche?.setValidators([Validators.required]);
+      this.demarche?.markAsPristine();
+    }
+    this.situation?.updateValueAndValidity();
+    this.masterConfirme?.updateValueAndValidity();
+    this.demarche?.updateValueAndValidity();
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -72,7 +104,17 @@ export class InscriptionCoordonnees implements OnInit {
     }
 
     const value = this.form.value;
+
+    if (this.isDirecteur) {
+      this.inscrireDirecteur(value);
+    } else {
+      this.inscrireCandidat(value);
+    }
+  }
+
+  private inscrireCandidat(value: any): void {
     const coordonnees: InscriptionCoordonneesData = {
+      role: 'CANDIDAT',
       demarche: value.demarche as Demarche,
       nom: value.nom,
       prenom: value.prenom,
@@ -86,6 +128,30 @@ export class InscriptionCoordonnees implements OnInit {
 
     this.store.setCoordonnees(coordonnees);
     this.router.navigate(['/inscription/documents']);
+  }
+
+  private inscrireDirecteur(value: any): void {
+    this.isSubmitting = true;
+    this.globalError = null;
+
+    const request: InscriptionRequest = {
+      email: value.email,
+      motDePasse: value.motDePasse,
+      prenom: value.prenom,
+      nom: value.nom,
+      role: 'DIRECTEUR_THESE',
+    };
+
+    this.authService.inscription(request).subscribe({
+      next: () => {
+        this.store.clear();
+        this.router.navigate(['/inscription/terminee']);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.globalError = err?.error?.error || 'Une erreur est survenue. Veuillez réessayer.';
+      }
+    });
   }
 }
 
