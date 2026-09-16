@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { DirecteurTheseService, ChangementMotDePasseRequest } from '../services/directeur-these.service';
 import { AuthService } from '../services/auth.service';
 import { FilterService } from '../services/filter.service';
-import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { ProfilDtResponse, ProfilDtUpdateRequest } from '../models/profil.model';
 
 @Component({
   selector: 'app-espace-directeur-these',
@@ -17,7 +17,7 @@ import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 })
 export class EspaceDirecteurThese implements OnInit {
 
-  profil: ProfilResponse | null = null;
+  profil: ProfilDtResponse | null = null;
   profilForm: FormGroup;
   motDePasseForm: FormGroup;
   isEditing = false;
@@ -38,6 +38,10 @@ export class EspaceDirecteurThese implements OnInit {
   laboratoires: string[] = [];
   filteredLaboratoires: string[] = [];
   showLaboSuggestions = false;
+
+  ecolesDoctorales: string[] = [];
+  filteredEcolesDoctorales: string[] = [];
+  showEcoleSuggestions = false;
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -65,6 +69,11 @@ export class EspaceDirecteurThese implements OnInit {
       orcid: ['', [Validators.maxLength(30)]],
       etablissement: ['', [Validators.required, Validators.maxLength(255)]],
       laboratoire: ['', [Validators.required, Validators.maxLength(255)]],
+      ecoleDoctorale: ['', [Validators.required, Validators.maxLength(255)]],
+      employeur: ['', [Validators.maxLength(255)]],
+      titre: [''],
+      precisionTitre: ['', [Validators.maxLength(255)]],
+      habilitationRecherche: [''],
     });
 
     this.motDePasseForm = this.fb.group({
@@ -142,17 +151,20 @@ export class EspaceDirecteurThese implements OnInit {
     this.isSaving = true;
     this.errorMessage = null;
 
-    const request: ProfilUpdateRequest = {
+    const request: ProfilDtUpdateRequest = {
       civilite: this.profilForm.value.civilite,
       nom: this.profilForm.value.nom,
       prenom: this.profilForm.value.prenom,
-      situation: this.profil?.situation ?? 'Directeur de thèse',
       email: this.profilForm.value.email,
-      telephone: this.profil?.telephone ?? null,
       competences: this.axes,
       orcid: this.profilForm.value.orcid || null,
       etablissement: this.profilForm.value.etablissement,
       laboratoire: this.profilForm.value.laboratoire,
+      ecoleDoctorale: this.profilForm.value.ecoleDoctorale || null,
+      employeur: this.profilForm.value.employeur || null,
+      titre: this.profilForm.value.titre || null,
+      precisionTitre: this.profilForm.value.precisionTitre || null,
+      habilitationRecherche: this.profilForm.value.habilitationRecherche || null,
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -269,7 +281,7 @@ export class EspaceDirecteurThese implements OnInit {
     img.src = this.defaultAvatar;
   }
 
-  private populateForm(data: ProfilResponse): void {
+  private populateForm(data: ProfilDtResponse): void {
     this.profilForm.patchValue({
       civilite: data.civilite ?? '',
       nom: data.nom,
@@ -278,6 +290,11 @@ export class EspaceDirecteurThese implements OnInit {
       orcid: data.orcid ?? '',
       etablissement: data.etablissement ?? '',
       laboratoire: data.laboratoire ?? '',
+      ecoleDoctorale: data.ecoleDoctorale ?? '',
+      employeur: data.employeur ?? '',
+      titre: data.titre ?? '',
+      precisionTitre: data.precisionTitre ?? '',
+      habilitationRecherche: data.habilitationRecherche ?? '',
     });
   }
 
@@ -286,6 +303,7 @@ export class EspaceDirecteurThese implements OnInit {
       next: (options) => {
         this.etablissements = (options.ecole ?? []).filter(e => !!e && e.trim().length > 0);
         this.laboratoires = (options.laboratoire ?? []).filter(l => !!l && l.trim().length > 0);
+        this.ecolesDoctorales = (options.ecole ?? []).filter(e => !!e && e.trim().length > 0);
       },
     });
   }
@@ -324,5 +342,23 @@ export class EspaceDirecteurThese implements OnInit {
 
   hideLaboSuggestions(): void {
     setTimeout(() => { this.showLaboSuggestions = false; }, 150);
+  }
+
+  filterEcolesDoctorales(): void {
+    const value = (this.profilForm.get('ecoleDoctorale')?.value ?? '').toLowerCase().trim();
+    this.filteredEcolesDoctorales = value
+      ? this.ecolesDoctorales.filter(e => e.toLowerCase().includes(value)).slice(0, 8)
+      : [];
+    this.showEcoleSuggestions = this.filteredEcolesDoctorales.length > 0;
+  }
+
+  selectEcoleDoctorale(ecole: string): void {
+    this.profilForm.get('ecoleDoctorale')?.setValue(ecole);
+    this.profilForm.get('ecoleDoctorale')?.markAsTouched();
+    this.showEcoleSuggestions = false;
+  }
+
+  hideEcoleSuggestions(): void {
+    setTimeout(() => { this.showEcoleSuggestions = false; }, 150);
   }
 }

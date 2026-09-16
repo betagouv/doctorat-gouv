@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { ProfilDtResponse, ProfilDtUpdateRequest } from '../models/profil.model';
 
 @Injectable({ providedIn: 'root' })
 export class DirecteurTheseService {
@@ -11,20 +11,20 @@ export class DirecteurTheseService {
 
   constructor(private http: HttpClient) {}
 
-  getProfil(): Observable<ProfilResponse> {
-    return this.http.get<ProfilResponse>(`${this.apiUrl}/profil`);
+  getProfil(): Observable<ProfilDtResponse> {
+    return this.http.get<ProfilDtResponse>(`${this.apiUrl}/profil`);
   }
 
-  updateProfil(request: ProfilUpdateRequest): Observable<ProfilResponse> {
-    return this.http.put<ProfilResponse>(`${this.apiUrl}/profil`, request);
+  updateProfil(request: ProfilDtUpdateRequest): Observable<ProfilDtResponse> {
+    return this.http.put<ProfilDtResponse>(`${this.apiUrl}/profil`, request);
   }
 
-  addCompetence(competence: string): Observable<ProfilResponse> {
-    return this.http.post<ProfilResponse>(`${this.apiUrl}/competences`, { competence });
+  addCompetence(competence: string): Observable<ProfilDtResponse> {
+    return this.http.post<ProfilDtResponse>(`${this.apiUrl}/competences`, { competence });
   }
 
-  removeCompetence(competence: string): Observable<ProfilResponse> {
-    return this.http.delete<ProfilResponse>(`${this.apiUrl}/competences`, { body: { competence } });
+  removeCompetence(competence: string): Observable<ProfilDtResponse> {
+    return this.http.delete<ProfilDtResponse>(`${this.apiUrl}/competences`, { body: { competence } });
   }
 
   changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {

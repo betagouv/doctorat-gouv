@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
-import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
-import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
-import fr.dinum.beta.gouv.doctorat.service.ProfilService;
+import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
+import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -27,50 +27,50 @@ public class DirecteurTheseController {
 
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseController.class);
 
-    private final ProfilService profilService;
+    private final DirecteurTheseService directeurTheseService;
 
-    public DirecteurTheseController(ProfilService profilService) {
-        this.profilService = profilService;
+    public DirecteurTheseController(DirecteurTheseService directeurTheseService) {
+        this.directeurTheseService = directeurTheseService;
     }
 
     @GetMapping("/profil")
-    public ResponseEntity<ProfilResponse> getProfil() {
+    public ResponseEntity<ProfilDtResponse> getProfil() {
         String userId = getCurrentUserId();
         log.info("Consultation du profil directeur de thèse pour l'utilisateur {}", userId);
-        return profilService.getProfil(userId)
+        return directeurTheseService.getProfil(userId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/profil")
-    public ResponseEntity<ProfilResponse> updateProfil(@Valid @RequestBody ProfilUpdateRequest request) {
+    public ResponseEntity<ProfilDtResponse> updateProfil(@Valid @RequestBody ProfilDtUpdateRequest request) {
         String userId = getCurrentUserId();
         log.info("Mise à jour du profil directeur de thèse pour l'utilisateur {}", userId);
-        ProfilResponse response = profilService.updateProfil(userId, request);
+        ProfilDtResponse response = directeurTheseService.updateProfil(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/competences")
-    public ResponseEntity<ProfilResponse> addCompetence(@RequestBody Map<String, String> body) {
+    public ResponseEntity<ProfilDtResponse> addCompetence(@RequestBody Map<String, String> body) {
         String userId = getCurrentUserId();
         String competence = body.get("competence");
         if (competence == null || competence.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
         log.info("Ajout axe de recherche '{}' pour le directeur de thèse {}", competence, userId);
-        ProfilResponse response = profilService.addCompetence(userId, competence.trim());
+        ProfilDtResponse response = directeurTheseService.addCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/competences")
-    public ResponseEntity<ProfilResponse> removeCompetence(@RequestBody Map<String, String> body) {
+    public ResponseEntity<ProfilDtResponse> removeCompetence(@RequestBody Map<String, String> body) {
         String userId = getCurrentUserId();
         String competence = body.get("competence");
         if (competence == null || competence.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
         log.info("Suppression axe de recherche '{}' pour le directeur de thèse {}", competence, userId);
-        ProfilResponse response = profilService.removeCompetence(userId, competence.trim());
+        ProfilDtResponse response = directeurTheseService.removeCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
     }
 
@@ -78,7 +78,7 @@ public class DirecteurTheseController {
     public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();
         log.info("Changement de mot de passe pour le directeur de thèse {}", userId);
-        profilService.changerMotDePasse(userId, request);
+        directeurTheseService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
     }
 

@@ -322,6 +322,15 @@ $font-family: 'Marianne', arial, sans-serif;
   appearance: auto;
 }
 
+/* ======== Radio buttons inline ======== */
+.ed-radio-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
 /* ======== Lien d'aide ORCID ======== */
 .ed-orcid-help {
   display: flex;

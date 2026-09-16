@@ -14,7 +14,7 @@ export interface ProfilResponse {
   laboratoire: string | null;
 }
 
-/** Données envoyées au backend pour modifier le profil. */
+/** Données envoyées au backend pour modifier le profil candidat. */
 export interface ProfilUpdateRequest {
   civilite: string | null;
   nom: string;
@@ -26,4 +26,39 @@ export interface ProfilUpdateRequest {
   orcid: string | null;
   etablissement: string | null;
   laboratoire: string | null;
+}
+
+/** Réponse du backend contenant les coordonnées du profil directeur de thèse. */
+export interface ProfilDtResponse {
+  civilite: string | null;
+  nom: string;
+  prenom: string;
+  email: string;
+  photoUrl: string | null;
+  competences: string[];
+  orcid: string | null;
+  etablissement: string | null;
+  laboratoire: string | null;
+  ecoleDoctorale: string | null;
+  employeur: string | null;
+  titre: string | null;
+  precisionTitre: string | null;
+  habilitationRecherche: string | null;
+}
+
+/** Données envoyées au backend pour modifier le profil directeur de thèse. */
+export interface ProfilDtUpdateRequest {
+  civilite: string | null;
+  nom: string;
+  prenom: string;
+  email: string;
+  competences: string[];
+  orcid: string | null;
+  etablissement: string | null;
+  laboratoire: string | null;
+  ecoleDoctorale: string | null;
+  employeur: string | null;
+  titre: string | null;
+  precisionTitre: string | null;
+  habilitationRecherche: string | null;
 }

@@ -146,6 +146,55 @@
                   </div>
                 </div>
 
+                <!-- Ligne 6 : École doctorale (pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-ecole-doctorale">École doctorale <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="view-ecole-doctorale" type="text" [value]="profil.ecoleDoctorale ?? ''" disabled />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                  </div>
+                </div>
+
+                <!-- Ligne 7 : Employeur (pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-employeur">Employeur <span class="required-star">*</span></label>
+                  <input class="fr-input" id="view-employeur" type="text" [value]="profil.employeur ?? ''" disabled />
+                </div>
+
+                <!-- Ligne 8 : Titre / Précision sur le titre -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="view-titre">Votre titre <span class="required-star">*</span></label>
+                  <select class="fr-select" id="view-titre" disabled>
+                    <option>{{ profil.titre || '—' }}</option>
+                  </select>
+                </div>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="view-precision-titre">Précision sur votre titre <span class="required-star">*</span></label>
+                  <input class="fr-input" id="view-precision-titre" type="text" [value]="profil.precisionTitre ?? ''" disabled />
+                </div>
+
+                <!-- Ligne 9 : Habilitation à diriger des recherches (radio, pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label">Habilitation à diriger des recherches <span class="required-star">*</span></label>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" [checked]="profil.habilitationRecherche === 'Obtenue'" disabled id="view-hab-obtenue" />
+                    <label class="fr-radio__label" for="view-hab-obtenue">Obtenue</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" [checked]="profil.habilitationRecherche === 'Equivalence'" disabled id="view-hab-equivalence" />
+                    <label class="fr-radio__label" for="view-hab-equivalence">Équivalence</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" [checked]="profil.habilitationRecherche === 'En cours'" disabled id="view-hab-encours" />
+                    <label class="fr-radio__label" for="view-hab-encours">En cours</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" [checked]="profil.habilitationRecherche === 'Non'" disabled id="view-hab-non" />
+                    <label class="fr-radio__label" for="view-hab-non">Non</label>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -248,6 +297,74 @@
                   <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
                     Le laboratoire est obligatoire.
                   </p>
+                </div>
+
+                <!-- Ligne 6 : École doctorale (autocomplete, pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">
+                  <label class="fr-label" for="edit-ecole-doctorale">École doctorale <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="edit-ecole-doctorale" type="text" formControlName="ecoleDoctorale"
+                           (input)="filterEcolesDoctorales()"
+                           (focus)="filterEcolesDoctorales()"
+                           (blur)="hideEcoleSuggestions()"
+                           autocomplete="off"
+                           [attr.aria-invalid]="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched ? 'true' : null" />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                    <ul class="ed-autocomplete__list" *ngIf="showEcoleSuggestions">
+                      <li *ngFor="let ecole of filteredEcolesDoctorales">
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEcoleDoctorale(ecole)">
+                          {{ ecole }}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">
+                    L'école doctorale est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 7 : Employeur (pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="edit-employeur">Employeur <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-employeur" type="text" formControlName="employeur" />
+                </div>
+
+                <!-- Ligne 8 : Titre / Précision sur le titre -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="edit-titre">Votre titre <span class="required-star">*</span></label>
+                  <select class="fr-select" id="edit-titre" formControlName="titre">
+                    <option value="">Sélectionner une option</option>
+                    <option value="Docteur / Docteure">Docteur / Docteure</option>
+                    <option value="Professeur des universités">Professeur des universités</option>
+                    <option value="Directeur de recherche">Directeur de recherche</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="edit-precision-titre">Précision sur votre titre <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-precision-titre" type="text" formControlName="precisionTitre" />
+                </div>
+
+                <!-- Ligne 9 : Habilitation à diriger des recherches (radio, pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label">Habilitation à diriger des recherches <span class="required-star">*</span></label>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" formControlName="habilitationRecherche" value="Obtenue" id="edit-hab-obtenue" />
+                    <label class="fr-radio__label" for="edit-hab-obtenue">Obtenue</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" formControlName="habilitationRecherche" value="Equivalence" id="edit-hab-equivalence" />
+                    <label class="fr-radio__label" for="edit-hab-equivalence">Équivalence</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" formControlName="habilitationRecherche" value="En cours" id="edit-hab-encours" />
+                    <label class="fr-radio__label" for="edit-hab-encours">En cours</label>
+                  </div>
+                  <div class="fr-radio-group ed-radio-row">
+                    <input class="fr-radio__input" type="radio" formControlName="habilitationRecherche" value="Non" id="edit-hab-non" />
+                    <label class="fr-radio__label" for="edit-hab-non">Non</label>
+                  </div>
                 </div>
 
               </div>
