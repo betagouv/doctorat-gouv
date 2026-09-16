@@ -41,6 +41,7 @@ public class SecurityConfig {
                 // API protégées (JWT requis)
                 .requestMatchers("/api/me").authenticated()
                 .requestMatchers("/api/candidat/**").authenticated()
+                .requestMatchers("/api/directeur-these/**").authenticated()
                 .requestMatchers("/api/deconnexion").authenticated()
 
                 // Fichiers statiques Angular
