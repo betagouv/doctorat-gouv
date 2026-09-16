@@ -306,6 +306,87 @@ $font-family: 'Marianne', arial, sans-serif;
   appearance: auto;
 }
 
+/* ======== Vue lecture : champs grisés façon maquette ======== */
+.ed-profil--readonly .fr-input:disabled,
+.ed-profil--readonly .fr-select:disabled {
+  background-color: #EEEEEE;
+  border: 1px solid transparent;
+  border-bottom: 1px solid $color-text-primary;
+  border-radius: 4px 4px 0 0;
+  color: $color-text-primary;
+  opacity: 1;
+  cursor: default;
+}
+
+.ed-profil--readonly .fr-select:disabled {
+  appearance: auto;
+}
+
+/* ======== Lien d'aide ORCID ======== */
+.ed-orcid-help {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 8px;
+
+  a {
+    font-family: $font-family;
+    font-size: 14px;
+    color: $color-blue-france;
+  }
+}
+
+/* ======== Autocomplete (établissement / laboratoire) ======== */
+.ed-autocomplete {
+  position: relative;
+}
+
+.ed-autocomplete .fr-input {
+  padding-right: 40px;
+}
+
+.ed-autocomplete__icon {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  color: $color-text-primary;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.ed-autocomplete__list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ed-autocomplete__option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  font-family: $font-family;
+  font-size: 15px;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-tab-active-bg;
+  }
+}
+
 /* ======== Axes de recherche ======== */
 .ed-axes {
   padding-top: 0;

@@ -16,6 +16,9 @@ public class ProfilResponse {
     private String photoUrl;
     private List<String> competences;
     private int nbCandidatures;
+    private String orcid;
+    private String etablissement;
+    private String laboratoire;
 
     public ProfilResponse() {}
 
@@ -54,4 +57,13 @@ public class ProfilResponse {
 
     public int getNbCandidatures() { return nbCandidatures; }
     public void setNbCandidatures(int nbCandidatures) { this.nbCandidatures = nbCandidatures; }
+
+    public String getOrcid() { return orcid; }
+    public void setOrcid(String orcid) { this.orcid = orcid; }
+
+    public String getEtablissement() { return etablissement; }
+    public void setEtablissement(String etablissement) { this.etablissement = etablissement; }
+
+    public String getLaboratoire() { return laboratoire; }
+    public void setLaboratoire(String laboratoire) { this.laboratoire = laboratoire; }
 }

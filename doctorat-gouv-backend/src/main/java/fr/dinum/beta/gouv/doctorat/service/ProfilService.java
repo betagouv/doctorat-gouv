@@ -59,6 +59,9 @@ public class ProfilService {
         profil.setCivilite(request.getCivilite());
         profil.setSituation(request.getSituation());
         profil.setTelephone(request.getTelephone());
+        profil.setOrcid(request.getOrcid());
+        profil.setEtablissement(request.getEtablissement());
+        profil.setLaboratoire(request.getLaboratoire());
         profilCandidatRepository.save(profil);
 
         log.info("Profil mis à jour pour l'utilisateur {}", userId);
@@ -126,6 +129,9 @@ public class ProfilService {
         response.setPhotoUrl(u.getPhotoUrl());
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
         response.setNbCandidatures(u.getNbCandidatures() != null ? u.getNbCandidatures() : 0);
+        response.setOrcid(profil != null ? profil.getOrcid() : null);
+        response.setEtablissement(profil != null ? profil.getEtablissement() : null);
+        response.setLaboratoire(profil != null ? profil.getLaboratoire() : null);
         return response;
     }
 }

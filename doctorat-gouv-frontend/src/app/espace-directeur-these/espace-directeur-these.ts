@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { DirecteurTheseService, ChangementMotDePasseRequest } from '../services/directeur-these.service';
 import { AuthService } from '../services/auth.service';
+import { FilterService } from '../services/filter.service';
 import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 
 @Component({
@@ -30,6 +31,14 @@ export class EspaceDirecteurThese implements OnInit {
   axeError: string | null = null;
   isAddingAxe = false;
 
+  etablissements: string[] = [];
+  filteredEtablissements: string[] = [];
+  showEtabSuggestions = false;
+
+  laboratoires: string[] = [];
+  filteredLaboratoires: string[] = [];
+  showLaboSuggestions = false;
+
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
@@ -45,15 +54,17 @@ export class EspaceDirecteurThese implements OnInit {
     private fb: FormBuilder,
     private directeurService: DirecteurTheseService,
     private authService: AuthService,
+    private filterService: FilterService,
     private titleService: Title,
   ) {
     this.profilForm = this.fb.group({
       civilite: [''],
       nom: ['', [Validators.required, Validators.maxLength(100)]],
       prenom: ['', [Validators.required, Validators.maxLength(100)]],
-      situation: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.maxLength(20), Validators.pattern(/^[\d\s+().-]+$/)]],
+      orcid: ['', [Validators.maxLength(30)]],
+      etablissement: ['', [Validators.required, Validators.maxLength(255)]],
+      laboratoire: ['', [Validators.required, Validators.maxLength(255)]],
     });
 
     this.motDePasseForm = this.fb.group({
@@ -66,6 +77,7 @@ export class EspaceDirecteurThese implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Espace directeur de thèse — Doctorat.gouv.fr');
     this.loadProfil();
+    this.loadReferentiels();
   }
 
   get prenom(): string {
@@ -131,8 +143,16 @@ export class EspaceDirecteurThese implements OnInit {
     this.errorMessage = null;
 
     const request: ProfilUpdateRequest = {
-      ...this.profilForm.value,
+      civilite: this.profilForm.value.civilite,
+      nom: this.profilForm.value.nom,
+      prenom: this.profilForm.value.prenom,
+      situation: this.profil?.situation ?? 'Directeur de thèse',
+      email: this.profilForm.value.email,
+      telephone: this.profil?.telephone ?? null,
       competences: this.axes,
+      orcid: this.profilForm.value.orcid || null,
+      etablissement: this.profilForm.value.etablissement,
+      laboratoire: this.profilForm.value.laboratoire,
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -254,9 +274,55 @@ export class EspaceDirecteurThese implements OnInit {
       civilite: data.civilite ?? '',
       nom: data.nom,
       prenom: data.prenom,
-      situation: data.situation,
       email: data.email,
-      telephone: data.telephone ?? '',
+      orcid: data.orcid ?? '',
+      etablissement: data.etablissement ?? '',
+      laboratoire: data.laboratoire ?? '',
     });
+  }
+
+  private loadReferentiels(): void {
+    this.filterService.getAllOptions().subscribe({
+      next: (options) => {
+        this.etablissements = (options.ecole ?? []).filter(e => !!e && e.trim().length > 0);
+        this.laboratoires = (options.laboratoire ?? []).filter(l => !!l && l.trim().length > 0);
+      },
+    });
+  }
+
+  filterEtablissements(): void {
+    const value = (this.profilForm.get('etablissement')?.value ?? '').toLowerCase().trim();
+    this.filteredEtablissements = value
+      ? this.etablissements.filter(e => e.toLowerCase().includes(value)).slice(0, 8)
+      : [];
+    this.showEtabSuggestions = this.filteredEtablissements.length > 0;
+  }
+
+  selectEtablissement(etablissement: string): void {
+    this.profilForm.get('etablissement')?.setValue(etablissement);
+    this.profilForm.get('etablissement')?.markAsTouched();
+    this.showEtabSuggestions = false;
+  }
+
+  hideEtabSuggestions(): void {
+    setTimeout(() => { this.showEtabSuggestions = false; }, 150);
+  }
+
+  filterLaboratoires(): void {
+    const value = (this.profilForm.get('laboratoire')?.value ?? '').toLowerCase().trim();
+    this.filteredLaboratoires = value
+      ? this.laboratoires.filter(l => l.toLowerCase().includes(value)).slice(0, 8)
+      : [];
+    this.showLaboSuggestions = this.filteredLaboratoires.length > 0;
+  }
+
+  selectLaboratoire(laboratoire: string): void {
+    this.profilForm.get('laboratoire')?.setValue(laboratoire);
+    this.profilForm.get('laboratoire')?.markAsTouched();
+    this.showLaboSuggestions = false;
+  }
+
+  hideLaboSuggestions(): void {
+    setTimeout(() => { this.showLaboSuggestions = false; }, 150);
   }
 }

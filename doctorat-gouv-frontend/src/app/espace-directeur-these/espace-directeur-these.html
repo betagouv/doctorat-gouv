@@ -78,10 +78,9 @@
             <div class="ed-card__header-row">
               <div>
                 <h2 class="ed-card__title">
-                  <span class="fr-icon-user-line" aria-hidden="true"></span>
                   Informations personnelles
                 </h2>
-                <p class="ed-card__desc">Renseignez vos coordonnees et informations de contact.</p>
+                <p class="ed-card__desc">Editer vos informations, votre qualification et votre expertise</p>
               </div>
               <button *ngIf="!isEditing" class="ed-btn-secondary" (click)="startEdit()">
                 <span class="fr-icon-edit-line" aria-hidden="true"></span>
@@ -92,33 +91,61 @@
 
           <div class="ed-card__body">
 
-            <!-- Vue lecture -->
-            <div *ngIf="!isEditing && profil" class="ed-profil">
+            <!-- Vue lecture : mêmes champs, grisés -->
+            <div *ngIf="!isEditing && profil" class="ed-profil ed-profil--readonly">
               <div class="ed-form-grid">
-                <div class="ed-field">
-                  <span class="ed-field__label">Prenom</span>
-                  <span class="ed-field__value">{{ profil.prenom }}</span>
+
+                <!-- Ligne 1 : Identifiant ORCID + lien d'aide -->
+                <div class="fr-input-group">
+                  <label class="fr-label" for="view-orcid">Identifiant ORCID</label>
+                  <input class="fr-input" id="view-orcid" type="text" [value]="profil.orcid ?? ''" disabled />
                 </div>
-                <div class="ed-field">
-                  <span class="ed-field__label">Nom</span>
-                  <span class="ed-field__value">{{ profil.nom }}</span>
+                <div class="ed-orcid-help">
+                  <a href="https://orcid.org" target="_blank" rel="noopener">À propos de l'identifiant ORCID</a>
                 </div>
-                <div class="ed-field">
-                  <span class="ed-field__label">Civilite</span>
-                  <span class="ed-field__value">{{ profil.civilite || '---' }}</span>
+
+                <!-- Ligne 2 : Nom / Prénom -->
+                <div class="fr-input-group">
+                  <label class="fr-label" for="view-nom">Nom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="view-nom" type="text" [value]="profil.nom" disabled />
                 </div>
-                <div class="ed-field">
-                  <span class="ed-field__label">Situation actuelle</span>
-                  <span class="ed-field__value">{{ profil.situation }}</span>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="view-prenom">Prénom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="view-prenom" type="text" [value]="profil.prenom" disabled />
                 </div>
-                <div class="ed-field">
-                  <span class="ed-field__label">E-mail</span>
-                  <span class="ed-field__value">{{ profil.email }}</span>
+
+                <!-- Ligne 3 : Civilité / E-mail -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="view-civilite">Civilité</label>
+                  <select class="fr-select" id="view-civilite" disabled>
+                    <option>{{ profil.civilite || '—' }}</option>
+                  </select>
                 </div>
-                <div class="ed-field">
-                  <span class="ed-field__label">Telephone mobile</span>
-                  <span class="ed-field__value">{{ profil.telephone || '---' }}</span>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="view-email">E-mail <span class="required-star">*</span></label>
+                  <input class="fr-input" id="view-email" type="email" [value]="profil.email" disabled />
                 </div>
+
+                <!-- Ligne 4 : Établissement (pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-etablissement">Établissement délivrant le doctorat dont vous relevez <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="view-etablissement" type="text" [value]="profil.etablissement ?? ''" disabled />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                  </div>
+                </div>
+
+                <!-- Ligne 5 : Laboratoire (pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-laboratoire">Laboratoire <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="view-laboratoire" type="text" [value]="profil.laboratoire ?? ''" disabled />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -126,16 +153,17 @@
             <form *ngIf="isEditing" [formGroup]="profilForm" (ngSubmit)="saveProfil()" class="ed-profil">
               <div class="ed-form-grid">
 
-                <!-- Ligne 1 : Prenom / Nom -->
-                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                  <label class="fr-label" for="edit-prenom">Prenom <span class="required-star">*</span></label>
-                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
-                         [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                    Le prenom est obligatoire.
-                  </p>
+                <!-- Ligne 1 : Identifiant ORCID + lien d'aide -->
+                <div class="fr-input-group">
+                  <label class="fr-label" for="edit-orcid">Identifiant ORCID</label>
+                  <input class="fr-input" id="edit-orcid" type="text" formControlName="orcid"
+                         placeholder="0000-0000-0000-0000" />
+                </div>
+                <div class="ed-orcid-help">
+                  <a href="https://orcid.org" target="_blank" rel="noopener">À propos de l'identifiant ORCID</a>
                 </div>
 
+                <!-- Ligne 2 : Nom / Prénom -->
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
                   <label class="fr-label" for="edit-nom">Nom <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
@@ -145,45 +173,81 @@
                   </p>
                 </div>
 
-                <!-- Ligne 2 : Civilite / Situation -->
-                <div class="fr-select-group">
-                  <label class="fr-label" for="edit-civilite">Civilite</label>
-                  <select class="fr-select" id="edit-civilite" formControlName="civilite">
-                    <option value="">---</option>
-                    <option value="M">Monsieur</option>
-                    <option value="Mme">Madame</option>
-                    <option value="Autre">Autre</option>
-                  </select>
-                </div>
-
-                <div class="fr-select-group" [class.fr-select-group--error]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                  <label class="fr-label" for="edit-situation">Situation actuelle <span class="required-star">*</span></label>
-                  <select class="fr-select" id="edit-situation" formControlName="situation"
-                          [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null">
-                    <option value="">---</option>
-                    <option value="Directeur de these">Directeur de these</option>
-                    <option value="Co-encadrant">Co-encadrant</option>
-                    <option value="Chercheur">Chercheur</option>
-                    <option value="Autre">Autre</option>
-                  </select>
-                  <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                    La situation est obligatoire.
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                  <label class="fr-label" for="edit-prenom">Prénom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
+                         [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                    Le prénom est obligatoire.
                   </p>
                 </div>
 
-                <!-- Ligne 3 : Email / Telephone -->
+                <!-- Ligne 3 : Civilité / E-mail -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="edit-civilite">Civilité</label>
+                  <select class="fr-select" id="edit-civilite" formControlName="civilite">
+                    <option value="">—</option>
+                    <option value="Monsieur">Monsieur</option>
+                    <option value="Madame">Madame</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
                   <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-email" type="email" formControlName="email"
                          [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
                   <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse electronique est obligatoire." : "L'adresse electronique n'est pas valide." }}
+                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse électronique est obligatoire." : "L'adresse électronique n'est pas valide." }}
                   </p>
                 </div>
 
-                <div class="fr-input-group">
-                  <label class="fr-label" for="edit-telephone">Telephone mobile</label>
-                  <input class="fr-input" id="edit-telephone" type="tel" formControlName="telephone" />
+                <!-- Ligne 4 : Établissement (autocomplete, pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">
+                  <label class="fr-label" for="edit-etablissement">Établissement délivrant le doctorat dont vous relevez <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="edit-etablissement" type="text" formControlName="etablissement"
+                           (input)="filterEtablissements()"
+                           (focus)="filterEtablissements()"
+                           (blur)="hideEtabSuggestions()"
+                           autocomplete="off"
+                           [attr.aria-invalid]="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched ? 'true' : null" />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                    <ul class="ed-autocomplete__list" *ngIf="showEtabSuggestions">
+                      <li *ngFor="let etab of filteredEtablissements">
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEtablissement(etab)">
+                          {{ etab }}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">
+                    L'établissement est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 5 : Laboratoire (autocomplete, pleine largeur) -->
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
+                  <label class="fr-label" for="edit-laboratoire">Laboratoire <span class="required-star">*</span></label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" id="edit-laboratoire" type="text" formControlName="laboratoire"
+                           (input)="filterLaboratoires()"
+                           (focus)="filterLaboratoires()"
+                           (blur)="hideLaboSuggestions()"
+                           autocomplete="off"
+                           [attr.aria-invalid]="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched ? 'true' : null" />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                    <ul class="ed-autocomplete__list" *ngIf="showLaboSuggestions">
+                      <li *ngFor="let labo of filteredLaboratoires">
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectLaboratoire(labo)">
+                          {{ labo }}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
+                    Le laboratoire est obligatoire.
+                  </p>
                 </div>
 
               </div>

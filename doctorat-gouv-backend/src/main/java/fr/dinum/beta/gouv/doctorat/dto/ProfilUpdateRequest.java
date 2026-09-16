@@ -33,6 +33,15 @@ public class ProfilUpdateRequest {
 
     private List<String> competences;
 
+    @Size(max = 30, message = "L'identifiant ORCID ne doit pas dépasser 30 caractères")
+    private String orcid;
+
+    @Size(max = 255, message = "L'établissement ne doit pas dépasser 255 caractères")
+    private String etablissement;
+
+    @Size(max = 255, message = "Le laboratoire ne doit pas dépasser 255 caractères")
+    private String laboratoire;
+
     public String getCivilite() { return civilite; }
     public void setCivilite(String civilite) { this.civilite = civilite; }
 
@@ -53,4 +62,13 @@ public class ProfilUpdateRequest {
 
     public List<String> getCompetences() { return competences; }
     public void setCompetences(List<String> competences) { this.competences = competences; }
+
+    public String getOrcid() { return orcid; }
+    public void setOrcid(String orcid) { this.orcid = orcid; }
+
+    public String getEtablissement() { return etablissement; }
+    public void setEtablissement(String etablissement) { this.etablissement = etablissement; }
+
+    public String getLaboratoire() { return laboratoire; }
+    public void setLaboratoire(String laboratoire) { this.laboratoire = laboratoire; }
 }

@@ -48,6 +48,15 @@ public class ProfilCandidat {
     @Column(name = "cv_filename", length = 500)
     private String cvFilename;
 
+    @Column(length = 30)
+    private String orcid;
+
+    @Column(length = 255)
+    private String etablissement;
+
+    @Column(length = 255)
+    private String laboratoire;
+
     @ElementCollection
     @CollectionTable(name = "profil_candidat_pieces", joinColumns = @JoinColumn(name = "profil_candidat_id"))
     @Column(name = "piece_path", length = 500)
@@ -76,4 +85,13 @@ public class ProfilCandidat {
 
     public List<String> getPiecesFilenames() { return piecesFilenames; }
     public void setPiecesFilenames(List<String> piecesFilenames) { this.piecesFilenames = piecesFilenames; }
+
+    public String getOrcid() { return orcid; }
+    public void setOrcid(String orcid) { this.orcid = orcid; }
+
+    public String getEtablissement() { return etablissement; }
+    public void setEtablissement(String etablissement) { this.etablissement = etablissement; }
+
+    public String getLaboratoire() { return laboratoire; }
+    public void setLaboratoire(String laboratoire) { this.laboratoire = laboratoire; }
 }

@@ -9,6 +9,9 @@ export interface ProfilResponse {
   photoUrl: string | null;
   competences: string[];
   nbCandidatures: number;
+  orcid: string | null;
+  etablissement: string | null;
+  laboratoire: string | null;
 }
 
 /** Données envoyées au backend pour modifier le profil. */
@@ -20,4 +23,7 @@ export interface ProfilUpdateRequest {
   email: string;
   telephone: string | null;
   competences: string[];
+  orcid: string | null;
+  etablissement: string | null;
+  laboratoire: string | null;
 }
