@@ -18,17 +18,17 @@ import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @Service
-public class CandidatService {
+public class ProfilService {
 
-    private static final Logger log = LoggerFactory.getLogger(CandidatService.class);
+    private static final Logger log = LoggerFactory.getLogger(ProfilService.class);
 
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CandidatService(UtilisateurRepository utilisateurRepository,
-                           ProfilCandidatRepository profilCandidatRepository,
-                           PasswordEncoder passwordEncoder) {
+    public ProfilService(UtilisateurRepository utilisateurRepository,
+                         ProfilCandidatRepository profilCandidatRepository,
+                         PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;

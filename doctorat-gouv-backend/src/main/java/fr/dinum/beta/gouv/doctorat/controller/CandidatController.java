@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
-import fr.dinum.beta.gouv.doctorat.service.CandidatService;
+import fr.dinum.beta.gouv.doctorat.service.ProfilService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -27,17 +27,17 @@ public class CandidatController {
 
     private static final Logger log = LoggerFactory.getLogger(CandidatController.class);
 
-    private final CandidatService candidatService;
+    private final ProfilService profilService;
 
-    public CandidatController(CandidatService candidatService) {
-        this.candidatService = candidatService;
+    public CandidatController(ProfilService profilService) {
+        this.profilService = profilService;
     }
 
     @GetMapping("/profil")
     public ResponseEntity<ProfilResponse> getProfil() {
         String userId = getCurrentUserId();
         log.info("Consultation du profil pour l'utilisateur {}", userId);
-        return candidatService.getProfil(userId)
+        return profilService.getProfil(userId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -46,7 +46,7 @@ public class CandidatController {
     public ResponseEntity<ProfilResponse> updateProfil(@Valid @RequestBody ProfilUpdateRequest request) {
         String userId = getCurrentUserId();
         log.info("Mise à jour du profil pour l'utilisateur {}", userId);
-        ProfilResponse response = candidatService.updateProfil(userId, request);
+        ProfilResponse response = profilService.updateProfil(userId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -58,7 +58,7 @@ public class CandidatController {
             return ResponseEntity.badRequest().build();
         }
         log.info("Ajout compétence '{}' pour l'utilisateur {}", competence, userId);
-        ProfilResponse response = candidatService.addCompetence(userId, competence.trim());
+        ProfilResponse response = profilService.addCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
     }
 
@@ -70,7 +70,7 @@ public class CandidatController {
             return ResponseEntity.badRequest().build();
         }
         log.info("Suppression compétence '{}' pour l'utilisateur {}", competence, userId);
-        ProfilResponse response = candidatService.removeCompetence(userId, competence.trim());
+        ProfilResponse response = profilService.removeCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
     }
 
@@ -78,7 +78,7 @@ public class CandidatController {
     public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();
         log.info("Changement de mot de passe pour l'utilisateur {}", userId);
-        candidatService.changerMotDePasse(userId, request);
+        profilService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
     }
 
