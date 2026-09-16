@@ -24,7 +24,11 @@ export class EspaceDirecteurThese implements OnInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  activeTab: 'profil' | 'motdepasse' | 'notifications' | 'alertes' = 'profil';
+  activeTab: 'profil' | 'axes' | 'parametres' | 'notifications' = 'profil';
+
+  newAxe = '';
+  axeError: string | null = null;
+  isAddingAxe = false;
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -92,7 +96,7 @@ export class EspaceDirecteurThese implements OnInit {
     });
   }
 
-  switchTab(tab: 'profil' | 'motdepasse' | 'notifications' | 'alertes'): void {
+  switchTab(tab: 'profil' | 'axes' | 'parametres' | 'notifications'): void {
     this.activeTab = tab;
     this.successMessage = null;
     this.errorMessage = null;
@@ -128,7 +132,7 @@ export class EspaceDirecteurThese implements OnInit {
 
     const request: ProfilUpdateRequest = {
       ...this.profilForm.value,
-      competences: [],
+      competences: this.axes,
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -141,6 +145,48 @@ export class EspaceDirecteurThese implements OnInit {
       error: () => {
         this.isSaving = false;
         this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+      }
+    });
+  }
+
+  get axes(): string[] {
+    return this.profil?.competences ?? [];
+  }
+
+  addAxe(): void {
+    const trimmed = this.newAxe.trim();
+    if (!trimmed) {
+      this.axeError = 'Veuillez saisir un axe de recherche.';
+      return;
+    }
+    if (this.axes.includes(trimmed)) {
+      this.axeError = 'Cet axe de recherche existe déjà.';
+      return;
+    }
+
+    this.isAddingAxe = true;
+    this.axeError = null;
+
+    this.directeurService.addCompetence(trimmed).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.newAxe = '';
+        this.isAddingAxe = false;
+      },
+      error: () => {
+        this.isAddingAxe = false;
+        this.errorMessage = "Erreur lors de l'ajout de l'axe de recherche.";
+      }
+    });
+  }
+
+  removeAxe(axe: string): void {
+    this.directeurService.removeCompetence(axe).subscribe({
+      next: (data) => {
+        this.profil = data;
+      },
+      error: () => {
+        this.errorMessage = "Erreur lors de la suppression de l'axe de recherche.";
       }
     });
   }

@@ -47,11 +47,18 @@
           Votre profil
         </button>
         <button class="ed-tabs__tab"
-                [class.ed-tabs__tab--active]="activeTab === 'motdepasse'"
-                (click)="switchTab('motdepasse')"
+                [class.ed-tabs__tab--active]="activeTab === 'axes'"
+                (click)="switchTab('axes')"
                 role="tab"
-                [attr.aria-selected]="activeTab === 'motdepasse'">
-          Mot de passe
+                [attr.aria-selected]="activeTab === 'axes'">
+          Vos axes de recherche
+        </button>
+        <button class="ed-tabs__tab"
+                [class.ed-tabs__tab--active]="activeTab === 'parametres'"
+                (click)="switchTab('parametres')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'parametres'">
+          Paramètres du compte
         </button>
         <button class="ed-tabs__tab"
                 [class.ed-tabs__tab--active]="activeTab === 'notifications'"
@@ -59,13 +66,6 @@
                 role="tab"
                 [attr.aria-selected]="activeTab === 'notifications'">
           Notifications
-        </button>
-        <button class="ed-tabs__tab"
-                [class.ed-tabs__tab--active]="activeTab === 'alertes'"
-                (click)="switchTab('alertes')"
-                role="tab"
-                [attr.aria-selected]="activeTab === 'alertes'">
-          Alertes
         </button>
       </nav>
 
@@ -204,8 +204,66 @@
 
       </div>
 
-      <!-- ============ ONGLET : MOT DE PASSE ============ -->
-      <div *ngIf="activeTab === 'motdepasse'" class="ed-tab-content">
+      <!-- ============ ONGLET : VOS AXES DE RECHERCHE ============ -->
+      <div *ngIf="activeTab === 'axes'" class="ed-tab-content">
+        <section class="ed-card">
+          <div class="ed-card__header">
+            <div class="ed-card__header-row">
+              <div>
+                <h2 class="ed-card__title">
+                  <span class="fr-icon-award-line" aria-hidden="true"></span>
+                  Vos axes de recherche
+                </h2>
+                <p class="ed-card__desc">Renseignez vos thematiques et domaines de recherche.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ed-card__body">
+            <div class="ed-axes">
+              <!-- Liste des axes -->
+              <div class="ed-axes__list" *ngIf="axes.length > 0">
+                <div class="ed-axes__item" *ngFor="let axe of axes">
+                  <span class="ed-axes__label">{{ axe }}</span>
+                  <button class="ed-axes__delete"
+                          (click)="removeAxe(axe)"
+                          aria-label="Supprimer l'axe de recherche"
+                          title="Supprimer l'axe de recherche">
+                    <span class="fr-icon-delete-line" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+              <p class="ed-axes__empty" *ngIf="axes.length === 0">
+                Aucun axe de recherche renseigne.
+              </p>
+
+              <!-- Ajout d'axe -->
+              <div class="ed-axes__add">
+                <div class="fr-input-group"
+                     [class.fr-input-group--error]="!!axeError">
+                  <input class="fr-input"
+                         type="text"
+                         [(ngModel)]="newAxe"
+                         placeholder="Nouvel axe de recherche"
+                         (keyup.enter)="addAxe()"
+                         [disabled]="isAddingAxe"
+                         [attr.aria-invalid]="axeError ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="axeError">{{ axeError }}</p>
+                </div>
+                <button class="ed-axes__add-btn"
+                        (click)="addAxe()"
+                        [disabled]="isAddingAxe">
+                  <span class="fr-icon-add-line" aria-hidden="true"></span>
+                  Ajouter un axe de recherche
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ ONGLET : PARAMETRES DU COMPTE ============ -->
+      <div *ngIf="activeTab === 'parametres'" class="ed-tab-content">
         <section class="ed-card">
           <div class="ed-card__header">
             <h2 class="ed-card__title">
@@ -323,15 +381,6 @@
         <section class="ed-card">
           <div class="ed-card__body">
             <p>Notifications</p>
-          </div>
-        </section>
-      </div>
-
-      <!-- ============ ONGLET : ALERTES ============ -->
-      <div *ngIf="activeTab === 'alertes'" class="ed-tab-content">
-        <section class="ed-card">
-          <div class="ed-card__body">
-            <p>Alertes</p>
           </div>
         </section>
       </div>

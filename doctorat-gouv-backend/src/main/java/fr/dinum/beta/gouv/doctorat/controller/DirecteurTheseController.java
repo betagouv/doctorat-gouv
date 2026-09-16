@@ -50,6 +50,30 @@ public class DirecteurTheseController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/competences")
+    public ResponseEntity<ProfilResponse> addCompetence(@RequestBody Map<String, String> body) {
+        String userId = getCurrentUserId();
+        String competence = body.get("competence");
+        if (competence == null || competence.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        log.info("Ajout axe de recherche '{}' pour le directeur de thèse {}", competence, userId);
+        ProfilResponse response = profilService.addCompetence(userId, competence.trim());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/competences")
+    public ResponseEntity<ProfilResponse> removeCompetence(@RequestBody Map<String, String> body) {
+        String userId = getCurrentUserId();
+        String competence = body.get("competence");
+        if (competence == null || competence.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        log.info("Suppression axe de recherche '{}' pour le directeur de thèse {}", competence, userId);
+        ProfilResponse response = profilService.removeCompetence(userId, competence.trim());
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/mot-de-passe")
     public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();

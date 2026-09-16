@@ -306,6 +306,123 @@ $font-family: 'Marianne', arial, sans-serif;
   appearance: auto;
 }
 
+/* ======== Axes de recherche ======== */
+.ed-axes {
+  padding-top: 0;
+}
+
+.ed-axes__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+}
+
+.ed-axes__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: $color-tag-bg;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-primary;
+  font-weight: 400;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $color-blue-france;
+  }
+}
+
+.ed-axes__label {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ed-axes__delete {
+  padding: 0 !important;
+  min-height: auto !important;
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: $color-blue-france;
+  }
+}
+
+.ed-axes__empty {
+  font-family: $font-family;
+  font-size: 14px;
+  font-style: italic;
+  color: $color-text-secondary;
+  margin-bottom: 16px;
+}
+
+.ed-axes__add {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid $color-border;
+
+  .fr-input-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .fr-input {
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid $color-border;
+    padding: 8px 12px;
+    font-family: $font-family;
+    font-size: 15px;
+
+    &:focus {
+      border-color: $color-blue-france;
+      box-shadow: 0 0 0 2px $color-focus-shadow;
+      outline: none;
+    }
+  }
+}
+
+.ed-axes__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid $color-blue-france;
+  border-radius: 4px;
+  color: $color-blue-france;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $color-blue-france;
+    color: $color-white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
 /* ======== Boutons d'action ======== */
 .ed-actions {
   margin-top: $section-spacing;
@@ -520,5 +637,14 @@ $font-family: 'Marianne', arial, sans-serif;
 
   .ed-card {
     min-height: auto;
+  }
+
+  .ed-axes__add {
+    flex-direction: column;
+  }
+
+  .ed-axes__add .ed-axes__add-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
