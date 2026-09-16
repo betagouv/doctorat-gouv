@@ -1,0 +1,341 @@
+﻿<main id="main-content" class="espace-directeur-page">
+  <div class="ed-layout">
+
+    <!-- ======== BARRE LATÉRALE GAUCHE ======== -->
+    <aside class="ed-sidebar">
+      <div class="ed-sidebar__card">
+        <div class="ed-sidebar__photo-wrapper">
+          <img [src]="photoUrl"
+               [alt]="fullName"
+               class="ed-sidebar__photo"
+               (error)="onPhotoError($event)" />
+          <button class="ed-sidebar__photo-edit"
+                  (click)="onPhotoEdit()"
+                  aria-label="Modifier la photo">
+            <span class="fr-icon-edit-line" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="ed-sidebar__info">
+          <h2 class="ed-sidebar__name">{{ fullName }}</h2>
+          <p class="ed-sidebar__role">Directeur de these</p>
+        </div>
+      </div>
+      <a routerLink="/tableau-de-bord-directeur-these" class="ed-sidebar__dashboard-link">
+        <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
+        Tableau de bord
+      </a>
+    </aside>
+
+    <!-- ======== ZONE PRINCIPALE ======== -->
+    <div class="ed-main">
+
+      <!-- Messages -->
+      <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="successMessage" role="alert">
+        {{ successMessage }}
+      </div>
+      <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Onglets de navigation -->
+      <nav class="ed-tabs" role="tablist" aria-label="Espace directeur de these">
+        <button class="ed-tabs__tab"
+                [class.ed-tabs__tab--active]="activeTab === 'profil'"
+                (click)="switchTab('profil')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'profil'">
+          Votre profil
+        </button>
+        <button class="ed-tabs__tab"
+                [class.ed-tabs__tab--active]="activeTab === 'motdepasse'"
+                (click)="switchTab('motdepasse')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'motdepasse'">
+          Mot de passe
+        </button>
+        <button class="ed-tabs__tab"
+                [class.ed-tabs__tab--active]="activeTab === 'notifications'"
+                (click)="switchTab('notifications')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'notifications'">
+          Notifications
+        </button>
+        <button class="ed-tabs__tab"
+                [class.ed-tabs__tab--active]="activeTab === 'alertes'"
+                (click)="switchTab('alertes')"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'alertes'">
+          Alertes
+        </button>
+      </nav>
+
+      <!-- ============ ONGLET : VOTRE PROFIL ============ -->
+      <div *ngIf="activeTab === 'profil'" class="ed-tab-content">
+
+        <!-- Section : Informations personnelles -->
+        <section class="ed-card">
+          <div class="ed-card__header">
+            <div class="ed-card__header-row">
+              <div>
+                <h2 class="ed-card__title">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  Informations personnelles
+                </h2>
+                <p class="ed-card__desc">Renseignez vos coordonnees et informations de contact.</p>
+              </div>
+              <button *ngIf="!isEditing" class="ed-btn-secondary" (click)="startEdit()">
+                <span class="fr-icon-edit-line" aria-hidden="true"></span>
+                Modifier
+              </button>
+            </div>
+          </div>
+
+          <div class="ed-card__body">
+
+            <!-- Vue lecture -->
+            <div *ngIf="!isEditing && profil" class="ed-profil">
+              <div class="ed-form-grid">
+                <div class="ed-field">
+                  <span class="ed-field__label">Prenom</span>
+                  <span class="ed-field__value">{{ profil.prenom }}</span>
+                </div>
+                <div class="ed-field">
+                  <span class="ed-field__label">Nom</span>
+                  <span class="ed-field__value">{{ profil.nom }}</span>
+                </div>
+                <div class="ed-field">
+                  <span class="ed-field__label">Civilite</span>
+                  <span class="ed-field__value">{{ profil.civilite || '---' }}</span>
+                </div>
+                <div class="ed-field">
+                  <span class="ed-field__label">Situation actuelle</span>
+                  <span class="ed-field__value">{{ profil.situation }}</span>
+                </div>
+                <div class="ed-field">
+                  <span class="ed-field__label">E-mail</span>
+                  <span class="ed-field__value">{{ profil.email }}</span>
+                </div>
+                <div class="ed-field">
+                  <span class="ed-field__label">Telephone mobile</span>
+                  <span class="ed-field__value">{{ profil.telephone || '---' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vue edition -->
+            <form *ngIf="isEditing" [formGroup]="profilForm" (ngSubmit)="saveProfil()" class="ed-profil">
+              <div class="ed-form-grid">
+
+                <!-- Ligne 1 : Prenom / Nom -->
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                  <label class="fr-label" for="edit-prenom">Prenom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
+                         [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
+                    Le prenom est obligatoire.
+                  </p>
+                </div>
+
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
+                  <label class="fr-label" for="edit-nom">Nom <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
+                         [attr.aria-invalid]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
+                    Le nom est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 2 : Civilite / Situation -->
+                <div class="fr-select-group">
+                  <label class="fr-label" for="edit-civilite">Civilite</label>
+                  <select class="fr-select" id="edit-civilite" formControlName="civilite">
+                    <option value="">---</option>
+                    <option value="M">Monsieur</option>
+                    <option value="Mme">Madame</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+
+                <div class="fr-select-group" [class.fr-select-group--error]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
+                  <label class="fr-label" for="edit-situation">Situation actuelle <span class="required-star">*</span></label>
+                  <select class="fr-select" id="edit-situation" formControlName="situation"
+                          [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null">
+                    <option value="">---</option>
+                    <option value="Directeur de these">Directeur de these</option>
+                    <option value="Co-encadrant">Co-encadrant</option>
+                    <option value="Chercheur">Chercheur</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                  <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
+                    La situation est obligatoire.
+                  </p>
+                </div>
+
+                <!-- Ligne 3 : Email / Telephone -->
+                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
+                  <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
+                  <input class="fr-input" id="edit-email" type="email" formControlName="email"
+                         [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
+                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse electronique est obligatoire." : "L'adresse electronique n'est pas valide." }}
+                  </p>
+                </div>
+
+                <div class="fr-input-group">
+                  <label class="fr-label" for="edit-telephone">Telephone mobile</label>
+                  <input class="fr-input" id="edit-telephone" type="tel" formControlName="telephone" />
+                </div>
+
+              </div>
+
+              <div class="ed-actions">
+                <button type="submit" class="ed-btn-primary" [disabled]="isSaving">
+                  <span class="fr-icon-check-line" aria-hidden="true"></span>
+                  Enregistrer
+                </button>
+                <button type="button" class="ed-btn-secondary" (click)="cancelEdit()" [disabled]="isSaving">
+                  Annuler
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ============ ONGLET : MOT DE PASSE ============ -->
+      <div *ngIf="activeTab === 'motdepasse'" class="ed-tab-content">
+        <section class="ed-card">
+          <div class="ed-card__header">
+            <h2 class="ed-card__title">
+              Gestion du mot de passe
+            </h2>
+          </div>
+          <div class="ed-card__body">
+
+            <!-- Messages -->
+            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="passwordSuccessMessage" role="alert">
+              {{ passwordSuccessMessage }}
+            </div>
+            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="passwordErrorMessage" role="alert">
+              {{ passwordErrorMessage }}
+            </div>
+
+            <form [formGroup]="motDePasseForm" (ngSubmit)="changerMotDePasse()" class="ed-mdp-form">
+
+              <!-- Mot de passe actuel -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
+                <label class="fr-label" for="mdp-actuel">Mot de passe actuel <span class="required-star">*</span></label>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showCurrentPassword ? 'text' : 'password'"
+                         id="mdp-actuel"
+                         formControlName="motDePasseActuel"
+                         autocomplete="current-password"
+                         [attr.aria-invalid]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
+                  Le mot de passe actuel est obligatoire.
+                </p>
+              </div>
+
+              <!-- Nouveau mot de passe -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
+                <div class="ed-mdp-label-row">
+                  <label class="fr-label" for="mdp-nouveau">Nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-checkbox-group fr-checkbox-group--sm">
+                    <input type="checkbox"
+                           [checked]="showNewPassword"
+                           (change)="toggleNewPassword()" />
+                    <span class="fr-checkbox-group__label">Afficher</span>
+                  </label>
+                </div>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showNewPassword ? 'text' : 'password'"
+                         id="mdp-nouveau"
+                         formControlName="nouveauMotDePasse"
+                         autocomplete="new-password"
+                         [attr.aria-invalid]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
+                  Le nouveau mot de passe est obligatoire (12 caracteres minimum).
+                </p>
+                <p class="fr-hint-text">Votre mot de passe doit etre different des 5 derniers mots de passe.</p>
+                <div class="ed-mdp-constraints">
+                  <p class="ed-mdp-constraints__title">
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    Votre mot de passe doit contenir au moins :
+                  </p>
+                  <ul class="ed-mdp-constraints__list">
+                    <li>12 caracteres minimum</li>
+                    <li>1 lettre en majuscule</li>
+                    <li>1 chiffre minimum</li>
+                    <li>Les caracteres speciaux suivants sont autorises % &amp; &lt; &gt; = |</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Confirmation -->
+              <div class="fr-input-group"
+                   [class.fr-input-group--error]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
+                <div class="ed-mdp-label-row">
+                  <label class="fr-label" for="mdp-confirmation">Confirmation du nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-checkbox-group fr-checkbox-group--sm">
+                    <input type="checkbox"
+                           [checked]="showConfirmPassword"
+                           (change)="toggleConfirmPassword()" />
+                    <span class="fr-checkbox-group__label">Afficher</span>
+                  </label>
+                </div>
+                <div class="fr-password">
+                  <input class="fr-input"
+                         [attr.type]="showConfirmPassword ? 'text' : 'password'"
+                         id="mdp-confirmation"
+                         formControlName="confirmationMotDePasse"
+                         autocomplete="new-password"
+                         [attr.aria-invalid]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched ? 'true' : null" />
+                </div>
+                <p class="fr-error-text" *ngIf="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
+                  La confirmation du mot de passe est obligatoire.
+                </p>
+              </div>
+
+              <!-- Bouton Enregistrer -->
+              <div class="ed-mdp-actions">
+                <button type="submit" class="ed-btn-primary" [disabled]="isSavingPassword">
+                  <span class="fr-icon-check-line" aria-hidden="true"></span>
+                  Enregistrer
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ ONGLET : NOTIFICATIONS ============ -->
+      <div *ngIf="activeTab === 'notifications'" class="ed-tab-content">
+        <section class="ed-card">
+          <div class="ed-card__body">
+            <p>Notifications</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ ONGLET : ALERTES ============ -->
+      <div *ngIf="activeTab === 'alertes'" class="ed-tab-content">
+        <section class="ed-card">
+          <div class="ed-card__body">
+            <p>Alertes</p>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</main>

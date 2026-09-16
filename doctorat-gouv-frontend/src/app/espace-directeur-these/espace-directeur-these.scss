@@ -1,0 +1,524 @@
+﻿:host {
+  display: block;
+}
+
+/* ======== Contrer le style global main { max-width: 960px } ======== */
+main.espace-directeur-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+/* ======== Palette DSFR ======== */
+$color-page-bg: #F9F8F6;
+$color-white: #FFFFFF;
+$color-text-primary: #161616;
+$color-text-secondary: #666666;
+$color-blue-france: #000091;
+$color-tab-active-bg: #E3E3FD;
+$color-tab-inactive-bg: #F5F5F5;
+$color-border: #DDDDDD;
+$color-tag-bg: #F5F5F5;
+$color-focus-shadow: #E3E3FD;
+
+/* ======== Grille & espacement ======== */
+$sidebar-width: 260px;
+$column-gap: 32px;
+$page-margin-x: 48px;
+$section-spacing: 40px;
+$container-padding: 32px;
+$field-gap-h: 16px;
+$field-gap-v: 24px;
+$label-gap: 4px;
+
+/* ======== Typographie ======== */
+$font-family: 'Marianne', arial, sans-serif;
+
+/* ======== Fond page ======== */
+.espace-directeur-page {
+  background: $color-page-bg;
+  min-height: 100vh;
+  padding: 3rem 0 4rem;
+}
+
+.required-star {
+  color: var(--text-default-error);
+}
+
+/* ======== Layout 2 colonnes ======== */
+.ed-layout {
+  display: flex;
+  gap: $column-gap;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 $page-margin-x;
+}
+
+.ed-sidebar {
+  flex: 0 0 $sidebar-width;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.ed-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ======== Barre laterale ======== */
+.ed-sidebar__card {
+  background: $color-white;
+  text-align: center;
+  padding: $container-padding 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid $color-border;
+}
+
+.ed-sidebar__photo-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.ed-sidebar__photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid $color-border;
+}
+
+.ed-sidebar__photo-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $color-blue-france;
+  color: $color-white;
+  border: 2px solid $color-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.ed-sidebar__name {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin-bottom: 0.25rem;
+}
+
+.ed-sidebar__role {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+  margin-bottom: 1rem;
+}
+
+/* ======== Lien tableau de bord ======== */
+.ed-sidebar__dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1rem;
+  padding: 10px 16px;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: $color-blue-france;
+    border-color: $color-blue-france;
+  }
+}
+
+/* ======== Onglets de navigation ======== */
+.ed-tabs {
+  display: flex;
+  gap: 4px;
+  background: $color-tab-inactive-bg;
+  border-radius: 8px 8px 0 0;
+  padding: 4px 4px 0;
+  margin-bottom: 0;
+}
+
+.ed-tabs__tab {
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($color-blue-france, 0.05);
+  }
+
+  &--active {
+    background: $color-tab-active-bg;
+    font-weight: 600;
+    color: $color-blue-france;
+  }
+}
+
+.ed-tab-content {
+  /* pas d'animation pour eviter le tremblement de la sidebar sticky */
+}
+
+/* ======== Carte profil ======== */
+.ed-card {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  margin-bottom: $section-spacing;
+  min-height: 600px;
+}
+
+.ed-card .ed-card__body {
+  padding: 2rem !important;
+}
+
+.ed-card .ed-card__header {
+  padding: 2rem 2rem 1rem !important;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: 2rem;
+}
+
+.ed-card__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ed-card__title {
+  font-family: $font-family;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.ed-card__desc {
+  font-family: $font-family;
+  font-size: 14px;
+  color: $color-text-secondary;
+  margin-top: 4px;
+}
+
+/* ======== Formulaire - Champs ======== */
+.ed-profil {
+  padding-top: 16px;
+}
+
+.ed-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $field-gap-v $field-gap-h;
+}
+
+.ed-form-grid__full {
+  grid-column: 1 / -1;
+}
+
+/* Champs en lecture */
+.ed-field {
+  margin-bottom: 0;
+}
+
+.ed-field__label {
+  display: block;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $label-gap;
+}
+
+.ed-field__value {
+  display: block;
+  font-family: $font-family;
+  font-size: 15px;
+  color: $color-text-secondary;
+  font-weight: 400;
+}
+
+/* Champs edition -surcharge DSFR */
+.ed-form-grid .fr-input-group,
+.ed-form-grid .fr-select-group {
+  margin-bottom: 0;
+}
+
+.ed-form-grid .fr-label {
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $label-gap;
+}
+
+.ed-form-grid .fr-input,
+.ed-form-grid .fr-select {
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid $color-border;
+  padding: 8px 12px;
+  font-family: $font-family;
+  font-size: 15px;
+  color: $color-text-primary;
+  background: $color-white;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: $color-blue-france;
+    box-shadow: 0 0 0 2px $color-focus-shadow;
+    outline: none;
+  }
+}
+
+.ed-form-grid .fr-select {
+  appearance: auto;
+}
+
+/* ======== Boutons d'action ======== */
+.ed-actions {
+  margin-top: $section-spacing;
+  padding-top: 1.5rem;
+  border-top: 1px solid $color-border;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.ed-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  background: $color-blue-france;
+  border: none;
+  border-radius: 4px;
+  color: $color-white;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ed-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  color: $color-text-primary;
+  font-family: $font-family;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $color-tab-inactive-bg;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ======== Formulaire mot de passe ======== */
+.ed-mdp-form {
+  max-width: 600px;
+}
+
+.ed-mdp-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 4px;
+
+  .fr-label {
+    margin-bottom: 0;
+  }
+
+  .fr-checkbox-group {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+}
+
+.fr-password {
+  position: relative;
+}
+
+.ed-mdp-constraints {
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: rgba($color-blue-france, 0.05);
+  border-left: 3px solid $color-blue-france;
+  border-radius: 4px;
+}
+
+.ed-mdp-constraints__title {
+  font-family: $font-family;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ed-mdp-constraints__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-family: $font-family;
+  font-size: 14px;
+  color: $color-text-secondary;
+
+  li {
+    margin-bottom: 2px;
+  }
+}
+
+.ed-mdp-actions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $color-border;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ======== Responsive ======== */
+
+/* < 992px : champs cote a cote -> pile */
+@media (max-width: 992px) {
+  .ed-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* < 768px : sidebar reduite */
+@media (max-width: 768px) {
+  .espace-directeur-page {
+    padding: 1.5rem 0 3rem;
+  }
+
+  .ed-layout {
+    padding: 0 24px;
+  }
+
+  .ed-sidebar {
+    flex: 0 0 200px;
+  }
+
+  .ed-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ed-tabs__tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .ed-card__header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ed-actions {
+    flex-direction: column;
+  }
+
+  .ed-btn-primary,
+  .ed-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* < 576px : sidebar masquee */
+@media (max-width: 576px) {
+  .espace-directeur-page {
+    padding: 1rem 0 2rem;
+  }
+
+  .ed-layout {
+    flex-direction: column;
+    padding: 0 16px;
+  }
+
+  .ed-sidebar {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+
+  .ed-sidebar__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .ed-sidebar__photo-wrapper {
+    margin-bottom: 0;
+  }
+
+  .ed-sidebar__photo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .ed-sidebar__info {
+    flex: 1;
+  }
+
+  .ed-card {
+    min-height: auto;
+  }
+}

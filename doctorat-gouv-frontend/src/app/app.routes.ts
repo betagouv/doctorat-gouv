@@ -9,6 +9,8 @@ import { InscriptionTerminee } from './inscription/inscription-terminee/inscript
 import { EspaceCandidat } from './espace-candidat/espace-candidat';
 import { TableauDeBordCandidat } from './espace-candidat/tableau-de-bord-candidat/tableau-de-bord-candidat';
 import { DemandeMiseEnRelation } from './demande-mise-en-relation/demande-mise-en-relation';
+import { EspaceDirecteurThese } from './espace-directeur-these/espace-directeur-these';
+import { TableauDeBordDirecteurThese } from './espace-directeur-these/tableau-de-bord-directeur-these/tableau-de-bord-directeur-these';
 import { inscriptionGuard } from './inscription/inscription.guard';
 import { authGuard } from './guards/auth.guard';
 
@@ -25,4 +27,6 @@ export const routes: Routes = [
   { path: 'espace-candidat', component: EspaceCandidat, canActivate: [authGuard] },
   { path: 'tableau-de-bord-candidat', component: TableauDeBordCandidat, canActivate: [authGuard] },
   { path: 'demande-mise-en-relation', component: DemandeMiseEnRelation, canActivate: [authGuard] },
+  { path: 'espace-directeur-these', component: EspaceDirecteurThese, canActivate: [authGuard] },
+  { path: 'tableau-de-bord-directeur-these', component: TableauDeBordDirecteurThese, canActivate: [authGuard] },
 ];

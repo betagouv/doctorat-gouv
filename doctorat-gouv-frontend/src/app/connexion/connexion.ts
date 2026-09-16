@@ -47,7 +47,12 @@ export class Connexion implements OnInit {
     this.metaService.updateTag({ name: 'description', content: description });
 
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
+      const user = this.authService.currentUser();
+      if (user?.role === 'DIRECTEUR_THESE') {
+        this.router.navigate(['/espace-directeur-these']);
+      } else {
+        this.router.navigate(['/espace-candidat']);
+      }
     }
   }
 
@@ -77,8 +82,17 @@ export class Connexion implements OnInit {
       motDePasse: this.loginForm.value.password
     }).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/espace-candidat';
-        this.router.navigateByUrl(returnUrl);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          const user = this.authService.currentUser();
+          if (user?.role === 'DIRECTEUR_THESE') {
+            this.router.navigate(['/espace-directeur-these']);
+          } else {
+            this.router.navigate(['/espace-candidat']);
+          }
+        }
       },
       error: (err) => {
         this.isSubmitting = false;

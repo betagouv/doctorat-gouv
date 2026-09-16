@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+
+@Injectable({ providedIn: 'root' })
+export class DirecteurTheseService {
+
+  private readonly apiUrl = `${environment.apiUrl}/directeur-these`;
+
+  constructor(private http: HttpClient) {}
+
+  getProfil(): Observable<ProfilResponse> {
+    return this.http.get<ProfilResponse>(`${this.apiUrl}/profil`);
+  }
+
+  updateProfil(request: ProfilUpdateRequest): Observable<ProfilResponse> {
+    return this.http.put<ProfilResponse>(`${this.apiUrl}/profil`, request);
+  }
+
+  changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+}
+
+export interface ChangementMotDePasseRequest {
+  motDePasseActuel: string;
+  nouveauMotDePasse: string;
+  confirmationMotDePasse: string;
+}
