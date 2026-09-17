@@ -2,6 +2,7 @@ package fr.dinum.beta.gouv.doctorat.dto;
 
 import java.util.List;
 
+import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -59,6 +60,11 @@ public class ProfilDtUpdateRequest {
 
     private List<String> motsCles;
 
+    @Size(max = 2000, message = "La description des axes ne doit pas dépasser 2000 caractères")
+    private String descriptionAxes;
+
+    private List<AxeDeRecherche> axes;
+
     public String getCivilite() { return civilite; }
     public void setCivilite(String civilite) { this.civilite = civilite; }
 
@@ -106,4 +112,10 @@ public class ProfilDtUpdateRequest {
 
     public List<String> getMotsCles() { return motsCles; }
     public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
+
+    public String getDescriptionAxes() { return descriptionAxes; }
+    public void setDescriptionAxes(String descriptionAxes) { this.descriptionAxes = descriptionAxes; }
+
+    public List<AxeDeRecherche> getAxes() { return axes; }
+    public void setAxes(List<AxeDeRecherche> axes) { this.axes = axes; }
 }

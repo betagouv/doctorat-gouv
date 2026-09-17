@@ -7,6 +7,7 @@ import { DirecteurTheseService, ChangementMotDePasseRequest } from '../services/
 import { AuthService } from '../services/auth.service';
 import { FilterService } from '../services/filter.service';
 import { ProfilDtResponse, ProfilDtUpdateRequest } from '../models/profil.model';
+import { AxeDeRecherche } from '../models/profil.model';
 
 @Component({
   selector: 'app-espace-directeur-these',
@@ -27,10 +28,6 @@ export class EspaceDirecteurThese implements OnInit {
 
   activeTab: 'profil' | 'axes' | 'parametres' | 'notifications' = 'profil';
 
-  newAxe = '';
-  axeError: string | null = null;
-  isAddingAxe = false;
-
   etablissements: string[] = [];
   filteredEtablissements: string[] = [];
   showEtabSuggestions = false;
@@ -45,6 +42,9 @@ export class EspaceDirecteurThese implements OnInit {
 
   newMotCle = '';
   motsCles: string[] = [];
+
+  descriptionAxes = '';
+  axes: AxeDeRecherche[] = [];
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -161,7 +161,7 @@ export class EspaceDirecteurThese implements OnInit {
       nom: this.profilForm.value.nom,
       prenom: this.profilForm.value.prenom,
       email: this.profilForm.value.email,
-      competences: this.axes,
+      competences: this.profil?.competences ?? [],
       orcid: this.profilForm.value.orcid || null,
       etablissement: this.profilForm.value.etablissement,
       laboratoire: this.profilForm.value.laboratoire,
@@ -173,6 +173,8 @@ export class EspaceDirecteurThese implements OnInit {
       domaineScientifique: this.profilForm.value.domaineScientifique || null,
       expertiseMots: this.profilForm.value.expertiseMots || null,
       motsCles: this.motsCles,
+      descriptionAxes: this.descriptionAxes || null,
+      axes: this.axes.map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable})),
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -189,46 +191,16 @@ export class EspaceDirecteurThese implements OnInit {
     });
   }
 
-  get axes(): string[] {
-    return this.profil?.competences ?? [];
-  }
-
   addAxe(): void {
-    const trimmed = this.newAxe.trim();
-    if (!trimmed) {
-      this.axeError = 'Veuillez saisir un axe de recherche.';
-      return;
-    }
-    if (this.axes.includes(trimmed)) {
-      this.axeError = 'Cet axe de recherche existe déjà.';
-      return;
-    }
-
-    this.isAddingAxe = true;
-    this.axeError = null;
-
-    this.directeurService.addCompetence(trimmed).subscribe({
-      next: (data) => {
-        this.profil = data;
-        this.newAxe = '';
-        this.isAddingAxe = false;
-      },
-      error: () => {
-        this.isAddingAxe = false;
-        this.errorMessage = "Erreur lors de l'ajout de l'axe de recherche.";
-      }
-    });
+    this.axes.push({ titre: '', precisions: '', contactable: false });
   }
 
-  removeAxe(axe: string): void {
-    this.directeurService.removeCompetence(axe).subscribe({
-      next: (data) => {
-        this.profil = data;
-      },
-      error: () => {
-        this.errorMessage = "Erreur lors de la suppression de l'axe de recherche.";
-      }
-    });
+  removeAxe(index: number): void {
+    this.axes.splice(index, 1);
+  }
+
+  toggleAxeContactable(index: number): void {
+    this.axes[index].contactable = !this.axes[index].contactable;
   }
 
   changerMotDePasse(): void {
@@ -307,6 +279,8 @@ export class EspaceDirecteurThese implements OnInit {
       expertiseMots: data.expertiseMots ?? '',
     });
     this.motsCles = data.motsCles ? [...data.motsCles] : [];
+    this.descriptionAxes = data.descriptionAxes ?? '';
+    this.axes = data.axes ? data.axes.map(a => ({...a})) : [];
   }
 
   private loadReferentiels(): void {

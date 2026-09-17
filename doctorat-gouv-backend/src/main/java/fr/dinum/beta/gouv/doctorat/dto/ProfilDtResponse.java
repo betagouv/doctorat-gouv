@@ -2,6 +2,8 @@ package fr.dinum.beta.gouv.doctorat.dto;
 
 import java.util.List;
 
+import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
+
 /**
  * DTO de réponse contenant les coordonnées du profil directeur de thèse.
  */
@@ -24,6 +26,8 @@ public class ProfilDtResponse {
     private String domaineScientifique;
     private String expertiseMots;
     private List<String> motsCles;
+    private String descriptionAxes;
+    private List<AxeDeRecherche> axes;
 
     public ProfilDtResponse() {}
 
@@ -84,4 +88,10 @@ public class ProfilDtResponse {
 
     public List<String> getMotsCles() { return motsCles; }
     public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
+
+    public String getDescriptionAxes() { return descriptionAxes; }
+    public void setDescriptionAxes(String descriptionAxes) { this.descriptionAxes = descriptionAxes; }
+
+    public List<AxeDeRecherche> getAxes() { return axes; }
+    public void setAxes(List<AxeDeRecherche> axes) { this.axes = axes; }
 }

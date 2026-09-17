@@ -2,6 +2,7 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
@@ -69,6 +71,18 @@ public class DirecteurTheseService {
         profil.setExpertiseMots(request.getExpertiseMots());
         if (request.getMotsCles() != null) {
             profil.setMotsCles(new ArrayList<>(request.getMotsCles()));
+        }
+        profil.setDescriptionAxes(request.getDescriptionAxes());
+        if (request.getAxes() != null) {
+            List<AxeDeRecherche> axes = new ArrayList<>();
+            for (AxeDeRecherche a : request.getAxes()) {
+                AxeDeRecherche axe = new AxeDeRecherche();
+                axe.setTitre(a.getTitre());
+                axe.setPrecisions(a.getPrecisions());
+                axe.setContactable(a.isContactable());
+                axes.add(axe);
+            }
+            profil.setAxes(axes);
         }
         profilDtRepository.save(profil);
 
@@ -145,6 +159,20 @@ public class DirecteurTheseService {
         response.setDomaineScientifique(profil != null ? profil.getDomaineScientifique() : null);
         response.setExpertiseMots(profil != null ? profil.getExpertiseMots() : null);
         response.setMotsCles(profil != null && profil.getMotsCles() != null ? new ArrayList<>(profil.getMotsCles()) : new ArrayList<>());
+        response.setDescriptionAxes(profil != null ? profil.getDescriptionAxes() : null);
+        if (profil != null && profil.getAxes() != null) {
+            List<AxeDeRecherche> axesCopy = new ArrayList<>();
+            for (AxeDeRecherche a : profil.getAxes()) {
+                AxeDeRecherche copy = new AxeDeRecherche();
+                copy.setTitre(a.getTitre());
+                copy.setPrecisions(a.getPrecisions());
+                copy.setContactable(a.isContactable());
+                axesCopy.add(copy);
+            }
+            response.setAxes(axesCopy);
+        } else {
+            response.setAxes(new ArrayList<>());
+        }
         return response;
     }
 }

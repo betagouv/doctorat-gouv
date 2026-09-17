@@ -47,6 +47,8 @@ export interface ProfilDtResponse {
   domaineScientifique: string | null;
   expertiseMots: string | null;
   motsCles: string[];
+  descriptionAxes: string | null;
+  axes: AxeDeRecherche[];
 }
 
 /** Données envoyées au backend pour modifier le profil directeur de thèse. */
@@ -67,4 +69,13 @@ export interface ProfilDtUpdateRequest {
   domaineScientifique: string | null;
   expertiseMots: string | null;
   motsCles: string[];
+  descriptionAxes: string | null;
+  axes: AxeDeRecherche[];
+}
+
+/** Un axe de recherche du directeur de thèse. */
+export interface AxeDeRecherche {
+  titre: string;
+  precisions: string;
+  contactable: boolean;
 }

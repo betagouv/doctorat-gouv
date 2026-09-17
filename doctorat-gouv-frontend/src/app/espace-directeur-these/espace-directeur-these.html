@@ -448,52 +448,100 @@
             <div class="ed-card__header-row">
               <div>
                 <h2 class="ed-card__title">
-                  <span class="fr-icon-award-line" aria-hidden="true"></span>
-                  Vos axes de recherche
+                  Axes de recherche
                 </h2>
-                <p class="ed-card__desc">Renseignez vos thematiques et domaines de recherche.</p>
+                <p class="ed-card__desc">Cette rubrique permet de décrire, dans les grandes lignes, un ou plusieurs axes dans lesquels s'inscrivent vos travaux de recherche actuels et ceux que vous êtes susceptible de mener ou diriger dans un futur proche.</p>
               </div>
             </div>
           </div>
 
           <div class="ed-card__body">
-            <div class="ed-axes">
-              <!-- Liste des axes -->
-              <div class="ed-axes__list" *ngIf="axes.length > 0">
-                <div class="ed-axes__item" *ngFor="let axe of axes">
-                  <span class="ed-axes__label">{{ axe }}</span>
-                  <button class="ed-axes__delete"
-                          (click)="removeAxe(axe)"
-                          aria-label="Supprimer l'axe de recherche"
-                          title="Supprimer l'axe de recherche">
-                    <span class="fr-icon-delete-line" aria-hidden="true"></span>
-                  </button>
-                </div>
-              </div>
-              <p class="ed-axes__empty" *ngIf="axes.length === 0">
-                Aucun axe de recherche renseigne.
-              </p>
 
-              <!-- Ajout d'axe -->
-              <div class="ed-axes__add">
-                <div class="fr-input-group"
-                     [class.fr-input-group--error]="!!axeError">
-                  <input class="fr-input"
-                         type="text"
-                         [(ngModel)]="newAxe"
-                         placeholder="Nouvel axe de recherche"
-                         (keyup.enter)="addAxe()"
-                         [disabled]="isAddingAxe"
-                         [attr.aria-invalid]="axeError ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="axeError">{{ axeError }}</p>
+            <!-- Description des axes (lecture) -->
+            <div *ngIf="!isEditing" class="ed-profil ed-profil--readonly">
+              <p class="fr-text--sm fr-mb-2w">Décrivez vos axes de recherche actuels et précisez ceux pour lesquels vous pouvez être contactés pour initier un projet doctoral ! <span class="required-star">*</span></p>
+              <textarea class="fr-input" disabled rows="3">{{ descriptionAxes ?? '' }}</textarea>
+            </div>
+
+            <!-- Description des axes (édition) -->
+            <div *ngIf="isEditing">
+              <p class="fr-text--sm fr-mb-2w">Décrivez vos axes de recherche actuels et précisez ceux pour lesquels vous pouvez être contactés pour initier un projet doctoral ! <span class="required-star">*</span></p>
+              <textarea class="fr-input" [(ngModel)]="descriptionAxes" rows="3"
+                        placeholder="Droit du numérique, intelligence artificielle, protection des données et régulation des plateformes."></textarea>
+            </div>
+
+            <!-- Offre d'encadrement -->
+            <div class="fr-mt-4w">
+              <h3 class="fr-h6 fr-mb-2w">Offre d'encadrement ({{ axes.length }})</h3>
+
+              <!-- Liste des axes (lecture) -->
+              <ng-container *ngIf="!isEditing">
+                <div *ngIf="axes.length === 0" class="fr-text--sm fr-py-2w" style="font-style: italic; color: #666;">
+                  Aucun axe de recherche renseigné.
                 </div>
-                <button class="ed-axes__add-btn"
-                        (click)="addAxe()"
-                        [disabled]="isAddingAxe">
+                <div *ngFor="let axe of axes; let i = index" class="ed-axe-card fr-mb-3w">
+                  <div class="ed-axe-card__header">
+                    <span class="ed-axe-card__number">{{ (i + 1) | number:'2.0-0' }}</span>
+                    <span class="ed-axe-card__title-label">Axe de recherche n°{{ i + 1 }}</span>
+                  </div>
+                  <div class="ed-axe-card__body">
+                    <div class="ed-axe-field fr-mb-2w">
+                      <span class="ed-axe-field__label">Titre</span>
+                      <p class="ed-axe-field__value">{{ axe.titre || '—' }}</p>
+                    </div>
+                    <div class="ed-axe-field fr-mb-2w">
+                      <span class="ed-axe-field__label">Précisions</span>
+                      <p class="ed-axe-field__value">{{ axe.precisions || '—' }}</p>
+                    </div>
+                    <div class="ed-axe-field">
+                      <span class="ed-axe-field__label">Vous pouvez me contacter à propos d'un projet doctoral dans ce domaine</span>
+                      <span class="fr-badge fr-badge--sm" [class.fr-badge--success]="axe.contactable">
+                        {{ axe.contactable ? 'Oui' : 'Non' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Liste des axes (édition) -->
+              <ng-container *ngIf="isEditing">
+                <div *ngFor="let axe of axes; let i = index" class="ed-axe-card fr-mb-3w">
+                  <div class="ed-axe-card__header">
+                    <span class="ed-axe-card__number">{{ (i + 1) | number:'2.0-0' }}</span>
+                    <span class="ed-axe-card__title-label">Axe de recherche n°{{ i + 1 }}</span>
+                    <div class="ed-axe-card__header-actions">
+                      <button type="button" class="ed-icon-btn" (click)="removeAxe(i)" aria-label="Supprimer cet axe">
+                        <span class="fr-icon-delete-line" aria-hidden="true"></span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="ed-axe-card__body">
+                    <div class="fr-input-group fr-mb-3w">
+                      <label class="fr-label" for="axe-titre-{{ i }}">Titre <span class="required-star">*</span></label>
+                      <input class="fr-input" id="axe-titre-{{ i }}" type="text" [(ngModel)]="axe.titre"
+                             placeholder="Exemple : Encadrement de thèse en mécanique des matériaux" />
+                    </div>
+                    <div class="fr-input-group fr-mb-3w">
+                      <label class="fr-label" for="axe-precisions-{{ i }}">Précisions <span class="required-star">*</span></label>
+                      <textarea class="fr-input" id="axe-precisions-{{ i }}" rows="4" [(ngModel)]="axe.precisions"
+                                placeholder="Modalités d'encadrement, co-encadrement, financement envisagé, attendes vis-à-vis du candidat,..."></textarea>
+                    </div>
+                    <div class="ed-axe-toggle">
+                      <span class="fr-text--sm">Vous pouvez me contacter à propos d'un projet doctoral dans ce domaine</span>
+                      <label class="fr-toggle">
+                        <input type="checkbox" [checked]="axe.contactable" (change)="toggleAxeContactable(i)" />
+                        <span class="fr-toggle__label"></span>
+                      </label>
+                      <p class="fr-hint-text fr-mt-1w">Cela va générer une offre d'accompagnement qui sera publiée sur doctorat.gouv.fr, qui sera rendue visible par les candidats et partenaires.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="ed-axes__add-btn fr-mt-2w" (click)="addAxe()">
                   <span class="fr-icon-add-line" aria-hidden="true"></span>
                   Ajouter un axe de recherche
                 </button>
-              </div>
+              </ng-container>
             </div>
 
           </div>

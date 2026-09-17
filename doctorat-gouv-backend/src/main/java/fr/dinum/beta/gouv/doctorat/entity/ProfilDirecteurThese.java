@@ -71,6 +71,13 @@ public class ProfilDirecteurThese {
     @Column(name = "mot_cle", length = 100)
     private List<String> motsCles = new ArrayList<>();
 
+    @Column(length = 2000)
+    private String descriptionAxes;
+
+    @ElementCollection
+    @CollectionTable(name = "profil_dt_axes", joinColumns = @JoinColumn(name = "profil_dt_id"))
+    private List<AxeDeRecherche> axes = new ArrayList<>();
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -112,4 +119,10 @@ public class ProfilDirecteurThese {
 
     public List<String> getMotsCles() { return motsCles; }
     public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
+
+    public String getDescriptionAxes() { return descriptionAxes; }
+    public void setDescriptionAxes(String descriptionAxes) { this.descriptionAxes = descriptionAxes; }
+
+    public List<AxeDeRecherche> getAxes() { return axes; }
+    public void setAxes(List<AxeDeRecherche> axes) { this.axes = axes; }
 }
