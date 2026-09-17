@@ -44,6 +44,9 @@ export interface ProfilDtResponse {
   titre: string | null;
   precisionTitre: string | null;
   habilitationRecherche: string | null;
+  domaineScientifique: string | null;
+  expertiseMots: string | null;
+  motsCles: string[];
 }
 
 /** Données envoyées au backend pour modifier le profil directeur de thèse. */
@@ -61,4 +64,7 @@ export interface ProfilDtUpdateRequest {
   titre: string | null;
   precisionTitre: string | null;
   habilitationRecherche: string | null;
+  domaineScientifique: string | null;
+  expertiseMots: string | null;
+  motsCles: string[];
 }

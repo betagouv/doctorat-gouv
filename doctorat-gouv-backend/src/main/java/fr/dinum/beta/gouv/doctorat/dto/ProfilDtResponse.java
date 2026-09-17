@@ -21,6 +21,9 @@ public class ProfilDtResponse {
     private String titre;
     private String precisionTitre;
     private String habilitationRecherche;
+    private String domaineScientifique;
+    private String expertiseMots;
+    private List<String> motsCles;
 
     public ProfilDtResponse() {}
 
@@ -72,4 +75,13 @@ public class ProfilDtResponse {
 
     public String getHabilitationRecherche() { return habilitationRecherche; }
     public void setHabilitationRecherche(String habilitationRecherche) { this.habilitationRecherche = habilitationRecherche; }
+
+    public String getDomaineScientifique() { return domaineScientifique; }
+    public void setDomaineScientifique(String domaineScientifique) { this.domaineScientifique = domaineScientifique; }
+
+    public String getExpertiseMots() { return expertiseMots; }
+    public void setExpertiseMots(String expertiseMots) { this.expertiseMots = expertiseMots; }
+
+    public List<String> getMotsCles() { return motsCles; }
+    public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
 }

@@ -65,6 +65,11 @@ public class DirecteurTheseService {
         profil.setTitre(request.getTitre());
         profil.setPrecisionTitre(request.getPrecisionTitre());
         profil.setHabilitationRecherche(request.getHabilitationRecherche());
+        profil.setDomaineScientifique(request.getDomaineScientifique());
+        profil.setExpertiseMots(request.getExpertiseMots());
+        if (request.getMotsCles() != null) {
+            profil.setMotsCles(new ArrayList<>(request.getMotsCles()));
+        }
         profilDtRepository.save(profil);
 
         log.info("Profil directeur de thèse mis à jour pour l'utilisateur {}", userId);
@@ -137,6 +142,9 @@ public class DirecteurTheseService {
         response.setTitre(profil != null ? profil.getTitre() : null);
         response.setPrecisionTitre(profil != null ? profil.getPrecisionTitre() : null);
         response.setHabilitationRecherche(profil != null ? profil.getHabilitationRecherche() : null);
+        response.setDomaineScientifique(profil != null ? profil.getDomaineScientifique() : null);
+        response.setExpertiseMots(profil != null ? profil.getExpertiseMots() : null);
+        response.setMotsCles(profil != null && profil.getMotsCles() != null ? new ArrayList<>(profil.getMotsCles()) : new ArrayList<>());
         return response;
     }
 }

@@ -1,6 +1,11 @@
 package fr.dinum.beta.gouv.doctorat.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -55,6 +60,17 @@ public class ProfilDirecteurThese {
     @Column(length = 30)
     private String habilitationRecherche;
 
+    @Column(length = 100)
+    private String domaineScientifique;
+
+    @Column(length = 2000)
+    private String expertiseMots;
+
+    @ElementCollection
+    @CollectionTable(name = "profil_dt_mots_cles", joinColumns = @JoinColumn(name = "profil_dt_id"))
+    @Column(name = "mot_cle", length = 100)
+    private List<String> motsCles = new ArrayList<>();
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -87,4 +103,13 @@ public class ProfilDirecteurThese {
 
     public String getHabilitationRecherche() { return habilitationRecherche; }
     public void setHabilitationRecherche(String habilitationRecherche) { this.habilitationRecherche = habilitationRecherche; }
+
+    public String getDomaineScientifique() { return domaineScientifique; }
+    public void setDomaineScientifique(String domaineScientifique) { this.domaineScientifique = domaineScientifique; }
+
+    public String getExpertiseMots() { return expertiseMots; }
+    public void setExpertiseMots(String expertiseMots) { this.expertiseMots = expertiseMots; }
+
+    public List<String> getMotsCles() { return motsCles; }
+    public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
 }

@@ -72,7 +72,7 @@
       <!-- ============ ONGLET : VOTRE PROFIL ============ -->
       <div *ngIf="activeTab === 'profil'" class="ed-tab-content">
 
-        <!-- Section : Informations personnelles -->
+        <!-- Section : Informations personnelles + Domaines d'expertise -->
         <section class="ed-card">
           <div class="ed-card__header">
             <div class="ed-card__header-row">
@@ -380,8 +380,106 @@
               </div>
             </form>
 
+            <hr class="fr-mt-3w fr-mb-3w" />
+
+            <!-- Domaines d'expertise -->
+            <div>
+              <h3 class="fr-h6 fr-mb-1w">Domaines d'expertise</h3>
+              <p class="fr-text--sm fr-mb-3w">Décrivez les thématiques que vous maîtrisez</p>
+            </div>
+
+            <!-- Vue lecture -->
+            <div *ngIf="!isEditing && profil" class="ed-profil ed-profil--readonly">
+              <div class="ed-form-grid">
+
+                <!-- Domaine scientifique -->
+                <div class="fr-select-group ed-form-grid__full">
+                  <label class="fr-label" for="view-domaine-scientifique">Domaine scientifique <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Sélectionnez un ou plusieurs grands domaines scientifiques d'accréditation des écoles doctorales</p>
+                  <select class="fr-select" id="view-domaine-scientifique" disabled>
+                    <option>{{ profil.domaineScientifique || '—' }}</option>
+                  </select>
+                </div>
+
+                <!-- Expertise en quelques mots -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
+                  <textarea class="fr-input" id="view-expertise-mots" disabled rows="4">{{ profil.expertiseMots ?? '' }}</textarea>
+                </div>
+
+                <!-- Mots-clés -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label">Mots-clés</label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" type="text" value="" disabled placeholder="Rechercher un mot-clé..." />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                  </div>
+                  <div class="ed-tags" *ngIf="profil.motsCles && profil.motsCles.length > 0">
+                    <span class="fr-tag ed-tag--readonly" *ngFor="let mot of profil.motsCles">
+                      {{ mot }}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Vue édition -->
+            <form *ngIf="isEditing" [formGroup]="profilForm" class="ed-profil">
+              <div class="ed-form-grid">
+
+                <!-- Domaine scientifique -->
+                <div class="fr-select-group ed-form-grid__full">
+                  <label class="fr-label" for="edit-domaine-scientifique">Domaine scientifique <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Sélectionnez un ou plusieurs grands domaines scientifiques d'accréditation des écoles doctorales</p>
+                  <select class="fr-select" id="edit-domaine-scientifique" formControlName="domaineScientifique">
+                    <option value="">Sélectionner un domaine</option>
+                    <option value="Informatique">Informatique</option>
+                    <option value="Mathématiques">Mathématiques</option>
+                    <option value="Physique">Physique</option>
+                    <option value="Chimie">Chimie</option>
+                    <option value="Biologie">Biologie</option>
+                    <option value="Sciences de la Terre">Sciences de la Terre</option>
+                    <option value="Sciences de l'ingénieur">Sciences de l'ingénieur</option>
+                    <option value="Sciences de l'homme et de la société">Sciences de l'homme et de la société</option>
+                  </select>
+                </div>
+
+                <!-- Expertise en quelques mots -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="edit-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
+                  <textarea class="fr-input" id="edit-expertise-mots" formControlName="expertiseMots" rows="4"
+                            placeholder="Mes travaux portent sur..."></textarea>
+                </div>
+
+                <!-- Mots-clés -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label">Mots-clés</label>
+                  <div class="ed-autocomplete">
+                    <input class="fr-input" type="text" [(ngModel)]="newMotCle" [ngModelOptions]="{standalone: true}"
+                           placeholder="Ajouter un mot-clé" (keyup.enter)="addMotCle()" />
+                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
+                  </div>
+                  <div class="ed-tags" *ngIf="motsCles.length > 0">
+                    <span class="fr-tag" *ngFor="let mot of motsCles">
+                      {{ mot }}
+                      <button type="button" class="ed-tag__delete" (click)="removeMotCle(mot)"
+                              aria-label="Supprimer le mot-clé">
+                        <span class="fr-icon-close-line" aria-hidden="true"></span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </form>
+
           </div>
         </section>
+
+        <hr class="fr-mt-3w fr-mb-3w" />
 
       </div>
 

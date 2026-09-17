@@ -43,6 +43,9 @@ export class EspaceDirecteurThese implements OnInit {
   filteredEcolesDoctorales: string[] = [];
   showEcoleSuggestions = false;
 
+  newMotCle = '';
+  motsCles: string[] = [];
+
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
@@ -74,6 +77,8 @@ export class EspaceDirecteurThese implements OnInit {
       titre: [''],
       precisionTitre: ['', [Validators.maxLength(255)]],
       habilitationRecherche: [''],
+      domaineScientifique: ['', [Validators.required]],
+      expertiseMots: ['', [Validators.required]],
     });
 
     this.motDePasseForm = this.fb.group({
@@ -165,6 +170,9 @@ export class EspaceDirecteurThese implements OnInit {
       titre: this.profilForm.value.titre || null,
       precisionTitre: this.profilForm.value.precisionTitre || null,
       habilitationRecherche: this.profilForm.value.habilitationRecherche || null,
+      domaineScientifique: this.profilForm.value.domaineScientifique || null,
+      expertiseMots: this.profilForm.value.expertiseMots || null,
+      motsCles: this.motsCles,
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -295,7 +303,10 @@ export class EspaceDirecteurThese implements OnInit {
       titre: data.titre ?? '',
       precisionTitre: data.precisionTitre ?? '',
       habilitationRecherche: data.habilitationRecherche ?? '',
+      domaineScientifique: data.domaineScientifique ?? '',
+      expertiseMots: data.expertiseMots ?? '',
     });
+    this.motsCles = data.motsCles ? [...data.motsCles] : [];
   }
 
   private loadReferentiels(): void {
@@ -360,5 +371,17 @@ export class EspaceDirecteurThese implements OnInit {
 
   hideEcoleSuggestions(): void {
     setTimeout(() => { this.showEcoleSuggestions = false; }, 150);
+  }
+
+  addMotCle(): void {
+    const trimmed = this.newMotCle.trim();
+    if (trimmed && !this.motsCles.includes(trimmed)) {
+      this.motsCles.push(trimmed);
+      this.newMotCle = '';
+    }
+  }
+
+  removeMotCle(mot: string): void {
+    this.motsCles = this.motsCles.filter(m => m !== mot);
   }
 }

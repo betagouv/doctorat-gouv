@@ -51,6 +51,14 @@ public class ProfilDtUpdateRequest {
     @Size(max = 30, message = "L'habilitation ne doit pas dépasser 30 caractères")
     private String habilitationRecherche;
 
+    @Size(max = 100, message = "Le domaine scientifique ne doit pas dépasser 100 caractères")
+    private String domaineScientifique;
+
+    @Size(max = 2000, message = "L'expertise ne doit pas dépasser 2000 caractères")
+    private String expertiseMots;
+
+    private List<String> motsCles;
+
     public String getCivilite() { return civilite; }
     public void setCivilite(String civilite) { this.civilite = civilite; }
 
@@ -89,4 +97,13 @@ public class ProfilDtUpdateRequest {
 
     public String getHabilitationRecherche() { return habilitationRecherche; }
     public void setHabilitationRecherche(String habilitationRecherche) { this.habilitationRecherche = habilitationRecherche; }
+
+    public String getDomaineScientifique() { return domaineScientifique; }
+    public void setDomaineScientifique(String domaineScientifique) { this.domaineScientifique = domaineScientifique; }
+
+    public String getExpertiseMots() { return expertiseMots; }
+    public void setExpertiseMots(String expertiseMots) { this.expertiseMots = expertiseMots; }
+
+    public List<String> getMotsCles() { return motsCles; }
+    public void setMotsCles(List<String> motsCles) { this.motsCles = motsCles; }
 }
