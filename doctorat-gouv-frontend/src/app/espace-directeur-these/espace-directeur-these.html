@@ -444,7 +444,7 @@
       <!-- ============ ONGLET : VOS AXES DE RECHERCHE ============ -->
       <div *ngIf="activeTab === 'axes'" class="ed-tab-content">
         <section class="ed-card">
-          <div class="ed-card__header">
+          <div class="ed-card__header ed-card__header--no-separator">
             <div class="ed-card__header-row">
               <div>
                 <h2 class="ed-card__title">
@@ -455,20 +455,27 @@
             </div>
           </div>
 
-          <div class="ed-card__body">
+          <div class="ed-card__body ed-card__body--tight-top">
 
-            <!-- Description des axes (lecture) -->
-            <div *ngIf="!isEditing" class="ed-profil ed-profil--readonly">
-              <p class="fr-text--sm fr-mb-2w">Décrivez vos axes de recherche actuels et précisez ceux pour lesquels vous pouvez être contactés pour initier un projet doctoral ! <span class="required-star">*</span></p>
+            <!-- En savoir plus -->
+            <details class="fr-accordion ed-axes-en-savoir-plus">
+              <summary class="fr-accordion__btn">En savoir plus</summary>
+              <div class="fr-collapse">
+                <p>Cette description permet aux candidats et aux établissements de comprendre vos domaines de compétence. Elle sera visible sur les offres d'encadrement publiées sur doctorat.gouv.fr.</p>
+              </div>
+            </details>
+
+            <!-- Description des axes -->
+            <p class="fr-text--sm fr-mb-2w fr-mt-3w">Décrivez vos axes de recherche actuels et précisez ceux pour lesquels vous pouvez être contactés pour initier un projet doctoral ! <span class="required-star">*</span></p>
+
+            <!-- Description (lecture) -->
+            <div *ngIf="!isEditing" class="ed-profil ed-profil--readonly" style="padding-top: 0;">
               <textarea class="fr-input" disabled rows="3">{{ descriptionAxes ?? '' }}</textarea>
             </div>
 
-            <!-- Description des axes (édition) -->
-            <div *ngIf="isEditing">
-              <p class="fr-text--sm fr-mb-2w">Décrivez vos axes de recherche actuels et précisez ceux pour lesquels vous pouvez être contactés pour initier un projet doctoral ! <span class="required-star">*</span></p>
-              <textarea class="fr-input" [(ngModel)]="descriptionAxes" rows="3"
-                        placeholder="Droit du numérique, intelligence artificielle, protection des données et régulation des plateformes."></textarea>
-            </div>
+            <!-- Description (édition) -->
+            <textarea *ngIf="isEditing" class="fr-input" [(ngModel)]="descriptionAxes" rows="3"
+                      placeholder="Droit du numérique, intelligence artificielle, protection des données et régulation des plateformes."></textarea>
 
             <!-- Offre d'encadrement -->
             <div class="fr-mt-4w">

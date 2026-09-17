@@ -209,6 +209,21 @@ $font-family: 'Marianne', arial, sans-serif;
   margin-bottom: 2rem;
 }
 
+.ed-card .ed-card__header--no-separator {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0 !important;
+}
+
+.ed-card .ed-card__body--tight-top {
+  padding-top: 1rem !important;
+}
+
+/* Séparateurs de l'accordéon DSFR limités à haut + bas */
+.ed-axes-en-savoir-plus {
+  margin: 0;
+}
+
 .ed-card__header-row {
   display: flex;
   align-items: flex-start;
