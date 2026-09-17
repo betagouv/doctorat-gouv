@@ -198,15 +198,51 @@
               </div>
             </div>
 
-            <!-- Vue edition -->
+            <!-- Vue lecture domaines d'expertise -->
+            <div *ngIf="!isEditing && profil" class="ed-profil ed-profil--readonly">
+              <hr class="fr-mt-3w fr-mb-3w" />
+              <h3 class="fr-h6 fr-mb-1w">Domaines d'expertise</h3>
+              <p class="fr-text--sm fr-mb-3w">Décrivez les thématiques que vous maîtrisez</p>
+              <div class="ed-form-grid">
+
+                <!-- Domaine scientifique -->
+                <div class="fr-select-group ed-form-grid__full">
+                  <label class="fr-label" for="view-domaine-scientifique">Domaine scientifique <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Sélectionnez un ou plusieurs grands domaines scientifiques d'accréditation des écoles doctorales</p>
+                  <select class="fr-select" id="view-domaine-scientifique" disabled>
+                    <option>{{ profil.domaineScientifique || '—' }}</option>
+                  </select>
+                </div>
+
+                <!-- Expertise en quelques mots -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label" for="view-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
+                  <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
+                  <textarea class="fr-input" id="view-expertise-mots" disabled rows="4">{{ profil.expertiseMots ?? '' }}</textarea>
+                </div>
+
+                <!-- Mots-clés -->
+                <div class="fr-input-group ed-form-grid__full">
+                  <label class="fr-label">Mots-clés</label>
+                  <div class="ed-tags" *ngIf="profil.motsCles && profil.motsCles.length > 0">
+                    <span class="fr-tag ed-tag--readonly" *ngFor="let mot of profil.motsCles">
+                      {{ mot }}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Vue edition : tout dans un seul form -->
             <form *ngIf="isEditing" [formGroup]="profilForm" (ngSubmit)="saveProfil()" class="ed-profil">
+
               <div class="ed-form-grid">
 
                 <!-- Ligne 1 : Identifiant ORCID + lien d'aide -->
                 <div class="fr-input-group">
                   <label class="fr-label" for="edit-orcid">Identifiant ORCID</label>
-                  <input class="fr-input" id="edit-orcid" type="text" formControlName="orcid"
-                         placeholder="0000-0000-0000-0000" />
+                  <input class="fr-input" id="edit-orcid" type="text" formControlName="orcid" placeholder="0000-0000-0000-0000" />
                 </div>
                 <div class="ed-orcid-help">
                   <a href="https://orcid.org" target="_blank" rel="noopener">À propos de l'identifiant ORCID</a>
@@ -215,20 +251,14 @@
                 <!-- Ligne 2 : Nom / Prénom -->
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
                   <label class="fr-label" for="edit-nom">Nom <span class="required-star">*</span></label>
-                  <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
-                         [attr.aria-invalid]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
-                    Le nom est obligatoire.
-                  </p>
+                  <input class="fr-input" id="edit-nom" type="text" formControlName="nom" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">Le nom est obligatoire.</p>
                 </div>
 
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
                   <label class="fr-label" for="edit-prenom">Prénom <span class="required-star">*</span></label>
-                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
-                         [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                    Le prénom est obligatoire.
-                  </p>
+                  <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">Le prénom est obligatoire.</p>
                 </div>
 
                 <!-- Ligne 3 : Civilité / E-mail -->
@@ -244,92 +274,62 @@
 
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
                   <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
-                  <input class="fr-input" id="edit-email" type="email" formControlName="email"
-                         [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse électronique est obligatoire." : "L'adresse électronique n'est pas valide." }}
-                  </p>
+                  <input class="fr-input" id="edit-email" type="email" formControlName="email" />
+                  <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">L'e-mail est obligatoire.</p>
                 </div>
 
-                <!-- Ligne 4 : Établissement (autocomplete, pleine largeur) -->
-                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">
+                <!-- Ligne 4 : Établissement -->
+                <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label" for="edit-etablissement">Établissement délivrant le doctorat dont vous relevez <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-etablissement" type="text" formControlName="etablissement"
-                           (input)="filterEtablissements()"
-                           (focus)="filterEtablissements()"
-                           (blur)="hideEtabSuggestions()"
-                           autocomplete="off"
-                           [attr.aria-invalid]="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched ? 'true' : null" />
+                           (input)="filterEtablissements()" (focus)="filterEtablissements()" (blur)="hideEtabSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
                     <ul class="ed-autocomplete__list" *ngIf="showEtabSuggestions">
                       <li *ngFor="let etab of filteredEtablissements">
-                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEtablissement(etab)">
-                          {{ etab }}
-                        </button>
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEtablissement(etab)">{{ etab }}</button>
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-error-text" *ngIf="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">
-                    L'établissement est obligatoire.
-                  </p>
                 </div>
 
-                <!-- Ligne 5 : Laboratoire (autocomplete, pleine largeur) -->
-                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
+                <!-- Ligne 5 : Laboratoire -->
+                <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label" for="edit-laboratoire">Laboratoire <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-laboratoire" type="text" formControlName="laboratoire"
-                           (input)="filterLaboratoires()"
-                           (focus)="filterLaboratoires()"
-                           (blur)="hideLaboSuggestions()"
-                           autocomplete="off"
-                           [attr.aria-invalid]="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched ? 'true' : null" />
+                           (input)="filterLaboratoires()" (focus)="filterLaboratoires()" (blur)="hideLaboSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
                     <ul class="ed-autocomplete__list" *ngIf="showLaboSuggestions">
                       <li *ngFor="let labo of filteredLaboratoires">
-                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectLaboratoire(labo)">
-                          {{ labo }}
-                        </button>
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectLaboratoire(labo)">{{ labo }}</button>
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
-                    Le laboratoire est obligatoire.
-                  </p>
                 </div>
 
-                <!-- Ligne 6 : École doctorale (autocomplete, pleine largeur) -->
-                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">
+                <!-- Ligne 6 : École doctorale -->
+                <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label" for="edit-ecole-doctorale">École doctorale <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-ecole-doctorale" type="text" formControlName="ecoleDoctorale"
-                           (input)="filterEcolesDoctorales()"
-                           (focus)="filterEcolesDoctorales()"
-                           (blur)="hideEcoleSuggestions()"
-                           autocomplete="off"
-                           [attr.aria-invalid]="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched ? 'true' : null" />
+                           (input)="filterEcolesDoctorales()" (focus)="filterEcolesDoctorales()" (blur)="hideEcoleSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
                     <ul class="ed-autocomplete__list" *ngIf="showEcoleSuggestions">
                       <li *ngFor="let ecole of filteredEcolesDoctorales">
-                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEcoleDoctorale(ecole)">
-                          {{ ecole }}
-                        </button>
+                        <button type="button" class="ed-autocomplete__option" (mousedown)="selectEcoleDoctorale(ecole)">{{ ecole }}</button>
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-error-text" *ngIf="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">
-                    L'école doctorale est obligatoire.
-                  </p>
                 </div>
 
-                <!-- Ligne 7 : Employeur (pleine largeur) -->
+                <!-- Ligne 7 : Employeur -->
                 <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label" for="edit-employeur">Employeur <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-employeur" type="text" formControlName="employeur" />
                 </div>
 
-                <!-- Ligne 8 : Titre / Précision sur le titre -->
+                <!-- Ligne 8 : Titre / Précision -->
                 <div class="fr-select-group">
                   <label class="fr-label" for="edit-titre">Votre titre <span class="required-star">*</span></label>
                   <select class="fr-select" id="edit-titre" formControlName="titre">
@@ -346,7 +346,7 @@
                   <input class="fr-input" id="edit-precision-titre" type="text" formControlName="precisionTitre" />
                 </div>
 
-                <!-- Ligne 9 : Habilitation à diriger des recherches (radio, pleine largeur) -->
+                <!-- Ligne 9 : Habilitation -->
                 <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label">Habilitation à diriger des recherches <span class="required-star">*</span></label>
                   <div class="fr-radio-group ed-radio-row">
@@ -369,64 +369,12 @@
 
               </div>
 
-              <div class="ed-actions">
-                <button type="submit" class="ed-btn-primary" [disabled]="isSaving">
-                  <span class="fr-icon-check-line" aria-hidden="true"></span>
-                  Enregistrer
-                </button>
-                <button type="button" class="ed-btn-secondary" (click)="cancelEdit()" [disabled]="isSaving">
-                  Annuler
-                </button>
+              <!-- Domaines d'expertise -->
+              <div class="fr-mt-3w">
+                <h3 class="fr-h6 fr-mb-1w">Domaines d'expertise</h3>
+                <p class="fr-text--sm fr-mb-3w">Décrivez les thématiques que vous maîtrisez</p>
               </div>
-            </form>
 
-            <hr class="fr-mt-3w fr-mb-3w" />
-
-            <!-- Domaines d'expertise -->
-            <div>
-              <h3 class="fr-h6 fr-mb-1w">Domaines d'expertise</h3>
-              <p class="fr-text--sm fr-mb-3w">Décrivez les thématiques que vous maîtrisez</p>
-            </div>
-
-            <!-- Vue lecture -->
-            <div *ngIf="!isEditing && profil" class="ed-profil ed-profil--readonly">
-              <div class="ed-form-grid">
-
-                <!-- Domaine scientifique -->
-                <div class="fr-select-group ed-form-grid__full">
-                  <label class="fr-label" for="view-domaine-scientifique">Domaine scientifique <span class="required-star">*</span></label>
-                  <p class="fr-hint-text">Sélectionnez un ou plusieurs grands domaines scientifiques d'accréditation des écoles doctorales</p>
-                  <select class="fr-select" id="view-domaine-scientifique" disabled>
-                    <option>{{ profil.domaineScientifique || '—' }}</option>
-                  </select>
-                </div>
-
-                <!-- Expertise en quelques mots -->
-                <div class="fr-input-group ed-form-grid__full">
-                  <label class="fr-label" for="view-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
-                  <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
-                  <textarea class="fr-input" id="view-expertise-mots" disabled rows="4">{{ profil.expertiseMots ?? '' }}</textarea>
-                </div>
-
-                <!-- Mots-clés -->
-                <div class="fr-input-group ed-form-grid__full">
-                  <label class="fr-label">Mots-clés</label>
-                  <div class="ed-autocomplete">
-                    <input class="fr-input" type="text" value="" disabled placeholder="Rechercher un mot-clé..." />
-                    <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
-                  </div>
-                  <div class="ed-tags" *ngIf="profil.motsCles && profil.motsCles.length > 0">
-                    <span class="fr-tag ed-tag--readonly" *ngFor="let mot of profil.motsCles">
-                      {{ mot }}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Vue édition -->
-            <form *ngIf="isEditing" [formGroup]="profilForm" class="ed-profil">
               <div class="ed-form-grid">
 
                 <!-- Domaine scientifique -->
@@ -446,12 +394,11 @@
                   </select>
                 </div>
 
-                <!-- Expertise en quelques mots -->
+                <!-- Expertise -->
                 <div class="fr-input-group ed-form-grid__full">
                   <label class="fr-label" for="edit-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
                   <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
-                  <textarea class="fr-input" id="edit-expertise-mots" formControlName="expertiseMots" rows="4"
-                            placeholder="Mes travaux portent sur..."></textarea>
+                  <textarea class="fr-input" id="edit-expertise-mots" formControlName="expertiseMots" rows="4" placeholder="Mes travaux portent sur..."></textarea>
                 </div>
 
                 <!-- Mots-clés -->
@@ -465,8 +412,7 @@
                   <div class="ed-tags" *ngIf="motsCles.length > 0">
                     <span class="fr-tag" *ngFor="let mot of motsCles">
                       {{ mot }}
-                      <button type="button" class="ed-tag__delete" (click)="removeMotCle(mot)"
-                              aria-label="Supprimer le mot-clé">
+                      <button type="button" class="ed-tag__delete" (click)="removeMotCle(mot)" aria-label="Supprimer le mot-clé">
                         <span class="fr-icon-close-line" aria-hidden="true"></span>
                       </button>
                     </span>
@@ -474,6 +420,18 @@
                 </div>
 
               </div>
+
+              <!-- Actions -->
+              <div class="ed-actions">
+                <button type="submit" class="ed-btn-primary" [disabled]="isSaving">
+                  <span class="fr-icon-check-line" aria-hidden="true"></span>
+                  Enregistrer
+                </button>
+                <button type="button" class="ed-btn-secondary" (click)="cancelEdit()" [disabled]="isSaving">
+                  Annuler
+                </button>
+              </div>
+
             </form>
 
           </div>
@@ -537,6 +495,7 @@
                 </button>
               </div>
             </div>
+
           </div>
         </section>
       </div>
