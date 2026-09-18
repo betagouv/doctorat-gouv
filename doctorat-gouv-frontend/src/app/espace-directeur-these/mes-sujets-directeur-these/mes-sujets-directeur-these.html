@@ -1,0 +1,127 @@
+<main class="tdb-page">
+  <div class="tdb-container">
+
+    <!-- ======== EN-TETE ======== -->
+    <header class="tdb-header">
+      <div class="tdb-header__greeting">
+        <div class="tdb-header__icon">
+          <img src="assets/icons/picto-tableau-loupe.png" alt="" width="72" height="72" aria-hidden="true"/>
+        </div>
+        <div>
+          <h1 class="tdb-header__title">Bienvenue {{ prenom }}</h1>
+          <p class="tdb-header__subtitle">Vos sujets de these</p>
+        </div>
+      </div>
+      <nav class="tdb-header__nav">
+        <a routerLink="/tableau-de-bord-directeur-these" class="tdb-header__link">
+          <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
+          Tableau de bord
+        </a>
+        <a routerLink="/espace-directeur-these" class="tdb-header__link">
+          <span class="fr-icon-user-line" aria-hidden="true"></span>
+          Votre profil
+        </a>
+      </nav>
+    </header>
+
+    <!-- ======== CHARGEMENT ======== -->
+    <section class="tdb-section" *ngIf="isLoading">
+      <div class="tdb-empty">
+        <p class="tdb-empty__text">Chargement de vos sujets...</p>
+      </div>
+    </section>
+
+    <!-- ======== ERREUR ======== -->
+    <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="!isLoading && errorMessage" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <!-- ======== ETAT VIDE ======== -->
+    <section class="tdb-section" *ngIf="!isLoading && !errorMessage && sujets.length === 0">
+      <div class="tdb-empty">
+        <div class="tdb-empty__icon">
+          <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+        </div>
+        <h3 class="tdb-empty__title">Aucun sujet rattaché</h3>
+        <p class="tdb-empty__text">
+          Aucun sujet de these n'est rattaché a votre e-mail ou a votre identifiant ORCID.<br/>
+          Les sujets apparaitront ici des qu'ils seront associes a vos coordonnees.
+        </p>
+      </div>
+    </section>
+
+    <!-- ======== LISTE DES SUJETS ======== -->
+    <section class="tdb-section tdb-sujets" *ngIf="!isLoading && !errorMessage && sujets.length > 0">
+      <div class="tdb-sujets__toolbar">
+        <p class="tdb-sujets__count">{{ sujets.length }} sujet(s) &mdash; {{ nbActifs }} actif(s), {{ nbInactifs }} inactif(s)</p>
+        <div class="tdb-sujets__filters" role="group" aria-label="Filtrer par statut">
+          <button type="button" class="tdb-sujets__filter"
+                  [class.tdb-sujets__filter--active]="filtre === 'tous'"
+                  (click)="setFiltre('tous')">
+            Tous ({{ sujets.length }})
+          </button>
+          <button type="button" class="tdb-sujets__filter"
+                  [class.tdb-sujets__filter--active]="filtre === 'actifs'"
+                  (click)="setFiltre('actifs')">
+            Actifs ({{ nbActifs }})
+          </button>
+          <button type="button" class="tdb-sujets__filter"
+                  [class.tdb-sujets__filter--active]="filtre === 'inactifs'"
+                  (click)="setFiltre('inactifs')">
+            Inactifs ({{ nbInactifs }})
+          </button>
+        </div>
+      </div>
+
+      <div class="tdb-sujets__empty" *ngIf="sujetsFiltres.length === 0">
+        <p>Aucun sujet ne correspond a ce filtre.</p>
+      </div>
+
+      <article class="tdb-sujet" *ngFor="let sujet of sujetsFiltres" [class.tdb-sujet--inactif]="!isActif(sujet)">
+        <div class="tdb-sujet__main">
+          <div class="tdb-sujet__badges">
+            <span class="fr-badge fr-badge--sm"
+                  [class.fr-badge--success]="isActif(sujet)"
+                  [class.fr-badge--error]="!isActif(sujet)">
+              {{ isActif(sujet) ? 'Actif' : 'Inactif' }}
+            </span>
+            <span class="fr-badge fr-badge--sm fr-badge--info" *ngIf="sujet.role === 'CODIRECTION'">
+              Codirection
+            </span>
+            <span class="fr-badge fr-badge--sm fr-badge--new" *ngIf="sujet.role === 'DIRECTION'">
+              Direction
+            </span>
+          </div>
+          <h3 class="tdb-sujet__title">{{ sujet.titre || 'Titre non renseigne' }}</h3>
+          <dl class="tdb-sujet__meta">
+            <div *ngIf="sujet.etablissement">
+              <dt>Etablissement</dt>
+              <dd>{{ sujet.etablissement }}</dd>
+            </div>
+            <div *ngIf="sujet.ecoleDoctorale">
+              <dt>Ecole doctorale</dt>
+              <dd>{{ sujet.ecoleDoctorale }}</dd>
+            </div>
+            <div *ngIf="sujet.laboratoire">
+              <dt>Laboratoire</dt>
+              <dd>{{ sujet.laboratoire }}</dd>
+            </div>
+            <div *ngIf="sujet.matricule">
+              <dt>Matricule</dt>
+              <dd>{{ sujet.matricule }}</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="tdb-sujet__side">
+          <p class="tdb-sujet__date" *ngIf="sujet.dateMiseEnLigne">Mis en ligne le {{ sujet.dateMiseEnLigne }}</p>
+          <p class="tdb-sujet__date" *ngIf="sujet.dateLimiteCandidature">Candidatures jusqu'au {{ sujet.dateLimiteCandidature }}</p>
+          <a class="fr-link" [routerLink]="['/proposition']" [queryParams]="{id: sujet.id}">
+            Voir le sujet
+            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+  </div>
+</main>

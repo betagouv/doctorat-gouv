@@ -11,6 +11,7 @@ import { TableauDeBordCandidat } from './espace-candidat/tableau-de-bord-candida
 import { DemandeMiseEnRelation } from './demande-mise-en-relation/demande-mise-en-relation';
 import { EspaceDirecteurThese } from './espace-directeur-these/espace-directeur-these';
 import { TableauDeBordDirecteurThese } from './espace-directeur-these/tableau-de-bord-directeur-these/tableau-de-bord-directeur-these';
+import { MesSujetsDirecteurThese } from './espace-directeur-these/mes-sujets-directeur-these/mes-sujets-directeur-these';
 import { inscriptionGuard } from './inscription/inscription.guard';
 import { authGuard } from './guards/auth.guard';
 
@@ -29,4 +30,5 @@ export const routes: Routes = [
   { path: 'demande-mise-en-relation', component: DemandeMiseEnRelation, canActivate: [authGuard] },
   { path: 'espace-directeur-these', component: EspaceDirecteurThese, canActivate: [authGuard] },
   { path: 'tableau-de-bord-directeur-these', component: TableauDeBordDirecteurThese, canActivate: [authGuard] },
+  { path: 'mes-sujets-directeur-these', component: MesSujetsDirecteurThese, canActivate: [authGuard] },
 ];

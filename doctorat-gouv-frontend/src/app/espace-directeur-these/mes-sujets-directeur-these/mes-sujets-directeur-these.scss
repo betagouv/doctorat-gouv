@@ -1,0 +1,297 @@
+:host {
+  display: block;
+}
+
+main.tdb-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+/* ======== Palette ======== */
+$color-page-bg: #F9F8F6;
+$color-white: #FFFFFF;
+$color-text-primary: #161616;
+$color-text-secondary: #666666;
+$color-blue-france: #000091;
+$color-border: #DDDDDD;
+
+/* ======== Typographie ======== */
+$font-family: 'Marianne', arial, sans-serif;
+
+/* ======== Layout ======== */
+.tdb-page {
+  background: $color-page-bg;
+  min-height: 100vh;
+  padding: 2rem 0 4rem;
+}
+
+.tdb-container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 4rem;
+}
+
+/* ======== En-tete ======== */
+.tdb-header {
+  margin-bottom: 2rem;
+}
+
+.tdb-header__greeting {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 3rem;
+}
+
+.tdb-header__icon {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+.tdb-header__title {
+  font-family: $font-family;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.tdb-header__subtitle {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+  margin: -0.25rem 0 0;
+}
+
+.tdb-header__nav {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0 0 3rem;
+}
+
+.tdb-header__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-blue-france;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ======== Section ======== */
+.tdb-section {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ======== Etat vide ======== */
+.tdb-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.tdb-empty__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E3E3FD;
+  border-radius: 50%;
+  color: $color-blue-france;
+  font-size: 1.75rem;
+}
+
+.tdb-empty__title {
+  font-family: $font-family;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 0.75rem;
+}
+
+.tdb-empty__text {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+/* ======== Barre d'outils (compteur + filtres) ======== */
+.tdb-sujets__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid $color-border;
+}
+
+.tdb-sujets__count {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.tdb-sujets__filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tdb-sujets__filter {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  background: $color-white;
+  color: $color-text-secondary;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-blue-france;
+    color: $color-blue-france;
+  }
+
+  &--active {
+    background: $color-blue-france;
+    border-color: $color-blue-france;
+    color: $color-white;
+  }
+}
+
+.tdb-sujets__empty {
+  padding: 2rem;
+  text-align: center;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+}
+
+/* ======== Carte sujet ======== */
+.tdb-sujet {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--inactif {
+    background: #F5F5F5;
+  }
+}
+
+.tdb-sujet__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.tdb-sujet__badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tdb-sujet__title {
+  font-family: $font-family;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 0.75rem;
+}
+
+.tdb-sujet__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  dt {
+    font-family: $font-family;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $color-text-secondary;
+  }
+
+  dd {
+    font-family: $font-family;
+    font-size: 0.9375rem;
+    color: $color-text-primary;
+    margin: 0;
+  }
+}
+
+.tdb-sujet__side {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.tdb-sujet__date {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+  margin: 0;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 768px) {
+  .tdb-container {
+    padding: 0 1rem;
+  }
+
+  .tdb-section {
+    padding: 0;
+  }
+
+  .tdb-header__title {
+    font-size: 1.25rem;
+  }
+
+  .tdb-sujet {
+    flex-direction: column;
+  }
+
+  .tdb-sujet__side {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

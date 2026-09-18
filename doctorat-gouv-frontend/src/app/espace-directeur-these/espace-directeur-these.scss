@@ -483,9 +483,72 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .ed-axe-toggle {
-  border-top: 1px solid $color-border;
-  padding-top: 12px;
   margin-top: 8px;
+}
+
+.ed-axe-toggle__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ed-axe-toggle__label {
+  font-family: $font-family;
+  font-size: 14px;
+  color: $color-text-primary;
+}
+
+/* Interrupteur maison (le markup fr-toggle DSFR ne s'affiche pas ici) */
+.ed-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: 1px solid $color-blue-france;
+  background: $color-white;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.ed-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: $color-white;
+  border: 1px solid $color-blue-france;
+  transition: left 0.15s, background 0.15s;
+}
+
+.ed-switch[aria-checked="true"] {
+  background: $color-blue-france;
+}
+
+.ed-switch[aria-checked="true"] .ed-switch__knob {
+  left: 20px;
+  background: $color-white;
+  border-color: $color-white;
+}
+
+.ed-axe-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-family: $font-family;
+  font-size: 13px;
+  line-height: 1.4;
+  color: $color-blue-france;
+}
+
+.ed-axe-note__icon {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .ed-icon-btn {

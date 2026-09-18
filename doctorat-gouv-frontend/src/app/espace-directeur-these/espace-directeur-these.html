@@ -24,6 +24,10 @@
         <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
         Tableau de bord
       </a>
+      <a routerLink="/mes-sujets-directeur-these" class="ed-sidebar__dashboard-link">
+        <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+        Mes sujets
+      </a>
     </aside>
 
     <!-- ======== ZONE PRINCIPALE ======== -->
@@ -513,12 +517,19 @@
                                 placeholder="Modalités d'encadrement, co-encadrement, financement envisagé, attendes vis-à-vis du candidat,..."></textarea>
                     </div>
                     <div class="ed-axe-toggle">
-                      <span class="fr-text--sm">Vous pouvez me contacter à propos d'un projet doctoral dans ce domaine</span>
-                      <label class="fr-toggle">
-                        <input type="checkbox" [checked]="axe.contactable" (change)="toggleAxeContactable(i)" />
-                        <span class="fr-toggle__label"></span>
-                      </label>
-                      <p class="fr-hint-text fr-mt-1w">Cela va générer une offre d'accompagnement qui sera publiée sur doctorat.gouv.fr, qui sera rendue visible par les candidats et partenaires.</p>
+                      <div class="ed-axe-toggle__row">
+                        <span class="ed-axe-toggle__label" id="axe-contact-label-{{ i }}">Vous pouvez me contacter à propos d'un projet doctoral dans ce domaine</span>
+                        <button type="button" class="ed-switch" role="switch"
+                                [attr.aria-checked]="axe.contactable"
+                                [attr.aria-labelledby]="'axe-contact-label-' + i"
+                                (click)="toggleAxeContactable(i)">
+                          <span class="ed-switch__knob" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                      <p class="ed-axe-note">
+                        <span class="fr-icon-information-fill ed-axe-note__icon" aria-hidden="true"></span>
+                        <span>Cela va générer une offre d'accompagnement qui sera publiée sur doctorat.gouv.fr, visible par les candidats et partenaires.</span>
+                      </p>
                     </div>
                   </div>
                 </div>

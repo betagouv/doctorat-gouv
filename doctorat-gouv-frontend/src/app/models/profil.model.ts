@@ -79,3 +79,17 @@ export interface AxeDeRecherche {
   precisions: string;
   contactable: boolean;
 }
+
+/** Un sujet de thèse rattaché au directeur de thèse. */
+export interface SujetDt {
+  id: number;
+  matricule: string | null;
+  titre: string | null;
+  etablissement: string | null;
+  ecoleDoctorale: string | null;
+  laboratoire: string | null;
+  active: boolean | null;
+  role: string | null;
+  dateMiseEnLigne: string | null;
+  dateLimiteCandidature: string | null;
+}
