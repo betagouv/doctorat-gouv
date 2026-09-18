@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
 import jakarta.validation.Valid;
 
@@ -72,6 +75,13 @@ public class DirecteurTheseController {
         log.info("Suppression axe de recherche '{}' pour le directeur de thèse {}", competence, userId);
         ProfilDtResponse response = directeurTheseService.removeCompetence(userId, competence.trim());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/sujets")
+    public ResponseEntity<List<SujetDtResponse>> getSujets() {
+        String userId = getCurrentUserId();
+        log.info("Consultation des sujets du directeur de thèse {}", userId);
+        return ResponseEntity.ok(directeurTheseService.getSujets(userId));
     }
 
     @PutMapping("/mot-de-passe")

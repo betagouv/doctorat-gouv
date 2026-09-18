@@ -10,13 +10,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
+import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
+import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @Service
@@ -26,13 +33,16 @@ public class DirecteurTheseService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilDirecteurTheseRepository profilDtRepository;
+    private final PropositionTheseRepository propositionTheseRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
+                                  PropositionTheseRepository propositionTheseRepository,
                                   PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
+        this.propositionTheseRepository = propositionTheseRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -119,6 +129,43 @@ public class DirecteurTheseService {
         return toProfilDtResponse(utilisateur);
     }
 
+    /**
+     * Retourne tous les sujets rattachés au directeur de thèse (actifs et inactifs).
+     * Le rattachement se fait par comparaison de l'e-mail et/ou de l'ORCID du DT
+     * avec les champs direction/codirection de la proposition de thèse.
+     */
+    public List<SujetDtResponse> getSujets(String userId) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
+
+        String email = normalizeEmail(utilisateur.getEmail());
+        String orcid = normalizeOrcid(profil != null ? profil.getOrcid() : null);
+
+        Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
+        if (email != null) {
+            for (PropositionThese p : propositionTheseRepository.findByDirecteurEmail(email)) {
+                if (p.getId() != null) {
+                    sujets.putIfAbsent(p.getId(), p);
+                }
+            }
+        }
+        if (orcid != null) {
+            for (PropositionThese p : propositionTheseRepository.findByDirecteurOrcid(orcid)) {
+                if (p.getId() != null) {
+                    sujets.putIfAbsent(p.getId(), p);
+                }
+            }
+        }
+
+        List<SujetDtResponse> response = new ArrayList<>();
+        for (PropositionThese p : sujets.values()) {
+            response.add(toSujetDtResponse(p, email, orcid));
+        }
+        log.info("{} sujet(s) trouvé(s) pour le directeur de thèse {}", response.size(), userId);
+        return response;
+    }
+
     public void changerMotDePasse(String userId, ChangementMotDePasseRequest request) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
@@ -135,6 +182,46 @@ public class DirecteurTheseService {
         utilisateur.setDateModification(LocalDateTime.now());
         utilisateurRepository.save(utilisateur);
         log.info("Mot de passe modifié pour le directeur de thèse {}", userId);
+    }
+
+    private SujetDtResponse toSujetDtResponse(PropositionThese p, String email, String orcid) {
+        SujetDtResponse dto = new SujetDtResponse();
+        dto.setId(p.getId());
+        dto.setMatricule(p.getMatricule());
+        dto.setTitre(p.getTheseTitre());
+        dto.setEtablissement(p.getEtablissementLibelle());
+        dto.setEcoleDoctorale(p.getEcoleDoctoraleLibelle());
+        dto.setLaboratoire(p.getUniteRechercheLibelle());
+        dto.setActive(p.getActive());
+        dto.setRole(isDirectionMatch(p, email, orcid) ? "DIRECTION" : "CODIRECTION");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        dto.setDateMiseEnLigne(p.getDateMiseEnLigne() != null ? p.getDateMiseEnLigne().format(dateTimeFormatter) : null);
+        dto.setDateLimiteCandidature(p.getDateLimiteCandidature() != null ? p.getDateLimiteCandidature().format(dateTimeFormatter) : null);
+        return dto;
+    }
+
+    private boolean isDirectionMatch(PropositionThese p, String email, String orcid) {
+        if (email != null
+            && (email.equals(normalizeEmail(p.getDirectionTheseEmail())))) {
+            return true;
+        }
+        return orcid != null && orcid.equals(normalizeOrcid(p.getDirectionTheseOrcid()));
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        String normalized = email.trim().toLowerCase();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    private String normalizeOrcid(String orcid) {
+        if (orcid == null) {
+            return null;
+        }
+        String normalized = orcid.trim();
+        return normalized.isEmpty() ? null : normalized;
     }
 
     private ProfilDtResponse toProfilDtResponse(Utilisateur u) {

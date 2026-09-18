@@ -86,6 +86,22 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 
     List<PropositionThese> findByIdIn(List<Long> ids);
 
+    /** Sujets où l'e-mail (insensible à la casse) correspond à la direction ou à la codirection. */
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE LOWER(TRIM(p.directionTheseEmail)) = LOWER(TRIM(:email))
+               OR LOWER(TRIM(p.codirectionTheseEmail)) = LOWER(TRIM(:email))
+        """)
+    List<PropositionThese> findByDirecteurEmail(@Param("email") String email);
+
+    /** Sujets où l'ORCID correspond à la direction ou à la codirection. */
+    @Query("""
+            SELECT p FROM PropositionThese p
+            WHERE TRIM(p.directionTheseOrcid) = TRIM(:orcid)
+               OR TRIM(p.codirectionTheseOrcid) = TRIM(:orcid)
+        """)
+    List<PropositionThese> findByDirecteurOrcid(@Param("orcid") String orcid);
+
     List<PropositionThese> findByDateMajAfter(LocalDateTime depuis);
     
     @Query("""
