@@ -21,8 +21,11 @@ export class EspaceDirecteurThese implements OnInit {
   profil: ProfilDtResponse | null = null;
   profilForm: FormGroup;
   motDePasseForm: FormGroup;
+  axesForm: FormGroup;
   isEditing = false;
   isSaving = false;
+  isEditingAxes = false;
+  isSavingAxes = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
@@ -85,6 +88,10 @@ export class EspaceDirecteurThese implements OnInit {
       motDePasseActuel: ['', [Validators.required]],
       nouveauMotDePasse: ['', [Validators.required, Validators.minLength(12)]],
       confirmationMotDePasse: ['', [Validators.required]],
+    });
+
+    this.axesForm = this.fb.group({
+      descriptionAxes: ['', [Validators.required, Validators.maxLength(2000)]],
     });
   }
 
@@ -173,8 +180,8 @@ export class EspaceDirecteurThese implements OnInit {
       domaineScientifique: this.profilForm.value.domaineScientifique || null,
       expertiseMots: this.profilForm.value.expertiseMots || null,
       motsCles: this.motsCles,
-      descriptionAxes: this.descriptionAxes || null,
-      axes: this.axes.map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable})),
+      descriptionAxes: this.profil?.descriptionAxes ?? null,
+      axes: (this.profil?.axes ?? []).map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable})),
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -186,6 +193,85 @@ export class EspaceDirecteurThese implements OnInit {
       },
       error: () => {
         this.isSaving = false;
+        this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+      }
+    });
+  }
+
+  startEditAxes(): void {
+    if (this.profil) {
+      this.descriptionAxes = this.profil.descriptionAxes ?? '';
+      this.axes = this.profil.axes ? this.profil.axes.map(a => ({...a})) : [];
+      this.axesForm.patchValue({ descriptionAxes: this.descriptionAxes });
+    }
+    this.isEditingAxes = true;
+    this.successMessage = null;
+    this.errorMessage = null;
+  }
+
+  cancelEditAxes(): void {
+    this.isEditingAxes = false;
+    this.errorMessage = null;
+    if (this.profil) {
+      this.descriptionAxes = this.profil.descriptionAxes ?? '';
+      this.axes = this.profil.axes ? this.profil.axes.map(a => ({...a})) : [];
+      this.axesForm.patchValue({ descriptionAxes: this.descriptionAxes });
+    }
+  }
+
+  saveAxes(): void {
+    if (this.axesForm.invalid) {
+      this.axesForm.markAllAsTouched();
+      this.errorMessage = 'La description des axes de recherche est obligatoire.';
+      return;
+    }
+    const invalidAxe = this.axes.some(a => !a.titre?.trim() || !a.precisions?.trim());
+    if (invalidAxe) {
+      this.errorMessage = 'Chaque axe de recherche doit avoir un titre et des précisions.';
+      return;
+    }
+    if (!this.profil) {
+      this.errorMessage = 'Profil introuvable. Veuillez recharger la page.';
+      return;
+    }
+
+    this.isSavingAxes = true;
+    this.errorMessage = null;
+
+    const p = this.profil;
+    const request: ProfilDtUpdateRequest = {
+      civilite: p.civilite,
+      nom: p.nom,
+      prenom: p.prenom,
+      email: p.email,
+      competences: p.competences ?? [],
+      orcid: p.orcid,
+      etablissement: p.etablissement,
+      laboratoire: p.laboratoire,
+      ecoleDoctorale: p.ecoleDoctorale,
+      employeur: p.employeur,
+      titre: p.titre,
+      precisionTitre: p.precisionTitre,
+      habilitationRecherche: p.habilitationRecherche,
+      domaineScientifique: p.domaineScientifique,
+      expertiseMots: p.expertiseMots,
+      motsCles: p.motsCles ?? [],
+      descriptionAxes: (this.axesForm.value.descriptionAxes ?? '').trim() || null,
+      axes: this.axes.map(a => ({titre: a.titre.trim(), precisions: a.precisions.trim(), contactable: a.contactable})),
+    };
+
+    this.directeurService.updateProfil(request).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.descriptionAxes = data.descriptionAxes ?? '';
+        this.axes = data.axes ? data.axes.map(a => ({...a})) : [];
+        this.axesForm.patchValue({ descriptionAxes: this.descriptionAxes });
+        this.isEditingAxes = false;
+        this.isSavingAxes = false;
+        this.successMessage = 'Axes de recherche mis à jour avec succès.';
+      },
+      error: () => {
+        this.isSavingAxes = false;
         this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
       }
     });
@@ -281,6 +367,7 @@ export class EspaceDirecteurThese implements OnInit {
     this.motsCles = data.motsCles ? [...data.motsCles] : [];
     this.descriptionAxes = data.descriptionAxes ?? '';
     this.axes = data.axes ? data.axes.map(a => ({...a})) : [];
+    this.axesForm.patchValue({ descriptionAxes: data.descriptionAxes ?? '' });
   }
 
   private loadReferentiels(): void {
