@@ -212,11 +212,11 @@ $font-family: 'Marianne', arial, sans-serif;
 .ed-card .ed-card__header--no-separator {
   border-bottom: none;
   margin-bottom: 0;
-  padding-bottom: 0 !important;
+  padding: 1.5rem 2rem 0 !important;
 }
 
 .ed-card .ed-card__body--tight-top {
-  padding-top: 1rem !important;
+  padding-top: 0.75rem !important;
 }
 
 /* Séparateurs de l'accordéon DSFR limités à haut + bas */
