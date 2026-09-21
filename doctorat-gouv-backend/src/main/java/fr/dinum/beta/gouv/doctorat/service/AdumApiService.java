@@ -25,6 +25,7 @@ import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.model.AdumResponse;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 /**
  *  Service pour interagir avec l'API ADUM.
  */
@@ -97,6 +98,7 @@ public class AdumApiService {
 		List<PropositionThese> toSave = new ArrayList<>();
 
 		for (PropositionThese p : propositions) {
+			normalizeEmails(p);
 			p.setAnnee(properties.getYear());
 			p.setSource(SourceThese.ADUM);
 			// Vérifie si la proposition doit être insérée ou mise à jour
@@ -169,6 +171,7 @@ public class AdumApiService {
 	    	
 	    	log.info("Traitement de la proposition (matricule {}) en mode RATTRAPAGE", p.getMatricule());
 	    	
+	    	normalizeEmails(p);
 	    	p.setAnnee(properties.getYear());
 	    	p.setSource(SourceThese.ADUM);
 
@@ -238,6 +241,17 @@ public class AdumApiService {
 	
 	public AdumApiProperties getProperties() {
 	    return properties;
+	}
+
+	/**
+	 * Homogénéise les e-mails fournis par ADUM (casse/espaces variables).
+	 * La normalisation est aussi faite en {@code @PrePersist/@PreUpdate} de l'entité,
+	 * mais on la fait ici explicitement pour que les logs et la déduplication voient déjà la forme canonique.
+	 */
+	private void normalizeEmails(PropositionThese p) {
+		p.setDirectionTheseEmail(EmailUtils.normalize(p.getDirectionTheseEmail()));
+		p.setCodirectionTheseEmail(EmailUtils.normalize(p.getCodirectionTheseEmail()));
+		p.setDeposantEmail(EmailUtils.normalize(p.getDeposantEmail()));
 	}
 
 	

@@ -29,6 +29,7 @@ import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 
 @Service
 public class DirecteurTheseService {
@@ -63,7 +64,13 @@ public class DirecteurTheseService {
 
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
-        utilisateur.setEmail(request.getEmail());
+        String normalizedEmail = EmailUtils.normalize(request.getEmail());
+        if (normalizedEmail != null && !normalizedEmail.equals(utilisateur.getEmail())) {
+            utilisateurRepository.findByEmailIgnoreCaseAndTrim(normalizedEmail)
+                .filter(u -> !u.getId().equals(userId))
+                .ifPresent(u -> { throw new IllegalArgumentException("Un compte existe déjà avec cet email"); });
+        }
+        utilisateur.setEmail(normalizedEmail);
         if (request.getCompetences() != null) {
             utilisateur.setCompetences(new ArrayList<>(request.getCompetences()));
         }
@@ -287,11 +294,7 @@ public class DirecteurTheseService {
     }
 
     private String normalizeEmail(String email) {
-        if (email == null) {
-            return null;
-        }
-        String normalized = email.trim().toLowerCase();
-        return normalized.isEmpty() ? null : normalized;
+        return EmailUtils.normalize(email);
     }
 
     private String normalizeOrcid(String orcid) {

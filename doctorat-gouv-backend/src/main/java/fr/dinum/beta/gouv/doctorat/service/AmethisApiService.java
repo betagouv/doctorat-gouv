@@ -24,6 +24,7 @@ import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.model.AmethisResponse;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 
 @Service
 public class AmethisApiService {
@@ -89,6 +90,7 @@ public class AmethisApiService {
 
         for (PropositionThese p : propositions) {
         	
+            normalizeEmails(p);
             p.setSource(SourceThese.AMETHIS);
             p.setAnnee(currentYear);
             
@@ -143,6 +145,7 @@ public class AmethisApiService {
         int compteur = 1; // Compteur pour garantir l'unicité du matricule en cas de réimport rapide
 
         for (PropositionThese p : propositions) {
+            normalizeEmails(p);
             p.setSource(SourceThese.AMETHIS);
             p.setAnnee(currentYear);
             
@@ -268,6 +271,15 @@ public class AmethisApiService {
         }
 
         return matricule;
+    }
+
+    /**
+     * Homogénéise les e-mails fournis par AMETHIS (casse/espaces variables).
+     */
+    private void normalizeEmails(PropositionThese p) {
+        p.setDirectionTheseEmail(EmailUtils.normalize(p.getDirectionTheseEmail()));
+        p.setCodirectionTheseEmail(EmailUtils.normalize(p.getCodirectionTheseEmail()));
+        p.setDeposantEmail(EmailUtils.normalize(p.getDeposantEmail()));
     }
 
 }

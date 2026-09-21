@@ -17,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
@@ -112,7 +114,13 @@ public class Utilisateur {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(email);
+    }
+
+    @PrePersist
+    @PreUpdate
+    void normalizeEmailBeforeSave() {
+        this.email = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(this.email);
     }
 
     public String getMotDePasse() {

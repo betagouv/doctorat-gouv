@@ -76,7 +76,7 @@ class AuthServiceTest {
         request.setNom("Curie");
         request.setRole(RoleUtilisateur.CANDIDAT);
 
-        when(utilisateurRepository.existsByEmail("nouveau@exemple.fr")).thenReturn(false);
+        when(utilisateurRepository.existsByEmailIgnoreCaseAndTrim("nouveau@exemple.fr")).thenReturn(false);
         when(passwordEncoder.encode("MotDePasse1234!")).thenReturn("$2a$10$encoded");
         when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(invocation -> {
             Utilisateur u = invocation.getArgument(0);
@@ -100,7 +100,7 @@ class AuthServiceTest {
         assertNotNull(result.getUtilisateur().getDateCreation());
         assertEquals(86400000L, result.getExpiresIn());
 
-        verify(utilisateurRepository).existsByEmail("nouveau@exemple.fr");
+        verify(utilisateurRepository).existsByEmailIgnoreCaseAndTrim("nouveau@exemple.fr");
         verify(passwordEncoder).encode("MotDePasse1234!");
         verify(utilisateurRepository).save(any(Utilisateur.class));
     }
@@ -114,7 +114,7 @@ class AuthServiceTest {
         request.setNom("User");
         request.setRole(RoleUtilisateur.CANDIDAT);
 
-        when(utilisateurRepository.existsByEmail("existant@exemple.fr")).thenReturn(true);
+        when(utilisateurRepository.existsByEmailIgnoreCaseAndTrim("existant@exemple.fr")).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -133,7 +133,7 @@ class AuthServiceTest {
         request.setEmail("test@exemple.fr");
         request.setMotDePasse("MotDePasse1234!");
 
-        when(utilisateurRepository.findByEmail("test@exemple.fr")).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findByEmailIgnoreCaseAndTrim("test@exemple.fr")).thenReturn(Optional.of(utilisateur));
         when(passwordEncoder.matches("MotDePasse1234!", "$2a$10$hashedPassword")).thenReturn(true);
         when(jwtConfig.getExpirationMs()).thenReturn(86400000L);
         when(jwtConfig.getSecret()).thenReturn("VGhpc0lzQVZlcnlMb25nU2VjcmV0S2V5Rm9ySlRXVGVzdGluZ1B1cnBvc2Vz");
@@ -146,7 +146,7 @@ class AuthServiceTest {
         assertEquals("test@exemple.fr", response.getUtilisateur().getEmail());
         assertEquals(86400000L, response.getExpiresIn());
 
-        verify(utilisateurRepository).findByEmail("test@exemple.fr");
+        verify(utilisateurRepository).findByEmailIgnoreCaseAndTrim("test@exemple.fr");
         verify(passwordEncoder).matches("MotDePasse1234!", "$2a$10$hashedPassword");
     }
 
@@ -156,7 +156,7 @@ class AuthServiceTest {
         request.setEmail("inconnu@exemple.fr");
         request.setMotDePasse("MotDePasse1234!");
 
-        when(utilisateurRepository.findByEmail("inconnu@exemple.fr")).thenReturn(Optional.empty());
+        when(utilisateurRepository.findByEmailIgnoreCaseAndTrim("inconnu@exemple.fr")).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -172,7 +172,7 @@ class AuthServiceTest {
         request.setEmail("test@exemple.fr");
         request.setMotDePasse("MauvaisMotDePasse!");
 
-        when(utilisateurRepository.findByEmail("test@exemple.fr")).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findByEmailIgnoreCaseAndTrim("test@exemple.fr")).thenReturn(Optional.of(utilisateur));
         when(passwordEncoder.matches("MauvaisMotDePasse!", "$2a$10$hashedPassword")).thenReturn(false);
 
         IllegalArgumentException exception = assertThrows(

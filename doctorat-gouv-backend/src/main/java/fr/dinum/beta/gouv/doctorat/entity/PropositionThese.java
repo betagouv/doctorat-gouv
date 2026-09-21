@@ -16,6 +16,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -375,7 +377,7 @@ public class PropositionThese {
 	}
 
 	public void setDeposantEmail(String deposantEmail) {
-		this.deposantEmail = deposantEmail;
+		this.deposantEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(deposantEmail);
 	}
 
 	public String getAnneeUniversitaire() {
@@ -511,7 +513,7 @@ public class PropositionThese {
 	}
 
 	public void setDirectionTheseEmail(String directionTheseEmail) {
-		this.directionTheseEmail = directionTheseEmail;
+		this.directionTheseEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(directionTheseEmail);
 	}
 
 	public String getCodirectionTheseOrcid() {
@@ -543,7 +545,15 @@ public class PropositionThese {
 	}
 
 	public void setCodirectionTheseEmail(String codirectionTheseEmail) {
-		this.codirectionTheseEmail = codirectionTheseEmail;
+		this.codirectionTheseEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(codirectionTheseEmail);
+	}
+
+	@PrePersist
+	@PreUpdate
+	void normalizeEmailsBeforeSave() {
+		this.deposantEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(this.deposantEmail);
+		this.directionTheseEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(this.directionTheseEmail);
+		this.codirectionTheseEmail = fr.dinum.beta.gouv.doctorat.util.EmailUtils.normalize(this.codirectionTheseEmail);
 	}
 
 	public String getInterdisciplinaire() {

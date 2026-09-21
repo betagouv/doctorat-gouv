@@ -16,6 +16,7 @@ import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 
 @Service
 public class ProfilService {
@@ -44,7 +45,13 @@ public class ProfilService {
 
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
-        utilisateur.setEmail(request.getEmail());
+        String normalizedEmail = EmailUtils.normalize(request.getEmail());
+        if (normalizedEmail != null && !normalizedEmail.equals(utilisateur.getEmail())) {
+            utilisateurRepository.findByEmailIgnoreCaseAndTrim(normalizedEmail)
+                .filter(u -> !u.getId().equals(userId))
+                .ifPresent(u -> { throw new IllegalArgumentException("Un compte existe déjà avec cet email"); });
+        }
+        utilisateur.setEmail(normalizedEmail);
         if (request.getCompetences() != null) {
             utilisateur.setCompetences(new ArrayList<>(request.getCompetences()));
         }

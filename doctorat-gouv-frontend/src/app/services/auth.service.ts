@@ -26,7 +26,8 @@ export class AuthService {
   }
 
   login(request: ConnexionRequest): Observable<ConnexionResponse> {
-    return this.http.post<ConnexionResponse>(`${this.apiUrl}/connexion`, request).pipe(
+    const normalized = { ...request, email: this.normalizeEmail(request.email) };
+    return this.http.post<ConnexionResponse>(`${this.apiUrl}/connexion`, normalized).pipe(
       tap(response => {
         this.setSession(response);
       })
@@ -34,7 +35,8 @@ export class AuthService {
   }
 
   inscription(request: InscriptionRequest): Observable<ConnexionResponse> {
-    return this.http.post<ConnexionResponse>(`${this.apiUrl}/inscription`, request).pipe(
+    const normalized = { ...request, email: this.normalizeEmail(request.email) };
+    return this.http.post<ConnexionResponse>(`${this.apiUrl}/inscription`, normalized).pipe(
       tap(response => {
         this.setSession(response);
       })
@@ -69,6 +71,10 @@ export class AuthService {
     localStorage.setItem(this.TOKEN_KEY, response.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response.utilisateur));
     this.currentUserSignal.set(response.utilisateur);
+  }
+
+  private normalizeEmail(email: string): string {
+    return (email ?? '').trim().toLowerCase();
   }
 
   private loadFromStorage(): void {

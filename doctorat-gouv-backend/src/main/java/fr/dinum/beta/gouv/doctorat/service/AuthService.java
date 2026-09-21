@@ -24,6 +24,7 @@ import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -52,14 +53,15 @@ public class AuthService {
     }
 
     public ConnexionResponse inscrire(InscriptionRequest request) {
-        log.info("Inscription de {}", request.getEmail());
+        String email = EmailUtils.normalize(request.getEmail());
+        log.info("Inscription de {}", email);
 
-        if (utilisateurRepository.existsByEmail(request.getEmail())) {
+        if (utilisateurRepository.existsByEmailIgnoreCaseAndTrim(email)) {
             throw new IllegalArgumentException("Un compte existe déjà avec cet email");
         }
 
         Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setEmail(request.getEmail());
+        utilisateur.setEmail(email);
         utilisateur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
         utilisateur.setPrenom(request.getPrenom());
         utilisateur.setNom(request.getNom());
@@ -124,9 +126,10 @@ public class AuthService {
     }
 
     public ConnexionResponse connecter(ConnexionRequest request) {
-        log.info("Connexion de {}", request.getEmail());
+        String email = EmailUtils.normalize(request.getEmail());
+        log.info("Connexion de {}", email);
 
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+        Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email ou mot de passe incorrect"));
 
         if (!passwordEncoder.matches(request.getMotDePasse(), utilisateur.getMotDePasse())) {
