@@ -93,3 +93,15 @@ export interface SujetDt {
   dateMiseEnLigne: string | null;
   dateLimiteCandidature: string | null;
 }
+
+/** Une demande de mise en relation faite par un candidat sur un sujet du DT. */
+export interface DemandeDt {
+  id: number;
+  propositionTheseId: number;
+  titreSujet: string | null;
+  etablissement: string | null;
+  candidatNom: string | null;
+  candidatEmail: string | null;
+  dateDemande: string | null;
+  statut: string | null;
+}

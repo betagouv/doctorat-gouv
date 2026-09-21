@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
+import { DemandeDt, ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
 
 @Injectable({ providedIn: 'root' })
 export class DirecteurTheseService {
@@ -33,6 +33,10 @@ export class DirecteurTheseService {
 
   getSujets(): Observable<SujetDt[]> {
     return this.http.get<SujetDt[]>(`${this.apiUrl}/sujets`);
+  }
+
+  getDemandes(): Observable<DemandeDt[]> {
+    return this.http.get<DemandeDt[]>(`${this.apiUrl}/mises-en-relation`);
   }
 }
 
