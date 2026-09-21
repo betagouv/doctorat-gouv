@@ -26,18 +26,56 @@
       </a>
     </section>
 
-    <!-- ======== ETAT VIDE ======== -->
-    <section class="tdb-section">
-      <div class="tdb-empty">
+    <!-- ======== DEMANDES DE MISE EN RELATION ======== -->
+    <section class="tdb-section tdb-demandes">
+      <div class="tdb-demandes__header">
+        <h2 class="tdb-demandes__title">Demandes de mise en relation ({{ demandes.length }})</h2>
+        <p class="tdb-demandes__subtitle">Demandes envoyees par des candidats sur vos sujets de these.</p>
+      </div>
+
+      <div class="fr-alert fr-alert--info fr-mb-3w tdb-demandes__alert" *ngIf="isLoadingDemandes" role="status">
+        Chargement des demandes...
+      </div>
+      <div class="fr-alert fr-alert--error fr-mb-3w tdb-demandes__alert" *ngIf="!isLoadingDemandes && errorDemandes" role="alert">
+        {{ errorDemandes }}
+      </div>
+
+      <div class="tdb-empty tdb-empty--compact" *ngIf="!isLoadingDemandes && !errorDemandes && demandes.length === 0">
         <div class="tdb-empty__icon">
           <span class="fr-icon-file-text-line" aria-hidden="true"></span>
         </div>
-        <h3 class="tdb-empty__title">Aucune activite pour le moment</h3>
+        <h3 class="tdb-empty__title">Aucune demande pour le moment</h3>
         <p class="tdb-empty__text">
-          Votre tableau de bord sera bientot disponible.<br/>
-          Vous pourrez y suivre les demandes de mise en relation des candidats.
+          Vous n'avez recu aucune demande de mise en relation sur vos sujets.<br/>
+          Les demandes des candidats apparaitront ici.
         </p>
       </div>
+
+      <article class="tdb-demande" *ngFor="let demande of demandes">
+        <div class="tdb-demande__main">
+          <div class="tdb-demande__badges">
+            <span class="fr-badge fr-badge--sm fr-badge--new">Mise en relation demandee</span>
+          </div>
+          <h3 class="tdb-demande__title">{{ demande.titreSujet || 'Titre non renseigne' }}</h3>
+          <dl class="tdb-demande__meta">
+            <div>
+              <dt>Candidat</dt>
+              <dd>{{ demande.candidatNom || '—' }}</dd>
+            </div>
+            <div *ngIf="demande.etablissement">
+              <dt>Etablissement</dt>
+              <dd>{{ demande.etablissement }}</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="tdb-demande__side">
+          <p class="tdb-demande__date" *ngIf="demande.dateDemande">Demandee le {{ formatDate(demande.dateDemande) }}</p>
+          <a class="fr-link" [routerLink]="['/proposition']" [queryParams]="{id: demande.propositionTheseId}">
+            Voir le sujet
+            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+          </a>
+        </div>
+      </article>
     </section>
 
   </div>
