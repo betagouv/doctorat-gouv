@@ -15,13 +15,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.DemandeDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
+import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
+import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
@@ -34,15 +38,18 @@ public class DirecteurTheseService {
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilDirecteurTheseRepository profilDtRepository;
     private final PropositionTheseRepository propositionTheseRepository;
+    private final DemandeMiseEnRelationRepository demandeMiseEnRelationRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
                                   PropositionTheseRepository propositionTheseRepository,
+                                  DemandeMiseEnRelationRepository demandeMiseEnRelationRepository,
                                   PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
         this.propositionTheseRepository = propositionTheseRepository;
+        this.demandeMiseEnRelationRepository = demandeMiseEnRelationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -135,6 +142,83 @@ public class DirecteurTheseService {
      * avec les champs direction/codirection de la proposition de thèse.
      */
     public List<SujetDtResponse> getSujets(String userId) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
+        String email = normalizeEmail(utilisateur.getEmail());
+        String orcid = normalizeOrcid(profil != null ? profil.getOrcid() : null);
+
+        List<SujetDtResponse> response = new ArrayList<>();
+        for (PropositionThese p : sujets.values()) {
+            response.add(toSujetDtResponse(p, email, orcid));
+        }
+        log.info("{} sujet(s) trouvé(s) pour le directeur de thèse {}", response.size(), userId);
+        return response;
+    }
+
+    /**
+     * Retourne les demandes de mise en relation envoyées (statut CREE, non archivées)
+     * par des candidats sur les sujets rattachés au directeur de thèse.
+     */
+    public List<DemandeDtResponse> getDemandes(String userId) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        if (sujets.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<DemandeMiseEnRelation> demandes = demandeMiseEnRelationRepository
+            .findByPropositionTheseIdInOrderByUpdatedAtDesc(new ArrayList<>(sujets.keySet()));
+
+        List<String> candidatIds = demandes.stream()
+            .map(DemandeMiseEnRelation::getCandidatId)
+            .filter(id -> id != null)
+            .distinct()
+            .toList();
+        Map<String, Utilisateur> candidats = new LinkedHashMap<>();
+        if (!candidatIds.isEmpty()) {
+            for (Utilisateur u : utilisateurRepository.findAllById(candidatIds)) {
+                candidats.put(u.getId(), u);
+            }
+        }
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        List<DemandeDtResponse> response = new ArrayList<>();
+        for (DemandeMiseEnRelation d : demandes) {
+            if (d.getStatut() != StatutDemandeMiseEnRelation.CREE
+                || Boolean.TRUE.equals(d.getArchivee())) {
+                continue;
+            }
+            PropositionThese p = sujets.get(d.getPropositionTheseId());
+            if (p == null) {
+                continue;
+            }
+            Utilisateur candidat = candidats.get(d.getCandidatId());
+            DemandeDtResponse dto = new DemandeDtResponse();
+            dto.setId(d.getId());
+            dto.setPropositionTheseId(d.getPropositionTheseId());
+            dto.setTitreSujet(p.getTheseTitre());
+            dto.setEtablissement(p.getEtablissementLibelle());
+            if (candidat != null) {
+                String nomComplet = ((candidat.getPrenom() != null ? candidat.getPrenom().trim() + " " : "")
+                    + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
+                dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
+                dto.setCandidatEmail(candidat.getEmail());
+            }
+            dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
+            dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
+            response.add(dto);
+        }
+        log.info("{} demande(s) de mise en relation trouvée(s) pour le directeur de thèse {}",
+            response.size(), userId);
+        return response;
+    }
+
+    /**
+     * Sujets rattachés au DT par comparaison de son e-mail et/ou ORCID
+     * avec les champs direction/codirection des propositions.
+     */
+    private Map<Long, PropositionThese> findSujetsRattaches(String userId) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
         ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
@@ -157,13 +241,7 @@ public class DirecteurTheseService {
                 }
             }
         }
-
-        List<SujetDtResponse> response = new ArrayList<>();
-        for (PropositionThese p : sujets.values()) {
-            response.add(toSujetDtResponse(p, email, orcid));
-        }
-        log.info("{} sujet(s) trouvé(s) pour le directeur de thèse {}", response.size(), userId);
-        return response;
+        return sujets;
     }
 
     public void changerMotDePasse(String userId, ChangementMotDePasseRequest request) {

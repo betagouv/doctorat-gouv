@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.DemandeDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
@@ -82,6 +83,13 @@ public class DirecteurTheseController {
         String userId = getCurrentUserId();
         log.info("Consultation des sujets du directeur de thèse {}", userId);
         return ResponseEntity.ok(directeurTheseService.getSujets(userId));
+    }
+
+    @GetMapping("/mises-en-relation")
+    public ResponseEntity<List<DemandeDtResponse>> getDemandes() {
+        String userId = getCurrentUserId();
+        log.info("Consultation des demandes de mise en relation du directeur de thèse {}", userId);
+        return ResponseEntity.ok(directeurTheseService.getDemandes(userId));
     }
 
     @PutMapping("/mot-de-passe")

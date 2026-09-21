@@ -18,4 +18,6 @@ public interface DemandeMiseEnRelationRepository extends JpaRepository<DemandeMi
     boolean existsByCandidatIdAndPropositionTheseId(String candidatId, Long propositionTheseId);
 
     List<DemandeMiseEnRelation> findByCandidatIdOrderByUpdatedAtDesc(String candidatId);
+
+    List<DemandeMiseEnRelation> findByPropositionTheseIdInOrderByUpdatedAtDesc(List<Long> propositionTheseIds);
 }
