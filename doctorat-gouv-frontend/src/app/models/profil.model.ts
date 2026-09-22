@@ -102,6 +102,7 @@ export interface DemandeDt {
   etablissement: string | null;
   candidatNom: string | null;
   candidatEmail: string | null;
+  candidatPhotoUrl: string | null;
   dateDemande: string | null;
   statut: string | null;
 }

@@ -50,7 +50,24 @@ export class TableauDeBordDirecteurThese implements OnInit {
     });
   }
 
-  formatDate(dateTime: string | null): string {
+  /** Colonne EN ATTENTE : demandes envoyées, en attente de décision du DT. */
+  get enAttente(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'CREE');
+  }
+
+  /** Colonne MISES EN RELATION : demandes acceptées par le DT (fonctionnalité à venir). */
+  get misesEnRelation(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'ACCEPTEE');
+  }
+
+  initiales(nom: string | null): string {
+    if (!nom) {
+      return '?';
+    }
+    return nom.trim().split(/\s+/).map(p => p.charAt(0)).join('').slice(0, 2).toUpperCase();
+  }
+
+  formatDateCandidature(dateTime: string | null): string {
     if (!dateTime) {
       return '—';
     }
@@ -58,6 +75,8 @@ export class TableauDeBordDirecteurThese implements OnInit {
     if (isNaN(date.getTime())) {
       return dateTime;
     }
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const jour = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const heure = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h');
+    return `${jour} à ${heure}`;
   }
 }
