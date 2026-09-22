@@ -12,6 +12,7 @@ public class DemandeDtResponse {
     private String etablissement;
     private String candidatNom;
     private String candidatEmail;
+    private String candidatPhotoUrl;
     private String dateDemande;
     private String statut;
 
@@ -34,6 +35,9 @@ public class DemandeDtResponse {
 
     public String getCandidatEmail() { return candidatEmail; }
     public void setCandidatEmail(String candidatEmail) { this.candidatEmail = candidatEmail; }
+
+    public String getCandidatPhotoUrl() { return candidatPhotoUrl; }
+    public void setCandidatPhotoUrl(String candidatPhotoUrl) { this.candidatPhotoUrl = candidatPhotoUrl; }
 
     public String getDateDemande() { return dateDemande; }
     public void setDateDemande(String dateDemande) { this.dateDemande = dateDemande; }

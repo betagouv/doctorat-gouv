@@ -211,6 +211,7 @@ public class DirecteurTheseService {
                     + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
                 dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
                 dto.setCandidatEmail(candidat.getEmail());
+                dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
             }
             dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
             dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
