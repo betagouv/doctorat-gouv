@@ -8,74 +8,124 @@
           <img src="assets/icons/picto-tableau-loupe.png" alt="" width="72" height="72" aria-hidden="true"/>
         </div>
         <div>
-          <h1 class="tdb-header__title">Bienvenue {{ prenom }}</h1>
-          <p class="tdb-header__subtitle">Votre espace directeur de these</p>
+          <h1 class="tdb-header__title">Ravi de vous revoir {{ prenom }}</h1>
+          <p class="tdb-header__subtitle">Un rapide coup d'oeil sur votre activité</p>
         </div>
       </div>
+      <button type="button" class="tdb-header__cta" title="Bientôt disponible">
+        Proposer un sujet
+      </button>
     </header>
 
-    <!-- ======== ACCES RAPIDES ======== -->
-    <section class="tdb-section tdb-shortcuts">
-      <a routerLink="/mes-sujets-directeur-these" class="tdb-shortcut">
+    <!-- ======== ONGLETS ======== -->
+    <nav class="tdb-tabs" aria-label="Navigation espace directeur de these">
+      <span class="tdb-tabs__tab tdb-tabs__tab--active" aria-current="page">
+        <span class="fr-icon-chat-3-line" aria-hidden="true"></span>
+        Mises en relations
+      </span>
+      <a class="tdb-tabs__tab" routerLink="/mes-sujets-directeur-these">
         <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-        Mes sujets de these
+        Sujets de thèse
       </a>
-      <a routerLink="/espace-directeur-these" class="tdb-shortcut">
-        <span class="fr-icon-user-line" aria-hidden="true"></span>
-        Votre profil
-      </a>
-    </section>
+      <span class="tdb-tabs__tab tdb-tabs__tab--disabled" title="Bientôt disponible">
+        <span class="fr-icon-team-line" aria-hidden="true"></span>
+        Offres d'encadrement
+      </span>
+    </nav>
 
-    <!-- ======== DEMANDES DE MISE EN RELATION ======== -->
-    <section class="tdb-section tdb-demandes">
-      <div class="tdb-demandes__header">
-        <h2 class="tdb-demandes__title">Demandes de mise en relation ({{ demandes.length }})</h2>
-        <p class="tdb-demandes__subtitle">Demandes envoyees par des candidats sur vos sujets de these.</p>
+    <!-- ======== SUIVI DES MISES EN RELATION ======== -->
+    <section class="tdb-section">
+      <div class="tdb-section__header">
+        <h2 class="tdb-section__title">Suivi des mises en relation</h2>
+        <div class="tdb-section__actions">
+          <button type="button" class="tdb-action-btn" title="Bientôt disponible">
+            <span class="fr-icon-list-ordered" aria-hidden="true"></span>
+            Action groupée
+          </button>
+          <div class="tdb-section__filters">
+            <button type="button" class="tdb-filter-btn tdb-filter-btn--active" title="Bientôt disponible">
+              En cours
+            </button>
+            <button type="button" class="tdb-filter-btn" title="Bientôt disponible">
+              Archivées
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="fr-alert fr-alert--info fr-mb-3w tdb-demandes__alert" *ngIf="isLoadingDemandes" role="status">
+      <div class="fr-alert fr-alert--info tdb-alert" *ngIf="isLoadingDemandes" role="status">
         Chargement des demandes...
       </div>
-      <div class="fr-alert fr-alert--error fr-mb-3w tdb-demandes__alert" *ngIf="!isLoadingDemandes && errorDemandes" role="alert">
+      <div class="fr-alert fr-alert--error tdb-alert" *ngIf="!isLoadingDemandes && errorDemandes" role="alert">
         {{ errorDemandes }}
       </div>
 
-      <div class="tdb-empty tdb-empty--compact" *ngIf="!isLoadingDemandes && !errorDemandes && demandes.length === 0">
-        <div class="tdb-empty__icon">
-          <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-        </div>
-        <h3 class="tdb-empty__title">Aucune demande pour le moment</h3>
-        <p class="tdb-empty__text">
-          Vous n'avez recu aucune demande de mise en relation sur vos sujets.<br/>
-          Les demandes des candidats apparaitront ici.
-        </p>
-      </div>
+      <!-- ======== KANBAN ======== -->
+      <div class="tdb-kanban" *ngIf="!isLoadingDemandes && !errorDemandes">
 
-      <article class="tdb-demande" *ngFor="let demande of demandes">
-        <div class="tdb-demande__main">
-          <div class="tdb-demande__badges">
-            <span class="fr-badge fr-badge--sm fr-badge--new">Mise en relation demandee</span>
+        <!-- Colonne EN ATTENTE -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            EN ATTENTE <span class="tdb-column__count">({{ enAttente.length }})</span>
+          </h3>
+          <p class="tdb-column__empty" *ngIf="enAttente.length === 0">Aucune demande en attente.</p>
+          <div class="tdb-column__cards">
+            <a *ngFor="let demande of enAttente"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: demande.propositionTheseId }">
+              <div class="tdb-card__avatar">
+                <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
+                     [src]="demande.candidatPhotoUrl"
+                     [alt]="demande.candidatNom || 'Candidat'" />
+                <ng-template #avatarFallback>
+                  <span class="tdb-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
+                </ng-template>
+              </div>
+              <div class="tdb-card__content">
+                <h4 class="tdb-card__name">{{ demande.candidatNom || 'Candidat' }}</h4>
+                <p class="tdb-card__title">{{ demande.titreSujet || 'Titre non renseigné' }}</p>
+                <p class="tdb-card__footer">
+                  <span class="tdb-card__tag">Sujets de thèse</span>
+                  <span class="tdb-card__date">Candidature le {{ formatDateCandidature(demande.dateDemande) }}</span>
+                </p>
+              </div>
+            </a>
           </div>
-          <h3 class="tdb-demande__title">{{ demande.titreSujet || 'Titre non renseigne' }}</h3>
-          <dl class="tdb-demande__meta">
-            <div>
-              <dt>Candidat</dt>
-              <dd>{{ demande.candidatNom || '—' }}</dd>
-            </div>
-            <div *ngIf="demande.etablissement">
-              <dt>Etablissement</dt>
-              <dd>{{ demande.etablissement }}</dd>
-            </div>
-          </dl>
         </div>
-        <div class="tdb-demande__side">
-          <p class="tdb-demande__date" *ngIf="demande.dateDemande">Demandee le {{ formatDate(demande.dateDemande) }}</p>
-          <a class="fr-link" [routerLink]="['/proposition']" [queryParams]="{id: demande.propositionTheseId}">
-            Voir le sujet
-            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-          </a>
+
+        <!-- Colonne MISES EN RELATION -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            MISES EN RELATION <span class="tdb-column__count">({{ misesEnRelation.length }})</span>
+          </h3>
+          <p class="tdb-column__empty" *ngIf="misesEnRelation.length === 0">Aucune mise en relation.</p>
+          <div class="tdb-column__cards">
+            <a *ngFor="let demande of misesEnRelation"
+               class="tdb-card"
+               [routerLink]="['/proposition']"
+               [queryParams]="{ id: demande.propositionTheseId }">
+              <div class="tdb-card__avatar">
+                <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
+                     [src]="demande.candidatPhotoUrl"
+                     [alt]="demande.candidatNom || 'Candidat'" />
+                <ng-template #avatarFallback2>
+                  <span class="tdb-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
+                </ng-template>
+              </div>
+              <div class="tdb-card__content">
+                <h4 class="tdb-card__name">{{ demande.candidatNom || 'Candidat' }}</h4>
+                <p class="tdb-card__title">{{ demande.titreSujet || 'Titre non renseigné' }}</p>
+                <p class="tdb-card__footer">
+                  <span class="tdb-card__tag">Sujets de thèse</span>
+                  <span class="tdb-card__date">Candidature le {{ formatDateCandidature(demande.dateDemande) }}</span>
+                </p>
+              </div>
+            </a>
+          </div>
         </div>
-      </article>
+
+      </div>
     </section>
 
   </div>
