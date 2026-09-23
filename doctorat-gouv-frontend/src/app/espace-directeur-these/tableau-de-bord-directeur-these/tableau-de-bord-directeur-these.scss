@@ -145,14 +145,15 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 }
 
-/* ======== Section ======== */
+/* ======== Section : bordure unique, bandeau blanc + Kanban beige ======== */
 .tdb-section {
   background: $color-white;
   border: 1px solid $color-border;
   border-radius: 8px;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 0;
+  overflow: hidden;
 }
 
 .tdb-section__header {
@@ -161,7 +162,13 @@ $font-family: 'Marianne', arial, sans-serif;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  background: $color-white;
+  border-bottom: 1px solid $color-border;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1;
 }
 
 .tdb-section__title {
@@ -227,15 +234,18 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-alert {
-  margin: 0 0 1rem;
+  margin: 1.5rem 1.5rem 0;
 }
 
-/* ======== Kanban ======== */
+/* ======== Kanban (fond beige) ======== */
 .tdb-kanban {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: flex-start;
+  background: $color-page-bg;
+  padding: 1.5rem;
+  margin: 0;
 }
 
 /* ======== Colonne ======== */
