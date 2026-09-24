@@ -94,15 +94,30 @@ export interface SujetDt {
   dateLimiteCandidature: string | null;
 }
 
+/** Un fichier complémentaire du candidat (nom affichable + taille en octets). */
+export interface FichierCandidat {
+  filename: string | null;
+  size: number | null;
+}
+
 /** Une demande de mise en relation faite par un candidat sur un sujet du DT. */
 export interface DemandeDt {
   id: number;
   propositionTheseId: number;
   titreSujet: string | null;
   etablissement: string | null;
+  dateMiseEnLigne?: string | null;
+  dateLimiteCandidature?: string | null;
   candidatNom: string | null;
+  candidatPrenom?: string | null;
+  candidatCivilite?: string | null;
   candidatEmail: string | null;
   candidatPhotoUrl: string | null;
+  candidatSituation?: string | null;
+  candidatTelephone?: string | null;
+  candidatCvFilename?: string | null;
+  candidatCvSize?: number | null;
+  candidatPieces?: FichierCandidat[];
   dateDemande: string | null;
   statut: string | null;
   motivations?: string | null;
