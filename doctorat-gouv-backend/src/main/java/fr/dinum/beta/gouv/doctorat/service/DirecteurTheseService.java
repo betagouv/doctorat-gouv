@@ -223,6 +223,39 @@ public class DirecteurTheseService {
     }
 
     /**
+     * Détail d'une demande de mise en relation, vérifié comme portant
+     * sur un sujet rattaché au directeur de thèse.
+     */
+    public DemandeDtResponse getDemandeDetail(String userId, Long demandeId) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        PropositionThese p = sujets.get(d.getPropositionTheseId());
+        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+            || Boolean.TRUE.equals(d.getArchivee())) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        Utilisateur candidat = utilisateurRepository.findById(d.getCandidatId()).orElse(null);
+        DemandeDtResponse dto = new DemandeDtResponse();
+        dto.setId(d.getId());
+        dto.setPropositionTheseId(d.getPropositionTheseId());
+        dto.setTitreSujet(p.getTheseTitre());
+        dto.setEtablissement(p.getEtablissementLibelle());
+        if (candidat != null) {
+            String nomComplet = ((candidat.getPrenom() != null ? candidat.getPrenom().trim() + " " : "")
+                + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
+            dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
+            dto.setCandidatEmail(candidat.getEmail());
+            dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
+        }
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
+        dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
+        dto.setMotivations(d.getMotivations());
+        return dto;
+    }
+
+    /**
      * Sujets rattachés au DT par comparaison de son e-mail et/ou ORCID
      * avec les champs direction/codirection des propositions.
      */

@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,6 +91,17 @@ public class DirecteurTheseController {
         String userId = getCurrentUserId();
         log.info("Consultation des demandes de mise en relation du directeur de thèse {}", userId);
         return ResponseEntity.ok(directeurTheseService.getDemandes(userId));
+    }
+
+    @GetMapping("/mises-en-relation/{id}")
+    public ResponseEntity<DemandeDtResponse> getDemandeDetail(@PathVariable("id") Long id) {
+        String userId = getCurrentUserId();
+        log.info("Consultation du détail de la demande {} pour le directeur de thèse {}", id, userId);
+        try {
+            return ResponseEntity.ok(directeurTheseService.getDemandeDetail(userId, id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/mot-de-passe")

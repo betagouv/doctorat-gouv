@@ -15,6 +15,7 @@ public class DemandeDtResponse {
     private String candidatPhotoUrl;
     private String dateDemande;
     private String statut;
+    private String motivations;
 
     public DemandeDtResponse() {}
 
@@ -44,4 +45,7 @@ public class DemandeDtResponse {
 
     public String getStatut() { return statut; }
     public void setStatut(String statut) { this.statut = statut; }
+
+    public String getMotivations() { return motivations; }
+    public void setMotivations(String motivations) { this.motivations = motivations; }
 }
