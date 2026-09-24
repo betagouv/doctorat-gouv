@@ -1,5 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +23,13 @@ import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
 import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
@@ -38,17 +42,20 @@ public class DirecteurTheseService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilDirecteurTheseRepository profilDtRepository;
+    private final ProfilCandidatRepository profilCandidatRepository;
     private final PropositionTheseRepository propositionTheseRepository;
     private final DemandeMiseEnRelationRepository demandeMiseEnRelationRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
+                                  ProfilCandidatRepository profilCandidatRepository,
                                   PropositionTheseRepository propositionTheseRepository,
                                   DemandeMiseEnRelationRepository demandeMiseEnRelationRepository,
                                   PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
+        this.profilCandidatRepository = profilCandidatRepository;
         this.propositionTheseRepository = propositionTheseRepository;
         this.demandeMiseEnRelationRepository = demandeMiseEnRelationRepository;
         this.passwordEncoder = passwordEncoder;
@@ -241,18 +248,99 @@ public class DirecteurTheseService {
         dto.setPropositionTheseId(d.getPropositionTheseId());
         dto.setTitreSujet(p.getTheseTitre());
         dto.setEtablissement(p.getEtablissementLibelle());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        dto.setDateMiseEnLigne(p.getDateMiseEnLigne() != null ? p.getDateMiseEnLigne().format(dateTimeFormatter) : null);
+        dto.setDateLimiteCandidature(p.getDateLimiteCandidature() != null ? p.getDateLimiteCandidature().format(dateTimeFormatter) : null);
         if (candidat != null) {
             String nomComplet = ((candidat.getPrenom() != null ? candidat.getPrenom().trim() + " " : "")
                 + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
             dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
+            dto.setCandidatPrenom(candidat.getPrenom());
             dto.setCandidatEmail(candidat.getEmail());
             dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
+            ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
+            if (profilCandidat != null) {
+                dto.setCandidatCivilite(profilCandidat.getCivilite());
+                dto.setCandidatSituation(profilCandidat.getSituation());
+                dto.setCandidatTelephone(profilCandidat.getTelephone());
+                dto.setCandidatCvFilename(displayFilename(profilCandidat.getCvFilename()));
+                dto.setCandidatCvSize(fileSize(profilCandidat.getCvFilename()));
+                if (profilCandidat.getPiecesFilenames() != null) {
+                    List<DemandeDtResponse.FichierCandidatDto> pieces = new ArrayList<>();
+                    for (String piece : profilCandidat.getPiecesFilenames()) {
+                        pieces.add(new DemandeDtResponse.FichierCandidatDto(displayFilename(piece), fileSize(piece)));
+                    }
+                    dto.setCandidatPieces(pieces);
+                }
+            }
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
         dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
         dto.setMotivations(d.getMotivations());
         return dto;
+    }
+
+    private Long fileSize(String path) {
+        if (path == null || path.isBlank()) {
+            return null;
+        }
+        try {
+            Path file = Path.of(path);
+            if (Files.isRegularFile(file)) {
+                return Files.size(file);
+            }
+        } catch (Exception e) {
+            log.debug("Impossible de calculer la taille du fichier {}", path);
+        }
+        return null;
+    }
+
+    /**
+     * Chemin absolu du CV ou d'une pièce du candidat d'une demande,
+     * après vérification que la demande appartient bien au DT.
+     */
+    public String getCandidatFichier(String userId, Long demandeId, String type, Integer index) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
+            .orElseThrow(() -> new IllegalArgumentException("Fichier introuvable"));
+        PropositionThese p = sujets.get(d.getPropositionTheseId());
+        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+            || Boolean.TRUE.equals(d.getArchivee())) {
+            throw new IllegalArgumentException("Fichier introuvable");
+        }
+        ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(d.getCandidatId()).orElse(null);
+        if (profilCandidat == null) {
+            throw new IllegalArgumentException("Fichier introuvable");
+        }
+        String path;
+        if ("cv".equalsIgnoreCase(type)) {
+            path = profilCandidat.getCvFilename();
+        } else if ("piece".equalsIgnoreCase(type) && index != null
+            && profilCandidat.getPiecesFilenames() != null
+            && index >= 0 && index < profilCandidat.getPiecesFilenames().size()) {
+            path = profilCandidat.getPiecesFilenames().get(index);
+        } else {
+            throw new IllegalArgumentException("Fichier introuvable");
+        }
+        if (path == null || path.isBlank() || !Files.isRegularFile(Path.of(path))) {
+            throw new IllegalArgumentException("Fichier introuvable");
+        }
+        return path;
+    }
+
+    /**
+     * Nom affichable d'un fichier (sans chemin ni préfixe horodatage).
+     */
+    private String displayFilename(String path) {
+        if (path == null || path.isBlank()) {
+            return null;
+        }
+        String name = Path.of(path).getFileName().toString();
+        int underscore = name.indexOf('_');
+        if (underscore > 0 && name.substring(0, underscore).matches("\\d+")) {
+            name = name.substring(underscore + 1);
+        }
+        return name;
     }
 
     /**

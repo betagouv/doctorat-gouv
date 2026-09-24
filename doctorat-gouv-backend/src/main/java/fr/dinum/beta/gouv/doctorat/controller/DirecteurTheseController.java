@@ -1,9 +1,15 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -101,6 +108,31 @@ public class DirecteurTheseController {
             return ResponseEntity.ok(directeurTheseService.getDemandeDetail(userId, id));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/mises-en-relation/{id}/fichier")
+    public ResponseEntity<Resource> getCandidatFichier(
+            @PathVariable("id") Long id,
+            @RequestParam("type") String type,
+            @RequestParam(value = "index", required = false) Integer index) {
+        String userId = getCurrentUserId();
+        try {
+            String path = directeurTheseService.getCandidatFichier(userId, id, type, index);
+            Path file = Path.of(path);
+            String filename = file.getFileName().toString();
+            Resource resource = new FileSystemResource(file);
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "inline; filename=\"" + filename.replace("\"", "") + "\"")
+                .contentLength(Files.size(file))
+                .body(resource);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Erreur lors de la lecture du fichier de la demande {}", id, e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
