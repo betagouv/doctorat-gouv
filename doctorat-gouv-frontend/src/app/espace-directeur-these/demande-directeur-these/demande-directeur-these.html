@@ -1,0 +1,52 @@
+<main class="tdb-page">
+  <div class="tdb-container">
+
+    <a routerLink="/tableau-de-bord-directeur-these" class="tdb-back">
+      <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
+      Retour au tableau de bord
+    </a>
+
+    <div class="fr-alert fr-alert--info" *ngIf="isLoading" role="status">
+      Chargement de la demande...
+    </div>
+    <div class="fr-alert fr-alert--error" *ngIf="!isLoading && errorMessage" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <!-- ======== DETAIL BASIQUE (en attente de la maquette) ======== -->
+    <section class="tdb-section" *ngIf="!isLoading && demande">
+      <h1 class="tdb-demande-title">{{ demande.titreSujet || 'Titre non renseigné' }}</h1>
+
+      <h2 class="tdb-demande-subtitle">Candidat</h2>
+      <dl class="tdb-demande-meta">
+        <div>
+          <dt>Nom</dt>
+          <dd>{{ demande.candidatNom || '—' }}</dd>
+        </div>
+        <div>
+          <dt>E-mail</dt>
+          <dd>{{ demande.candidatEmail || '—' }}</dd>
+        </div>
+        <div *ngIf="demande.etablissement">
+          <dt>Établissement du sujet</dt>
+          <dd>{{ demande.etablissement }}</dd>
+        </div>
+      </dl>
+
+      <h2 class="tdb-demande-subtitle">Motivation</h2>
+      <p class="tdb-demande-motivation">{{ demande.motivations || '—' }}</p>
+
+      <div class="tdb-demande-actions">
+        <button type="button" class="tdb-btn-accept" title="Bientôt disponible">
+          <span class="fr-icon-check-line" aria-hidden="true"></span>
+          Accepter
+        </button>
+        <button type="button" class="tdb-btn-decline" title="Bientôt disponible">
+          <span class="fr-icon-close-line" aria-hidden="true"></span>
+          Décliner
+        </button>
+      </div>
+    </section>
+
+  </div>
+</main>

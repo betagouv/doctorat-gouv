@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+main.tdb-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+$color-page-bg: #F9F8F6;
+$color-white: #FFFFFF;
+$color-text-primary: #161616;
+$color-text-secondary: #666666;
+$color-blue-france: #000091;
+$color-success: #18753C;
+$color-error: #CE0500;
+$color-border: #DDDDDD;
+$font-family: 'Marianne', arial, sans-serif;
+
+.tdb-page {
+  background: $color-page-bg;
+  min-height: 100vh;
+  padding: 2rem 0 4rem;
+}
+
+.tdb-container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 4rem;
+}
+
+.tdb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-blue-france;
+  text-decoration: none;
+  margin: 0 0 1.5rem 3rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tdb-section {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.tdb-demande-title {
+  font-family: $font-family;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 1.5rem;
+}
+
+.tdb-demande-subtitle {
+  font-family: $font-family;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 0.75rem;
+}
+
+.tdb-demande-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 1.5rem;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  dt {
+    font-family: $font-family;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $color-text-secondary;
+  }
+
+  dd {
+    font-family: $font-family;
+    font-size: 0.9375rem;
+    color: $color-text-primary;
+    margin: 0;
+  }
+}
+
+.tdb-demande-motivation {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  white-space: pre-line;
+  margin: 0 0 1.5rem;
+}
+
+.tdb-demande-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $color-border;
+}
+
+.tdb-btn-accept {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-white;
+  background: $color-success;
+  border: none;
+  border-radius: 4px;
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+}
+
+.tdb-btn-decline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-error;
+  background: transparent;
+  border: 1px solid $color-error;
+  border-radius: 4px;
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .tdb-container {
+    padding: 0 1rem;
+  }
+}

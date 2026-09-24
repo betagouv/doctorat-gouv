@@ -72,8 +72,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let demande of enAttente"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: demande.propositionTheseId }">
+               [routerLink]="['/demande-directeur-these']"
+               [queryParams]="{ id: demande.id }">
               <div class="tdb-card__avatar">
                 <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
                      [src]="demande.candidatPhotoUrl"
@@ -103,8 +103,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let demande of misesEnRelation"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: demande.propositionTheseId }">
+               [routerLink]="['/demande-directeur-these']"
+               [queryParams]="{ id: demande.id }">
               <div class="tdb-card__avatar">
                 <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
                      [src]="demande.candidatPhotoUrl"

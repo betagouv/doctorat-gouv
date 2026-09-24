@@ -38,6 +38,10 @@ export class DirecteurTheseService {
   getDemandes(): Observable<DemandeDt[]> {
     return this.http.get<DemandeDt[]>(`${this.apiUrl}/mises-en-relation`);
   }
+
+  getDemandeDetail(id: number): Observable<DemandeDt> {
+    return this.http.get<DemandeDt>(`${this.apiUrl}/mises-en-relation/${id}`);
+  }
 }
 
 export interface ChangementMotDePasseRequest {

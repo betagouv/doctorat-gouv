@@ -105,4 +105,5 @@ export interface DemandeDt {
   candidatPhotoUrl: string | null;
   dateDemande: string | null;
   statut: string | null;
+  motivations?: string | null;
 }

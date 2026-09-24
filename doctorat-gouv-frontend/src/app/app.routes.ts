@@ -12,6 +12,7 @@ import { DemandeMiseEnRelation } from './demande-mise-en-relation/demande-mise-e
 import { EspaceDirecteurThese } from './espace-directeur-these/espace-directeur-these';
 import { TableauDeBordDirecteurThese } from './espace-directeur-these/tableau-de-bord-directeur-these/tableau-de-bord-directeur-these';
 import { MesSujetsDirecteurThese } from './espace-directeur-these/mes-sujets-directeur-these/mes-sujets-directeur-these';
+import { DemandeDirecteurThese } from './espace-directeur-these/demande-directeur-these/demande-directeur-these';
 import { inscriptionGuard } from './inscription/inscription.guard';
 import { authGuard } from './guards/auth.guard';
 
@@ -31,4 +32,5 @@ export const routes: Routes = [
   { path: 'espace-directeur-these', component: EspaceDirecteurThese, canActivate: [authGuard] },
   { path: 'tableau-de-bord-directeur-these', component: TableauDeBordDirecteurThese, canActivate: [authGuard] },
   { path: 'mes-sujets-directeur-these', component: MesSujetsDirecteurThese, canActivate: [authGuard] },
+  { path: 'demande-directeur-these', component: DemandeDirecteurThese, canActivate: [authGuard] },
 ];
