@@ -1,11 +1,6 @@
 <main class="tdb-page">
   <div class="tdb-container">
 
-    <a routerLink="/tableau-de-bord-directeur-these" class="tdb-back">
-      <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
-      Retour au tableau de bord
-    </a>
-
     <div class="fr-alert fr-alert--info" *ngIf="isLoading" role="status">
       Chargement de la demande...
     </div>
@@ -13,40 +8,152 @@
       {{ errorMessage }}
     </div>
 
-    <!-- ======== DETAIL BASIQUE (en attente de la maquette) ======== -->
-    <section class="tdb-section" *ngIf="!isLoading && demande">
-      <h1 class="tdb-demande-title">{{ demande.titreSujet || 'Titre non renseigné' }}</h1>
+    <div class="demande-layout" *ngIf="!isLoading && demande">
 
-      <h2 class="tdb-demande-subtitle">Candidat</h2>
-      <dl class="tdb-demande-meta">
-        <div>
-          <dt>Nom</dt>
-          <dd>{{ demande.candidatNom || '—' }}</dd>
+      <!-- ======== EN-TETE SUJET ======== -->
+      <header class="sujet-header">
+        <div class="sujet-header__top">
+          <a routerLink="/tableau-de-bord-directeur-these" class="sujet-header__back">
+            <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
+          </a>
+          <h1 class="sujet-header__label">Sujet de thèse</h1>
+          <span class="sujet-header__published">Publié le {{ formatDatePublie(demande.dateMiseEnLigne) }}</span>
         </div>
-        <div>
-          <dt>E-mail</dt>
-          <dd>{{ demande.candidatEmail || '—' }}</dd>
-        </div>
-        <div *ngIf="demande.etablissement">
-          <dt>Établissement du sujet</dt>
-          <dd>{{ demande.etablissement }}</dd>
-        </div>
-      </dl>
+        <h2 class="sujet-header__title">{{ demande.titreSujet || 'Titre non renseigné' }}</h2>
+        <p class="sujet-header__deadline">
+          <span class="fr-icon-calendar-line" aria-hidden="true"></span>
+          Date limite des candidatures : <strong>{{ formatDateLimite(demande.dateLimiteCandidature) }}</strong>
+        </p>
+      </header>
 
-      <h2 class="tdb-demande-subtitle">Motivation</h2>
-      <p class="tdb-demande-motivation">{{ demande.motivations || '—' }}</p>
+      <!-- ======== DEUX COLONNES ======== -->
+      <div class="demande-grid">
 
-      <div class="tdb-demande-actions">
-        <button type="button" class="tdb-btn-accept" title="Bientôt disponible">
-          <span class="fr-icon-check-line" aria-hidden="true"></span>
-          Accepter
-        </button>
-        <button type="button" class="tdb-btn-decline" title="Bientôt disponible">
-          <span class="fr-icon-close-line" aria-hidden="true"></span>
-          Décliner
-        </button>
+        <!-- Colonne gauche : message + actions -->
+        <section class="message-card">
+          <div class="message-card__header">
+            <div class="message-card__avatar">
+              <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
+                   [src]="demande.candidatPhotoUrl"
+                   [alt]="demande.candidatNom || 'Candidat'" />
+              <ng-template #avatarFallback>
+                <span class="message-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
+              </ng-template>
+            </div>
+            <span class="message-card__name">{{ demande.candidatNom || 'Candidat' }}</span>
+            <span class="message-card__role">Candidat</span>
+          </div>
+
+          <div class="message-card__body">
+            <div class="message-box">
+              <div class="message-box__author">
+                <div class="message-box__avatar">
+                  <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
+                       [src]="demande.candidatPhotoUrl"
+                       [alt]="demande.candidatNom || 'Candidat'" />
+                  <ng-template #avatarFallback2>
+                    <span class="message-box__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
+                  </ng-template>
+                </div>
+                <div class="message-box__author-info">
+                  <span class="message-box__author-name">{{ demande.candidatNom }}</span>
+                  <span class="message-box__author-role" *ngIf="demande.candidatSituation">{{ demande.candidatSituation }}</span>
+                </div>
+              </div>
+              <div class="message-box__content">
+                <p>« {{ demande.motivations || '—' }} »</p>
+              </div>
+              <div class="message-box__sent">
+                Envoyé le {{ formatDateEnvoi(demande.dateDemande) }}
+              </div>
+            </div>
+
+            <div class="message-separator">
+              <span class="message-separator__line"></span>
+              <span class="fr-icon-mail-line message-separator__icon" aria-hidden="true"></span>
+              <span class="message-separator__line"></span>
+            </div>
+
+            <p class="message-cta">
+              {{ demande.candidatNom }} souhaiterait être mis en relation avec vous
+            </p>
+
+            <div class="message-actions">
+              <button type="button" class="btn-accept" title="Bientôt disponible"
+                      (click)="simulateurEnvoiNotification()">
+                <span class="fr-icon-check-line" aria-hidden="true"></span>
+                Accepter la mise en relation
+              </button>
+              <button type="button" class="btn-decline" title="Bientôt disponible">
+                <span class="fr-icon-close-line" aria-hidden="true"></span>
+                Décliner la demande
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Colonne droite : profil candidat -->
+        <aside class="profil-card">
+          <div class="profil-card__photo">
+            <img *ngIf="demande.candidatPhotoUrl; else avatarFallback3"
+                 [src]="demande.candidatPhotoUrl"
+                 [alt]="demande.candidatNom || 'Candidat'" />
+            <ng-template #avatarFallback3>
+              <span class="profil-card__photo-fallback">{{ initiales(demande.candidatNom) }}</span>
+            </ng-template>
+          </div>
+          <h3 class="profil-card__name">{{ civiliteNom }}</h3>
+          <p class="profil-card__situation" *ngIf="demande.candidatSituation">{{ demande.candidatSituation }}</p>
+
+          <hr class="profil-card__divider" />
+
+          <div class="profil-field" *ngIf="demande.candidatEmail">
+            <span class="profil-field__icon fr-icon-mail-line" aria-hidden="true"></span>
+            <div class="profil-field__body">
+              <span class="profil-field__label">E-mail</span>
+              <a class="profil-field__link" [href]="'mailto:' + demande.candidatEmail">{{ demande.candidatEmail }}</a>
+            </div>
+          </div>
+
+          <div class="profil-field" *ngIf="demande.candidatTelephone">
+            <span class="profil-field__icon fr-icon-phone-line" aria-hidden="true"></span>
+            <div class="profil-field__body">
+              <span class="profil-field__label">Téléphone</span>
+              <span class="profil-field__value">{{ demande.candidatTelephone }}</span>
+            </div>
+          </div>
+
+          <div class="profil-field" *ngIf="demande.candidatCvFilename">
+            <span class="profil-field__icon fr-icon-file-text-line" aria-hidden="true"></span>
+            <div class="profil-field__body">
+              <span class="profil-field__label">Curriculum vitae</span>
+              <button type="button" class="profil-field__file-link" (click)="ouvrirFichier('cv')">
+                {{ nomAffichage(demande.candidatCvFilename) }}
+                <span class="fr-icon-eye-line" aria-hidden="true"></span>
+              </button>
+              <span class="profil-field__meta">{{ formatTaille(demande.candidatCvSize) }}</span>
+            </div>
+          </div>
+
+          <div class="profil-field" *ngIf="demande.candidatPieces && demande.candidatPieces.length > 0">
+            <span class="profil-field__icon fr-icon-file-text-line" aria-hidden="true"></span>
+            <div class="profil-field__body">
+              <span class="profil-field__label">Pièces complémentaires</span>
+              <div class="profil-field__files">
+                <ng-container *ngFor="let piece of demande.candidatPieces; let i = index">
+                  <button type="button" class="profil-field__file-link" (click)="ouvrirFichier('piece', i)">
+                    {{ nomAffichage(piece.filename) }}
+                    <span class="fr-icon-eye-line" aria-hidden="true"></span>
+                  </button>
+                  <span class="profil-field__meta">{{ formatTaille(piece.size) }}</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </aside>
+
       </div>
-    </section>
+    </div>
 
   </div>
 </main>

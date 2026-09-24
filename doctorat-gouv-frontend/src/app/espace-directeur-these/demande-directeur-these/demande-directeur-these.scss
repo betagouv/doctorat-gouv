@@ -9,14 +9,17 @@ main.tdb-page {
   margin: 0 !important;
 }
 
+/* ======== Palette ======== */
 $color-page-bg: #F9F8F6;
 $color-white: #FFFFFF;
 $color-text-primary: #161616;
 $color-text-secondary: #666666;
+$color-text-muted: #929292;
 $color-blue-france: #000091;
-$color-success: #18753C;
-$color-error: #CE0500;
 $color-border: #DDDDDD;
+$color-border-light: #E5E5E5;
+$color-tag-bg: #F5F5F5;
+$color-header-bg: #F5F5FE;
 $font-family: 'Marianne', arial, sans-serif;
 
 .tdb-page {
@@ -31,120 +34,476 @@ $font-family: 'Marianne', arial, sans-serif;
   padding: 0 4rem;
 }
 
-.tdb-back {
+.demande-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ======== En-tete sujet ======== */
+.sujet-header {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-top: 4px solid $color-blue-france;
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.sujet-header__top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.sujet-header__back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-family: $font-family;
-  font-size: 0.875rem;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid $color-border;
+  border-radius: 4px;
   color: $color-blue-france;
   text-decoration: none;
-  margin: 0 0 1.5rem 3rem;
+  flex-shrink: 0;
 
   &:hover {
-    text-decoration: underline;
+    background: rgba($color-blue-france, 0.05);
   }
 }
 
-.tdb-section {
+.sujet-header__label {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $color-blue-france;
+  margin: 0;
+  flex: 1;
+}
+
+.sujet-header__published {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+.sujet-header__title {
+  font-family: $font-family;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  line-height: 1.3;
+  margin: 0 0 1rem;
+}
+
+.sujet-header__deadline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  margin: 0;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+/* ======== Grille deux colonnes ======== */
+.demande-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ======== Carte message ======== */
+.message-card {
   background: $color-white;
   border: 1px solid $color-border;
   border-radius: 8px;
-  max-width: 1400px;
-  margin: 0 auto;
+  overflow: hidden;
+}
+
+.message-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: $color-header-bg;
+  border-bottom: 1px solid $color-border;
+}
+
+.message-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $color-tag-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.message-card__avatar-fallback {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $color-blue-france;
+}
+
+.message-card__name {
+  font-family: $font-family;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.message-card__role {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+}
+
+.message-card__body {
   padding: 1.5rem;
 }
 
-.tdb-demande-title {
-  font-family: $font-family;
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: $color-text-primary;
-  margin: 0 0 1.5rem;
+/* ======== Boite de message ======== */
+.message-box {
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
 }
 
-.tdb-demande-subtitle {
-  font-family: $font-family;
-  font-size: 1rem;
-  font-weight: 700;
-  color: $color-text-primary;
-  margin: 0 0 0.75rem;
+.message-box__author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.tdb-demande-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.5rem 1.5rem;
-  margin: 0 0 1.5rem;
+.message-box__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $color-tag-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
-  div {
-    display: flex;
-    flex-direction: column;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
+}
 
-  dt {
-    font-family: $font-family;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: $color-text-secondary;
-  }
+.message-box__avatar-fallback {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $color-blue-france;
+}
 
-  dd {
-    font-family: $font-family;
-    font-size: 0.9375rem;
-    color: $color-text-primary;
+.message-box__author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-box__author-name {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.message-box__author-role {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+.message-box__content {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  line-height: 1.6;
+  white-space: pre-line;
+
+  p {
     margin: 0;
   }
 }
 
-.tdb-demande-motivation {
+.message-box__sent {
   font-family: $font-family;
-  font-size: 0.9375rem;
-  color: $color-text-primary;
-  white-space: pre-line;
-  margin: 0 0 1.5rem;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+  text-align: right;
+  margin-top: 1rem;
 }
 
-.tdb-demande-actions {
+/* ======== Separateur envelope ======== */
+.message-separator {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid $color-border;
+  margin: 1.25rem 0;
 }
 
-.tdb-btn-accept {
+.message-separator__line {
+  flex: 1;
+  height: 1px;
+  background: $color-border;
+}
+
+.message-separator__icon {
+  color: $color-text-secondary;
+  font-size: 1.25rem;
+}
+
+/* ======== CTA + boutons ======== */
+.message-cta {
+  font-family: $font-family;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  text-align: center;
+  margin: 0 0 1.25rem;
+}
+
+.message-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-accept {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-family: $font-family;
   font-size: 0.9375rem;
   font-weight: 600;
   color: $color-white;
-  background: $color-success;
+  background: $color-blue-france;
   border: none;
   border-radius: 4px;
-  padding: 0.625rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   cursor: pointer;
+
+  &:hover {
+    background: #1212ff;
+  }
 }
 
-.tdb-btn-decline {
+.btn-decline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-blue-france;
+  background: $color-white;
+  border: 1px solid $color-blue-france;
+  border-radius: 4px;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba($color-blue-france, 0.05);
+  }
+}
+
+/* ======== Carte profil candidat ======== */
+.profil-card {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.profil-card__photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $color-tag-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.profil-card__photo-fallback {
+  font-family: $font-family;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-blue-france;
+}
+
+.profil-card__name {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 0.25rem;
+}
+
+.profil-card__situation {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+  margin: 0 0 1rem;
+}
+
+.profil-card__divider {
+  border: none;
+  border-top: 1px solid $color-border;
+  margin: 0 0 1rem;
+}
+
+/* ======== Champs profil ======== */
+.profil-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  text-align: left;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid $color-border-light;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.profil-field__icon {
+  color: $color-text-secondary;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.profil-field__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.profil-field__label {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+.profil-field__value {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.profil-field__link {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-blue-france;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.profil-field__files {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profil-field__file-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: $font-family;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: $color-error;
-  background: transparent;
-  border: 1px solid $color-error;
-  border-radius: 4px;
-  padding: 0.625rem 1.5rem;
+  color: $color-blue-france;
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+
+  &:hover {
+    color: #1212ff;
+  }
+}
+
+.profil-field__meta {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  color: $color-text-muted;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 992px) {
+  .demande-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
   .tdb-container {
     padding: 0 1rem;
+  }
+
+  .sujet-header {
+    padding: 1rem;
+  }
+
+  .sujet-header__title {
+    font-size: 1.25rem;
+  }
+
+  .sujet-header__top {
+    flex-wrap: wrap;
+  }
+
+  .message-card__header {
+    flex-wrap: wrap;
+  }
+
+  .message-actions {
+    width: 100%;
+  }
+
+  .btn-accept,
+  .btn-decline {
+    width: 100%;
+    justify-content: center;
   }
 }
