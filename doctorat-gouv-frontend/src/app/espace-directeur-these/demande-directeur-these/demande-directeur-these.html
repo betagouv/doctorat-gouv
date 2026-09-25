@@ -170,17 +170,23 @@
     </div>
 
     <dialog #dialogSucces class="demande-dialog" aria-labelledby="dialog-succes-titre">
-      <h2 id="dialog-succes-titre" class="demande-dialog__title">Mise en relation acceptée</h2>
+      <div class="demande-dialog__header">
+        <span class="demande-dialog__icon demande-dialog__icon--success fr-icon-checkbox-circle-line" aria-hidden="true"></span>
+        <h2 id="dialog-succes-titre" class="demande-dialog__title">Mise en relation acceptée</h2>
+      </div>
       <p class="demande-dialog__text">
         {{ demande?.candidatNom }} a été notifié par e-mail. Vous pouvez désormais échanger avec lui depuis la plateforme.
       </p>
       <div class="demande-dialog__actions">
-        <button type="button" class="btn-accept" (click)="fermerDialogues()">Fermer</button>
+        <button type="button" class="btn-decline" (click)="fermerDialogues()">Fermer</button>
       </div>
     </dialog>
 
     <dialog #dialogErreur class="demande-dialog" aria-labelledby="dialog-erreur-titre">
-      <h2 id="dialog-erreur-titre" class="demande-dialog__title">Échec de l'acceptation</h2>
+      <div class="demande-dialog__header">
+        <span class="demande-dialog__icon demande-dialog__icon--error fr-icon-alert-line" aria-hidden="true"></span>
+        <h2 id="dialog-erreur-titre" class="demande-dialog__title">Échec de l'acceptation</h2>
+      </div>
       <p class="demande-dialog__text">
         La mise en relation n'a pas pu être acceptée. Veuillez réessayer.
       </p>

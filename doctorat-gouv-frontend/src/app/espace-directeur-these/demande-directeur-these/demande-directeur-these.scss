@@ -17,6 +17,7 @@ $color-text-secondary: #666666;
 $color-text-muted: #929292;
 $color-blue-france: #000091;
 $color-success: #18753C;
+$color-error: #CE0500;
 $color-border: #DDDDDD;
 $color-border-light: #E5E5E5;
 $color-tag-bg: #F5F5F5;
@@ -515,16 +516,63 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 }
 
-/* ======== Boites de dialogue ======== */
+/* ======== Boites de dialogue (modale DSFR) ======== */
 .demande-dialog {
-  border: 1px solid $color-border;
+  border: none;
   border-radius: 8px;
-  padding: 1.5rem 2rem;
+  padding: 0;
   max-width: 480px;
   width: calc(100% - 2rem);
+  box-shadow: 0 8px 32px rgba(22, 22, 22, 0.25);
+  animation: dialog-zoom 0.2s ease-out;
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(22, 22, 22, 0.5);
+  }
+}
+
+@keyframes dialog-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demande-dialog {
+    animation: none;
+  }
+}
+
+.demande-dialog__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.demande-dialog__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+
+  &--success {
+    color: $color-success;
+    background: rgba($color-success, 0.1);
+  }
+
+  &--error {
+    color: $color-error;
+    background: rgba($color-error, 0.1);
   }
 }
 
@@ -533,19 +581,25 @@ $font-family: 'Marianne', arial, sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
   color: $color-text-primary;
-  margin: 0 0 0.75rem;
+  margin: 0;
 }
 
 .demande-dialog__text {
   font-family: $font-family;
   font-size: 0.9375rem;
   color: $color-text-primary;
-  margin: 0 0 1.25rem;
+  line-height: 1.6;
+  padding: 1rem 1.5rem 0;
+  margin: 0;
 }
 
 .demande-dialog__actions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-top: 1rem;
+  border-top: 1px solid $color-border-light;
 }
 
 /* ======== Responsive ======== */
