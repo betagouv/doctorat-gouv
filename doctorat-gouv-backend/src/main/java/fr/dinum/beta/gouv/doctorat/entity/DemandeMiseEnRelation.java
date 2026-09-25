@@ -49,6 +49,9 @@ public class DemandeMiseEnRelation {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "date_acceptation")
+    private LocalDateTime dateAcceptation;
+
     public DemandeMiseEnRelation() {
     }
 
@@ -133,5 +136,13 @@ public class DemandeMiseEnRelation {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getDateAcceptation() {
+        return dateAcceptation;
+    }
+
+    public void setDateAcceptation(LocalDateTime dateAcceptation) {
+        this.dateAcceptation = dateAcceptation;
     }
 }

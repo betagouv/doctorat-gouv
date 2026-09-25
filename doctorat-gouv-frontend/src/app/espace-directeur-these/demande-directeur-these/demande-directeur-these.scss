@@ -16,6 +16,7 @@ $color-text-primary: #161616;
 $color-text-secondary: #666666;
 $color-text-muted: #929292;
 $color-blue-france: #000091;
+$color-success: #18753C;
 $color-border: #DDDDDD;
 $color-border-light: #E5E5E5;
 $color-tag-bg: #F5F5F5;
@@ -310,6 +311,11 @@ $font-family: 'Marianne', arial, sans-serif;
   &:hover {
     background: #1212ff;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
 }
 
 .btn-decline {
@@ -467,6 +473,52 @@ $font-family: 'Marianne', arial, sans-serif;
   font-family: $font-family;
   font-size: 0.75rem;
   color: $color-text-muted;
+}
+
+.message-accepted {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: $font-family;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-success;
+  text-align: center;
+  margin: 0;
+}
+
+/* ======== Boites de dialogue ======== */
+.demande-dialog {
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  max-width: 480px;
+  width: calc(100% - 2rem);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.demande-dialog__title {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 0.75rem;
+}
+
+.demande-dialog__text {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  margin: 0 0 1.25rem;
+}
+
+.demande-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* ======== Responsive ======== */

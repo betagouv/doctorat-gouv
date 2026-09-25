@@ -42,6 +42,10 @@ export class DirecteurTheseService {
   getDemandeDetail(id: number): Observable<DemandeDt> {
     return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/detail`, { id });
   }
+
+  accepterDemande(id: number): Observable<DemandeDt> {
+    return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/accepter`, { id });
+  }
 }
 
 export interface ChangementMotDePasseRequest {

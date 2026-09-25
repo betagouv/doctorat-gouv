@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -19,7 +19,11 @@ export class DemandeDirecteurThese implements OnInit {
 
   demande: DemandeDt | null = null;
   isLoading = true;
+  isAccepting = false;
   errorMessage: string | null = null;
+
+  @ViewChild('dialogSucces') dialogSucces?: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialogErreur') dialogErreur?: ElementRef<HTMLDialogElement>;
 
   private readonly apiUrl = `${environment.apiUrl}/directeur-these`;
 
@@ -93,7 +97,7 @@ export class DemandeDirecteurThese implements OnInit {
     return `${jour} à ${heure}`;
   }
 
-  formatDateEnvoi(dateTime: string | null): string {
+  formatDateEnvoi(dateTime: string | null | undefined): string {
     if (!dateTime) {
       return '—';
     }
@@ -121,9 +125,27 @@ export class DemandeDirecteurThese implements OnInit {
     return filename.replace(/\.pdf$/i, '');
   }
 
-  /** Bouchon : simule l'envoi de l'e-mail de notification au candidat (non développé). */
-  simulateurEnvoiNotification(): void {
-    // Envoi d'e-mail de notification non développé pour l'instant.
+  accepter(): void {
+    if (!this.demande || this.isAccepting || this.demande.statut !== 'CREE') {
+      return;
+    }
+    this.isAccepting = true;
+    this.directeurService.accepterDemande(this.demande.id).subscribe({
+      next: (data) => {
+        this.demande = data;
+        this.isAccepting = false;
+        this.dialogSucces?.nativeElement.showModal();
+      },
+      error: () => {
+        this.isAccepting = false;
+        this.dialogErreur?.nativeElement.showModal();
+      }
+    });
+  }
+
+  fermerDialogues(): void {
+    this.dialogSucces?.nativeElement.close();
+    this.dialogErreur?.nativeElement.close();
   }
 
   ouvrirFichier(type: 'cv' | 'piece', index?: number): void {

@@ -74,21 +74,27 @@
               <span class="message-separator__line"></span>
             </div>
 
-            <p class="message-cta">
+            <p class="message-cta" *ngIf="demande.statut === 'CREE'">
               {{ demande.candidatNom }} souhaiterait être mis en relation avec vous
             </p>
 
-            <div class="message-actions">
-              <button type="button" class="btn-accept" title="Bientôt disponible"
-                      (click)="simulateurEnvoiNotification()">
+            <div class="message-actions" *ngIf="demande.statut === 'CREE'">
+              <button type="button" class="btn-accept"
+                      [disabled]="isAccepting"
+                      (click)="accepter()">
                 <span class="fr-icon-check-line" aria-hidden="true"></span>
-                Accepter la mise en relation
+                {{ isAccepting ? 'Acceptation en cours...' : 'Accepter la mise en relation' }}
               </button>
               <button type="button" class="btn-decline" title="Bientôt disponible">
                 <span class="fr-icon-close-line" aria-hidden="true"></span>
                 Décliner la demande
               </button>
             </div>
+
+            <p class="message-accepted" *ngIf="demande.statut === 'ACCEPTEE'">
+              <span class="fr-icon-check-line" aria-hidden="true"></span>
+              Mise en relation acceptée le {{ formatDateEnvoi(demande.dateAcceptation) }}
+            </p>
           </div>
         </section>
 
@@ -154,6 +160,26 @@
 
       </div>
     </div>
+
+    <dialog #dialogSucces class="demande-dialog" aria-labelledby="dialog-succes-titre">
+      <h2 id="dialog-succes-titre" class="demande-dialog__title">Mise en relation acceptée</h2>
+      <p class="demande-dialog__text">
+        {{ demande?.candidatNom }} a été notifié par e-mail. Vous pouvez désormais échanger avec lui depuis la plateforme.
+      </p>
+      <div class="demande-dialog__actions">
+        <button type="button" class="btn-accept" (click)="fermerDialogues()">Fermer</button>
+      </div>
+    </dialog>
+
+    <dialog #dialogErreur class="demande-dialog" aria-labelledby="dialog-erreur-titre">
+      <h2 id="dialog-erreur-titre" class="demande-dialog__title">Échec de l'acceptation</h2>
+      <p class="demande-dialog__text">
+        La mise en relation n'a pas pu être acceptée. Veuillez réessayer.
+      </p>
+      <div class="demande-dialog__actions">
+        <button type="button" class="btn-decline" (click)="fermerDialogues()">Fermer</button>
+      </div>
+    </dialog>
 
   </div>
 </main>

@@ -119,6 +119,7 @@ export interface DemandeDt {
   candidatCvSize?: number | null;
   candidatPieces?: FichierCandidat[];
   dateDemande: string | null;
+  dateAcceptation?: string | null;
   statut: string | null;
   motivations?: string | null;
 }

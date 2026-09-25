@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,25 +41,37 @@ public class DirecteurTheseService {
 
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseService.class);
 
+    private static final String LIEN_CONVERSATION = "https://app.doctorat.gouv.fr/connexion";
+    private static final int BREVO_TEMPLATE_ACCEPTATION = 67;
+
+    @Value("${app.mail.enabled:false}")
+    private boolean mailEnabled;
+
+    @Value("${app.mail.stub-mailbox:}")
+    private String stubMailbox;
+
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilDirecteurTheseRepository profilDtRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PropositionTheseRepository propositionTheseRepository;
     private final DemandeMiseEnRelationRepository demandeMiseEnRelationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BrevoEmailService emailService;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
                                   ProfilCandidatRepository profilCandidatRepository,
                                   PropositionTheseRepository propositionTheseRepository,
                                   DemandeMiseEnRelationRepository demandeMiseEnRelationRepository,
-                                  PasswordEncoder passwordEncoder) {
+                                  PasswordEncoder passwordEncoder,
+                                  BrevoEmailService emailService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.propositionTheseRepository = propositionTheseRepository;
         this.demandeMiseEnRelationRepository = demandeMiseEnRelationRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public Optional<ProfilDtResponse> getProfil(String userId) {
@@ -172,8 +185,9 @@ public class DirecteurTheseService {
     }
 
     /**
-     * Retourne les demandes de mise en relation envoyées (statut CREE, non archivées)
-     * par des candidats sur les sujets rattachés au directeur de thèse.
+     * Retourne les demandes de mise en relation envoyées ou acceptées
+     * (statuts CREE et ACCEPTEE, non archivées) par des candidats
+     * sur les sujets rattachés au directeur de thèse.
      */
     public List<DemandeDtResponse> getDemandes(String userId) {
         Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
@@ -199,7 +213,8 @@ public class DirecteurTheseService {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         List<DemandeDtResponse> response = new ArrayList<>();
         for (DemandeMiseEnRelation d : demandes) {
-            if (d.getStatut() != StatutDemandeMiseEnRelation.CREE
+            if ((d.getStatut() != StatutDemandeMiseEnRelation.CREE
+                    && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE)
                 || Boolean.TRUE.equals(d.getArchivee())) {
                 continue;
             }
@@ -232,13 +247,16 @@ public class DirecteurTheseService {
     /**
      * Détail d'une demande de mise en relation, vérifié comme portant
      * sur un sujet rattaché au directeur de thèse.
+     * Accessible aux statuts CREE et ACCEPTEE (non archivée).
      */
     public DemandeDtResponse getDemandeDetail(String userId, Long demandeId) {
         Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
-        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+        if (p == null
+            || (d.getStatut() != StatutDemandeMiseEnRelation.CREE
+                && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE)
             || Boolean.TRUE.equals(d.getArchivee())) {
             throw new IllegalArgumentException("Demande introuvable");
         }
@@ -275,9 +293,71 @@ public class DirecteurTheseService {
             }
         }
         dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
+        dto.setDateAcceptation(d.getDateAcceptation() != null ? d.getDateAcceptation().format(dateTimeFormatter) : null);
         dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
         dto.setMotivations(d.getMotivations());
         return dto;
+    }
+
+    /**
+     * Accepte une demande de mise en relation : passage au statut ACCEPTEE,
+     * enregistrement de la date d'acceptation et notification du candidat
+     * (template Brevo 67, bouchonné hors production).
+     */
+    public DemandeDtResponse accepterDemande(String userId, Long demandeId) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        PropositionThese p = sujets.get(d.getPropositionTheseId());
+        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+            || Boolean.TRUE.equals(d.getArchivee())) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        d.setStatut(StatutDemandeMiseEnRelation.ACCEPTEE);
+        d.setDateAcceptation(LocalDateTime.now());
+        d.setUpdatedAt(LocalDateTime.now());
+        demandeMiseEnRelationRepository.save(d);
+        log.info("Demande {} acceptée par le directeur de thèse {}", demandeId, userId);
+
+        envoyerMailAcceptation(userId, d);
+        return getDemandeDetail(userId, demandeId);
+    }
+
+    private void envoyerMailAcceptation(String userId, DemandeMiseEnRelation d) {
+        Utilisateur candidat = utilisateurRepository.findById(d.getCandidatId()).orElse(null);
+        if (candidat == null) {
+            log.warn("Candidat introuvable pour la demande {}, mail d'acceptation non envoyé", d.getId());
+            return;
+        }
+        Utilisateur directeur = utilisateurRepository.findById(userId).orElse(null);
+        String nomDirecteur = directeur != null
+            ? ((directeur.getPrenom() != null ? directeur.getPrenom().trim() + " " : "")
+                + (directeur.getNom() != null ? directeur.getNom().trim() : "")).trim()
+            : "";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("prenom", candidat.getPrenom());
+        params.put("nom_directeur", nomDirecteur);
+        params.put("lien_conversation", LIEN_CONVERSATION);
+
+        String destinataire = candidat.getEmail();
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail d'acceptation non envoyé (boîte bouchon non configurée) pour la demande {}",
+                    d.getId());
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail d'acceptation de la demande {} bouchonné vers {}", d.getId(), destinataire);
+        }
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_ACCEPTATION, params);
+                log.info("Mail d'acceptation envoyé à {} pour la demande {}", destinataire, d.getId());
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail d'acceptation pour la demande {}", d.getId(), e);
+        }
     }
 
     private Long fileSize(String path) {
@@ -304,7 +384,9 @@ public class DirecteurTheseService {
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Fichier introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
-        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+        if (p == null
+            || (d.getStatut() != StatutDemandeMiseEnRelation.CREE
+                && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE)
             || Boolean.TRUE.equals(d.getArchivee())) {
             throw new IllegalArgumentException("Fichier introuvable");
         }

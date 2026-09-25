@@ -134,6 +134,17 @@ public class DirecteurTheseController {
         }
     }
 
+    @PostMapping("/mises-en-relation/accepter")
+    public ResponseEntity<DemandeDtResponse> accepterDemande(@Valid @RequestBody DemandeDetailRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Acceptation de la demande {} par le directeur de thèse {}", request.getId(), userId);
+        try {
+            return ResponseEntity.ok(directeurTheseService.accepterDemande(userId, request.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PutMapping("/mot-de-passe")
     public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();

@@ -26,6 +26,7 @@ public class DemandeDtResponse {
     private Long candidatCvSize;
     private List<FichierCandidatDto> candidatPieces = new ArrayList<>();
     private String dateDemande;
+    private String dateAcceptation;
     private String statut;
     private String motivations;
 
@@ -100,6 +101,9 @@ public class DemandeDtResponse {
 
     public String getDateDemande() { return dateDemande; }
     public void setDateDemande(String dateDemande) { this.dateDemande = dateDemande; }
+
+    public String getDateAcceptation() { return dateAcceptation; }
+    public void setDateAcceptation(String dateAcceptation) { this.dateAcceptation = dateAcceptation; }
 
     public String getStatut() { return statut; }
     public void setStatut(String statut) { this.statut = statut; }
