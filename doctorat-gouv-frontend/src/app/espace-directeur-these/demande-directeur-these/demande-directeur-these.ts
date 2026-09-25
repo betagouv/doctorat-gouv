@@ -20,7 +20,11 @@ export class DemandeDirecteurThese implements OnInit {
   demande: DemandeDt | null = null;
   isLoading = true;
   isAccepting = false;
+  isResetting = false;
   errorMessage: string | null = null;
+
+  /** Bouton de réinitialisation visible uniquement hors production. */
+  readonly isHorsProd = !environment.production;
 
   @ViewChild('dialogSucces') dialogSucces?: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogErreur') dialogErreur?: ElementRef<HTMLDialogElement>;
@@ -146,6 +150,27 @@ export class DemandeDirecteurThese implements OnInit {
   fermerDialogues(): void {
     this.dialogSucces?.nativeElement.close();
     this.dialogErreur?.nativeElement.close();
+  }
+
+  /** Outil hors prod : fait revenir une demande acceptée à l'état CREE. */
+  reinitialiser(): void {
+    if (!this.demande || this.isResetting || this.demande.statut !== 'ACCEPTEE') {
+      return;
+    }
+    if (!confirm('Réinitialiser cette demande à l’état CREE (outil hors production) ?')) {
+      return;
+    }
+    this.isResetting = true;
+    this.directeurService.reinitialiserDemande(this.demande.id).subscribe({
+      next: (data) => {
+        this.demande = data;
+        this.isResetting = false;
+      },
+      error: () => {
+        this.isResetting = false;
+        this.dialogErreur?.nativeElement.showModal();
+      }
+    });
   }
 
   ouvrirFichier(type: 'cv' | 'piece', index?: number): void {

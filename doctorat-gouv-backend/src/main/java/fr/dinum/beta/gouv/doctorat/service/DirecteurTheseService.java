@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +59,7 @@ public class DirecteurTheseService {
     private final DemandeMiseEnRelationRepository demandeMiseEnRelationRepository;
     private final PasswordEncoder passwordEncoder;
     private final BrevoEmailService emailService;
+    private final Environment environment;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
@@ -64,7 +67,8 @@ public class DirecteurTheseService {
                                   PropositionTheseRepository propositionTheseRepository,
                                   DemandeMiseEnRelationRepository demandeMiseEnRelationRepository,
                                   PasswordEncoder passwordEncoder,
-                                  BrevoEmailService emailService) {
+                                  BrevoEmailService emailService,
+                                  Environment environment) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
         this.profilCandidatRepository = profilCandidatRepository;
@@ -72,6 +76,7 @@ public class DirecteurTheseService {
         this.demandeMiseEnRelationRepository = demandeMiseEnRelationRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.environment = environment;
     }
 
     public Optional<ProfilDtResponse> getProfil(String userId) {
@@ -320,6 +325,30 @@ public class DirecteurTheseService {
         log.info("Demande {} acceptée par le directeur de thèse {}", demandeId, userId);
 
         envoyerMailAcceptation(userId, d);
+        return getDemandeDetail(userId, demandeId);
+    }
+
+    /**
+     * Outil hors production : fait revenir une demande acceptée à l'état CREE
+     * (date d'acceptation effacée). Refusé en production.
+     */
+    public DemandeDtResponse reinitialiserDemande(String userId, Long demandeId) {
+        if (environment.acceptsProfiles(Profiles.of("prod"))) {
+            throw new IllegalStateException("Réinitialisation interdite en production");
+        }
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        PropositionThese p = sujets.get(d.getPropositionTheseId());
+        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+            || Boolean.TRUE.equals(d.getArchivee())) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        d.setStatut(StatutDemandeMiseEnRelation.CREE);
+        d.setDateAcceptation(null);
+        d.setUpdatedAt(LocalDateTime.now());
+        demandeMiseEnRelationRepository.save(d);
+        log.info("Demande {} réinitialisée à l'état CREE par le directeur de thèse {}", demandeId, userId);
         return getDemandeDetail(userId, demandeId);
     }
 

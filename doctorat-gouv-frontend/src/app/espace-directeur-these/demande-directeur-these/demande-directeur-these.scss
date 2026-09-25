@@ -488,6 +488,33 @@ $font-family: 'Marianne', arial, sans-serif;
   margin: 0;
 }
 
+/* ======== Bouton discret hors prod ======== */
+.message-reset {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.btn-reset {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  color: $color-text-muted;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-text-secondary;
+  }
+
+  &:disabled {
+    cursor: default;
+    text-decoration: none;
+  }
+}
+
 /* ======== Boites de dialogue ======== */
 .demande-dialog {
   border: 1px solid $color-border;

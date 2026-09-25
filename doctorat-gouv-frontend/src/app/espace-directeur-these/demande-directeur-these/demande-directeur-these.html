@@ -95,6 +95,14 @@
               <span class="fr-icon-check-line" aria-hidden="true"></span>
               Mise en relation acceptée le {{ formatDateEnvoi(demande.dateAcceptation) }}
             </p>
+
+            <div class="message-reset" *ngIf="demande.statut === 'ACCEPTEE' && isHorsProd">
+              <button type="button" class="btn-reset"
+                      [disabled]="isResetting"
+                      (click)="reinitialiser()">
+                {{ isResetting ? 'Réinitialisation...' : 'Réinitialiser à CREE (hors prod)' }}
+              </button>
+            </div>
           </div>
         </section>
 

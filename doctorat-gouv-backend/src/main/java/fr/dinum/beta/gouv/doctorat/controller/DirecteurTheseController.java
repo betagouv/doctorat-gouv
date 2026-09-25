@@ -145,6 +145,19 @@ public class DirecteurTheseController {
         }
     }
 
+    @PostMapping("/mises-en-relation/reinitialiser")
+    public ResponseEntity<DemandeDtResponse> reinitialiserDemande(@Valid @RequestBody DemandeDetailRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Réinitialisation de la demande {} par le directeur de thèse {}", request.getId(), userId);
+        try {
+            return ResponseEntity.ok(directeurTheseService.reinitialiserDemande(userId, request.getId()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PutMapping("/mot-de-passe")
     public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();
