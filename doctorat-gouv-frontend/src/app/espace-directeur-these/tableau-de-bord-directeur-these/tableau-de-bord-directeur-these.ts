@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
+import { DemandeDtContextService } from '../../services/demande-dt-context.service';
 import { DirecteurTheseService } from '../../services/directeur-these.service';
 import { DemandeDt } from '../../models/profil.model';
 
@@ -24,6 +25,7 @@ export class TableauDeBordDirecteurThese implements OnInit {
     private titleService: Title,
     private authService: AuthService,
     private directeurService: DirecteurTheseService,
+    private demandeDtContext: DemandeDtContextService,
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +50,11 @@ export class TableauDeBordDirecteurThese implements OnInit {
         this.errorDemandes = 'Erreur lors du chargement des demandes de mise en relation.';
       }
     });
+  }
+
+  /** Mémorise la demande sélectionnée (sans l'exposer dans l'URL). */
+  selectDemande(id: number): void {
+    this.demandeDtContext.setDemandeId(id);
   }
 
   /** Colonne EN ATTENTE : demandes envoyées, en attente de décision du DT. */

@@ -15,18 +15,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.DemandeDetailRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeDtResponse;
+import fr.dinum.beta.gouv.doctorat.dto.DemandeFichierRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
@@ -100,25 +100,23 @@ public class DirecteurTheseController {
         return ResponseEntity.ok(directeurTheseService.getDemandes(userId));
     }
 
-    @GetMapping("/mises-en-relation/{id}")
-    public ResponseEntity<DemandeDtResponse> getDemandeDetail(@PathVariable("id") Long id) {
+    @PostMapping("/mises-en-relation/detail")
+    public ResponseEntity<DemandeDtResponse> getDemandeDetail(@Valid @RequestBody DemandeDetailRequest request) {
         String userId = getCurrentUserId();
-        log.info("Consultation du détail de la demande {} pour le directeur de thèse {}", id, userId);
+        log.info("Consultation du détail de la demande {} pour le directeur de thèse {}", request.getId(), userId);
         try {
-            return ResponseEntity.ok(directeurTheseService.getDemandeDetail(userId, id));
+            return ResponseEntity.ok(directeurTheseService.getDemandeDetail(userId, request.getId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping("/mises-en-relation/{id}/fichier")
-    public ResponseEntity<Resource> getCandidatFichier(
-            @PathVariable("id") Long id,
-            @RequestParam("type") String type,
-            @RequestParam(value = "index", required = false) Integer index) {
+    @PostMapping("/mises-en-relation/fichier")
+    public ResponseEntity<Resource> getCandidatFichier(@Valid @RequestBody DemandeFichierRequest request) {
         String userId = getCurrentUserId();
         try {
-            String path = directeurTheseService.getCandidatFichier(userId, id, type, index);
+            String path = directeurTheseService.getCandidatFichier(
+                userId, request.getDemandeId(), request.getType(), request.getIndex());
             Path file = Path.of(path);
             String filename = file.getFileName().toString();
             Resource resource = new FileSystemResource(file);
@@ -131,7 +129,7 @@ public class DirecteurTheseController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            log.error("Erreur lors de la lecture du fichier de la demande {}", id, e);
+            log.error("Erreur lors de la lecture du fichier de la demande {}", request.getDemandeId(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

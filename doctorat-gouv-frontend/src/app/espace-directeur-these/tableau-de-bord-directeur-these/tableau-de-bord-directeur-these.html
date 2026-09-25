@@ -73,7 +73,7 @@
             <a *ngFor="let demande of enAttente"
                class="tdb-card"
                [routerLink]="['/demande-directeur-these']"
-               [queryParams]="{ id: demande.id }">
+               (click)="selectDemande(demande.id)">
               <div class="tdb-card__avatar">
                 <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
                      [src]="demande.candidatPhotoUrl"
@@ -104,7 +104,7 @@
             <a *ngFor="let demande of misesEnRelation"
                class="tdb-card"
                [routerLink]="['/demande-directeur-these']"
-               [queryParams]="{ id: demande.id }">
+               (click)="selectDemande(demande.id)">
               <div class="tdb-card__avatar">
                 <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
                      [src]="demande.candidatPhotoUrl"

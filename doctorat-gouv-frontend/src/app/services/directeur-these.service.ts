@@ -40,7 +40,7 @@ export class DirecteurTheseService {
   }
 
   getDemandeDetail(id: number): Observable<DemandeDt> {
-    return this.http.get<DemandeDt>(`${this.apiUrl}/mises-en-relation/${id}`);
+    return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/detail`, { id });
   }
 }
 

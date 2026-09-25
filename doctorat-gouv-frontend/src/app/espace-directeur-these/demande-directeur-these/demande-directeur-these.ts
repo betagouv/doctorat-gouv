@@ -4,6 +4,7 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { DirecteurTheseService } from '../../services/directeur-these.service';
+import { DemandeDtContextService } from '../../services/demande-dt-context.service';
 import { DemandeDt, FichierCandidat } from '../../models/profil.model';
 import { environment } from '../../../environments/environment';
 
@@ -26,14 +27,17 @@ export class DemandeDirecteurThese implements OnInit {
     private titleService: Title,
     private route: ActivatedRoute,
     private directeurService: DirecteurTheseService,
+    private demandeDtContext: DemandeDtContextService,
     private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Demande de mise en relation — Espace directeur de these — Doctorat.gouv.fr');
+    // L'id ne transite plus dans l'URL : contexte en priorité, ?id= en repli (anciens liens).
+    const contextId = this.demandeDtContext.getDemandeId();
     const idParam = this.route.snapshot.queryParamMap.get('id');
-    const id = idParam ? Number(idParam) : NaN;
-    if (!idParam || isNaN(id)) {
+    const id = contextId ?? (idParam ? Number(idParam) : NaN);
+    if (id == null || isNaN(id)) {
       this.isLoading = false;
       this.errorMessage = 'Demande introuvable.';
       return;
@@ -126,12 +130,15 @@ export class DemandeDirecteurThese implements OnInit {
     if (!this.demande) {
       return;
     }
-    const params: string[] = [`type=${type}`];
+    const body: { demandeId: number; type: string; index?: number } = {
+      demandeId: this.demande.id,
+      type,
+    };
     if (type === 'piece' && index != null) {
-      params.push(`index=${index}`);
+      body.index = index;
     }
-    const url = `${this.apiUrl}/mises-en-relation/${this.demande.id}/fichier?${params.join('&')}`;
-    this.http.get(url, { responseType: 'blob', observe: 'response' }).subscribe({
+    const url = `${this.apiUrl}/mises-en-relation/fichier`;
+    this.http.post(url, body, { responseType: 'blob', observe: 'response' }).subscribe({
       next: (response) => {
         const blob = new Blob([response.body as Blob], { type: 'application/pdf' });
         const objectUrl = URL.createObjectURL(blob);
