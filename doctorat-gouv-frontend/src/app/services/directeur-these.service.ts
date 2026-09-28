@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DemandeDt, ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
+import { MessageEchange } from '../models/echange.model';
 
 @Injectable({ providedIn: 'root' })
 export class DirecteurTheseService {
@@ -45,6 +46,14 @@ export class DirecteurTheseService {
 
   accepterDemande(id: number): Observable<DemandeDt> {
     return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/accepter`, { id });
+  }
+
+  getMessages(demandeId: number): Observable<MessageEchange[]> {
+    return this.http.post<MessageEchange[]>(`${this.apiUrl}/mises-en-relation/messages`, { demandeId });
+  }
+
+  envoyerMessage(demandeId: number, contenu: string): Observable<MessageEchange> {
+    return this.http.post<MessageEchange>(`${this.apiUrl}/mises-en-relation/messages/envoyer`, { demandeId, contenu });
   }
 
   reinitialiserDemande(id: number): Observable<DemandeDt> {

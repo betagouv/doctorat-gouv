@@ -1,21 +1,23 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { DirecteurTheseService } from '../../services/directeur-these.service';
 import { DemandeDtContextService } from '../../services/demande-dt-context.service';
 import { DemandeDt, FichierCandidat } from '../../models/profil.model';
+import { MessageEchange } from '../../models/echange.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-directeur-these',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './demande-directeur-these.html',
   styleUrl: './demande-directeur-these.scss',
 })
-export class DemandeDirecteurThese implements OnInit {
+export class DemandeDirecteurThese implements OnInit, OnDestroy {
 
   demande: DemandeDt | null = null;
   isLoading = true;
@@ -23,11 +25,22 @@ export class DemandeDirecteurThese implements OnInit {
   isResetting = false;
   errorMessage: string | null = null;
 
+  messages: MessageEchange[] = [];
+  messageContenu = '';
+  isLoadingMessages = false;
+  isSendingMessage = false;
+  erreurTitre = 'Échec de l\'acceptation';
+  erreurTexte = 'La mise en relation n\'a pas pu être acceptée. Veuillez réessayer.';
+
+  private demandeId: number | null = null;
+  private pollingId: ReturnType<typeof setInterval> | null = null;
+
   /** Bouton de réinitialisation visible uniquement hors production. */
   readonly isHorsProd = !environment.production;
 
   @ViewChild('dialogSucces') dialogSucces?: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogErreur') dialogErreur?: ElementRef<HTMLDialogElement>;
+  @ViewChild('messagesList') messagesList?: ElementRef<HTMLElement>;
 
   private readonly apiUrl = `${environment.apiUrl}/directeur-these`;
 
@@ -50,16 +63,28 @@ export class DemandeDirecteurThese implements OnInit {
       this.errorMessage = 'Demande introuvable.';
       return;
     }
+    this.demandeId = id;
     this.directeurService.getDemandeDetail(id).subscribe({
       next: (data) => {
         this.demande = data;
         this.isLoading = false;
+        if (data.statut === 'ACCEPTEE') {
+          this.chargerMessages(false);
+        }
       },
       error: () => {
         this.isLoading = false;
         this.errorMessage = 'Demande introuvable.';
       }
     });
+    this.pollingId = setInterval(() => this.chargerMessages(true), 15000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingId != null) {
+      clearInterval(this.pollingId);
+      this.pollingId = null;
+    }
   }
 
   initiales(nom: string | null): string {
@@ -150,6 +175,61 @@ export class DemandeDirecteurThese implements OnInit {
   fermerDialogues(): void {
     this.dialogSucces?.nativeElement.close();
     this.dialogErreur?.nativeElement.close();
+  }
+
+  chargerMessages(silencieux: boolean): void {
+    if (this.demandeId == null || this.demande?.statut !== 'ACCEPTEE') {
+      return;
+    }
+    if (!silencieux) {
+      this.isLoadingMessages = true;
+    }
+    const tailleAvant = this.messages.length;
+    this.directeurService.getMessages(this.demandeId).subscribe({
+      next: (data) => {
+        this.messages = data ?? [];
+        this.isLoadingMessages = false;
+        if (this.messages.length > tailleAvant) {
+          this.scrollerMessagesBas();
+        }
+      },
+      error: () => {
+        this.isLoadingMessages = false;
+      }
+    });
+  }
+
+  envoyerMessage(): void {
+    if (this.demandeId == null || this.isSendingMessage) {
+      return;
+    }
+    const contenu = this.messageContenu.trim();
+    if (!contenu) {
+      return;
+    }
+    this.isSendingMessage = true;
+    this.directeurService.envoyerMessage(this.demandeId, contenu).subscribe({
+      next: () => {
+        this.messageContenu = '';
+        this.isSendingMessage = false;
+        this.chargerMessages(false);
+      },
+      error: () => {
+        this.isSendingMessage = false;
+        this.erreurTitre = 'Échec de l\'envoi';
+        this.erreurTexte = 'Le message n\'a pas pu être envoyé. Veuillez réessayer.';
+        this.dialogErreur?.nativeElement.showModal();
+      }
+    });
+  }
+
+  private scrollerMessagesBas(): void {
+    setTimeout(() => {
+      const el = this.messagesList?.nativeElement;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    });
   }
 
   /** Outil hors prod : fait revenir une demande acceptée à l'état CREE. */

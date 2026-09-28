@@ -27,10 +27,14 @@ import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeDetailRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeFichierRequest;
+import fr.dinum.beta.gouv.doctorat.dto.MessageDto;
+import fr.dinum.beta.gouv.doctorat.dto.MessageEnvoiRequest;
+import fr.dinum.beta.gouv.doctorat.dto.MessageListeRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
+import fr.dinum.beta.gouv.doctorat.service.EchangeService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -40,9 +44,12 @@ public class DirecteurTheseController {
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseController.class);
 
     private final DirecteurTheseService directeurTheseService;
+    private final EchangeService echangeService;
 
-    public DirecteurTheseController(DirecteurTheseService directeurTheseService) {
+    public DirecteurTheseController(DirecteurTheseService directeurTheseService,
+                                    EchangeService echangeService) {
         this.directeurTheseService = directeurTheseService;
+        this.echangeService = echangeService;
     }
 
     @GetMapping("/profil")
@@ -153,6 +160,27 @@ public class DirecteurTheseController {
             return ResponseEntity.ok(directeurTheseService.reinitialiserDemande(userId, request.getId()));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(403).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/mises-en-relation/messages")
+    public ResponseEntity<List<MessageDto>> listerMessages(@Valid @RequestBody MessageListeRequest request) {
+        String userId = getCurrentUserId();
+        try {
+            return ResponseEntity.ok(echangeService.lister(userId, request.getDemandeId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/mises-en-relation/messages/envoyer")
+    public ResponseEntity<MessageDto> envoyerMessage(@Valid @RequestBody MessageEnvoiRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Envoi d'un message sur la demande {} par le directeur de thèse {}", request.getDemandeId(), userId);
+        try {
+            return ResponseEntity.ok(echangeService.envoyer(userId, request.getDemandeId(), request.getContenu()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
