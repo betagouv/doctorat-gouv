@@ -87,6 +87,7 @@ export class TableauDeBordCandidat implements OnInit {
     for (const item of this.allItems) {
       const archivee = item.archivee === true;
       const isBrouillon = item.statut === 'BROUILLON';
+      const isAcceptee = item.statut === 'ACCEPTEE';
       const mapped: MiseEnRelationDto = {
         id: item.id,
         propositionTheseId: item.propositionTheseId,
@@ -94,17 +95,21 @@ export class TableauDeBordCandidat implements OnInit {
         etablissement: item.etablissement?.trim() ? item.etablissement : '—',
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
-        statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : 'en_attente',
+        statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : isAcceptee ? 'mise_en_relation' : 'en_attente',
       };
       if (archivee) {
         this.archives.push(mapped);
         if (isBrouillon) {
           this.archivesBrouillons.push(mapped);
+        } else if (isAcceptee) {
+          this.archivesMisesEnRelation.push(mapped);
         } else {
           this.archivesEnAttente.push(mapped);
         }
       } else if (isBrouillon) {
         this.brouillons.push(mapped);
+      } else if (isAcceptee) {
+        this.misesEnRelation.push(mapped);
       } else {
         this.enAttente.push(mapped);
       }
