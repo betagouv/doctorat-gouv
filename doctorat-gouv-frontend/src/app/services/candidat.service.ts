@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { DemandeCandidat } from '../models/demande-candidat.model';
 import { TableauDeBordCandidatItemBackend } from '../models/mise-en-relation.model';
 
 @Injectable({ providedIn: 'root' })
@@ -38,6 +39,10 @@ export class CandidatService {
 
   archiverDemande(demandeId: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/demande-mise-en-relation/${demandeId}/archiver`, {});
+  }
+
+  getDemandeDetail(demandeId: number): Observable<DemandeCandidat> {
+    return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/detail`, { demandeId });
   }
 }
 

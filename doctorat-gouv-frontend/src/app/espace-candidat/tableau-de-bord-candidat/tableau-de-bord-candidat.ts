@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService } from '../../services/candidat.service';
+import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
 import { MiseEnRelationDto, TableauDeBordCandidatItemBackend } from '../../models/mise-en-relation.model';
 
 @Component({
@@ -33,6 +34,7 @@ export class TableauDeBordCandidat implements OnInit {
   constructor(
     private titleService: Title,
     private candidatService: CandidatService,
+    private demandeCandidatContext: DemandeCandidatContextService,
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +45,11 @@ export class TableauDeBordCandidat implements OnInit {
 
   setFilter(filter: 'en_cours' | 'archivees'): void {
     this.activeFilter = filter;
+  }
+
+  /** Mémorise la demande sélectionnée (sans l'exposer dans l'URL). */
+  selectDemande(id: number): void {
+    this.demandeCandidatContext.setDemandeId(id);
   }
 
   private loadPrenom(): void {

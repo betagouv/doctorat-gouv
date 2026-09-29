@@ -1,0 +1,20 @@
+<main class="demande-candidat-page">
+  <div class="demande-candidat-container">
+
+    <div class="fr-alert fr-alert--info" *ngIf="isLoading" role="status">
+      Chargement de la demande...
+    </div>
+    <div class="fr-alert fr-alert--error" *ngIf="!isLoading && errorMessage" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && demande">
+      <a routerLink="/tableau-de-bord-candidat" class="demande-candidat-back">
+        <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
+        Retour au tableau de bord
+      </a>
+      <h1 class="demande-candidat-title">{{ demande.titreSujet || 'Titre non renseigné' }}</h1>
+    </div>
+
+  </div>
+</main>

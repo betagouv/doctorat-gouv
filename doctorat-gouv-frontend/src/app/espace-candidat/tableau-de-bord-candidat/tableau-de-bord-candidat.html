@@ -51,8 +51,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of brouillons"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
                 <div class="tdb-card__actions">
@@ -96,8 +96,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of enAttente"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
                 <div class="tdb-card__actions">
@@ -138,8 +138,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of misesEnRelation"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
                 <span *ngIf="item.candidatureEnvoyee" class="tdb-card__candidature">
@@ -193,8 +193,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesBrouillons"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
@@ -227,8 +227,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesEnAttente"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
@@ -261,8 +261,8 @@
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesMisesEnRelation"
                class="tdb-card"
-               [routerLink]="['/proposition']"
-               [queryParams]="{ id: item.propositionTheseId }">
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
