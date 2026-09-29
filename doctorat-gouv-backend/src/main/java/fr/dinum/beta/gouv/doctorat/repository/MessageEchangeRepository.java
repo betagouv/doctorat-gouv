@@ -11,4 +11,6 @@ import fr.dinum.beta.gouv.doctorat.entity.MessageEchange;
 public interface MessageEchangeRepository extends JpaRepository<MessageEchange, Long> {
 
     List<MessageEchange> findByDemandeIdOrderByCreatedAtAsc(Long demandeId);
+
+    long countByDemandeIdAndAuteurIdNotAndLuFalse(Long demandeId, String auteurId);
 }

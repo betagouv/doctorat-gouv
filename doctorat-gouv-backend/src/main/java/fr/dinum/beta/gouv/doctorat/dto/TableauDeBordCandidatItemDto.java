@@ -12,6 +12,7 @@ public class TableauDeBordCandidatItemDto {
     private LocalDateTime dateContact;
     private String statut;
     private boolean archivee;
+    private Integer nbMessagesNonLus;
 
     public TableauDeBordCandidatItemDto() {
     }
@@ -91,5 +92,13 @@ public class TableauDeBordCandidatItemDto {
 
     public void setArchivee(boolean archivee) {
         this.archivee = archivee;
+    }
+
+    public Integer getNbMessagesNonLus() {
+        return nbMessagesNonLus;
+    }
+
+    public void setNbMessagesNonLus(Integer nbMessagesNonLus) {
+        this.nbMessagesNonLus = nbMessagesNonLus;
     }
 }

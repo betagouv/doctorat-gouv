@@ -16,11 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.dinum.beta.gouv.doctorat.dto.DemandeCandidatDetailResponse;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationResponse;
+import fr.dinum.beta.gouv.doctorat.dto.MessageDto;
+import fr.dinum.beta.gouv.doctorat.dto.MessageEnvoiRequest;
+import fr.dinum.beta.gouv.doctorat.dto.MessageListeRequest;
 import fr.dinum.beta.gouv.doctorat.dto.TableauDeBordCandidatItemDto;
 import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.service.DemandeMiseEnRelationService;
+import fr.dinum.beta.gouv.doctorat.service.EchangeService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/candidat/demande-mise-en-relation")
@@ -29,9 +35,12 @@ public class DemandeMiseEnRelationController {
     private static final Logger log = LoggerFactory.getLogger(DemandeMiseEnRelationController.class);
 
     private final DemandeMiseEnRelationService service;
+    private final EchangeService echangeService;
 
-    public DemandeMiseEnRelationController(DemandeMiseEnRelationService service) {
+    public DemandeMiseEnRelationController(DemandeMiseEnRelationService service,
+                                           EchangeService echangeService) {
         this.service = service;
+        this.echangeService = echangeService;
     }
 
     @GetMapping("/mes-demandes")
@@ -115,6 +124,44 @@ public class DemandeMiseEnRelationController {
 
         return ResponseEntity.ok(new DemandeMiseEnRelationResponse(
                 "Demande de mise en relation envoyée avec succès", true));
+    }
+
+    @PostMapping("/detail")
+    public ResponseEntity<DemandeCandidatDetailResponse> detailDemande(
+            @Valid @RequestBody MessageListeRequest request) {
+
+        String userId = getCurrentUserId();
+        log.info("Consultation du détail de la demande {} pour le candidat {}", request.getDemandeId(), userId);
+        try {
+            return ResponseEntity.ok(service.getDemandeDetailCandidat(userId, request.getDemandeId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/messages")
+    public ResponseEntity<List<MessageDto>> listerMessages(
+            @Valid @RequestBody MessageListeRequest request) {
+
+        String userId = getCurrentUserId();
+        try {
+            return ResponseEntity.ok(echangeService.lister(userId, request.getDemandeId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/messages/envoyer")
+    public ResponseEntity<MessageDto> envoyerMessage(
+            @Valid @RequestBody MessageEnvoiRequest request) {
+
+        String userId = getCurrentUserId();
+        log.info("Envoi d'un message sur la demande {} par le candidat {}", request.getDemandeId(), userId);
+        try {
+            return ResponseEntity.ok(echangeService.envoyer(userId, request.getDemandeId(), request.getContenu()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private void validateRequest(DemandeMiseEnRelationRequest request) {

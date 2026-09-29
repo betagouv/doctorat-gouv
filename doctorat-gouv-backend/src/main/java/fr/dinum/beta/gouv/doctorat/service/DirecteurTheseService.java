@@ -43,7 +43,7 @@ public class DirecteurTheseService {
 
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseService.class);
 
-    private static final String LIEN_CONVERSATION = "https://app.doctorat.gouv.fr/connexion";
+    private static final String LIEN_CONVERSATION = "https://app.doctorat.gouv.fr/demande-candidat";
     private static final int BREVO_TEMPLATE_ACCEPTATION = 67;
 
     @Value("${app.mail.enabled:false}")
