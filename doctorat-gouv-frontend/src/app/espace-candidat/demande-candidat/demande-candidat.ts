@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService } from '../../services/candidat.service';
 import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
@@ -35,7 +35,6 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
 
   constructor(
     private titleService: Title,
-    private router: Router,
     private route: ActivatedRoute,
     private candidatService: CandidatService,
     private demandeCandidatContext: DemandeCandidatContextService,
@@ -188,21 +187,9 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Bouchon : fonctionnalité « Je ne suis plus intéressé » à détailler (≠ archivage). */
   seDesister(): void {
-    if (!this.demande || this.isDesisting || this.demande.archivee) {
-      return;
-    }
-    this.isDesisting = true;
-    this.candidatService.archiverDemande(this.demande.id).subscribe({
-      next: () => {
-        this.isDesisting = false;
-        this.router.navigate(['/tableau-de-bord-candidat']);
-      },
-      error: () => {
-        this.isDesisting = false;
-        this.messageErreur = 'Une erreur est survenue. Veuillez réessayer.';
-      }
-    });
+    // TODO: implémenter selon spec à venir.
   }
 
   private scrollerMessagesBas(): void {
