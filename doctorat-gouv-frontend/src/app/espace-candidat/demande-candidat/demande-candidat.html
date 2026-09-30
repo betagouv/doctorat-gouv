@@ -1,5 +1,5 @@
-<main class="demande-candidat-page">
-  <div class="demande-candidat-container">
+<main class="dc-page">
+  <div class="dc-container">
 
     <div class="fr-alert fr-alert--info" *ngIf="isLoading" role="status">
       Chargement de la demande...
@@ -8,12 +8,170 @@
       {{ errorMessage }}
     </div>
 
-    <div *ngIf="!isLoading && demande">
-      <a routerLink="/tableau-de-bord-candidat" class="demande-candidat-back">
-        <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
-        Retour au tableau de bord
-      </a>
-      <h1 class="demande-candidat-title">{{ demande.titreSujet || 'Titre non renseigné' }}</h1>
+    <div class="demande-layout" *ngIf="!isLoading && demande">
+
+      <!-- ======== EN-TETE SUJET ======== -->
+      <header class="sujet-header">
+        <div class="sujet-header__top">
+          <a routerLink="/tableau-de-bord-candidat" class="sujet-header__back">
+            <span class="fr-icon-arrow-left-line" aria-hidden="true"></span>
+          </a>
+          <h1 class="sujet-header__label">Sujet de thèse</h1>
+          <span class="sujet-header__published">Publié le {{ formatDatePublie(demande.dateMiseEnLigne) }}</span>
+        </div>
+        <h2 class="sujet-header__title">{{ demande.titreSujet || 'Titre non renseigné' }}</h2>
+        <p class="sujet-header__deadline">
+          <span class="fr-icon-calendar-line" aria-hidden="true"></span>
+          Date limite des candidatures : <strong>{{ formatDateLimite(demande.dateLimiteCandidature) }}</strong>
+        </p>
+      </header>
+
+      <!-- ======== DEUX COLONNES ======== -->
+      <div class="demande-grid">
+
+        <!-- Colonne gauche : message + échanges -->
+        <section class="message-card">
+          <div class="message-card__header">
+            <div class="message-card__avatar">
+              <img *ngIf="demande.directeurPhotoUrl; else dtAvatarFallback"
+                   [src]="demande.directeurPhotoUrl"
+                   [alt]="directeurNomComplet" />
+              <ng-template #dtAvatarFallback>
+                <span class="message-card__avatar-fallback">{{ initiales(directeurNomComplet) }}</span>
+              </ng-template>
+            </div>
+            <span class="message-card__name">{{ directeurNomComplet || 'Direction de thèse' }}</span>
+            <span class="message-card__role">Direction de la thèse</span>
+          </div>
+
+          <div class="message-card__body">
+            <div class="message-box">
+              <div class="message-box__author">
+                <div class="message-box__avatar">
+                  <img *ngIf="demande.candidatPhotoUrl; else candidatAvatarFallback"
+                       [src]="demande.candidatPhotoUrl"
+                       [alt]="demande.candidatNom || 'Candidat'" />
+                  <ng-template #candidatAvatarFallback>
+                    <span class="message-box__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
+                  </ng-template>
+                </div>
+                <div class="message-box__author-info">
+                  <span class="message-box__author-name">{{ demande.candidatNom }}</span>
+                  <span class="message-box__author-role" *ngIf="demande.candidatSituation">{{ demande.candidatSituation }}</span>
+                </div>
+              </div>
+              <div class="message-box__content">
+                <p>« {{ demande.motivations || '—' }} »</p>
+              </div>
+              <div class="message-box__sent">
+                Envoyé le {{ formatDateEnvoi(demande.dateDemande) }}
+              </div>
+            </div>
+
+            <div class="message-separator">
+              <span class="message-separator__line"></span>
+              <span class="fr-icon-mail-line message-separator__icon" aria-hidden="true"></span>
+              <span class="message-separator__line"></span>
+            </div>
+
+            <p class="message-cta" *ngIf="demande.statut === 'CREE'">
+              Vous avez demandé à être mis en relation avec {{ directeurNomComplet }}.
+              Vous serez informé dès que la direction de thèse aura donné suite à votre prise de contact.
+            </p>
+
+            <ng-container *ngIf="demande.statut === 'ACCEPTEE' && !demande.archivee">
+              <p class="message-cta">
+                Vous êtes désormais en relation avec {{ directeurNomComplet }}.
+                Vous pouvez échanger directement avec la direction de thèse depuis cette page.
+              </p>
+
+              <div class="echanges">
+                <div #messagesList class="echanges__list" *ngIf="!isLoadingMessages && messages.length > 0">
+                  <div *ngFor="let message of messages"
+                       class="bulle"
+                       [class.bulle--moi]="message.envoyeParMoi">
+                    <p class="bulle__contenu">{{ message.contenu }}</p>
+                    <span class="bulle__date">{{ formatDateEnvoi(message.dateEnvoi) }}</span>
+                  </div>
+                </div>
+                <p class="echanges__info" *ngIf="isLoadingMessages">Chargement des échanges...</p>
+
+                <label class="echanges__label" for="message-contenu">Message</label>
+                <textarea id="message-contenu"
+                          class="echanges__input"
+                          rows="3"
+                          maxlength="2000"
+                          [(ngModel)]="messageContenu"></textarea>
+                <div class="echanges__footer">
+                  <span class="echanges__compteur">{{ messageContenu.length }} / 2000</span>
+                  <button type="button" class="btn-envoyer"
+                          [disabled]="isSendingMessage || !messageContenu.trim()"
+                          (click)="envoyerMessage()">
+                    {{ isSendingMessage ? 'Envoi...' : 'Envoyer' }}
+                  </button>
+                </div>
+                <p class="fr-error-text" *ngIf="messageErreur" role="alert">{{ messageErreur }}</p>
+              </div>
+            </ng-container>
+          </div>
+        </section>
+
+        <!-- Colonne droite : fiche sujet -->
+        <aside class="fiche-card">
+          <div class="fiche-card__visual">
+            <img src="assets/images/default.jpg" alt="Illustration du sujet de thèse" />
+            <span class="fiche-card__badge">THÈSE</span>
+          </div>
+
+          <div class="fiche-field">
+            <span class="fiche-field__icon fr-icon-calendar-line" aria-hidden="true"></span>
+            <div class="fiche-field__body">
+              <span class="fiche-field__label">Date de début de la thèse</span>
+              <span class="fiche-field__value">{{ formatDateDebut(demande.dateDebutThese) }}</span>
+            </div>
+          </div>
+
+          <div class="fiche-field" *ngIf="demande.etablissement">
+            <span class="fiche-field__icon fr-icon-building-line" aria-hidden="true"></span>
+            <div class="fiche-field__body">
+              <span class="fiche-field__label">Établissement</span>
+              <span class="fiche-field__value">{{ demande.etablissement }}</span>
+            </div>
+          </div>
+
+          <div class="fiche-field" *ngIf="demande.ecoleDoctorale">
+            <span class="fiche-field__icon fr-icon-school-line" aria-hidden="true"></span>
+            <div class="fiche-field__body">
+              <span class="fiche-field__label">École doctorale</span>
+              <span class="fiche-field__value">{{ demande.ecoleDoctorale }}</span>
+            </div>
+          </div>
+
+          <div class="fiche-field" *ngIf="demande.laboratoire">
+            <span class="fiche-field__icon fr-icon-flask-line" aria-hidden="true"></span>
+            <div class="fiche-field__body">
+              <span class="fiche-field__label">Laboratoire de recherche</span>
+              <span class="fiche-field__value">{{ demande.laboratoire }}</span>
+            </div>
+          </div>
+
+          <a class="fiche-link"
+             [routerLink]="['/proposition']"
+             [queryParams]="{ id: demande.propositionTheseId }">
+            Consulter la fiche complète
+            <span class="fr-icon-external-link-line" aria-hidden="true"></span>
+          </a>
+
+          <button type="button" class="btn-desister"
+                  *ngIf="!demande.archivee"
+                  [disabled]="isDesisting"
+                  (click)="seDesister()">
+            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+            {{ isDesisting ? 'Traitement...' : 'Je ne suis plus intéressé' }}
+          </button>
+        </aside>
+
+      </div>
     </div>
 
   </div>

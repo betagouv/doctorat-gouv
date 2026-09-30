@@ -81,6 +81,7 @@ public class DemandeMiseEnRelationService {
         dto.setId(demande.getId());
         dto.setStatut(demande.getStatut().name());
         dto.setMotivations(demande.getMotivations());
+        dto.setArchivee(Boolean.TRUE.equals(demande.getArchivee()));
         dto.setDateDemande(demande.getUpdatedAt() != null
             ? demande.getUpdatedAt().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             : null);
@@ -111,6 +112,7 @@ public class DemandeMiseEnRelationService {
             + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
         dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
         dto.setCandidatPrenom(candidat.getPrenom());
+        dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
         if (profilCandidat != null) {
             dto.setCandidatSituation(profilCandidat.getSituation());
         }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 import { DemandeCandidat } from '../models/demande-candidat.model';
+import { MessageEchange } from '../models/echange.model';
 import { TableauDeBordCandidatItemBackend } from '../models/mise-en-relation.model';
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +44,14 @@ export class CandidatService {
 
   getDemandeDetail(demandeId: number): Observable<DemandeCandidat> {
     return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/detail`, { demandeId });
+  }
+
+  getMessages(demandeId: number): Observable<MessageEchange[]> {
+    return this.http.post<MessageEchange[]>(`${this.apiUrl}/demande-mise-en-relation/messages`, { demandeId });
+  }
+
+  envoyerMessage(demandeId: number, contenu: string): Observable<MessageEchange> {
+    return this.http.post<MessageEchange>(`${this.apiUrl}/demande-mise-en-relation/messages/envoyer`, { demandeId, contenu });
   }
 }
 

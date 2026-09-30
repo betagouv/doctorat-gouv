@@ -4,6 +4,7 @@ export interface DemandeCandidat {
   statut: string | null;
   motivations: string | null;
   dateDemande: string | null;
+  archivee: boolean;
   propositionTheseId: number;
   titreSujet: string | null;
   dateMiseEnLigne: string | null;
@@ -18,4 +19,5 @@ export interface DemandeCandidat {
   candidatNom: string | null;
   candidatPrenom: string | null;
   candidatSituation: string | null;
+  candidatPhotoUrl: string | null;
 }

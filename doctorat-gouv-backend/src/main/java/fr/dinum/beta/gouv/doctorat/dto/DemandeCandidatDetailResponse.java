@@ -10,6 +10,7 @@ public class DemandeCandidatDetailResponse {
     private String statut;
     private String motivations;
     private String dateDemande;
+    private boolean archivee;
 
     private Long propositionTheseId;
     private String titreSujet;
@@ -27,6 +28,7 @@ public class DemandeCandidatDetailResponse {
     private String candidatNom;
     private String candidatPrenom;
     private String candidatSituation;
+    private String candidatPhotoUrl;
 
     public DemandeCandidatDetailResponse() {}
 
@@ -41,6 +43,9 @@ public class DemandeCandidatDetailResponse {
 
     public String getDateDemande() { return dateDemande; }
     public void setDateDemande(String dateDemande) { this.dateDemande = dateDemande; }
+
+    public boolean isArchivee() { return archivee; }
+    public void setArchivee(boolean archivee) { this.archivee = archivee; }
 
     public Long getPropositionTheseId() { return propositionTheseId; }
     public void setPropositionTheseId(Long propositionTheseId) { this.propositionTheseId = propositionTheseId; }
@@ -83,4 +88,7 @@ public class DemandeCandidatDetailResponse {
 
     public String getCandidatSituation() { return candidatSituation; }
     public void setCandidatSituation(String candidatSituation) { this.candidatSituation = candidatSituation; }
+
+    public String getCandidatPhotoUrl() { return candidatPhotoUrl; }
+    public void setCandidatPhotoUrl(String candidatPhotoUrl) { this.candidatPhotoUrl = candidatPhotoUrl; }
 }
