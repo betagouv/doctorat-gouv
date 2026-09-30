@@ -106,6 +106,8 @@ public class DemandeMiseEnRelationController {
                     "Demande archivée", true);
             response.setId(demande.getId());
             return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

@@ -163,10 +163,14 @@ public class DemandeMiseEnRelationService {
     /**
      * Archive une demande du candidat. Les lignes existantes sans valeur
      * (archivee NULL) sont traitées comme non archivées.
+     * Les demandes acceptées par un DT ne peuvent pas être archivées.
      */
     public DemandeMiseEnRelation archiverDemande(String userId, long demandeId) {
         DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        if (demande.getStatut() == StatutDemandeMiseEnRelation.ACCEPTEE) {
+            throw new IllegalStateException("Une demande acceptée ne peut pas être archivée");
+        }
         demande.setArchivee(Boolean.TRUE);
         demande.setUpdatedAt(LocalDateTime.now());
         DemandeMiseEnRelation saved = demandeRepository.save(demande);
