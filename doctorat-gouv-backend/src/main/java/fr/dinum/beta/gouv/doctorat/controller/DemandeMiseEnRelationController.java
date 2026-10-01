@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeCandidatDetailResponse;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationRequest;
 import fr.dinum.beta.gouv.doctorat.dto.DemandeMiseEnRelationResponse;
+import fr.dinum.beta.gouv.doctorat.dto.DesistementRequest;
 import fr.dinum.beta.gouv.doctorat.dto.MessageDto;
 import fr.dinum.beta.gouv.doctorat.dto.MessageEnvoiRequest;
 import fr.dinum.beta.gouv.doctorat.dto.MessageListeRequest;
@@ -36,11 +39,14 @@ public class DemandeMiseEnRelationController {
 
     private final DemandeMiseEnRelationService service;
     private final EchangeService echangeService;
+    private final Environment environment;
 
     public DemandeMiseEnRelationController(DemandeMiseEnRelationService service,
-                                           EchangeService echangeService) {
+                                           EchangeService echangeService,
+                                           Environment environment) {
         this.service = service;
         this.echangeService = echangeService;
+        this.environment = environment;
     }
 
     @GetMapping("/mes-demandes")
@@ -161,6 +167,35 @@ public class DemandeMiseEnRelationController {
         log.info("Envoi d'un message sur la demande {} par le candidat {}", request.getDemandeId(), userId);
         try {
             return ResponseEntity.ok(echangeService.envoyer(userId, request.getDemandeId(), request.getContenu()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/desister")
+    public ResponseEntity<DemandeCandidatDetailResponse> seDesister(
+            @Valid @RequestBody DesistementRequest request) {
+
+        String userId = getCurrentUserId();
+        log.info("Désistement du candidat {} sur la demande {}", userId, request.getDemandeId());
+        try {
+            service.seDesister(userId, request.getDemandeId(), request.getMotif());
+            return ResponseEntity.ok(service.getDemandeDetailCandidat(userId, request.getDemandeId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/annuler-desistement")
+    public ResponseEntity<DemandeCandidatDetailResponse> annulerDesistement(
+            @Valid @RequestBody MessageListeRequest request) {
+
+        String userId = getCurrentUserId();
+        boolean estProduction = environment.acceptsProfiles(Profiles.of("prod"));
+        try {
+            return ResponseEntity.ok(service.annulerDesistement(userId, request.getDemandeId(), estProduction));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

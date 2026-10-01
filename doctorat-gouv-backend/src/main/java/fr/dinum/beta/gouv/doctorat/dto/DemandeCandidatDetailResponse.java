@@ -11,6 +11,7 @@ public class DemandeCandidatDetailResponse {
     private String motivations;
     private String dateDemande;
     private boolean archivee;
+    private String dateDesistement;
 
     private Long propositionTheseId;
     private String titreSujet;
@@ -46,6 +47,9 @@ public class DemandeCandidatDetailResponse {
 
     public boolean isArchivee() { return archivee; }
     public void setArchivee(boolean archivee) { this.archivee = archivee; }
+
+    public String getDateDesistement() { return dateDesistement; }
+    public void setDateDesistement(String dateDesistement) { this.dateDesistement = dateDesistement; }
 
     public Long getPropositionTheseId() { return propositionTheseId; }
     public void setPropositionTheseId(Long propositionTheseId) { this.propositionTheseId = propositionTheseId; }

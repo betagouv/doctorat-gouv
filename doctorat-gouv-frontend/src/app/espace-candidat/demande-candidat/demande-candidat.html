@@ -169,10 +169,46 @@
             <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
             {{ isDesisting ? 'Traitement...' : 'Je ne suis plus intéressé' }}
           </button>
+
+          <div class="fiche-undo" *ngIf="demande.archivee && demande.statut === 'ACCEPTEE' && demande.dateDesistement && isHorsProd">
+            <button type="button" class="btn-reset"
+                    [disabled]="isAnnulationDesistement"
+                    (click)="annulerDesistement()">
+              {{ isAnnulationDesistement ? 'Annulation...' : 'Annuler le désistement (hors prod)' }}
+            </button>
+          </div>
         </aside>
 
       </div>
     </div>
+
+    <dialog #dialogDesistement class="dc-dialog" aria-labelledby="dialog-desistement-titre">
+      <div class="dc-dialog__close-row">
+        <button type="button" class="dc-dialog__close" (click)="fermerDialogueDesistement()">
+          Fermer
+          <span class="fr-icon-close-line" aria-hidden="true"></span>
+        </button>
+      </div>
+      <h2 id="dialog-desistement-titre" class="dc-dialog__title">Précisez la raison de votre rétractation</h2>
+      <label class="dc-dialog__label" for="motif-desistement">
+        Votre message à la direction de thèse <span class="dc-dialog__required" aria-hidden="true">*</span>
+      </label>
+      <p class="dc-dialog__hint">Merci de préciser les raisons pour lesquelles vous n'êtes plus intéressé</p>
+      <textarea id="motif-desistement"
+                class="dc-dialog__input"
+                rows="4"
+                maxlength="2000"
+                [(ngModel)]="motifDesistement"></textarea>
+      <p class="fr-error-text" *ngIf="messageErreur" role="alert">{{ messageErreur }}</p>
+      <div class="dc-dialog__actions">
+        <button type="button" class="btn-annuler" (click)="fermerDialogueDesistement()">Annuler</button>
+        <button type="button" class="btn-envoyer-dialog"
+                [disabled]="isSendingDesistement || !motifDesistement.trim()"
+                (click)="envoyerDesistement()">
+          {{ isSendingDesistement ? 'Envoi...' : 'Envoyer' }}
+        </button>
+      </div>
+    </dialog>
 
   </div>
 </main>

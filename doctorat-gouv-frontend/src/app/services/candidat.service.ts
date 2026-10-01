@@ -53,6 +53,14 @@ export class CandidatService {
   envoyerMessage(demandeId: number, contenu: string): Observable<MessageEchange> {
     return this.http.post<MessageEchange>(`${this.apiUrl}/demande-mise-en-relation/messages/envoyer`, { demandeId, contenu });
   }
+
+  seDesister(demandeId: number, motif: string): Observable<DemandeCandidat> {
+    return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/desister`, { demandeId, motif });
+  }
+
+  annulerDesistement(demandeId: number): Observable<DemandeCandidat> {
+    return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/annuler-desistement`, { demandeId });
+  }
 }
 
 export interface ChangementMotDePasseRequest {

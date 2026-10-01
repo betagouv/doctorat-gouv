@@ -5,6 +5,7 @@ export interface DemandeCandidat {
   motivations: string | null;
   dateDemande: string | null;
   archivee: boolean;
+  dateDesistement: string | null;
   propositionTheseId: number;
   titreSujet: string | null;
   dateMiseEnLigne: string | null;

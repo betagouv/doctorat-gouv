@@ -1,12 +1,13 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService } from '../../services/candidat.service';
 import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
 import { DemandeCandidat } from '../../models/demande-candidat.model';
 import { MessageEchange } from '../../models/echange.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-candidat',
@@ -28,13 +29,22 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
   isDesisting = false;
   messageErreur: string | null = null;
 
+  motifDesistement = '';
+  isSendingDesistement = false;
+  isAnnulationDesistement = false;
+
+  /** Bouton d'annulation visible uniquement hors production. */
+  readonly isHorsProd = !environment.production;
+
   private demandeId: number | null = null;
   private pollingId: ReturnType<typeof setInterval> | null = null;
 
   @ViewChild('messagesList') messagesList?: ElementRef<HTMLElement>;
+  @ViewChild('dialogDesistement') dialogDesistement?: ElementRef<HTMLDialogElement>;
 
   constructor(
     private titleService: Title,
+    private router: Router,
     private route: ActivatedRoute,
     private candidatService: CandidatService,
     private demandeCandidatContext: DemandeCandidatContextService,
@@ -189,7 +199,62 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
 
   /** Bouchon : fonctionnalité « Je ne suis plus intéressé » à détailler (≠ archivage). */
   seDesister(): void {
-    // TODO: implémenter selon spec à venir.
+    if (!this.demande || this.demande.archivee || this.demande.statut !== 'ACCEPTEE') {
+      return;
+    }
+    this.motifDesistement = '';
+    this.dialogDesistement?.nativeElement.showModal();
+  }
+
+  fermerDialogueDesistement(): void {
+    this.dialogDesistement?.nativeElement.close();
+  }
+
+  envoyerDesistement(): void {
+    if (!this.demande || this.isSendingDesistement) {
+      return;
+    }
+    const motif = this.motifDesistement.trim();
+    if (!motif) {
+      return;
+    }
+    this.isSendingDesistement = true;
+    this.messageErreur = null;
+    this.candidatService.seDesister(this.demande.id, motif).subscribe({
+      next: () => {
+        this.isSendingDesistement = false;
+        this.fermerDialogueDesistement();
+        this.router.navigate(['/tableau-de-bord-candidat']);
+      },
+      error: () => {
+        this.isSendingDesistement = false;
+        this.messageErreur = 'Le désistement n\'a pas pu être enregistré. Veuillez réessayer.';
+      }
+    });
+  }
+
+  /** Outil hors prod : annule un désistement et revient à l'état accepté. */
+  annulerDesistement(): void {
+    if (!this.demande || this.isAnnulationDesistement) {
+      return;
+    }
+    if (!confirm('Annuler ce désistement et revenir à l’état accepté (outil hors production) ?')) {
+      return;
+    }
+    this.isAnnulationDesistement = true;
+    this.candidatService.annulerDesistement(this.demande.id).subscribe({
+      next: (data) => {
+        this.demande = data;
+        this.isAnnulationDesistement = false;
+        if (data.statut === 'ACCEPTEE' && !data.archivee) {
+          this.chargerMessages(false);
+        }
+      },
+      error: () => {
+        this.isAnnulationDesistement = false;
+        this.messageErreur = 'L\'annulation n\'a pas pu être effectuée. Veuillez réessayer.';
+      }
+    });
   }
 
   private scrollerMessagesBas(): void {

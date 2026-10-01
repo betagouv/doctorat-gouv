@@ -17,6 +17,7 @@ $color-text-primary: #161616;
 $color-text-secondary: #666666;
 $color-text-muted: #929292;
 $color-blue-france: #000091;
+$color-error: #CE0500;
 $color-border: #DDDDDD;
 $color-border-light: #E5E5E5;
 $color-tag-bg: #F5F5F5;
@@ -500,6 +501,173 @@ $font-family: 'Marianne', arial, sans-serif;
 
   &:hover {
     border-color: $color-blue-france;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+/* ======== Bouton discret hors prod ======== */
+.fiche-undo {
+  display: flex;
+  justify-content: center;
+  padding: 0 1.25rem 1rem;
+}
+
+.btn-reset {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  color: $color-text-muted;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-text-secondary;
+  }
+
+  &:disabled {
+    cursor: default;
+    text-decoration: none;
+  }
+}
+
+/* ======== Dialogue de désistement ======== */
+.dc-dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 1.25rem 2rem 1.5rem;
+  max-width: 560px;
+  width: calc(100% - 2rem);
+  box-shadow: 0 8px 32px rgba(22, 22, 22, 0.25);
+  animation: dialog-zoom 0.2s ease-out;
+
+  &::backdrop {
+    background: rgba(22, 22, 22, 0.5);
+  }
+}
+
+@keyframes dialog-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-dialog {
+    animation: none;
+  }
+}
+
+.dc-dialog__close-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.dc-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: $font-family;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-blue-france;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.dc-dialog__title {
+  font-family: $font-family;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 1rem;
+}
+
+.dc-dialog__label {
+  display: block;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  margin-bottom: 0.25rem;
+}
+
+.dc-dialog__required {
+  color: $color-error;
+}
+
+.dc-dialog__hint {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+  margin: 0 0 0.5rem;
+}
+
+.dc-dialog__input {
+  width: 100%;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  background: $color-tag-bg;
+  border: none;
+  border-bottom: 2px solid $color-text-primary;
+  border-radius: 4px 4px 0 0;
+  padding: 0.625rem 0.75rem;
+  resize: vertical;
+}
+
+.dc-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.btn-annuler {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-blue-france;
+  background: $color-white;
+  border: 1px solid $color-blue-france;
+  border-radius: 4px;
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba($color-blue-france, 0.05);
+  }
+}
+
+.btn-envoyer-dialog {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-white;
+  background: $color-blue-france;
+  border: none;
+  border-radius: 4px;
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+
+  &:hover {
+    background: #1212ff;
   }
 
   &:disabled {

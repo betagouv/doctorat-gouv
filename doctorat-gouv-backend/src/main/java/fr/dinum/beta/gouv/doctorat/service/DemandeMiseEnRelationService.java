@@ -85,6 +85,9 @@ public class DemandeMiseEnRelationService {
         dto.setDateDemande(demande.getUpdatedAt() != null
             ? demande.getUpdatedAt().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             : null);
+        dto.setDateDesistement(demande.getDateDesistement() != null
+            ? demande.getDateDesistement().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            : null);
 
         dto.setPropositionTheseId(these.getId());
         dto.setTitreSujet(these.getTheseTitre());
@@ -176,6 +179,64 @@ public class DemandeMiseEnRelationService {
         DemandeMiseEnRelation saved = demandeRepository.save(demande);
         log.info("Demande archivée (id={}) pour candidat {}", saved.getId(), userId);
         return saved;
+    }
+
+    /**
+     * Désistement (« Je ne suis plus intéressé ») : la demande acceptée est
+     * archivée (affichée en MISES EN RELATION des archives) avec date et motif,
+     * et les deux parties sont notifiées (templates Brevo, bouchonnés hors production).
+     */
+    public DemandeMiseEnRelation seDesister(String userId, Long demandeId, String motif) {
+        DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        if (demande.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+            || Boolean.TRUE.equals(demande.getArchivee())) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        String texte = motif != null ? motif.trim() : "";
+        if (texte.isEmpty()) {
+            throw new IllegalArgumentException("Le motif est obligatoire");
+        }
+        demande.setArchivee(Boolean.TRUE);
+        demande.setDateDesistement(LocalDateTime.now());
+        demande.setMotifDesistement(texte.length() > 2000 ? texte.substring(0, 2000) : texte);
+        demande.setUpdatedAt(LocalDateTime.now());
+        DemandeMiseEnRelation saved = demandeRepository.save(demande);
+        log.info("Désistement du candidat {} sur la demande {}", userId, demandeId);
+
+        envoyerMailsDesistement(userId, saved);
+        return saved;
+    }
+
+    /**
+     * Outil hors production : annule un désistement (désarchive, efface
+     * date et motif). Refusé en production.
+     */
+    public DemandeCandidatDetailResponse annulerDesistement(String userId, Long demandeId,
+            boolean estProduction) {
+        if (estProduction) {
+            throw new IllegalStateException("Annulation interdite en production");
+        }
+        DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        if (demande.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+            || !Boolean.TRUE.equals(demande.getArchivee())
+            || demande.getDateDesistement() == null) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        demande.setArchivee(Boolean.FALSE);
+        demande.setDateDesistement(null);
+        demande.setMotifDesistement(null);
+        demande.setUpdatedAt(LocalDateTime.now());
+        demandeRepository.save(demande);
+        log.info("Désistement annulé pour la demande {} (candidat {})", demandeId, userId);
+        return getDemandeDetailCandidat(userId, demandeId);
+    }
+
+    // TODO(desistement): notifier le DT et le candidat (templates Brevo en attente).
+    // Bouchon : aucun mail envoyé pour l'instant.
+    private void envoyerMailsDesistement(String userId, DemandeMiseEnRelation demande) {
+        log.info("Bouchon : mails de désistement non envoyés pour la demande {}", demande.getId());
     }
 
     private String buildEncadrantNom(PropositionTheseDto these) {

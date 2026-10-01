@@ -52,6 +52,12 @@ public class DemandeMiseEnRelation {
     @Column(name = "date_acceptation")
     private LocalDateTime dateAcceptation;
 
+    @Column(name = "date_desistement")
+    private LocalDateTime dateDesistement;
+
+    @Column(name = "motif_desistement", columnDefinition = "TEXT")
+    private String motifDesistement;
+
     public DemandeMiseEnRelation() {
     }
 
@@ -144,5 +150,21 @@ public class DemandeMiseEnRelation {
 
     public void setDateAcceptation(LocalDateTime dateAcceptation) {
         this.dateAcceptation = dateAcceptation;
+    }
+
+    public LocalDateTime getDateDesistement() {
+        return dateDesistement;
+    }
+
+    public void setDateDesistement(LocalDateTime dateDesistement) {
+        this.dateDesistement = dateDesistement;
+    }
+
+    public String getMotifDesistement() {
+        return motifDesistement;
+    }
+
+    public void setMotifDesistement(String motifDesistement) {
+        this.motifDesistement = motifDesistement;
     }
 }
