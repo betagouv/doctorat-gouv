@@ -119,6 +119,10 @@
                 <p class="tdb-card__footer">
                   <span class="tdb-card__tag">Sujets de thèse</span>
                   <span class="tdb-card__date">Candidature le {{ formatDateCandidature(demande.dateDemande) }}</span>
+                  <span *ngIf="demande.nbMessagesNonLus" class="tdb-card__messages">
+                    <span class="fr-icon-mail-line" aria-hidden="true"></span>
+                    {{ demande.nbMessagesNonLus }} nouveau{{ demande.nbMessagesNonLus > 1 ? 'x' : '' }} message{{ demande.nbMessagesNonLus > 1 ? 's' : '' }}
+                  </span>
                 </p>
               </div>
             </a>

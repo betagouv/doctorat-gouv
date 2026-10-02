@@ -32,6 +32,7 @@ import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
+import fr.dinum.beta.gouv.doctorat.repository.MessageEchangeRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
@@ -57,6 +58,7 @@ public class DirecteurTheseService {
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PropositionTheseRepository propositionTheseRepository;
     private final DemandeMiseEnRelationRepository demandeMiseEnRelationRepository;
+    private final MessageEchangeRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
     private final BrevoEmailService emailService;
     private final Environment environment;
@@ -66,6 +68,7 @@ public class DirecteurTheseService {
                                   ProfilCandidatRepository profilCandidatRepository,
                                   PropositionTheseRepository propositionTheseRepository,
                                   DemandeMiseEnRelationRepository demandeMiseEnRelationRepository,
+                                  MessageEchangeRepository messageRepository,
                                   PasswordEncoder passwordEncoder,
                                   BrevoEmailService emailService,
                                   Environment environment) {
@@ -74,6 +77,7 @@ public class DirecteurTheseService {
         this.profilCandidatRepository = profilCandidatRepository;
         this.propositionTheseRepository = propositionTheseRepository;
         this.demandeMiseEnRelationRepository = demandeMiseEnRelationRepository;
+        this.messageRepository = messageRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.environment = environment;
@@ -242,6 +246,8 @@ public class DirecteurTheseService {
             }
             dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
             dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
+            dto.setNbMessagesNonLus((int) messageRepository
+                .countByDemandeIdAndAuteurIdNotAndLuFalse(d.getId(), userId));
             response.add(dto);
         }
         log.info("{} demande(s) de mise en relation trouvée(s) pour le directeur de thèse {}",
