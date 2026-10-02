@@ -103,6 +103,7 @@ export class TableauDeBordCandidat implements OnInit {
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
         statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : isAcceptee ? 'mise_en_relation' : 'en_attente',
+        nbMessages: item.nbMessagesNonLus ?? undefined,
       };
       if (archivee) {
         this.archives.push(mapped);

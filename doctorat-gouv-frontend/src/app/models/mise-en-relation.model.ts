@@ -11,6 +11,7 @@ export interface TableauDeBordCandidatItemBackend {
   dateContact: string | null;
   statut: StatutDemandeBackend;
   archivee: boolean;
+  nbMessagesNonLus?: number | null;
 }
 
 export interface MiseEnRelationDto {

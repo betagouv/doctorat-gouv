@@ -162,7 +162,7 @@
                 <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
                 <span *ngIf="item.nbMessages" class="tdb-card__messages">
                   <span class="fr-icon-mail-line" aria-hidden="true"></span>
-                  {{ item.nbMessages }} message{{ item.nbMessages > 1 ? 's' : '' }}
+                  {{ item.nbMessages }} nouveau{{ item.nbMessages > 1 ? 'x' : '' }} message{{ item.nbMessages > 1 ? 's' : '' }}
                 </span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
