@@ -703,8 +703,45 @@
       <!-- ============ ONGLET : NOTIFICATIONS ============ -->
       <div *ngIf="activeTab === 'notifications'" class="ed-tab-content">
         <section class="ed-card">
+          <div class="ed-card__header">
+            <div class="ed-card__header-row">
+              <div>
+                <h2 class="ed-card__title">
+                  <span class="fr-icon-mail-line" aria-hidden="true"></span>
+                  Notifications par e-mail
+                </h2>
+                <p class="ed-card__desc">Choisissez à quelle fréquence recevoir un e-mail récapitulant vos messages non lus.</p>
+              </div>
+            </div>
+          </div>
+
           <div class="ed-card__body">
-            <p>Notifications</p>
+            <fieldset class="fr-fieldset">
+              <legend class="fr-fieldset__legend">Fréquence d'envoi</legend>
+              <div class="fr-fieldset__content">
+                <div class="fr-radio-group">
+                  <input type="radio" id="dt-freq-journaliere" name="dt-frequence-notifications" checked />
+                  <label class="fr-label" for="dt-freq-journaliere">
+                    Journalière
+                    <span class="fr-hint-text">Un e-mail récapitulatif chaque jour en cas de messages non lus.</span>
+                  </label>
+                </div>
+                <div class="fr-radio-group">
+                  <input type="radio" id="dt-freq-hebdomadaire" name="dt-frequence-notifications" />
+                  <label class="fr-label" for="dt-freq-hebdomadaire">
+                    Hebdomadaire
+                    <span class="fr-hint-text">Un e-mail récapitulatif chaque semaine en cas de messages non lus.</span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="ed-actions">
+              <button type="button" class="ed-btn-primary" title="Bientôt disponible">
+                <span class="fr-icon-check-line" aria-hidden="true"></span>
+                Enregistrer
+              </button>
+            </div>
           </div>
         </section>
       </div>
