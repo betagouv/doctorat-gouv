@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.dinum.beta.gouv.doctorat.dto.OffreEncadrementDto;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
 import fr.dinum.beta.gouv.doctorat.service.PropositionTheseService;
 
@@ -42,6 +44,24 @@ public class PropositionTheseController {
     @GetMapping("/proposition")
     public PropositionTheseDto getThesisById(@RequestParam("id") Long id) {
         return propositionTheseService.findById(id);
+    }
+
+    /**
+     * Autres offres d'accompagnement du même directeur, pour la fiche offre d'encadrement.
+     * Exemple : GET /api/propositions-these/proposition/autres-offres?id=123
+     */
+    @GetMapping("/proposition/autres-offres")
+    public List<PropositionTheseDto> getAutresOffres(@RequestParam("id") Long id) {
+        return propositionTheseService.findAutresOffresEncadrement(id);
+    }
+
+    /**
+     * Fiche offre d'encadrement : offre + données publiques du chercheur.
+     * Exemple : GET /api/propositions-these/proposition/encadrement?id=123
+     */
+    @GetMapping("/proposition/encadrement")
+    public OffreEncadrementDto getOffreEncadrement(@RequestParam("id") Long id) {
+        return propositionTheseService.findOffreEncadrement(id);
     }
 
 }

@@ -19,13 +19,20 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import fr.dinum.beta.gouv.doctorat.dto.AllFilterOptions;
+import fr.dinum.beta.gouv.doctorat.dto.DirecteurOffreDto;
+import fr.dinum.beta.gouv.doctorat.dto.OffreEncadrementDto;
 import fr.dinum.beta.gouv.doctorat.dto.PropositionTheseDto;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.DomaineScientifique;
 import fr.dinum.beta.gouv.doctorat.enums.RegionsFrance;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.exception.ResourceNotFoundException;
 import fr.dinum.beta.gouv.doctorat.mapper.PropositionTheseMapper;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.MapJoin;
@@ -37,9 +44,15 @@ public class PropositionTheseService {
 	private static final Logger log = LoggerFactory.getLogger(PropositionTheseService.class);
 
     private final PropositionTheseRepository repo;
+    private final UtilisateurRepository utilisateurRepository;
+    private final ProfilDirecteurTheseRepository profilDtRepository;
 
-    public PropositionTheseService(PropositionTheseRepository repo) {
+    public PropositionTheseService(PropositionTheseRepository repo,
+                                   UtilisateurRepository utilisateurRepository,
+                                   ProfilDirecteurTheseRepository profilDtRepository) {
         this.repo = repo;
+        this.utilisateurRepository = utilisateurRepository;
+        this.profilDtRepository = profilDtRepository;
     }
 
     /* --------------------------------------------------------------
@@ -257,6 +270,73 @@ public class PropositionTheseService {
         return opt.map(PropositionTheseMapper::toDto)
                   .orElseThrow(() -> new ResourceNotFoundException(
                           "Proposition de thèse avec l’id " + id + " introuvable"));
+    }
+
+    /**
+     * Fiche offre d'encadrement : l'offre + les données publiques du chercheur,
+     * résolues depuis son profil via l'e-mail de direction (repli sur les champs
+     * de l'offre si le profil est introuvable). Aucune colonne ajoutée à
+     * proposition_these.
+     */
+    public OffreEncadrementDto findOffreEncadrement(Long id) {
+        PropositionThese offre = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Proposition de thèse avec l’id " + id + " introuvable"));
+        OffreEncadrementDto dto = new OffreEncadrementDto();
+        dto.setOffre(PropositionTheseMapper.toDto(offre));
+        dto.setDirecteur(directeurOffre(offre));
+        return dto;
+    }
+
+    private DirecteurOffreDto directeurOffre(PropositionThese offre) {
+        DirecteurOffreDto directeur = new DirecteurOffreDto();
+        directeur.setPrenom(offre.getDirectionThesePrenom());
+        directeur.setNom(offre.getDirectionTheseNom());
+        directeur.setOrcid(offre.getDirectionTheseOrcid());
+
+        String email = offre.getDirectionTheseEmail();
+        if (email == null || email.isBlank()) {
+            return directeur;
+        }
+        Optional<Utilisateur> utilisateur = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email);
+        if (utilisateur.isEmpty()) {
+            return directeur;
+        }
+        Utilisateur u = utilisateur.get();
+        directeur.setPhotoUrl(u.getPhotoUrl());
+        Optional<ProfilDirecteurThese> profil = profilDtRepository.findByUtilisateurId(u.getId());
+        if (profil.isEmpty()) {
+            return directeur;
+        }
+        ProfilDirecteurThese p = profil.get();
+        directeur.setCivilite(p.getCivilite());
+        directeur.setTitre(p.getTitre());
+        directeur.setExpertiseMots(p.getExpertiseMots());
+        if (p.getOrcid() != null && !p.getOrcid().isBlank()) {
+            directeur.setOrcid(p.getOrcid());
+        }
+        return directeur;
+    }
+
+    /**
+     * Autres offres d'accompagnement actives du même directeur (même e-mail de direction,
+     * source DOCTORAT_GOUV), hors offre courante. Alimente la fiche offre d'encadrement.
+     */
+    public List<PropositionTheseDto> findAutresOffresEncadrement(Long id) {
+        Optional<PropositionThese> ref = repo.findById(id);
+        if (ref.isEmpty() || ref.get().getSource() != SourceThese.DOCTORAT_GOUV) {
+            return List.of();
+        }
+        String email = ref.get().getDirectionTheseEmail();
+        if (email == null || email.isBlank()) {
+            return List.of();
+        }
+        return repo.findByDirecteurEmail(email).stream()
+                .filter(p -> p.getSource() == SourceThese.DOCTORAT_GOUV
+                        && Boolean.TRUE.equals(p.getActive())
+                        && !p.getId().equals(id))
+                .map(PropositionTheseMapper::toDto)
+                .toList();
     }
 
     /**

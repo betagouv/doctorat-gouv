@@ -99,6 +99,8 @@ class DirecteurTheseServiceTest {
         request.setPrenom("Marie");
         request.setEmail("marie.curie@exemple.fr");
         request.setCompetences(new ArrayList<>());
+        request.setCivilite("M.");
+        request.setTitre("Directeur de recherche");
         request.setEtablissement("Université X");
         request.setLaboratoire("Labo Y");
         request.setEcoleDoctorale("ED Z");
