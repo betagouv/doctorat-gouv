@@ -358,6 +358,28 @@ public class DirecteurTheseService {
     }
 
     /**
+     * Retourne les offres d'accompagnement créées par le directeur de thèse
+     * (source DOCTORAT_GOUV, actives et inactives) depuis ses axes contactables.
+     */
+    public List<SujetDtResponse> getOffres(String userId) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
+        String email = normalizeEmail(utilisateur.getEmail());
+        String orcid = normalizeOrcid(profil != null ? profil.getOrcid() : null);
+
+        List<SujetDtResponse> response = new ArrayList<>();
+        for (PropositionThese p : sujets.values()) {
+            if (p.getSource() == SourceThese.DOCTORAT_GOUV) {
+                response.add(toSujetDtResponse(p, email, orcid));
+            }
+        }
+        log.info("{} offre(s) d'accompagnement trouvée(s) pour le directeur de thèse {}", response.size(), userId);
+        return response;
+    }
+
+    /**
      * Retourne les demandes de mise en relation envoyées ou acceptées
      * (statuts CREE et ACCEPTEE, non archivées) par des candidats
      * sur les sujets rattachés au directeur de thèse.

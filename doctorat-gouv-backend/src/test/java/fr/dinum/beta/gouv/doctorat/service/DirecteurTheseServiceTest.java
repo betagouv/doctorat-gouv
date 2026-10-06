@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.entity.AxeDeRecherche;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
@@ -199,5 +200,32 @@ class DirecteurTheseServiceTest {
         assertNotNull(captor.getValue().getAxeExternalId());
         assertTrue(captor.getValue().getMatricule().startsWith("DG-"));
         assertNotNull(response.getAxes().get(0).getExternalId());
+    }
+
+    @Test
+    void getOffres_neRetourneQueLaSourceDoctoratGouv() {
+        PropositionThese sujetAdum = new PropositionThese();
+        sujetAdum.setId(1L);
+        sujetAdum.setMatricule("AB-2026_0001");
+        sujetAdum.setSource(SourceThese.ADUM);
+        sujetAdum.setTheseTitre("Sujet ADUM");
+        sujetAdum.setActive(true);
+
+        PropositionThese offre = new PropositionThese();
+        offre.setId(2L);
+        offre.setMatricule("DG-11111111");
+        offre.setSource(SourceThese.DOCTORAT_GOUV);
+        offre.setTheseTitre("Encadrement IA");
+        offre.setActive(true);
+        offre.setDirectionTheseEmail("marie.curie@exemple.fr");
+
+        when(propositionTheseRepository.findByDirecteurEmail("marie.curie@exemple.fr"))
+            .thenReturn(List.of(sujetAdum, offre));
+
+        List<SujetDtResponse> offres = directeurTheseService.getOffres("dt-1");
+
+        assertEquals(1, offres.size());
+        assertEquals("DG-11111111", offres.get(0).getMatricule());
+        assertEquals("Encadrement IA", offres.get(0).getTitre());
     }
 }

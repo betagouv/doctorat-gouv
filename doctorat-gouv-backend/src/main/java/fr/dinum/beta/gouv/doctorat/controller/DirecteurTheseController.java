@@ -100,6 +100,13 @@ public class DirecteurTheseController {
         return ResponseEntity.ok(directeurTheseService.getSujets(userId));
     }
 
+    @GetMapping("/offres")
+    public ResponseEntity<List<SujetDtResponse>> getOffres() {
+        String userId = getCurrentUserId();
+        log.info("Consultation des offres d'accompagnement du directeur de thèse {}", userId);
+        return ResponseEntity.ok(directeurTheseService.getOffres(userId));
+    }
+
     @GetMapping("/mises-en-relation")
     public ResponseEntity<List<DemandeDtResponse>> getDemandes() {
         String userId = getCurrentUserId();
