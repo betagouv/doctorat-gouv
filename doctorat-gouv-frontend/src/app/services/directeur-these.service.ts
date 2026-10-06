@@ -36,6 +36,10 @@ export class DirecteurTheseService {
     return this.http.get<SujetDt[]>(`${this.apiUrl}/sujets`);
   }
 
+  getOffres(): Observable<SujetDt[]> {
+    return this.http.get<SujetDt[]>(`${this.apiUrl}/offres`);
+  }
+
   getDemandes(): Observable<DemandeDt[]> {
     return this.http.get<DemandeDt[]>(`${this.apiUrl}/mises-en-relation`);
   }
