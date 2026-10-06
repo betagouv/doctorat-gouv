@@ -78,6 +78,8 @@ export interface AxeDeRecherche {
   titre: string;
   precisions: string;
   contactable: boolean;
+  /** Identifiant stable de l'axe (génère 1 offre d'accompagnement par axe contactable). */
+  externalId: string | null;
 }
 
 /** Un sujet de thèse rattaché au directeur de thèse. */

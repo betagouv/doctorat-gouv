@@ -227,6 +227,7 @@ public class SearchRerankerService {
                 || contains(dto.getResumeAnglais(), token)
                 || containsInMap(dto.getMotsCles(), token)
                 || containsInMap(dto.getMotsClesAnglais(), token)
+                || contains(dto.getExpertiseMots(), token)
                 || contains(dto.getObjectif(), token)
                 || contains(dto.getContexte(), token);
             if (!found) return false;

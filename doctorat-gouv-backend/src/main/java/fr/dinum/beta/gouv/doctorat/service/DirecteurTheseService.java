@@ -3,9 +3,11 @@ package fr.dinum.beta.gouv.doctorat.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.MessageEchangeRepository;
@@ -94,6 +97,7 @@ public class DirecteurTheseService {
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
         String normalizedEmail = EmailUtils.normalize(request.getEmail());
+        String ancienEmail = EmailUtils.normalize(utilisateur.getEmail());
         if (normalizedEmail != null && !normalizedEmail.equals(utilisateur.getEmail())) {
             utilisateurRepository.findByEmailIgnoreCaseAndTrim(normalizedEmail)
                 .filter(u -> !u.getId().equals(userId))
@@ -133,14 +137,174 @@ public class DirecteurTheseService {
                 axe.setTitre(a.getTitre());
                 axe.setPrecisions(a.getPrecisions());
                 axe.setContactable(a.isContactable());
+                // Identifiant stable par axe (généré côté front, backfillé ici pour les axes existants)
+                axe.setExternalId(a.getExternalId() != null && !a.getExternalId().isBlank()
+                    ? a.getExternalId()
+                    : UUID.randomUUID().toString());
                 axes.add(axe);
             }
             profil.setAxes(axes);
         }
         profilDtRepository.save(profil);
 
+        synchroniserOffresAccompagnement(utilisateur, profil, ancienEmail);
+
         log.info("Profil directeur de thèse mis à jour pour l'utilisateur {}", userId);
         return toProfilDtResponse(utilisateur);
+    }
+
+    /**
+     * Synchronise les offres d'accompagnement (PropositionThese de type "offre",
+     * source DOCTORAT_GOUV) avec les axes de recherche contactables du directeur.
+     * Règle : 1 axe contactable = 1 offre active (upsert par matricule déterministe).
+     * Tout axe désactivé/supprimé (ou offre orpheline, ex. après changement d'e-mail)
+     * est désactivé (active=false), jamais supprimé : l'historique et les demandes
+     * de mise en relation sont préservés.
+     */
+    private void synchroniserOffresAccompagnement(Utilisateur utilisateur, ProfilDirecteurThese profil, String ancienEmail) {
+        List<AxeDeRecherche> axes = profil.getAxes() != null ? profil.getAxes() : new ArrayList<>();
+        String email = EmailUtils.normalize(utilisateur.getEmail());
+        String orcid = normalizeOrcid(profil.getOrcid());
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. Offres DOCTORAT_GOUV existantes rattachées au directeur
+        // (e-mail actuel + ancien e-mail + ORCID : couvre le changement d'e-mail).
+        Map<String, PropositionThese> existantesParAxe = new LinkedHashMap<>();
+        List<PropositionThese> candidates = new ArrayList<>();
+        if (email != null) {
+            candidates.addAll(propositionTheseRepository.findByDirecteurEmail(email));
+        }
+        if (ancienEmail != null && !ancienEmail.equals(email)) {
+            candidates.addAll(propositionTheseRepository.findByDirecteurEmail(ancienEmail));
+        }
+        if (orcid != null) {
+            candidates.addAll(propositionTheseRepository.findByDirecteurOrcid(orcid));
+        }
+        for (PropositionThese p : candidates) {
+            if (p.getSource() == SourceThese.DOCTORAT_GOUV && p.getAxeExternalId() != null) {
+                existantesParAxe.putIfAbsent(p.getAxeExternalId(), p);
+            }
+        }
+
+        // 2. Upsert des axes contactables.
+        List<String> axesActifs = new ArrayList<>();
+        for (AxeDeRecherche axe : axes) {
+            if (!axe.isContactable() || axe.getExternalId() == null || axe.getExternalId().isBlank()) {
+                continue;
+            }
+            axesActifs.add(axe.getExternalId());
+            String matricule = matriculeOffre(axe.getExternalId());
+            PropositionThese offre = propositionTheseRepository.findByMatricule(matricule).orElse(null);
+            boolean creation = (offre == null);
+            if (creation) {
+                offre = new PropositionThese();
+                offre.setMatricule(matricule);
+                offre.setAxeExternalId(axe.getExternalId());
+                offre.setTypeProposition("offre");
+                offre.setSource(SourceThese.DOCTORAT_GOUV);
+                offre.setDateCreation(now);
+                offre.setDateSoumission(now);
+                offre.setDateMiseEnLigne(now);
+                offre.setDateIntegration(now);
+            }
+            remplirOffreAccompagnement(offre, utilisateur, profil, axe, now);
+            propositionTheseRepository.save(offre);
+            if (creation) {
+                log.info("Offre d'accompagnement {} créée pour le directeur {}", matricule, utilisateur.getId());
+            }
+        }
+
+        // 3. Désactivation des offres dont l'axe n'est plus contactable.
+        for (Map.Entry<String, PropositionThese> entry : existantesParAxe.entrySet()) {
+            if (!axesActifs.contains(entry.getKey())) {
+                PropositionThese offre = entry.getValue();
+                if (!Boolean.FALSE.equals(offre.getActive())) {
+                    offre.setActive(false);
+                    offre.setDateMaj(now);
+                    propositionTheseRepository.save(offre);
+                    log.info("Offre d'accompagnement {} désactivée (axe non contactable) pour le directeur {}",
+                        offre.getMatricule(), utilisateur.getId());
+                }
+            }
+        }
+    }
+
+    /**
+     * Matricule déterministe et stable par axe : "DG-" + 8 caractères hexadéraux
+     * issus de l'UUID de l'axe (11 caractères, contrainte d'unicité en base).
+     */
+    private String matriculeOffre(String axeExternalId) {
+        String hex = axeExternalId.replace("-", "");
+        if (hex.length() < 8) {
+            hex = (hex + "00000000").substring(0, 8);
+        }
+        return "DG-" + hex.substring(0, 8).toUpperCase();
+    }
+
+    /**
+     * Recopie profil + axe vers l'offre d'accompagnement.
+     * - titre axe -> titre de l'offre ; précisions axe -> résumé + thématique
+     *   (champs couverts par la recherche plein texte et affichés sur la fiche) ;
+     * - expertise en quelques mots + mots-clés du profil -> offre (recherche + fiche) ;
+     * - direction/déposant = directeur (le contact candidat et le rattachement
+     *   "Mes sujets" fonctionnent via l'e-mail/ORCID) ;
+     * - pas de date limite -> exclue du flux EURAXESS (deadline obligatoire, règle R4).
+     */
+    private void remplirOffreAccompagnement(PropositionThese offre, Utilisateur utilisateur,
+            ProfilDirecteurThese profil, AxeDeRecherche axe, LocalDateTime now) {
+        String email = EmailUtils.normalize(utilisateur.getEmail());
+        int annee = Year.now().getValue();
+
+        offre.setActive(true);
+        offre.setDateMaj(now);
+        offre.setAnnee(annee);
+        offre.setAnneeUniversitaire(String.valueOf(annee));
+
+        offre.setTheseTitre(truncate(axe.getTitre() != null ? axe.getTitre().trim() : null, 600));
+        offre.setResume(axe.getPrecisions());
+        offre.setThematiqueRecherche(axe.getPrecisions());
+        offre.setExpertiseMots(profil.getExpertiseMots());
+        offre.setMotsCles(motsClesOffre(profil.getMotsCles()));
+
+        offre.setDomaineScientifique(profil.getDomaineScientifique());
+        offre.setEtablissementLibelle(truncate(profil.getEtablissement(), 250));
+        offre.setUniteRechercheLibelle(truncate(profil.getLaboratoire(), 300));
+        offre.setEcoleDoctoraleLibelle(truncate(profil.getEcoleDoctorale(), 250));
+
+        offre.setDirectionTheseNom(truncate(utilisateur.getNom(), 50));
+        offre.setDirectionThesePrenom(truncate(utilisateur.getPrenom(), 25));
+        offre.setDirectionTheseEmail(email);
+        offre.setDirectionTheseOrcid(truncate(normalizeOrcid(profil.getOrcid()), 20));
+
+        offre.setDeposantNom(truncate(utilisateur.getNom(), 50));
+        offre.setDeposantPrenom(truncate(utilisateur.getPrenom(), 25));
+        offre.setDeposantEmail(email);
+        offre.setDeposantOrcid(truncate(normalizeOrcid(profil.getOrcid()), 20));
+
+        if (offre.getDateMiseEnLigne() == null) {
+            offre.setDateMiseEnLigne(now);
+        }
+    }
+
+    private Map<String, String> motsClesOffre(List<String> motsCles) {
+        if (motsCles == null || motsCles.isEmpty()) {
+            return null;
+        }
+        Map<String, String> map = new LinkedHashMap<>();
+        int i = 0;
+        for (String mot : motsCles) {
+            if (mot != null && !mot.isBlank()) {
+                map.put(String.valueOf(i++), mot.trim());
+            }
+        }
+        return map.isEmpty() ? null : map;
+    }
+
+    private String truncate(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        return value.length() > maxLength ? value.substring(0, maxLength) : value;
     }
 
     public ProfilDtResponse addCompetence(String userId, String competence) {
@@ -574,6 +738,7 @@ public class DirecteurTheseService {
                 copy.setTitre(a.getTitre());
                 copy.setPrecisions(a.getPrecisions());
                 copy.setContactable(a.isContactable());
+                copy.setExternalId(a.getExternalId());
                 axesCopy.add(copy);
             }
             response.setAxes(axesCopy);

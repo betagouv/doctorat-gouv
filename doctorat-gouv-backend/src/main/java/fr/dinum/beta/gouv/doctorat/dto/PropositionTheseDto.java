@@ -401,6 +401,14 @@ public class PropositionTheseDto {
 		this.thematiqueRecherche = thematiqueRecherche;
 	}
 
+	public String getExpertiseMots() {
+		return expertiseMots;
+	}
+
+	public void setExpertiseMots(String expertiseMots) {
+		this.expertiseMots = expertiseMots;
+	}
+
 	public String getDomaine() {
 		return domaine;
 	}
@@ -655,6 +663,7 @@ public class PropositionTheseDto {
 	private String resume;
 	private String resumeAnglais;
 	private String thematiqueRecherche;
+	private String expertiseMots;
 	private String domaine;
 	private String objectif;
 	private String contexte;

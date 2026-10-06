@@ -73,6 +73,7 @@ public class PropositionTheseMapper {
         dto.setResume(entity.getResume());
         dto.setResumeAnglais(entity.getResumeAnglais());
         dto.setThematiqueRecherche(entity.getThematiqueRecherche());
+        dto.setExpertiseMots(entity.getExpertiseMots());
         dto.setDomaine(entity.getDomaine());
         dto.setObjectif(entity.getObjectif());
         dto.setContexte(entity.getContexte());
@@ -179,6 +180,7 @@ public class PropositionTheseMapper {
         entity.setResume(dto.getResume());
         entity.setResumeAnglais(dto.getResumeAnglais());
         entity.setThematiqueRecherche(dto.getThematiqueRecherche());
+        entity.setExpertiseMots(dto.getExpertiseMots());
         entity.setDomaine(dto.getDomaine());
         entity.setObjectif(dto.getObjectif());
         entity.setContexte(dto.getContexte());

@@ -173,6 +173,12 @@ public class PropositionThese {
 	private String thematiqueRecherche;
 
 	@Column(columnDefinition = "TEXT")
+	private String expertiseMots;
+
+	@Column(length = 36)
+	private String axeExternalId;
+
+	@Column(columnDefinition = "TEXT")
 	private String domaine;
 
 	@Column(columnDefinition = "TEXT")
@@ -922,6 +928,22 @@ public class PropositionThese {
 
 	public void setSource(SourceThese source) {
 		this.source = source;
+	}
+
+	public String getExpertiseMots() {
+		return expertiseMots;
+	}
+
+	public void setExpertiseMots(String expertiseMots) {
+		this.expertiseMots = expertiseMots;
+	}
+
+	public String getAxeExternalId() {
+		return axeExternalId;
+	}
+
+	public void setAxeExternalId(String axeExternalId) {
+		this.axeExternalId = axeExternalId;
 	}
 
 	public String getAlbertDocumentId() {

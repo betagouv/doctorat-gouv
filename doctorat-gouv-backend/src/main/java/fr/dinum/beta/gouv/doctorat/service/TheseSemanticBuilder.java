@@ -30,6 +30,7 @@ public class TheseSemanticBuilder {
         // 🇫🇷 Français
         appendSectionWithHeader(sb, "Titre", these.getTheseTitre());
         appendMotsCles(sb, these);
+        appendSectionWithHeader(sb, "Expertise", these.getExpertiseMots());
         appendSectionWithHeader(sb, "Résumé", these.getResume());
         appendSectionWithHeader(sb, "Objectif", these.getObjectif());
         appendSectionWithHeader(sb, "Contexte", these.getContexte());

@@ -43,6 +43,7 @@ public record ExportPropositionTheseDTO(
         String resume,
         String resumeAnglais,
         String thematiqueRecherche,
+        String expertiseMots,
         String domaine,
         String objectif,
         String contexte,

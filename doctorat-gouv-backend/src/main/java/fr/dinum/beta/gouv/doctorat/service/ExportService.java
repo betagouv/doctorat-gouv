@@ -97,6 +97,7 @@ public class ExportService {
                 entity.getResume(),
                 entity.getResumeAnglais(),
                 entity.getThematiqueRecherche(),
+                entity.getExpertiseMots(),
                 entity.getDomaine(),
                 entity.getObjectif(),
                 entity.getContexte(),

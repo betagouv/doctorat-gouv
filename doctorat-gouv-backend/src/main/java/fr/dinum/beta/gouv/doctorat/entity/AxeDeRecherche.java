@@ -19,6 +19,9 @@ public class AxeDeRecherche {
     @Column(name = "axe_contactable")
     private boolean contactable;
 
+    @Column(name = "axe_external_id", length = 36)
+    private String externalId;
+
     public String getTitre() { return titre; }
     public void setTitre(String titre) { this.titre = titre; }
 
@@ -27,4 +30,7 @@ public class AxeDeRecherche {
 
     public boolean isContactable() { return contactable; }
     public void setContactable(boolean contactable) { this.contactable = contactable; }
+
+    public String getExternalId() { return externalId; }
+    public void setExternalId(String externalId) { this.externalId = externalId; }
 }

@@ -195,7 +195,12 @@
 					{{ 'DETAIL.INFO_TRADUCTION_MANQUANTE' | translate }}
 				</div>
 
-				<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
+				<ng-container *ngIf="thesis?.expertiseMots?.trim() as expertise">
+				<h3 class="section-title">{{ 'DETAIL.EXPERTISE' | translate }}</h3>
+				<p class="paragraph fr-mb-12v" [innerHTML]="expertise | nl2br"></p>
+			</ng-container>
+
+			<ng-container *ngIf="getThesisResume(thesis)?.trim() as resume">
 					<h3 class="section-title">{{ 'DETAIL.RESUME' | translate }}</h3>
 					<p class="paragraph fr-mb-12v" [innerHTML]="resume | nl2br"></p>
 				</ng-container>

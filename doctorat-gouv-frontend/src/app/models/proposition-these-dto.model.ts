@@ -64,6 +64,7 @@ export interface PropositionTheseDto{
   resume: string | null;
   resumeAnglais: string | null;
   thematiqueRecherche: string | null;
+  expertiseMots: string | null;
   domaine: string | null;
   objectif: string | null;
   contexte: string | null;

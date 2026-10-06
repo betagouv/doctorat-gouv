@@ -30,6 +30,8 @@ public class BlocExtractor {
 		ajouterBloc(blocs, sujet.getId(), "mots_cles",
 			joinMap(sujet.getMotsCles(), sujet.getMotsClesAnglais()));
 
+		ajouterBloc(blocs, sujet.getId(), "mots_cles", sujet.getExpertiseMots());
+
 		ajouterBloc(blocs, sujet.getId(), "profil",
 			join(sujet.getProfilRecherche(), sujet.getProfilRechercheAnglais()));
 

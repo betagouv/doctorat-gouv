@@ -181,7 +181,7 @@ export class EspaceDirecteurThese implements OnInit {
       expertiseMots: this.profilForm.value.expertiseMots || null,
       motsCles: this.motsCles,
       descriptionAxes: this.profil?.descriptionAxes ?? null,
-      axes: (this.profil?.axes ?? []).map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable})),
+      axes: (this.profil?.axes ?? []).map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable, externalId: a.externalId ?? null})),
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -237,6 +237,7 @@ export class EspaceDirecteurThese implements OnInit {
 
     this.isSavingAxes = true;
     this.errorMessage = null;
+    this.ensureAxesExternalIds();
 
     const p = this.profil;
     const request: ProfilDtUpdateRequest = {
@@ -257,7 +258,7 @@ export class EspaceDirecteurThese implements OnInit {
       expertiseMots: p.expertiseMots,
       motsCles: p.motsCles ?? [],
       descriptionAxes: (this.axesForm.value.descriptionAxes ?? '').trim() || null,
-      axes: this.axes.map(a => ({titre: a.titre.trim(), precisions: a.precisions.trim(), contactable: a.contactable})),
+      axes: this.axes.map(a => ({titre: a.titre.trim(), precisions: a.precisions.trim(), contactable: a.contactable, externalId: a.externalId ?? null})),
     };
 
     this.directeurService.updateProfil(request).subscribe({
@@ -278,7 +279,7 @@ export class EspaceDirecteurThese implements OnInit {
   }
 
   addAxe(): void {
-    this.axes.push({ titre: '', precisions: '', contactable: false });
+    this.axes.push({ titre: '', precisions: '', contactable: false, externalId: this.newAxeExternalId() });
   }
 
   removeAxe(index: number): void {
@@ -287,6 +288,26 @@ export class EspaceDirecteurThese implements OnInit {
 
   toggleAxeContactable(index: number): void {
     this.axes[index].contactable = !this.axes[index].contactable;
+  }
+
+  /** Identifiant stable par axe : 1 axe contactable = 1 offre d'accompagnement. */
+  private newAxeExternalId(): string {
+    const c = crypto as Crypto & { randomUUID?: () => string };
+    if (c && typeof c.randomUUID === 'function') {
+      return c.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, ch => {
+      const r = (Math.random() * 16) | 0;
+      return (ch === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+
+  private ensureAxesExternalIds(): void {
+    for (const axe of this.axes) {
+      if (!axe.externalId) {
+        axe.externalId = this.newAxeExternalId();
+      }
+    }
   }
 
   changerMotDePasse(): void {
