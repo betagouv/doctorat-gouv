@@ -101,3 +101,20 @@ export interface PropositionTheseDto{
   
 }
 
+/** Données publiques du chercheur (fiche offre d'encadrement, résolues depuis son profil). */
+export interface DirecteurOffreDto {
+  civilite: string | null;
+  prenom: string | null;
+  nom: string | null;
+  titre: string | null;
+  photoUrl: string | null;
+  orcid: string | null;
+  expertiseMots: string | null;
+}
+
+/** Fiche offre d'encadrement : offre + chercheur. */
+export interface OffreEncadrementDto {
+  offre: PropositionTheseDto | null;
+  directeur: DirecteurOffreDto | null;
+}
+

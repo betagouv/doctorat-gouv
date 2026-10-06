@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { PropositionTheseDto } from '../models/proposition-these-dto.model';
-import { PageResponse } from '../models/page-response.model';
+import { PropositionTheseDto, OffreEncadrementDto } from '../models/proposition-these-dto.model';import { PageResponse } from '../models/page-response.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -38,6 +37,22 @@ export class PropositionTheseService {
 	getThesisById(id: number): Observable<PropositionTheseDto> {
 	  const url = `${this.baseUrl}/proposition?id=${id}`;
 	  return this.http.get<PropositionTheseDto>(url);
+	}
+
+	/**
+	 * Autres offres d'encadrement du même directeur (fiche offre d'encadrement).
+	 */
+	getAutresOffres(id: number): Observable<PropositionTheseDto[]> {
+	  const url = `${this.baseUrl}/proposition/autres-offres?id=${id}`;
+	  return this.http.get<PropositionTheseDto[]>(url);
+	}
+
+	/**
+	 * Fiche offre d'encadrement : offre + données publiques du chercheur.
+	 */
+	getOffreEncadrement(id: number): Observable<OffreEncadrementDto> {
+	  const url = `${this.baseUrl}/proposition/encadrement?id=${id}`;
+	  return this.http.get<OffreEncadrementDto>(url);
 	}
 
 }

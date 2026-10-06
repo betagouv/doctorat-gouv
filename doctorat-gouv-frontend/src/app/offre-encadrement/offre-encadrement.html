@@ -1,0 +1,106 @@
+<main class="offre-page" *ngIf="!isLoading && !errorMessage && offre">
+  <div class="offre-container">
+
+    <!-- ======== CARTE TITRE ======== -->
+    <section class="offre-card offre-title-card">
+      <div class="offre-eyebrow">
+        <span class="offre-eyebrow__label">Offre d'encadrement</span>
+        <span class="offre-eyebrow__date" *ngIf="datePublication">Publié le {{ datePublication }}</span>
+      </div>
+      <h1 class="offre-title">{{ offre.theseTitre || 'Titre non renseigné' }}</h1>
+      <p class="offre-proposed">
+        Proposé par
+        <a *ngIf="orcidUrl; else nomSeul" class="offre-proposed__name" [href]="orcidUrl" target="_blank" rel="noopener">{{ nomComplet }}</a>
+        <ng-template #nomSeul><span class="offre-proposed__name">{{ nomComplet }}</span></ng-template>
+        <a *ngIf="orcidUrl" class="offre-orcid" [href]="orcidUrl" target="_blank" rel="noopener" title="Voir la fiche ORCID">ORCID</a>
+      </p>
+    </section>
+
+    <!-- ======== CONTENU ======== -->
+    <div class="offre-grid">
+
+      <!-- ======== COLONNE PRINCIPALE : un seul panneau, deux sections séparées ======== -->
+      <section class="offre-card offre-main">
+        <h2 class="offre-section-title">Quelques mots sur l'encadrement</h2>
+        <div class="offre-text" [class.offre-text--collapsed]="!encadrementEtendu" *ngIf="texteEncadrement; else pasEncadrement">
+          <p [innerHTML]="texteEncadrement | nl2br"></p>
+        </div>
+        <ng-template #pasEncadrement>
+          <p class="offre-text--empty">Précisions à venir.</p>
+        </ng-template>
+        <button *ngIf="texteEncadrement" type="button" class="offre-more" (click)="basculerEncadrement()">
+          <span class="offre-more__icon" aria-hidden="true">{{ encadrementEtendu ? '−' : '+' }}</span>
+          {{ encadrementEtendu ? 'Réduire' : 'Lire plus' }}
+        </button>
+
+        <hr class="offre-separator" />
+
+        <h2 class="offre-section-title">Expertises du chercheur</h2>
+        <figure class="offre-quote" *ngIf="expertiseMots; else pasExpertise">
+          <span class="fr-icon-double-quotes-l offre-quote__icon" aria-hidden="true"></span>
+          <blockquote>
+            <p [innerHTML]="('« ' + expertiseMots + ' »') | nl2br"></p>
+          </blockquote>
+          <figcaption>{{ nomComplet }}</figcaption>
+        </figure>
+        <ng-template #pasExpertise>
+          <p class="offre-text--empty">Expertises à venir.</p>
+        </ng-template>
+      </section>
+
+      <!-- ======== COLONNE CONTACT ======== -->
+      <aside class="offre-card offre-contact">
+        <h2 class="offre-contact__title">Contactez le chercheur</h2>
+        <img *ngIf="photoUrl && !photoErreur; else avatarInitiales" class="offre-contact__photo"
+             [src]="photoUrl" [alt]="nomComplet" (error)="photoErreur = true" />
+        <ng-template #avatarInitiales>
+          <div class="offre-contact__avatar" aria-hidden="true">{{ initiales }}</div>
+        </ng-template>
+        <p class="offre-contact__name">{{ civiliteNom }}</p>
+        <p class="offre-contact__role" *ngIf="titreChercheur">{{ titreChercheur }}</p>
+        <div class="offre-contact__tags" *ngIf="motsClesListe.length > 0">
+          <span class="offre-tag" *ngFor="let mot of motsClesListe.slice(0, 2)">{{ mot }}</span>
+        </div>
+        <button type="button" class="offre-contact__cta" (click)="prendreContact()">
+          Prendre contact
+        </button>
+        <div class="offre-contact__links">
+          <a *ngIf="orcidUrl" [href]="orcidUrl" target="_blank" rel="noopener">
+            Fiche ORCID
+            <span class="fr-icon-external-link-line" aria-hidden="true"></span>
+          </a>
+          <a [href]="thesesUrl" target="_blank" rel="noopener">
+            Thèse.fr
+            <span class="fr-icon-external-link-line" aria-hidden="true"></span>
+          </a>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ======== AUTRES OFFRES ======== -->
+    <section class="offre-autres" *ngIf="autresOffres.length > 0">
+      <p class="offre-autres__label">Autres offres d'encadrement proposées par {{ nomComplet }}</p>
+      <ul class="offre-autres__list">
+        <li *ngFor="let autre of autresOffres">
+          <a [routerLink]="['/offre-encadrement']" [queryParams]="{ id: autre.id }">
+            {{ autre.theseTitre || 'Titre non renseigné' }}
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<!-- ======== CHARGEMENT / ERREUR ======== -->
+<main class="offre-page" *ngIf="isLoading || errorMessage">
+  <div class="offre-container">
+    <div class="offre-card offre-status" *ngIf="isLoading" role="status">
+      <p>Chargement de l'offre...</p>
+    </div>
+    <div class="offre-card offre-status offre-status--error" *ngIf="!isLoading && errorMessage" role="alert">
+      <p>{{ errorMessage }}</p>
+      <a routerLink="/mes-offres-directeur-these" class="fr-link">Retour à mes offres</a>
+    </div>
+  </div>
+</main>

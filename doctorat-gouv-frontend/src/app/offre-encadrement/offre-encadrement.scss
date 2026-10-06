@@ -1,0 +1,365 @@
+:host {
+  display: block;
+}
+
+$font-family: 'Marianne', arial, sans-serif;
+$color-page-bg: #FAF6F0;
+$color-white: #FFFFFF;
+$color-text-primary: #161616;
+$color-text-secondary: #666666;
+$color-blue-france: #000091;
+$color-border: #E8E2D6;
+$color-tag-bg: #E3E3FD;
+$color-orcid-bg: #B8FEC9;
+$color-orcid-text: #18753C;
+
+.offre-page {
+  background: $color-page-bg;
+  min-height: 100vh;
+  padding: 2rem 0 4rem;
+}
+
+.offre-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.offre-card {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1.75rem 2rem;
+}
+
+/* ======== Carte titre ======== */
+.offre-title-card {
+  margin-bottom: 1.5rem;
+}
+
+.offre-eyebrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.offre-eyebrow__label {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: $color-blue-france;
+}
+
+.offre-eyebrow__date {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.offre-title {
+  font-family: $font-family;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: $color-text-primary;
+  margin: 0 0 0.75rem;
+}
+
+.offre-proposed {
+  font-family: $font-family;
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.offre-proposed__name {
+  color: $color-blue-france;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+a.offre-proposed__name:hover {
+  text-decoration-thickness: 2px;
+}
+
+.offre-orcid {
+  display: inline-block;
+  font-family: $font-family;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: $color-orcid-text;
+  background: $color-orcid-bg;
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  text-decoration: none;
+}
+
+/* ======== Grille contenu ======== */
+.offre-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.offre-section-title {
+  font-family: $font-family;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: $color-text-primary;
+  margin: 0 0 1rem;
+}
+
+.offre-text {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: $color-text-primary;
+
+  p {
+    margin: 0;
+  }
+
+  &--collapsed p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.offre-text--empty {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-style: italic;
+  color: $color-text-secondary;
+  margin: 0;
+}
+
+.offre-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-primary;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  padding: 0.25rem 0.625rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-blue-france;
+    color: $color-blue-france;
+  }
+}
+
+.offre-more__icon {
+  font-weight: 700;
+}
+
+.offre-separator {
+  border: none;
+  border-top: 1px solid $color-border;
+  margin: 1.75rem 0;
+}
+
+/* ======== Citation expertise ======== */
+.offre-quote {
+  margin: 0;
+}
+
+.offre-quote__icon {
+  color: $color-blue-france;
+  font-size: 1.5rem;
+}
+
+.offre-quote blockquote {
+  margin: 0.25rem 0 0.75rem;
+}
+
+.offre-quote blockquote p {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.6;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.offre-quote figcaption {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-primary;
+}
+
+/* ======== Panneau contact ======== */
+.offre-contact {
+  text-align: center;
+}
+
+.offre-contact__title {
+  font-family: $font-family;
+  font-size: 1rem;
+  font-weight: 800;
+  color: $color-text-primary;
+  margin: 0 0 1rem;
+}
+
+.offre-contact__avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  background: $color-tag-bg;
+  color: $color-blue-france;
+  font-family: $font-family;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.offre-contact__photo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.offre-contact__name {
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.offre-contact__role {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+  margin: 0.125rem 0 0;
+}
+
+.offre-contact__tags {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 1rem;
+}
+
+.offre-tag {
+  font-family: $font-family;
+  font-size: 0.75rem;
+  color: $color-blue-france;
+  background: $color-tag-bg;
+  border-radius: 12px;
+  padding: 0.125rem 0.625rem;
+}
+
+.offre-contact__cta {
+  width: 100%;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $color-white;
+  background: $color-blue-france;
+  border: none;
+  border-radius: 4px;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background: #1212FF;
+  }
+}
+
+.offre-contact__links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+
+  a {
+    font-family: $font-family;
+    font-size: 0.75rem;
+    color: $color-blue-france;
+    text-decoration: underline;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+/* ======== Autres offres ======== */
+.offre-autres {
+  padding: 0 0.25rem;
+}
+
+.offre-autres__label {
+  font-family: $font-family;
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+  margin: 0 0 0.5rem;
+}
+
+.offre-autres__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  a {
+    font-family: $font-family;
+    font-size: 0.875rem;
+    color: $color-blue-france;
+    text-decoration: underline;
+  }
+}
+
+/* ======== Etats ======== */
+.offre-status {
+  text-align: center;
+  font-family: $font-family;
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 768px) {
+  .offre-container {
+    padding: 0 1rem;
+  }
+
+  .offre-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .offre-title {
+    font-size: 1.375rem;
+  }
+
+  .offre-card {
+    padding: 1.25rem;
+  }
+}

@@ -132,7 +132,7 @@
         <div class="tdb-sujet__side">
           <p class="tdb-sujet__date" *ngIf="offre.dateMiseEnLigne">Mise en ligne le {{ offre.dateMiseEnLigne }}</p>
           <p class="tdb-sujet__date" *ngIf="offre.dateLimiteCandidature">Candidatures jusqu'au {{ offre.dateLimiteCandidature }}</p>
-          <a class="fr-link" [routerLink]="['/proposition']" [queryParams]="{id: offre.id}">
+          <a class="fr-link" [routerLink]="['/offre-encadrement']" [queryParams]="{id: offre.id}">
             Voir l'offre
             <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
           </a>
