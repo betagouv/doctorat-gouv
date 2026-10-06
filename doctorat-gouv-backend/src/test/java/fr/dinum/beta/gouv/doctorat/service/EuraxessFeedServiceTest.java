@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 
 /**
@@ -73,5 +74,32 @@ class EuraxessFeedServiceTest {
 		assertTrue(!xml.contains("ina-0002"), "L'offre inactive ne doit pas être publiée");
 		assertTrue(xml.contains("isIncremental=\"false\""),
 				"Offres présentes → flux complet attendu, obtenu : " + xml);
+	}
+
+	@Test
+	void exclutOffreAccompagnementInterneMemeSiComplete() {
+		// Offre DOCTORAT_GOUV remplissant tous les champs obligatoires EURAXESS
+		// (y compris la deadline) : elle ne doit en aucun cas être diffusée.
+		PropositionThese offre = new PropositionThese();
+		offre.setMatricule("DG-11111111");
+		offre.setTypeProposition("offre");
+		offre.setSource(SourceThese.DOCTORAT_GOUV);
+		offre.setActive(true);
+		offre.setTheseTitre("Offre d'accompagnement");
+		offre.setResume("Description de l'offre d'accompagnement");
+		offre.setDateMaj(LocalDateTime.of(2026, 8, 1, 10, 0));
+		offre.setDateLimiteCandidature(LocalDateTime.of(2026, 10, 1, 0, 0));
+		offre.setDomaineScientifique("2");
+		offre.setSpecialite("physique");
+		offre.setEtablissementLibelle("Université Exemple");
+		offre.setEtablissementVille("Paris");
+		offre.setEtablissementCodePostal("75000");
+		offre.setDeposantEmail("directeur@exemple.fr");
+		repository.save(offre);
+
+		EuraxessEmptyFeedException ex = assertThrows(EuraxessEmptyFeedException.class,
+				() -> euraxessFeedService.generateFeed(),
+				"Offre DOCTORAT_GOUV seule en base → flux vide attendu");
+		assertTrue(ex.getMessage().contains("Aucune offre"));
 	}
 }

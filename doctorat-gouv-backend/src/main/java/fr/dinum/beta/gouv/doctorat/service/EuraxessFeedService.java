@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import fr.dinum.beta.gouv.doctorat.config.EuraxessProperties;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.euraxess.jaxb.JobOpportunities;
 import fr.dinum.beta.gouv.doctorat.euraxess.jaxb.JobOpportunity;
 import fr.dinum.beta.gouv.doctorat.mapper.EuraxessFeedMapper;
@@ -68,6 +69,14 @@ public class EuraxessFeedService {
 
 		int excluded = 0;
 		for (PropositionThese p : propositions) {
+			// Les offres d'accompagnement internes ne sont jamais diffusées sur EURAXESS,
+			// même si elles remplissent par ailleurs les champs obligatoires.
+			if (p.getSource() == SourceThese.DOCTORAT_GOUV) {
+				excluded++;
+				log.info("Offre exclue du flux EURAXESS (accompagnement interne) : matricule={}",
+						p.getMatricule());
+				continue;
+			}
 			JobOpportunity job = mapper.toJobOpportunity(p);
 			if (job == null) {
 				excluded++;

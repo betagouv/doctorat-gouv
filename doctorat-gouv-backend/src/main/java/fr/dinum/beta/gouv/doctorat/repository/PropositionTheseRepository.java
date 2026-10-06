@@ -84,6 +84,19 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
 		""")
 	Page<PropositionThese> findByActiveTrue(Pageable pageable);
 
+	/**
+	 * Offres actives hors une source donnée. Utilisé par l'export REST :
+	 * les offres d'accompagnement internes (DOCTORAT_GOUV) ne sont jamais exportées.
+	 */
+	@Query("""
+		    SELECT p FROM PropositionThese p
+		    left join fetch p.motsCles
+		    left join fetch p.motsClesAnglais
+		    WHERE (p.active IS NULL OR p.active = TRUE)
+		      AND (p.source IS NULL OR p.source <> :source)
+		""")
+	Page<PropositionThese> findByActiveTrueExcludingSource(@Param("source") SourceThese source, Pageable pageable);
+
     List<PropositionThese> findByIdIn(List<Long> ids);
 
     /** Sujets où l'e-mail (insensible à la casse) correspond à la direction ou à la codirection. */

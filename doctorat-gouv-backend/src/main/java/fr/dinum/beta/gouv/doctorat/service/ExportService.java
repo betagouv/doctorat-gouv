@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import fr.dinum.beta.gouv.doctorat.dto.ExportPropositionTheseDTO;
 import fr.dinum.beta.gouv.doctorat.dto.ExportResponseDTO;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 
 @Service
@@ -30,7 +31,9 @@ public class ExportService {
         if (page == null || size == null) {
             log.info("Export complet des propositions actives");
 
-            List<PropositionThese> all = propositionTheseRepository.findByActiveTrue(
+            // Les offres d'accompagnement internes ne sont jamais exportées.
+            List<PropositionThese> all = propositionTheseRepository.findByActiveTrueExcludingSource(
+                    SourceThese.DOCTORAT_GOUV,
                     PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "dateMaj")))
                     .getContent();
 
@@ -50,7 +53,9 @@ public class ExportService {
 
         log.info("Export paginé des propositions actives - page={}, size={}", page, size);
 
-        Page<PropositionThese> result = propositionTheseRepository.findByActiveTrue(pageable);
+        // Les offres d'accompagnement internes ne sont jamais exportées.
+        Page<PropositionThese> result = propositionTheseRepository.findByActiveTrueExcludingSource(
+                SourceThese.DOCTORAT_GOUV, pageable);
 
         log.info("Export paginé retourné {} résultats sur {} total", result.getContent().size(), result.getTotalElements());
 
