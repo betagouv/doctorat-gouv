@@ -37,7 +37,7 @@
 
         <h2 class="offre-section-title">Expertises du chercheur</h2>
         <figure class="offre-quote" *ngIf="expertiseMots; else pasExpertise">
-          <span class="fr-icon-double-quotes-l offre-quote__icon" aria-hidden="true"></span>
+          <img class="offre-quote__icon" src="assets/icons/picto-guillemet.png" alt="" width="36" height="36" aria-hidden="true" />
           <blockquote>
             <p [innerHTML]="('« ' + expertiseMots + ' »') | nl2br"></p>
           </blockquote>
@@ -67,11 +67,9 @@
         <div class="offre-contact__links">
           <a *ngIf="orcidUrl" [href]="orcidUrl" target="_blank" rel="noopener">
             Fiche ORCID
-            <span class="fr-icon-external-link-line" aria-hidden="true"></span>
           </a>
           <a [href]="thesesUrl" target="_blank" rel="noopener">
             Thèse.fr
-            <span class="fr-icon-external-link-line" aria-hidden="true"></span>
           </a>
         </div>
       </aside>
