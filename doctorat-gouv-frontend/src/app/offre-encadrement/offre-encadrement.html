@@ -46,6 +46,18 @@
         <ng-template #pasExpertise>
           <p class="offre-text--empty">Expertises à venir.</p>
         </ng-template>
+
+        <div class="offre-autres" *ngIf="autresOffres.length > 0">
+          <hr class="offre-separator" />
+          <p class="offre-autres__label">Autres offres d'encadrement proposées par {{ nomComplet }}</p>
+          <ul class="offre-autres__list">
+            <li *ngFor="let autre of autresOffres">
+              <a [routerLink]="['/offre-encadrement']" [queryParams]="{ id: autre.id }">
+                {{ autre.theseTitre || 'Titre non renseigné' }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </section>
 
       <!-- ======== COLONNE CONTACT ======== -->
@@ -74,18 +86,6 @@
         </div>
       </aside>
     </div>
-
-    <!-- ======== AUTRES OFFRES ======== -->
-    <section class="offre-autres" *ngIf="autresOffres.length > 0">
-      <p class="offre-autres__label">Autres offres d'encadrement proposées par {{ nomComplet }}</p>
-      <ul class="offre-autres__list">
-        <li *ngFor="let autre of autresOffres">
-          <a [routerLink]="['/offre-encadrement']" [queryParams]="{ id: autre.id }">
-            {{ autre.theseTitre || 'Titre non renseigné' }}
-          </a>
-        </li>
-      </ul>
-    </section>
 
   </div>
 </main>
