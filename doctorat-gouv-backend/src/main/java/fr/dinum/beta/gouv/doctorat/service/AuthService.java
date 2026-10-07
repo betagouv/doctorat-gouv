@@ -94,7 +94,7 @@ public class AuthService {
                 : genererMotDePasseTemporaire());
         base.setPrenom(request.getPrenom());
         base.setNom(request.getNom());
-        base.setRole(RoleUtilisateur.CANDIDAT);
+        base.setRole(request.getRole() != null ? request.getRole() : RoleUtilisateur.CANDIDAT);
 
         ConnexionResponse response = inscrire(base);
         String userId = response.getUtilisateur().getId();

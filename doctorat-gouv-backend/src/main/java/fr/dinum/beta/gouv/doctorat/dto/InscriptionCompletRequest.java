@@ -1,6 +1,8 @@
 package fr.dinum.beta.gouv.doctorat.dto;
 
 import fr.dinum.beta.gouv.doctorat.enums.DemarcheType;
+import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +12,11 @@ import jakarta.validation.constraints.Size;
  * DTO représentant les coordonnées envoyées (partie JSON) à l'endpoint
  * POST /api/inscription/complet, accompagnées des fichiers uploadés.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InscriptionCompletRequest {
+
+    /** Rôle transmis par le front (ex: CANDIDAT). Optionnel : défaut CANDIDAT côté service. */
+    private RoleUtilisateur role;
 
     @NotNull(message = "La démarche est obligatoire")
     private DemarcheType demarche;
@@ -44,6 +50,14 @@ public class InscriptionCompletRequest {
 
     public DemarcheType getDemarche() {
         return demarche;
+    }
+
+    public RoleUtilisateur getRole() {
+        return role;
+    }
+
+    public void setRole(RoleUtilisateur role) {
+        this.role = role;
     }
 
     public void setDemarche(DemarcheType demarche) {
