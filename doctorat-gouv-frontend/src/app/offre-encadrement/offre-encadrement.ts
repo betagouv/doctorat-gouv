@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { Title } from '@angular/platform-browser';
+import { Title, DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto, OffreEncadrementDto, DirecteurOffreDto } from '../models/proposition-these-dto.model';
@@ -30,6 +31,8 @@ export class OffreEncadrement implements OnInit {
   errorMessage: string | null = null;
   encadrementEtendu = false;
   photoErreur = false;
+  mapLat: number | null = null;
+  mapLon: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +40,8 @@ export class OffreEncadrement implements OnInit {
     private propositionTheseService: PropositionTheseService,
     private contactContextService: ContactContextService,
     private titleService: Title,
+    private sanitizer: DomSanitizer,
+    private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -71,6 +76,7 @@ export class OffreEncadrement implements OnInit {
         const titre = this.offre.theseTitre || 'Offre d\u2019encadrement';
         this.titleService.setTitle(`${titre} — Offre d'encadrement — Doctorat.gouv.fr`);
         this.chargerAutresOffres();
+        this.geocoderLieu();
       },
       error: () => {
         this.isLoading = false;
@@ -167,6 +173,69 @@ export class OffreEncadrement implements OnInit {
 
   get texteEncadrement(): string {
     return this.offre?.resume || this.offre?.thematiqueRecherche || '';
+  }
+
+  get hasLieu(): boolean {
+    return !!(this.offre?.etablissementLibelle?.trim()
+      || this.offre?.ecoleDoctoraleLibelle?.trim()
+      || this.offre?.uniteRechercheLibelle?.trim());
+  }
+
+  get villeEtablissement(): string {
+    const cp = (this.offre?.etablissementCodePostal ?? '').trim();
+    const ville = (this.offre?.etablissementVille ?? '').trim();
+    return `${cp} ${ville}`.trim();
+  }
+
+  /** Requête de localisation : ville si dispo, sinon nom de l'établissement. */
+  get mapQuery(): string | null {
+    const ville = (this.offre?.etablissementVille ?? '').trim();
+    const etab = (this.offre?.etablissementLibelle ?? '').trim();
+    const cp = (this.offre?.etablissementCodePostal ?? '').trim();
+    if (ville) {
+      return `${cp} ${ville}`.trim();
+    }
+    return etab || null;
+  }
+
+  get mapUrl(): SafeResourceUrl | null {
+    if (this.mapLat === null || this.mapLon === null) {
+      return null;
+    }
+    const deltaLon = 0.03;
+    const deltaLat = 0.018;
+    const bbox = `${this.mapLon - deltaLon},${this.mapLat - deltaLat},${this.mapLon + deltaLon},${this.mapLat + deltaLat}`;
+    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${this.mapLat},${this.mapLon}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  get mapSearchUrl(): string | null {
+    if (this.mapLat === null || this.mapLon === null) {
+      return null;
+    }
+    return `https://www.openstreetmap.org/?mlat=${this.mapLat}&mlon=${this.mapLon}#map=13/${this.mapLat}/${this.mapLon}`;
+  }
+
+  /** Géocode le lieu via Nominatim (OpenStreetMap) pour centrer la carte. */
+  private geocoderLieu(): void {
+    this.mapLat = null;
+    this.mapLon = null;
+    if (!this.mapQuery) {
+      return;
+    }
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(this.mapQuery)}`;
+    this.http.get<Array<{ lat: string; lon: string }>>(url).subscribe({
+      next: (res) => {
+        if (res && res.length > 0) {
+          this.mapLat = parseFloat(res[0].lat);
+          this.mapLon = parseFloat(res[0].lon);
+        }
+      },
+      error: () => {
+        this.mapLat = null;
+        this.mapLon = null;
+      }
+    });
   }
 
   basculerEncadrement(): void {
