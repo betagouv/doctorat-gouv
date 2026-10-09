@@ -15,6 +15,9 @@ public class DirecteurOffreDto {
     private String photoUrl;
     private String orcid;
     private String expertiseMots;
+    private String etablissement;
+    private String laboratoire;
+    private String ecoleDoctorale;
 
     public String getCivilite() { return civilite; }
     public void setCivilite(String civilite) { this.civilite = civilite; }
@@ -36,4 +39,13 @@ public class DirecteurOffreDto {
 
     public String getExpertiseMots() { return expertiseMots; }
     public void setExpertiseMots(String expertiseMots) { this.expertiseMots = expertiseMots; }
+
+    public String getEtablissement() { return etablissement; }
+    public void setEtablissement(String etablissement) { this.etablissement = etablissement; }
+
+    public String getLaboratoire() { return laboratoire; }
+    public void setLaboratoire(String laboratoire) { this.laboratoire = laboratoire; }
+
+    public String getEcoleDoctorale() { return ecoleDoctorale; }
+    public void setEcoleDoctorale(String ecoleDoctorale) { this.ecoleDoctorale = ecoleDoctorale; }
 }

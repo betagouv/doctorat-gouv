@@ -345,8 +345,8 @@ a.offre-proposed__name:hover {
 }
 
 /* ======== Lieu de recherche ======== */
-.offre-lieu {
-  margin-bottom: 1.5rem;
+.offre-lieu-bloc {
+  margin-top: 0;
 }
 
 .offre-lieu__rows {
@@ -387,6 +387,14 @@ a.offre-proposed__name:hover {
 }
 
 /* ======== Carte ======== */
+.offre-carte-bloc {
+  margin-top: 1.5rem;
+}
+
+.offre-carte-bloc .offre-carte {
+  margin-bottom: 0;
+}
+
 .offre-carte {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

@@ -110,6 +110,9 @@ export interface DirecteurOffreDto {
   photoUrl: string | null;
   orcid: string | null;
   expertiseMots: string | null;
+  etablissement: string | null;
+  laboratoire: string | null;
+  ecoleDoctorale: string | null;
 }
 
 /** Fiche offre d'encadrement : offre + chercheur. */

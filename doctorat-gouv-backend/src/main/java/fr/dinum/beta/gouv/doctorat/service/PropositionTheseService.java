@@ -312,6 +312,9 @@ public class PropositionTheseService {
         directeur.setCivilite(p.getCivilite());
         directeur.setTitre(p.getTitre());
         directeur.setExpertiseMots(p.getExpertiseMots());
+        directeur.setEtablissement(p.getEtablissement());
+        directeur.setLaboratoire(p.getLaboratoire());
+        directeur.setEcoleDoctorale(p.getEcoleDoctorale());
         if (p.getOrcid() != null && !p.getOrcid().isBlank()) {
             directeur.setOrcid(p.getOrcid());
         }

@@ -58,6 +58,55 @@
             </li>
           </ul>
         </div>
+
+        <!-- ======== LIEU DE RECHERCHE (sous autres offres, sinon sous expertise) ======== -->
+        <div class="offre-lieu-bloc" *ngIf="hasLieu">
+          <hr class="offre-separator" />
+          <h2 class="offre-section-title">Lieu de recherche</h2>
+          <div class="offre-lieu__rows">
+            <div class="offre-lieu__row" *ngIf="etablissement">
+              <span class="fr-icon-bank-line offre-lieu__icon" aria-hidden="true"></span>
+              <div>
+                <p class="offre-lieu__label">Établissement</p>
+                <p class="offre-lieu__value">{{ etablissement }}</p>
+              </div>
+            </div>
+            <div class="offre-lieu__row" *ngIf="ecoleDoctorale">
+              <span class="fr-icon-school-line offre-lieu__icon" aria-hidden="true"></span>
+              <div>
+                <p class="offre-lieu__label">École doctorale</p>
+                <p class="offre-lieu__value">{{ ecoleDoctorale }}</p>
+              </div>
+            </div>
+            <div class="offre-lieu__row" *ngIf="laboratoire">
+              <span class="fr-icon-microscope-line offre-lieu__icon" aria-hidden="true"></span>
+              <div>
+                <p class="offre-lieu__label">Laboratoire de recherche</p>
+                <p class="offre-lieu__value">{{ laboratoire }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======== CARTE ======== -->
+        <div class="offre-carte-bloc" *ngIf="mapQuery">
+          <div class="offre-card offre-carte">
+            <div class="offre-carte__adresse">
+              <p class="offre-carte__nom">{{ etablissement || 'Établissement non renseigné' }}</p>
+              <p class="offre-carte__ville" *ngIf="villeEtablissement">{{ villeEtablissement }}</p>
+            </div>
+            <div class="offre-carte__map">
+              <iframe *ngIf="mapUrl; else chargementCarte" title="Carte du lieu de recherche" [src]="mapUrl" loading="lazy"></iframe>
+              <ng-template #chargementCarte>
+                <p class="offre-carte__loading" role="status">Chargement de la carte...</p>
+              </ng-template>
+              <a class="offre-carte__expand" *ngIf="mapSearchUrl" [href]="mapSearchUrl" target="_blank" rel="noopener">
+                <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                Agrandir
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ======== COLONNE CONTACT ======== -->
@@ -86,52 +135,6 @@
         </div>
       </aside>
     </div>
-
-    <!-- ======== LIEU DE RECHERCHE ======== -->
-    <section class="offre-card offre-lieu" *ngIf="hasLieu">
-      <h2 class="offre-section-title">Lieu de recherche</h2>
-      <div class="offre-lieu__rows">
-        <div class="offre-lieu__row" *ngIf="offre.etablissementLibelle?.trim()">
-          <span class="fr-icon-bank-line offre-lieu__icon" aria-hidden="true"></span>
-          <div>
-            <p class="offre-lieu__label">Établissement</p>
-            <p class="offre-lieu__value">{{ offre.etablissementLibelle }}</p>
-          </div>
-        </div>
-        <div class="offre-lieu__row" *ngIf="offre.ecoleDoctoraleLibelle?.trim()">
-          <span class="fr-icon-school-line offre-lieu__icon" aria-hidden="true"></span>
-          <div>
-            <p class="offre-lieu__label">École doctorale</p>
-            <p class="offre-lieu__value">{{ offre.ecoleDoctoraleLibelle }}</p>
-          </div>
-        </div>
-        <div class="offre-lieu__row" *ngIf="offre.uniteRechercheLibelle?.trim()">
-          <span class="fr-icon-microscope-line offre-lieu__icon" aria-hidden="true"></span>
-          <div>
-            <p class="offre-lieu__label">Laboratoire de recherche</p>
-            <p class="offre-lieu__value">{{ offre.uniteRechercheLibelle }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======== CARTE ======== -->
-    <section class="offre-card offre-carte" *ngIf="mapQuery">
-      <div class="offre-carte__adresse">
-        <p class="offre-carte__nom">{{ offre.etablissementLibelle || 'Établissement non renseigné' }}</p>
-        <p class="offre-carte__ville" *ngIf="villeEtablissement">{{ villeEtablissement }}</p>
-      </div>
-      <div class="offre-carte__map">
-        <iframe *ngIf="mapUrl; else chargementCarte" title="Carte du lieu de recherche" [src]="mapUrl" loading="lazy"></iframe>
-        <ng-template #chargementCarte>
-          <p class="offre-carte__loading" role="status">Chargement de la carte...</p>
-        </ng-template>
-        <a class="offre-carte__expand" *ngIf="mapSearchUrl" [href]="mapSearchUrl" target="_blank" rel="noopener">
-          <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-          Agrandir
-        </a>
-      </div>
-    </section>
 
   </div>
 </main>

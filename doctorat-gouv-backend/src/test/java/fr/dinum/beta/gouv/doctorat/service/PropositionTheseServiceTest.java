@@ -101,6 +101,9 @@ class PropositionTheseServiceTest {
         profil.setTitre("Directrice de recherche");
         profil.setExpertiseMots("IA pour la santé");
         profil.setOrcid("0000-0001-2345-6789");
+        profil.setEtablissement("Université X");
+        profil.setLaboratoire("Labo Y");
+        profil.setEcoleDoctorale("ED Z");
 
         when(repo.findById(1L)).thenReturn(Optional.of(offre));
         when(utilisateurRepository.findByEmailIgnoreCaseAndTrim("dt@exemple.fr"))
@@ -117,6 +120,9 @@ class PropositionTheseServiceTest {
         assertEquals("https://exemple.fr/photo.jpg", result.getDirecteur().getPhotoUrl());
         assertEquals("IA pour la santé", result.getDirecteur().getExpertiseMots());
         assertEquals("0000-0001-2345-6789", result.getDirecteur().getOrcid());
+        assertEquals("Université X", result.getDirecteur().getEtablissement());
+        assertEquals("Labo Y", result.getDirecteur().getLaboratoire());
+        assertEquals("ED Z", result.getDirecteur().getEcoleDoctorale());
     }
 
     @Test

@@ -176,9 +176,29 @@ export class OffreEncadrement implements OnInit {
   }
 
   get hasLieu(): boolean {
-    return !!(this.offre?.etablissementLibelle?.trim()
-      || this.offre?.ecoleDoctoraleLibelle?.trim()
-      || this.offre?.uniteRechercheLibelle?.trim());
+    return !!(this.etablissement || this.ecoleDoctorale || this.laboratoire);
+  }
+
+  /** Lieu issu du profil DT, repli sur le snapshot de l'offre (vide = absent). */
+  private premierNonVide(...vals: Array<string | null | undefined>): string {
+    for (const v of vals) {
+      if (v && v.trim()) {
+        return v.trim();
+      }
+    }
+    return '';
+  }
+
+  get etablissement(): string {
+    return this.premierNonVide(this.directeur?.etablissement, this.offre?.etablissementLibelle);
+  }
+
+  get ecoleDoctorale(): string {
+    return this.premierNonVide(this.directeur?.ecoleDoctorale, this.offre?.ecoleDoctoraleLibelle);
+  }
+
+  get laboratoire(): string {
+    return this.premierNonVide(this.directeur?.laboratoire, this.offre?.uniteRechercheLibelle);
   }
 
   get villeEtablissement(): string {
