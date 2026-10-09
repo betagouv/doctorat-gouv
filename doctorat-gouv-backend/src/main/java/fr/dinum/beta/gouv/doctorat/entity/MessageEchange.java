@@ -3,6 +3,7 @@ package fr.dinum.beta.gouv.doctorat.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +29,7 @@ public class MessageEchange {
     @Column(name = "auteur_id", nullable = false)
     private String auteurId;
 
+    @Convert(converter = fr.dinum.beta.gouv.doctorat.security.MessageContenuConverter.class)
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contenu;
 
