@@ -1,12 +1,11 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,6 +34,7 @@ import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
 import fr.dinum.beta.gouv.doctorat.service.EchangeService;
+import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import jakarta.validation.Valid;
 
 @RestController
@@ -45,11 +45,14 @@ public class DirecteurTheseController {
 
     private final DirecteurTheseService directeurTheseService;
     private final EchangeService echangeService;
+    private final StoragePort storage;
 
     public DirecteurTheseController(DirecteurTheseService directeurTheseService,
-                                    EchangeService echangeService) {
+                                    EchangeService echangeService,
+                                    StoragePort storage) {
         this.directeurTheseService = directeurTheseService;
         this.echangeService = echangeService;
+        this.storage = storage;
     }
 
     @GetMapping("/profil")
@@ -129,16 +132,16 @@ public class DirecteurTheseController {
     public ResponseEntity<Resource> getCandidatFichier(@Valid @RequestBody DemandeFichierRequest request) {
         String userId = getCurrentUserId();
         try {
-            String path = directeurTheseService.getCandidatFichier(
+            String key = directeurTheseService.getCandidatFichier(
                 userId, request.getDemandeId(), request.getType(), request.getIndex());
-            Path file = Path.of(path);
-            String filename = file.getFileName().toString();
-            Resource resource = new FileSystemResource(file);
+            String filename = directeurTheseService.displayFilename(key);
+            InputStream content = storage.open(key);
+            Resource resource = new InputStreamResource(content);
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                     "inline; filename=\"" + filename.replace("\"", "") + "\"")
-                .contentLength(Files.size(file))
+                .contentLength(storage.size(key))
                 .body(resource);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

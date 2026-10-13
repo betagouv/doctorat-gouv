@@ -38,6 +38,7 @@ import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 
 /**
  * Synchronisation axes contactables -> offres d'accompagnement (source DOCTORAT_GOUV).
@@ -63,6 +64,8 @@ class DirecteurTheseServiceTest {
     private BrevoEmailService emailService;
     @Mock
     private Environment environment;
+    @Mock
+    private StoragePort storage;
 
     @InjectMocks
     private DirecteurTheseService directeurTheseService;

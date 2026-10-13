@@ -1,6 +1,5 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -40,6 +39,7 @@ import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 
 @Service
@@ -65,6 +65,7 @@ public class DirecteurTheseService {
     private final PasswordEncoder passwordEncoder;
     private final BrevoEmailService emailService;
     private final Environment environment;
+    private final StoragePort storage;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
@@ -74,7 +75,8 @@ public class DirecteurTheseService {
                                   MessageEchangeRepository messageRepository,
                                   PasswordEncoder passwordEncoder,
                                   BrevoEmailService emailService,
-                                  Environment environment) {
+                                  Environment environment,
+                                  StoragePort storage) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
         this.profilCandidatRepository = profilCandidatRepository;
@@ -84,6 +86,7 @@ public class DirecteurTheseService {
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.environment = environment;
+        this.storage = storage;
     }
 
     public Optional<ProfilDtResponse> getProfil(String userId) {
@@ -581,23 +584,22 @@ public class DirecteurTheseService {
         }
     }
 
-    private Long fileSize(String path) {
-        if (path == null || path.isBlank()) {
+    private Long fileSize(String key) {
+        if (key == null || key.isBlank()) {
             return null;
         }
         try {
-            Path file = Path.of(path);
-            if (Files.isRegularFile(file)) {
-                return Files.size(file);
+            if (storage.exists(key)) {
+                return storage.size(key);
             }
         } catch (Exception e) {
-            log.debug("Impossible de calculer la taille du fichier {}", path);
+            log.debug("Impossible de calculer la taille du fichier {}", key);
         }
         return null;
     }
 
     /**
-     * Chemin absolu du CV ou d'une pièce du candidat d'une demande,
+     * Clé objet du CV ou d'une pièce du candidat d'une demande,
      * après vérification que la demande appartient bien au DT.
      */
     public String getCandidatFichier(String userId, Long demandeId, String type, Integer index) {
@@ -625,25 +627,28 @@ public class DirecteurTheseService {
         } else {
             throw new IllegalArgumentException("Fichier introuvable");
         }
-        if (path == null || path.isBlank() || !Files.isRegularFile(Path.of(path))) {
+        boolean present = false;
+        try {
+            present = path != null && !path.isBlank() && storage.exists(path);
+        } catch (Exception e) {
+            present = false;
+        }
+        if (!present) {
             throw new IllegalArgumentException("Fichier introuvable");
         }
         return path;
     }
 
     /**
-     * Nom affichable d'un fichier (sans chemin ni préfixe horodatage).
+     * Nom affichable d'un fichier (sans clé/chemin ni préfixe technique
+     * horodatage historique ou UUID).
      */
-    private String displayFilename(String path) {
-        if (path == null || path.isBlank()) {
+    public String displayFilename(String key) {
+        if (key == null || key.isBlank()) {
             return null;
         }
-        String name = Path.of(path).getFileName().toString();
-        int underscore = name.indexOf('_');
-        if (underscore > 0 && name.substring(0, underscore).matches("\\d+")) {
-            name = name.substring(underscore + 1);
-        }
-        return name;
+        String name = Path.of(key).getFileName().toString();
+        return name.replaceFirst("^(\\d+|[0-9a-fA-F-]{36})_", "");
     }
 
     /**
