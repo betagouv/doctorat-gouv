@@ -1,0 +1,165 @@
+package fr.dinum.beta.gouv.doctorat.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
+import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
+import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
+import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
+
+/**
+ * Fichiers du candidat sur son profil : affichage, remplacement du CV,
+ * ajout/suppression de pièces (avec suppression backend).
+ */
+@ExtendWith(MockitoExtension.class)
+class ProfilServiceTest {
+
+    private static final String USER_ID = "user-test";
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
+    @Mock
+    private ProfilCandidatRepository profilCandidatRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
+    private StoragePort storage;
+    @Mock
+    private InscriptionFileService inscriptionFileService;
+
+    @InjectMocks
+    private ProfilService profilService;
+
+    private Utilisateur utilisateur;
+    private ProfilCandidat profil;
+
+    @BeforeEach
+    void setUp() {
+        utilisateur = new Utilisateur();
+        utilisateur.setId(USER_ID);
+        utilisateur.setEmail("candidat@exemple.fr");
+        utilisateur.setNom("Test");
+        utilisateur.setPrenom("Candidat");
+
+        profil = new ProfilCandidat();
+        profil.setUtilisateur(utilisateur);
+        profil.setCvFilename("inscription/" + USER_ID + "/cv/de56f538-ab22-4d20-a436-de45af755e7f_cv.pdf");
+        profil.setPiecesFilenames(new ArrayList<>(
+            List.of("inscription/" + USER_ID + "/pieces/1d55c554-7c27-4789-baac-220aa0b1ab3c_piece.pdf")));
+
+        when(profilCandidatRepository.findByUtilisateurId(USER_ID)).thenReturn(Optional.of(profil));
+        Mockito.lenient().when(storage.exists(anyString())).thenReturn(true);
+        Mockito.lenient().when(storage.size(anyString())).thenReturn(1024L);
+    }
+
+    private MockMultipartFile pdf(String name) {
+        return new MockMultipartFile("cv", name, "application/pdf", "%PDF-1.4 test".getBytes());
+    }
+
+    @Test
+    void getProfil_exposeCvEtPieces() {
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+
+        ProfilResponse response = profilService.getProfil(USER_ID).orElseThrow();
+
+        assertNotNull(response.getCv());
+        assertEquals("cv.pdf", response.getCv().getFilename());
+        assertEquals(1024L, response.getCv().getSize());
+        assertEquals(1, response.getPieces().size());
+        assertEquals("piece.pdf", response.getPieces().get(0).getFilename());
+    }
+
+    @Test
+    void remplacerCv_stockeNouveauEtMetAJourBase() {
+        String newKey = "inscription/" + USER_ID + "/cv/a8d36a19-6c1a-4d52-b927-0c826cfe5482_nouveau.pdf";
+        when(inscriptionFileService.replaceCv(eq(USER_ID), anyString(), any())).thenReturn(newKey);
+
+        ProfilResponse response = profilService.remplacerCv(USER_ID, pdf("nouveau.pdf"));
+
+        verify(inscriptionFileService).replaceCv(eq(USER_ID), eq("inscription/" + USER_ID + "/cv/de56f538-ab22-4d20-a436-de45af755e7f_cv.pdf"), any());
+        verify(profilCandidatRepository).save(profil);
+        assertEquals(newKey, profil.getCvFilename());
+        assertNotNull(response.getCv());
+    }
+
+    @Test
+    void ajouterPieces_respecteLimiteCinq() {
+        profil.setPiecesFilenames(new ArrayList<>(List.of("p1", "p2", "p3", "p4", "p5")));
+        when(inscriptionFileService.addPiece(eq(USER_ID), anyInt(), any()))
+            .thenThrow(new IllegalArgumentException("Maximum 5 pièces complémentaires autorisées"));
+
+        assertThrows(IllegalArgumentException.class,
+            () -> profilService.ajouterPieces(USER_ID, List.of(pdf("trop.pdf"))));
+        verify(profilCandidatRepository, never()).save(any());
+    }
+
+    @Test
+    void ajouterPieces_ajouteEtSauvegarde() {
+        String newKey = "inscription/" + USER_ID + "/pieces/f39cecd2-17b6-44cb-a5c1-9664203fd018_nouvelle.pdf";
+        when(inscriptionFileService.addPiece(eq(USER_ID), eq(1), any())).thenReturn(newKey);
+
+        ProfilResponse response = profilService.ajouterPieces(USER_ID, List.of(pdf("nouvelle.pdf")));
+
+        verify(profilCandidatRepository).save(profil);
+        assertTrue(profil.getPiecesFilenames().contains(newKey));
+        assertEquals(2, response.getPieces().size());
+    }
+
+    @Test
+    void supprimerPiece_supprimeBackendEtBase() {
+        ProfilResponse response = profilService.supprimerPiece(USER_ID, 0);
+
+        verify(inscriptionFileService).deletePiece("inscription/" + USER_ID + "/pieces/1d55c554-7c27-4789-baac-220aa0b1ab3c_piece.pdf");
+        verify(profilCandidatRepository).save(profil);
+        assertTrue(profil.getPiecesFilenames().isEmpty());
+        assertTrue(response.getPieces().isEmpty());
+    }
+
+    @Test
+    void supprimerPiece_indexInvalide_lanceException() {
+        assertThrows(IllegalArgumentException.class, () -> profilService.supprimerPiece(USER_ID, 5));
+        verify(inscriptionFileService, never()).deletePiece(anyString());
+        verify(profilCandidatRepository, never()).save(any());
+    }
+
+    @Test
+    void getMonFichier_cvExistant_retourneCle() {
+        assertEquals("inscription/" + USER_ID + "/cv/de56f538-ab22-4d20-a436-de45af755e7f_cv.pdf",
+            profilService.getMonFichier(USER_ID, "cv", null));
+    }
+
+    @Test
+    void getMonFichier_pieceAbsenteDuBackend_lanceException() {
+        when(storage.exists(anyString())).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class,
+            () -> profilService.getMonFichier(USER_ID, "piece", 0));
+    }
+}
+
