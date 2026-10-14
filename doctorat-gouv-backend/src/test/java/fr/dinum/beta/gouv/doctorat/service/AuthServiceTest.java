@@ -4,21 +4,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import fr.dinum.beta.gouv.doctorat.config.JwtConfig;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionRequest;
@@ -29,6 +35,7 @@ import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +52,12 @@ class AuthServiceTest {
 
     @Mock
     private InscriptionFileService inscriptionFileService;
+
+    @Mock
+    private ProfilCandidatRepository profilCandidatRepository;
+
+    @Mock
+    private BrevoEmailService emailService;
 
     @InjectMocks
     private AuthService authService;
@@ -235,5 +248,78 @@ class AuthServiceTest {
         assertEquals("uuid-test", claims.getSubject());
         assertEquals("test@exemple.fr", claims.get("email"));
         assertEquals("CANDIDAT", claims.get("role"));
+    }
+
+    // ==================== MAIL CONFIRMATION INSCRIPTION (template 61) ====================
+
+    private InscriptionRequest nouvelleInscriptionCandidat() {
+        InscriptionRequest request = new InscriptionRequest();
+        request.setEmail("nouveau@exemple.fr");
+        request.setMotDePasse("MotDePasse1234!");
+        request.setPrenom("Marie");
+        request.setNom("Curie");
+        request.setRole(RoleUtilisateur.CANDIDAT);
+        return request;
+    }
+
+    private void stubInscriptionOk() {
+        when(utilisateurRepository.existsByEmailIgnoreCaseAndTrim("nouveau@exemple.fr")).thenReturn(false);
+        when(passwordEncoder.encode("MotDePasse1234!")).thenReturn("$2a$10$encoded");
+        when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(invocation -> {
+            Utilisateur u = invocation.getArgument(0);
+            u.setId("uuid-genere");
+            return u;
+        });
+        when(jwtConfig.getExpirationMs()).thenReturn(86400000L);
+        when(jwtConfig.getSecret()).thenReturn("VGhpc0lzQVZlcnlMb25nU2VjcmV0S2V5Rm9ySlRXVGVzdGluZ1B1cnBvc2Vz");
+    }
+
+    @Test
+    void inscrire_candidatMailActive_envoieTemplate61AvecPrenomNom() throws Exception {
+        ReflectionTestUtils.setField(authService, "mailEnabled", true);
+        stubInscriptionOk();
+
+        ConnexionResponse result = authService.inscrire(nouvelleInscriptionCandidat());
+
+        assertNotNull(result);
+        ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(emailService).sendTemplateEmail(eq("nouveau@exemple.fr"), eq(61), paramsCaptor.capture());
+        assertEquals("Marie", paramsCaptor.getValue().get("prenom"));
+        assertEquals("Curie", paramsCaptor.getValue().get("nom"));
+    }
+
+    @Test
+    void inscrire_candidatMailDesactive_nEnvoiePasDeMail() throws Exception {
+        ReflectionTestUtils.setField(authService, "mailEnabled", false);
+        stubInscriptionOk();
+
+        authService.inscrire(nouvelleInscriptionCandidat());
+
+        verify(emailService, never()).sendTemplateEmail(anyString(), eq(61), anyMap());
+    }
+
+    @Test
+    void inscrire_roleNonCandidat_nEnvoiePasDeMail() throws Exception {
+        ReflectionTestUtils.setField(authService, "mailEnabled", true);
+        InscriptionRequest request = nouvelleInscriptionCandidat();
+        request.setRole(RoleUtilisateur.DIRECTEUR_THESE);
+        stubInscriptionOk();
+
+        authService.inscrire(request);
+
+        verify(emailService, never()).sendTemplateEmail(anyString(), eq(61), anyMap());
+    }
+
+    @Test
+    void inscrire_echecMail_neBloquePasInscription() throws Exception {
+        ReflectionTestUtils.setField(authService, "mailEnabled", true);
+        stubInscriptionOk();
+        doThrow(new RuntimeException("Brevo KO"))
+                .when(emailService).sendTemplateEmail(anyString(), eq(61), anyMap());
+
+        ConnexionResponse result = authService.inscrire(nouvelleInscriptionCandidat());
+
+        assertNotNull(result);
+        assertNotNull(result.getToken());
     }
 }

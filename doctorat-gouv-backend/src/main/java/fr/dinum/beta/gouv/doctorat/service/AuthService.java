@@ -2,13 +2,16 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,22 +37,33 @@ public class AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
+    private static final int BREVO_TEMPLATE_CONFIRMATION_CANDIDAT = 61;
+
+    @Value("${app.mail.enabled:false}")
+    private boolean mailEnabled;
+
+    @Value("${app.mail.stub-mailbox:}")
+    private String stubMailbox;
+
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
     private final InscriptionFileService inscriptionFileService;
+    private final BrevoEmailService emailService;
 
     public AuthService(UtilisateurRepository utilisateurRepository,
                        ProfilCandidatRepository profilCandidatRepository,
                        PasswordEncoder passwordEncoder,
                        JwtConfig jwtConfig,
-                       InscriptionFileService inscriptionFileService) {
+                       InscriptionFileService inscriptionFileService,
+                       BrevoEmailService emailService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtConfig = jwtConfig;
         this.inscriptionFileService = inscriptionFileService;
+        this.emailService = emailService;
     }
 
     public ConnexionResponse inscrire(InscriptionRequest request) {
@@ -71,6 +85,8 @@ public class AuthService {
         utilisateur.setDateCreation(LocalDateTime.now());
 
         utilisateur = utilisateurRepository.save(utilisateur);
+
+        envoyerMailConfirmationCandidat(utilisateur);
 
         String token = genererToken(utilisateur);
         UtilisateurDto dto = toDto(utilisateur);
@@ -123,6 +139,37 @@ public class AuthService {
 
     private String genererMotDePasseTemporaire() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    /**
+     * Envoie le mail de confirmation de profil au candidat (template Brevo 61 :
+     * {@code {{ params.prenom }} {{ params.nom }}}).
+     * L'échec d'envoi ne bloque jamais l'inscription.
+     */
+    private void envoyerMailConfirmationCandidat(Utilisateur utilisateur) {
+        if (utilisateur.getRole() != RoleUtilisateur.CANDIDAT) {
+            return;
+        }
+        String destinataire = utilisateur.getEmail();
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail de confirmation d'inscription non envoyé pour {}", destinataire);
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail de confirmation d'inscription bouchonné vers {}", destinataire);
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("prenom", utilisateur.getPrenom());
+        params.put("nom", utilisateur.getNom());
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_CONFIRMATION_CANDIDAT, params);
+                log.info("Mail de confirmation d'inscription envoyé à {}", destinataire);
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail de confirmation d'inscription à {}", destinataire, e);
+        }
     }
 
     public ConnexionResponse connecter(ConnexionRequest request) {
