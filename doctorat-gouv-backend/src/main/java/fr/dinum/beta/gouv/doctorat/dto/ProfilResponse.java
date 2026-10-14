@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ public class ProfilResponse {
     private String orcid;
     private String etablissement;
     private String laboratoire;
+    private FichierDto cv;
+    private List<FichierDto> pieces = new ArrayList<>();
 
     public ProfilResponse() {}
 
@@ -66,4 +69,10 @@ public class ProfilResponse {
 
     public String getLaboratoire() { return laboratoire; }
     public void setLaboratoire(String laboratoire) { this.laboratoire = laboratoire; }
+
+    public FichierDto getCv() { return cv; }
+    public void setCv(FichierDto cv) { this.cv = cv; }
+
+    public List<FichierDto> getPieces() { return pieces; }
+    public void setPieces(List<FichierDto> pieces) { this.pieces = pieces; }
 }

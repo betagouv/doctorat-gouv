@@ -1,24 +1,34 @@
 package fr.dinum.beta.gouv.doctorat.controller;
 
+import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.service.ProfilService;
+import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,9 +38,11 @@ public class CandidatController {
     private static final Logger log = LoggerFactory.getLogger(CandidatController.class);
 
     private final ProfilService profilService;
+    private final StoragePort storage;
 
-    public CandidatController(ProfilService profilService) {
+    public CandidatController(ProfilService profilService, StoragePort storage) {
         this.profilService = profilService;
+        this.storage = storage;
     }
 
     @GetMapping("/profil")
@@ -80,6 +92,86 @@ public class CandidatController {
         log.info("Changement de mot de passe pour l'utilisateur {}", userId);
         profilService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/fichiers/cv")
+    public ResponseEntity<Resource> getMonCv() {
+        String userId = getCurrentUserId();
+        try {
+            return streamerFichier(profilService.getMonFichier(userId, "cv", null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Erreur lors de la lecture du CV de l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/fichiers/pieces/{index}")
+    public ResponseEntity<Resource> getMaPiece(@PathVariable("index") int index) {
+        String userId = getCurrentUserId();
+        try {
+            return streamerFichier(profilService.getMonFichier(userId, "piece", index));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Erreur lors de la lecture d'une pièce de l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/fichiers/cv")
+    public ResponseEntity<?> remplacerCv(@RequestParam("cv") MultipartFile cv) {
+        String userId = getCurrentUserId();
+        log.info("Remplacement du CV pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.remplacerCv(userId, cv));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors du remplacement du CV de l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/fichiers/pieces")
+    public ResponseEntity<?> ajouterPieces(@RequestParam("pieces") List<MultipartFile> pieces) {
+        String userId = getCurrentUserId();
+        log.info("Ajout de pièce(s) pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.ajouterPieces(userId, pieces));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de l'ajout de pièce(s) pour l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/fichiers/pieces/{index}")
+    public ResponseEntity<?> supprimerPiece(@PathVariable("index") int index) {
+        String userId = getCurrentUserId();
+        log.info("Suppression d'une pièce pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.supprimerPiece(userId, index));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de la suppression d'une pièce pour l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private ResponseEntity<Resource> streamerFichier(String key) {
+        String filename = StoragePort.displayName(key);
+        InputStream content = storage.open(key);
+        Resource resource = new InputStreamResource(content);
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=\"" + filename.replace("\"", "") + "\"")
+            .contentLength(storage.size(key))
+            .body(resource);
     }
 
     private String getCurrentUserId() {
