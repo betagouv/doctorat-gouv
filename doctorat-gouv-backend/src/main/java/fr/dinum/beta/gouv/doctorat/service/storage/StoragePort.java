@@ -52,4 +52,20 @@ public interface StoragePort {
      * Supprime la clé (idempotent, usage RGPD).
      */
     void delete(String key);
+
+    /**
+     * Nom affichable d'une clé objet ou d'un chemin historique :
+     * nom de fichier seul, sans préfixe technique (horodatage historique ou UUID).
+     */
+    static String displayName(String key) {
+        if (key == null || key.isBlank()) {
+            return null;
+        }
+        String name = key.replace('\\', '/');
+        int slash = name.lastIndexOf('/');
+        if (slash >= 0) {
+            name = name.substring(slash + 1);
+        }
+        return name.replaceFirst("^(\\d+|[0-9a-fA-F-]{36})_", "");
+    }
 }

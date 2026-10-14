@@ -1,6 +1,5 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
@@ -644,11 +643,7 @@ public class DirecteurTheseService {
      * horodatage historique ou UUID).
      */
     public String displayFilename(String key) {
-        if (key == null || key.isBlank()) {
-            return null;
-        }
-        String name = Path.of(key).getFileName().toString();
-        return name.replaceFirst("^(\\d+|[0-9a-fA-F-]{36})_", "");
+        return StoragePort.displayName(key);
     }
 
     /**
