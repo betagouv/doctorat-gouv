@@ -34,6 +34,30 @@ export class CandidatService {
     return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
   }
 
+  telechargerCv(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/fichiers/cv`, { responseType: 'blob' });
+  }
+
+  telechargerPiece(index: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/fichiers/pieces/${index}`, { responseType: 'blob' });
+  }
+
+  remplacerCv(fichier: File): Observable<ProfilResponse> {
+    const formData = new FormData();
+    formData.append('cv', fichier);
+    return this.http.put<ProfilResponse>(`${this.apiUrl}/fichiers/cv`, formData);
+  }
+
+  ajouterPieces(fichiers: File[]): Observable<ProfilResponse> {
+    const formData = new FormData();
+    fichiers.forEach((f) => formData.append('pieces', f));
+    return this.http.post<ProfilResponse>(`${this.apiUrl}/fichiers/pieces`, formData);
+  }
+
+  supprimerPiece(index: number): Observable<ProfilResponse> {
+    return this.http.delete<ProfilResponse>(`${this.apiUrl}/fichiers/pieces/${index}`);
+  }
+
   getDemandesMiseEnRelation(): Observable<TableauDeBordCandidatItemBackend[]> {
     return this.http.get<TableauDeBordCandidatItemBackend[]>(`${this.apiUrl}/demande-mise-en-relation/mes-demandes`);
   }

@@ -12,6 +12,10 @@ export interface ProfilResponse {
   orcid: string | null;
   etablissement: string | null;
   laboratoire: string | null;
+  /** CV du candidat (null si absent). */
+  cv: FichierCandidat | null;
+  /** Pièces complémentaires (jamais null). */
+  pieces: FichierCandidat[];
 }
 
 /** Données envoyées au backend pour modifier le profil candidat. */

@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService, ChangementMotDePasseRequest } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
-import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { FichierCandidat, ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 
 @Component({
   selector: 'app-espace-candidat',
@@ -29,6 +29,16 @@ export class EspaceCandidat implements OnInit {
   newCompetence = '';
   competenceError: string | null = null;
   isAddingCompetence = false;
+
+  fichiersError: string | null = null;
+  fichiersSuccess: string | null = null;
+  isSavingCv = false;
+  isAddingPieces = false;
+  pieceEnCoursSuppression: number | null = null;
+
+  private static readonly CV_MAX_SIZE = 1_048_576; // 1 Mo
+  private static readonly PIECE_MAX_SIZE = 5_242_880; // 5 Mo
+  private static readonly MAX_PIECES = 5;
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -92,6 +102,144 @@ export class EspaceCandidat implements OnInit {
     return this.profil?.competences ?? [];
   }
 
+  get cv(): FichierCandidat | null {
+    return this.profil?.cv ?? null;
+  }
+
+  get pieces(): FichierCandidat[] {
+    return this.profil?.pieces ?? [];
+  }
+
+  formatTaille(bytes: number | null | undefined): string {
+    if (bytes == null) {
+      return 'PDF';
+    }
+    const ko = bytes / 1024;
+    return `PDF – ${ko.toFixed(2).replace('.', ',')} Ko`;
+  }
+
+  ouvrirCv(): void {
+    this.candidatService.telechargerCv().subscribe({
+      next: (blob) => this.ouvrirBlob(blob),
+      error: () => {
+        this.fichiersError = 'CV indisponible. Veuillez réessayer.';
+      }
+    });
+  }
+
+  ouvrirPiece(index: number): void {
+    this.candidatService.telechargerPiece(index).subscribe({
+      next: (blob) => this.ouvrirBlob(blob),
+      error: () => {
+        this.fichiersError = 'Pièce indisponible. Veuillez réessayer.';
+      }
+    });
+  }
+
+  onRemplacerCv(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    if (!fichier) {
+      return;
+    }
+    const erreur = this.validerPdf(fichier, EspaceCandidat.CV_MAX_SIZE, 'CV');
+    if (erreur) {
+      this.fichiersError = erreur;
+      return;
+    }
+    this.isSavingCv = true;
+    this.fichiersError = null;
+    this.fichiersSuccess = null;
+    this.candidatService.remplacerCv(fichier).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.isSavingCv = false;
+        this.fichiersSuccess = 'CV remplacé avec succès. L’ancien fichier a été supprimé.';
+      },
+      error: (err) => {
+        this.isSavingCv = false;
+        this.fichiersError = err.error?.message || 'Erreur lors du remplacement du CV.';
+      }
+    });
+  }
+
+  onAjouterPieces(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichiers = Array.from(input.files ?? []);
+    input.value = '';
+    if (fichiers.length === 0) {
+      return;
+    }
+    if (this.pieces.length + fichiers.length > EspaceCandidat.MAX_PIECES) {
+      this.fichiersError = `Maximum ${EspaceCandidat.MAX_PIECES} pièces complémentaires autorisées.`;
+      return;
+    }
+    for (const fichier of fichiers) {
+      const erreur = this.validerPdf(fichier, EspaceCandidat.PIECE_MAX_SIZE, 'Pièce complémentaire');
+      if (erreur) {
+        this.fichiersError = erreur;
+        return;
+      }
+    }
+    this.isAddingPieces = true;
+    this.fichiersError = null;
+    this.fichiersSuccess = null;
+    this.candidatService.ajouterPieces(fichiers).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.isAddingPieces = false;
+        this.fichiersSuccess = 'Pièce(s) ajoutée(s) avec succès.';
+      },
+      error: (err) => {
+        this.isAddingPieces = false;
+        this.fichiersError = err.error?.message || 'Erreur lors de l’ajout des pièces.';
+      }
+    });
+  }
+
+  supprimerPiece(index: number): void {
+    const piece = this.pieces[index];
+    if (!piece) {
+      return;
+    }
+    if (!confirm(`Supprimer définitivement « ${piece.filename} » ? L’ancien fichier sera supprimé du stockage.`)) {
+      return;
+    }
+    this.pieceEnCoursSuppression = index;
+    this.fichiersError = null;
+    this.fichiersSuccess = null;
+    this.candidatService.supprimerPiece(index).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.pieceEnCoursSuppression = null;
+        this.fichiersSuccess = 'Pièce supprimée avec succès.';
+      },
+      error: () => {
+        this.pieceEnCoursSuppression = null;
+        this.fichiersError = 'Erreur lors de la suppression de la pièce.';
+      }
+    });
+  }
+
+  private validerPdf(fichier: File, tailleMax: number, libelle: string): string | null {
+    const nom = fichier.name.toLowerCase();
+    if (fichier.type !== 'application/pdf' && !nom.endsWith('.pdf')) {
+      return `${libelle} : le format PDF est requis.`;
+    }
+    if (fichier.size > tailleMax) {
+      const maxMo = tailleMax / (1024 * 1024);
+      return `${libelle} : la taille maximale est de ${maxMo} Mo.`;
+    }
+    return null;
+  }
+
+  private ouvrirBlob(blob: Blob): void {
+    const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
   loadProfil(): void {
     this.candidatService.getProfil().subscribe({
       next: (data) => {
@@ -110,6 +258,8 @@ export class EspaceCandidat implements OnInit {
     this.errorMessage = null;
     this.passwordSuccessMessage = null;
     this.passwordErrorMessage = null;
+    this.fichiersError = null;
+    this.fichiersSuccess = null;
   }
 
   startEdit(): void {

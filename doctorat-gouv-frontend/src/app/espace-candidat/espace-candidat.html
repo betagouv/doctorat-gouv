@@ -206,6 +206,74 @@
           </div>
         </section>
 
+        <!-- Section : Documents (CV + pièces) -->
+        <section class="ec-card">
+          <div class="ec-card__header">
+            <div class="ec-card__header-row">
+              <div>
+                <h2 class="ec-card__title">
+                  <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+                  Mes documents
+                </h2>
+                <p class="ec-card__desc">Votre CV et vos pièces complémentaires (PDF uniquement). Remplacer ou supprimer un fichier le supprime définitivement du stockage.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ec-card__body">
+            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="fichiersSuccess" role="alert">
+              {{ fichiersSuccess }}
+            </div>
+            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="fichiersError" role="alert">
+              {{ fichiersError }}
+            </div>
+
+            <!-- CV -->
+            <div class="ec-field">
+              <span class="ec-field__label">Curriculum vitae (PDF, 1 Mo max)</span>
+              <div *ngIf="cv; else pasDeCv" class="ec-competences__item">
+                <span class="ec-competences__label">{{ cv.filename }} ({{ formatTaille(cv.size) }})</span>
+                <button type="button" class="ec-btn-secondary" (click)="ouvrirCv()">Voir</button>
+                <label class="ec-btn-secondary" for="remplacer-cv">Remplacer</label>
+                <input class="fr-sr-only" type="file" id="remplacer-cv" accept=".pdf,application/pdf"
+                       (change)="onRemplacerCv($event)" [disabled]="isSavingCv" />
+              </div>
+              <ng-template #pasDeCv>
+                <span class="ec-competences__empty">Aucun CV déposé.</span>
+                <label class="ec-btn-secondary" for="remplacer-cv">Déposer un CV</label>
+                <input class="fr-sr-only" type="file" id="remplacer-cv" accept=".pdf,application/pdf"
+                       (change)="onRemplacerCv($event)" [disabled]="isSavingCv" />
+              </ng-template>
+            </div>
+
+            <!-- Pièces complémentaires -->
+            <div class="ec-field fr-mt-3w">
+              <span class="ec-field__label">Pièces complémentaires (PDF, 5 Mo max, 5 maximum)</span>
+              <div class="ec-competences__list" *ngIf="pieces.length > 0">
+                <div class="ec-competences__item" *ngFor="let piece of pieces; let i = index">
+                  <span class="ec-competences__label">{{ piece.filename }} ({{ formatTaille(piece.size) }})</span>
+                  <button type="button" class="ec-btn-secondary" (click)="ouvrirPiece(i)">Voir</button>
+                  <button type="button" class="ec-competences__delete"
+                          (click)="supprimerPiece(i)"
+                          [disabled]="pieceEnCoursSuppression === i"
+                          aria-label="Supprimer la pièce"
+                          title="Supprimer définitivement la pièce">
+                    <span class="fr-icon-delete-line" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+              <p class="ec-competences__empty" *ngIf="pieces.length === 0">
+                Aucune pièce complémentaire.
+              </p>
+              <div *ngIf="pieces.length < 5">
+                <label class="ec-btn-secondary" for="ajouter-pieces">Ajouter des pièces</label>
+                <input class="fr-sr-only" type="file" id="ajouter-pieces" accept=".pdf,application/pdf" multiple
+                       (change)="onAjouterPieces($event)" [disabled]="isAddingPieces" />
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Section : Compétences -->
         <section class="ec-card">
           <div class="ec-card__header">
