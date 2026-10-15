@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService, ChangementMotDePasseRequest } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
-import { FichierCandidat, ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { FichierCandidat, FrequenceNotification, ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 
 @Component({
   selector: 'app-espace-candidat',
@@ -47,6 +47,12 @@ export class EspaceCandidat implements OnInit {
   passwordSuccessMessage: string | null = null;
   passwordErrorMessage: string | null = null;
 
+  frequenceNotification: FrequenceNotification = 'JOURNALIERE';
+  isLoadingNotifications = false;
+  isSavingNotifications = false;
+  notifSuccessMessage: string | null = null;
+  notifErrorMessage: string | null = null;
+
   readonly defaultAvatar = 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23DDDDDD"><rect width="100" height="100" rx="50"/><text x="50" y="55" text-anchor="middle" fill="%23999" font-size="40" font-family="Arial">?</text></svg>'
   );
@@ -76,6 +82,7 @@ export class EspaceCandidat implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Espace candidat — Doctorat.gouv.fr');
     this.loadProfil();
+    this.loadNotifications();
   }
 
   get prenom(): string {
@@ -260,6 +267,43 @@ export class EspaceCandidat implements OnInit {
     this.passwordErrorMessage = null;
     this.fichiersError = null;
     this.fichiersSuccess = null;
+    this.notifSuccessMessage = null;
+    this.notifErrorMessage = null;
+    if (tab === 'notifications') {
+      this.loadNotifications();
+    }
+  }
+
+  loadNotifications(): void {
+    this.isLoadingNotifications = true;
+    this.notifErrorMessage = null;
+    this.candidatService.getNotifications().subscribe({
+      next: (data) => {
+        this.frequenceNotification = data.frequence ?? 'JOURNALIERE';
+        this.isLoadingNotifications = false;
+      },
+      error: () => {
+        this.isLoadingNotifications = false;
+        this.notifErrorMessage = 'Erreur lors du chargement des préférences.';
+      }
+    });
+  }
+
+  saveNotifications(): void {
+    this.isSavingNotifications = true;
+    this.notifSuccessMessage = null;
+    this.notifErrorMessage = null;
+    this.candidatService.updateNotifications({ frequence: this.frequenceNotification }).subscribe({
+      next: (data) => {
+        this.frequenceNotification = data.frequence;
+        this.isSavingNotifications = false;
+        this.notifSuccessMessage = 'Préférences enregistrées avec succès.';
+      },
+      error: () => {
+        this.isSavingNotifications = false;
+        this.notifErrorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+      }
+    });
   }
 
   startEdit(): void {

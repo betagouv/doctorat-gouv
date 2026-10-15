@@ -25,8 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceRequest;
+import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.service.NotificationPreferenceService;
 import fr.dinum.beta.gouv.doctorat.service.ProfilService;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import jakarta.validation.Valid;
@@ -38,10 +41,14 @@ public class CandidatController {
     private static final Logger log = LoggerFactory.getLogger(CandidatController.class);
 
     private final ProfilService profilService;
+    private final NotificationPreferenceService notificationPreferenceService;
     private final StoragePort storage;
 
-    public CandidatController(ProfilService profilService, StoragePort storage) {
+    public CandidatController(ProfilService profilService,
+                              NotificationPreferenceService notificationPreferenceService,
+                              StoragePort storage) {
         this.profilService = profilService;
+        this.notificationPreferenceService = notificationPreferenceService;
         this.storage = storage;
     }
 
@@ -92,6 +99,29 @@ public class CandidatController {
         log.info("Changement de mot de passe pour l'utilisateur {}", userId);
         profilService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/notifications")
+    public ResponseEntity<NotificationPreferenceResponse> getNotifications() {
+        String userId = getCurrentUserId();
+        log.info("Consultation préférence notifications pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(notificationPreferenceService.getPreference(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/notifications")
+    public ResponseEntity<NotificationPreferenceResponse> updateNotifications(
+            @Valid @RequestBody NotificationPreferenceRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Mise à jour préférence notifications pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(notificationPreferenceService.updatePreference(userId, request));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/fichiers/cv")

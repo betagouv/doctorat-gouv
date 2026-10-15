@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { NotificationPreference, ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
 import { DemandeCandidat } from '../models/demande-candidat.model';
 import { MessageEchange } from '../models/echange.model';
 import { TableauDeBordCandidatItemBackend } from '../models/mise-en-relation.model';
@@ -32,6 +32,14 @@ export class CandidatService {
 
   changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+
+  getNotifications(): Observable<NotificationPreference> {
+    return this.http.get<NotificationPreference>(`${this.apiUrl}/notifications`);
+  }
+
+  updateNotifications(preference: NotificationPreference): Observable<NotificationPreference> {
+    return this.http.put<NotificationPreference>(`${this.apiUrl}/notifications`, preference);
   }
 
   telechargerCv(): Observable<Blob> {
