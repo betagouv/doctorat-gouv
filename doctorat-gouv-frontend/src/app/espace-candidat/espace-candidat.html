@@ -448,7 +448,7 @@
 
       <!-- ============ ONGLET : NOTIFICATIONS ============ -->
       <div *ngIf="activeTab === 'notifications'" class="ec-tab-content">
-        <section class="ec-card">
+        <section class="ec-card ec-card--notif">
           <div class="ec-card__header">
             <div class="ec-card__header-row">
               <div>
@@ -462,10 +462,10 @@
           </div>
 
           <div class="ec-card__body">
-            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="notifSuccessMessage" role="alert">
+            <div class="fr-alert fr-alert--success fr-mb-3w ec-notif-alert" *ngIf="notifSuccessMessage" role="alert">
               {{ notifSuccessMessage }}
             </div>
-            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="notifErrorMessage" role="alert">
+            <div class="fr-alert fr-alert--error fr-mb-3w ec-notif-alert" *ngIf="notifErrorMessage" role="alert">
               {{ notifErrorMessage }}
             </div>
 

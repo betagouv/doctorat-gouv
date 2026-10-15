@@ -702,7 +702,7 @@
 
       <!-- ============ ONGLET : NOTIFICATIONS ============ -->
       <div *ngIf="activeTab === 'notifications'" class="ed-tab-content">
-        <section class="ed-card">
+        <section class="ed-card ed-card--notif">
           <div class="ed-card__header">
             <div class="ed-card__header-row">
               <div>
@@ -716,10 +716,10 @@
           </div>
 
           <div class="ed-card__body">
-            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="notifSuccessMessage" role="alert">
+            <div class="fr-alert fr-alert--success fr-mb-3w ed-notif-alert" *ngIf="notifSuccessMessage" role="alert">
               {{ notifSuccessMessage }}
             </div>
-            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="notifErrorMessage" role="alert">
+            <div class="fr-alert fr-alert--error fr-mb-3w ed-notif-alert" *ngIf="notifErrorMessage" role="alert">
               {{ notifErrorMessage }}
             </div>
 

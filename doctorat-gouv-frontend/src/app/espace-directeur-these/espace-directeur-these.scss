@@ -196,7 +196,7 @@ $font-family: 'Marianne', arial, sans-serif;
   border-radius: 0 0 8px 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: $section-spacing;
-  min-height: 600px;
+  min-height: 0px;
 }
 
 .ed-card .ed-card__body {
@@ -620,9 +620,11 @@ $font-family: 'Marianne', arial, sans-serif;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
+  margin-bottom: 0.8rem;
 
   &:hover {
     opacity: 0.9;
+    background: #000091;
   }
 
   &:disabled {
@@ -654,6 +656,16 @@ $font-family: 'Marianne', arial, sans-serif;
     opacity: 0.5;
     cursor: not-allowed;
   }
+}
+
+/* ======== Onglet Notifications : resserrer sous le séparateur d'en-tête ======== */
+.ed-card--notif .ed-card__header {
+  margin-bottom: 0;
+}
+
+.ed-card--notif .ed-card__body {
+  padding-top: 0.5rem !important;
+  padding-bottom: 1rem !important;
 }
 
 /* ======== Formulaire mot de passe ======== */
