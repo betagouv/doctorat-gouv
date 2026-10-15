@@ -97,6 +97,20 @@ export class Header implements AfterViewInit {
     this.router.navigate(['/']);
   }
 
+  /** Lien "Mon profil" selon le rôle (candidat vs directeur de thèse). */
+  get espaceLink(): string {
+    return this.authService.currentUser()?.role === 'DIRECTEUR_THESE'
+      ? '/espace-directeur-these'
+      : '/espace-candidat';
+  }
+
+  /** Lien "Tableau de bord" selon le rôle. */
+  get tableauLink(): string {
+    return this.authService.currentUser()?.role === 'DIRECTEUR_THESE'
+      ? '/tableau-de-bord-directeur-these'
+      : '/tableau-de-bord-candidat';
+  }
+
   private closeMobileMenuAndReturnFocus(): void {
     const mobileMenu = document.querySelector('.mobile-menu') as HTMLElement;
     const burger = document.querySelector('.mobile-burger') as HTMLElement;

@@ -1,6 +1,18 @@
 ﻿<main class="tdb-page">
   <div class="tdb-container">
 
+    <!-- ======== FIL D'ARIANE : retour profil ======== -->
+    <nav class="fr-breadcrumb fr-mb-2w" aria-label="Fil d'Ariane">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" routerLink="/espace-directeur-these">Mon profil</a>
+        </li>
+        <li>
+          <span class="fr-breadcrumb__link" aria-current="page">Tableau de bord</span>
+        </li>
+      </ol>
+    </nav>
+
     <!-- ======== EN-TETE ======== -->
     <header class="tdb-header">
       <div class="tdb-header__greeting">
@@ -19,6 +31,10 @@
 
     <!-- ======== ONGLETS ======== -->
     <nav class="tdb-tabs" aria-label="Navigation espace directeur de these">
+      <a class="tdb-tabs__tab" routerLink="/espace-directeur-these">
+        <span class="fr-icon-user-line" aria-hidden="true"></span>
+        Votre profil
+      </a>
       <span class="tdb-tabs__tab tdb-tabs__tab--active" aria-current="page">
         <span class="fr-icon-chat-3-line" aria-hidden="true"></span>
         Mises en relations

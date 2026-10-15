@@ -1,6 +1,18 @@
 <main class="tdb-page">
   <div class="tdb-container">
 
+    <!-- ======== FIL D'ARIANE : retour profil ======== -->
+    <nav class="fr-breadcrumb fr-mb-2w" aria-label="Fil d'Ariane">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" routerLink="/espace-candidat">Mon profil</a>
+        </li>
+        <li>
+          <span class="fr-breadcrumb__link" aria-current="page">Tableau de bord</span>
+        </li>
+      </ol>
+    </nav>
+
     <!-- ======== EN-TÊTE ======== -->
     <header class="tdb-header">
       <div class="tdb-header__greeting">
@@ -12,6 +24,9 @@
           <p class="tdb-header__subtitle">Un rapide coup d'oeil sur votre activité</p>
         </div>
       </div>
+      <a routerLink="/espace-candidat" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-line fr-mt-2w">
+        Retour à mon profil
+      </a>
     </header>
 
     <!-- ======== SUIVI DES MISES EN RELATION ======== -->

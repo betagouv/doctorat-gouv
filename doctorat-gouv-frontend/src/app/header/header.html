@@ -134,6 +134,12 @@
           <li class="fr-nav__item">
             <a class="fr-nav__link" href="/">{{ 'HEADER.RETOUR_AUX_OFFRES' | translate }}</a>
           </li>
+          <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
+            <a class="fr-nav__link" [routerLink]="espaceLink">{{ 'HEADER.MON_PROFIL' | translate }}</a>
+          </li>
+          <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
+            <a class="fr-nav__link" [routerLink]="tableauLink">{{ 'HEADER.TABLEAU_DE_BORD' | translate }}</a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -204,6 +210,15 @@
     <a href="/">
       <span class="fr-icon-search-line" aria-hidden="true"></span>
       {{ 'MOBILE.ALL_OFFERS' | translate }}
+    </a>
+
+    <a *ngIf="authService.isLoggedIn()" [routerLink]="espaceLink">
+      <span class="fr-icon-user-line" aria-hidden="true"></span>
+      {{ 'HEADER.MON_PROFIL' | translate }}
+    </a>
+    <a *ngIf="authService.isLoggedIn()" [routerLink]="tableauLink">
+      <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
+      {{ 'HEADER.TABLEAU_DE_BORD' | translate }}
     </a>
 
     <a href="https://doctorat.sites.beta.gouv.fr/">

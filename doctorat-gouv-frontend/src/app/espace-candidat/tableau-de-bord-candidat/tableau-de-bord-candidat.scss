@@ -48,6 +48,10 @@ $font-family: 'Marianne', arial, sans-serif;
 
 /* ======== En-tête ======== */
 .tdb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
