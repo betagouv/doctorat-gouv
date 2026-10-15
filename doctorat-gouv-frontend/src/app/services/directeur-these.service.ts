@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { DemandeDt, ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
+import { DemandeDt, NotificationPreference, ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
 import { MessageEchange } from '../models/echange.model';
 
 @Injectable({ providedIn: 'root' })
@@ -30,6 +30,14 @@ export class DirecteurTheseService {
 
   changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+
+  getNotifications(): Observable<NotificationPreference> {
+    return this.http.get<NotificationPreference>(`${this.apiUrl}/notifications`);
+  }
+
+  updateNotifications(preference: NotificationPreference): Observable<NotificationPreference> {
+    return this.http.put<NotificationPreference>(`${this.apiUrl}/notifications`, preference);
   }
 
   getSujets(): Observable<SujetDt[]> {

@@ -716,18 +716,27 @@
           </div>
 
           <div class="ed-card__body">
-            <fieldset class="fr-fieldset">
+            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="notifSuccessMessage" role="alert">
+              {{ notifSuccessMessage }}
+            </div>
+            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="notifErrorMessage" role="alert">
+              {{ notifErrorMessage }}
+            </div>
+
+            <fieldset class="fr-fieldset" [disabled]="isLoadingNotifications">
               <legend class="fr-fieldset__legend">Fréquence d'envoi</legend>
               <div class="fr-fieldset__content">
                 <div class="fr-radio-group">
-                  <input type="radio" id="dt-freq-journaliere" name="dt-frequence-notifications" checked />
+                  <input type="radio" id="dt-freq-journaliere" name="dt-frequence-notifications"
+                         value="JOURNALIERE" [(ngModel)]="frequenceNotification" />
                   <label class="fr-label" for="dt-freq-journaliere">
                     Journalière
                     <span class="fr-hint-text">Un e-mail récapitulatif chaque jour en cas de messages non lus.</span>
                   </label>
                 </div>
                 <div class="fr-radio-group">
-                  <input type="radio" id="dt-freq-hebdomadaire" name="dt-frequence-notifications" />
+                  <input type="radio" id="dt-freq-hebdomadaire" name="dt-frequence-notifications"
+                         value="HEBDOMADAIRE" [(ngModel)]="frequenceNotification" />
                   <label class="fr-label" for="dt-freq-hebdomadaire">
                     Hebdomadaire
                     <span class="fr-hint-text">Un e-mail récapitulatif chaque semaine en cas de messages non lus.</span>
@@ -737,7 +746,8 @@
             </fieldset>
 
             <div class="ed-actions">
-              <button type="button" class="ed-btn-primary" title="Bientôt disponible">
+              <button type="button" class="ed-btn-primary" (click)="saveNotifications()"
+                      [disabled]="isLoadingNotifications || isSavingNotifications">
                 <span class="fr-icon-check-line" aria-hidden="true"></span>
                 Enregistrer
               </button>

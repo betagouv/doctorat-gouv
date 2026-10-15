@@ -7,7 +7,7 @@ import { DirecteurTheseService, ChangementMotDePasseRequest } from '../services/
 import { AuthService } from '../services/auth.service';
 import { FilterService } from '../services/filter.service';
 import { ProfilDtResponse, ProfilDtUpdateRequest } from '../models/profil.model';
-import { AxeDeRecherche } from '../models/profil.model';
+import { AxeDeRecherche, FrequenceNotification } from '../models/profil.model';
 
 @Component({
   selector: 'app-espace-directeur-these',
@@ -56,6 +56,12 @@ export class EspaceDirecteurThese implements OnInit {
   passwordSuccessMessage: string | null = null;
   passwordErrorMessage: string | null = null;
 
+  frequenceNotification: FrequenceNotification = 'JOURNALIERE';
+  isLoadingNotifications = false;
+  isSavingNotifications = false;
+  notifSuccessMessage: string | null = null;
+  notifErrorMessage: string | null = null;
+
   readonly defaultAvatar = 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23DDDDDD"><rect width="100" height="100" rx="50"/><text x="50" y="55" text-anchor="middle" fill="%23999" font-size="40" font-family="Arial">?</text></svg>'
   );
@@ -99,6 +105,7 @@ export class EspaceDirecteurThese implements OnInit {
     this.titleService.setTitle('Espace directeur de thèse — Doctorat.gouv.fr');
     this.loadProfil();
     this.loadReferentiels();
+    this.loadNotifications();
   }
 
   get prenom(): string {
@@ -135,6 +142,43 @@ export class EspaceDirecteurThese implements OnInit {
     this.errorMessage = null;
     this.passwordSuccessMessage = null;
     this.passwordErrorMessage = null;
+    this.notifSuccessMessage = null;
+    this.notifErrorMessage = null;
+    if (tab === 'notifications') {
+      this.loadNotifications();
+    }
+  }
+
+  loadNotifications(): void {
+    this.isLoadingNotifications = true;
+    this.notifErrorMessage = null;
+    this.directeurService.getNotifications().subscribe({
+      next: (data) => {
+        this.frequenceNotification = data.frequence ?? 'JOURNALIERE';
+        this.isLoadingNotifications = false;
+      },
+      error: () => {
+        this.isLoadingNotifications = false;
+        this.notifErrorMessage = 'Erreur lors du chargement des préférences.';
+      }
+    });
+  }
+
+  saveNotifications(): void {
+    this.isSavingNotifications = true;
+    this.notifSuccessMessage = null;
+    this.notifErrorMessage = null;
+    this.directeurService.updateNotifications({ frequence: this.frequenceNotification }).subscribe({
+      next: (data) => {
+        this.frequenceNotification = data.frequence;
+        this.isSavingNotifications = false;
+        this.notifSuccessMessage = 'Préférences enregistrées avec succès.';
+      },
+      error: () => {
+        this.isSavingNotifications = false;
+        this.notifErrorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+      }
+    });
   }
 
   startEdit(): void {

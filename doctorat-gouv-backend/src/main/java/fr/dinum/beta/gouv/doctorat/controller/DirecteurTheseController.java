@@ -29,11 +29,14 @@ import fr.dinum.beta.gouv.doctorat.dto.DemandeFichierRequest;
 import fr.dinum.beta.gouv.doctorat.dto.MessageDto;
 import fr.dinum.beta.gouv.doctorat.dto.MessageEnvoiRequest;
 import fr.dinum.beta.gouv.doctorat.dto.MessageListeRequest;
+import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceRequest;
+import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
 import fr.dinum.beta.gouv.doctorat.service.EchangeService;
+import fr.dinum.beta.gouv.doctorat.service.NotificationPreferenceService;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import jakarta.validation.Valid;
 
@@ -45,13 +48,16 @@ public class DirecteurTheseController {
 
     private final DirecteurTheseService directeurTheseService;
     private final EchangeService echangeService;
+    private final NotificationPreferenceService notificationPreferenceService;
     private final StoragePort storage;
 
     public DirecteurTheseController(DirecteurTheseService directeurTheseService,
                                     EchangeService echangeService,
+                                    NotificationPreferenceService notificationPreferenceService,
                                     StoragePort storage) {
         this.directeurTheseService = directeurTheseService;
         this.echangeService = echangeService;
+        this.notificationPreferenceService = notificationPreferenceService;
         this.storage = storage;
     }
 
@@ -202,6 +208,29 @@ public class DirecteurTheseController {
         log.info("Changement de mot de passe pour le directeur de thèse {}", userId);
         directeurTheseService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/notifications")
+    public ResponseEntity<NotificationPreferenceResponse> getNotifications() {
+        String userId = getCurrentUserId();
+        log.info("Consultation préférence notifications pour le directeur de thèse {}", userId);
+        try {
+            return ResponseEntity.ok(notificationPreferenceService.getPreference(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/notifications")
+    public ResponseEntity<NotificationPreferenceResponse> updateNotifications(
+            @Valid @RequestBody NotificationPreferenceRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Mise à jour préférence notifications pour le directeur de thèse {}", userId);
+        try {
+            return ResponseEntity.ok(notificationPreferenceService.updatePreference(userId, request));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private String getCurrentUserId() {
