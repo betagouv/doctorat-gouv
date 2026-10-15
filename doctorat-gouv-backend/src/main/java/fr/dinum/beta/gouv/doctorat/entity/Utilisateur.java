@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import fr.dinum.beta.gouv.doctorat.enums.DemarcheType;
+import fr.dinum.beta.gouv.doctorat.enums.FrequenceNotification;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import jakarta.persistence.CollectionTable;
@@ -92,6 +93,12 @@ public class Utilisateur {
 
     @Column(name = "nb_candidatures")
     private Integer nbCandidatures = 0;
+
+    // --- Préférence de notification (socle commun candidat / directeur de thèse) ---
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "frequence_notification", length = 20)
+    private FrequenceNotification frequenceNotification = FrequenceNotification.JOURNALIERE;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "date_creation", nullable = false)
@@ -209,6 +216,14 @@ public class Utilisateur {
 
     public void setNbCandidatures(Integer nbCandidatures) {
         this.nbCandidatures = nbCandidatures;
+    }
+
+    public FrequenceNotification getFrequenceNotification() {
+        return frequenceNotification;
+    }
+
+    public void setFrequenceNotification(FrequenceNotification frequenceNotification) {
+        this.frequenceNotification = frequenceNotification;
     }
 
     public LocalDateTime getDateCreation() {

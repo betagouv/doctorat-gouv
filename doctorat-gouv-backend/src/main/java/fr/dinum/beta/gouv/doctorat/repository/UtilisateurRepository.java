@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.FrequenceNotification;
 
 /**
  * Repository Spring Data pour l'entité Utilisateur.
@@ -29,4 +31,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, String
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Utilisateur u WHERE LOWER(TRIM(u.email)) = LOWER(TRIM(:email))")
     boolean existsByEmailIgnoreCaseAndTrim(@Param("email") String email);
+
+    List<Utilisateur> findByFrequenceNotificationAndActifTrue(FrequenceNotification frequenceNotification);
 }

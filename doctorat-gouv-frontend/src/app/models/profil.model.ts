@@ -77,6 +77,13 @@ export interface ProfilDtUpdateRequest {
   axes: AxeDeRecherche[];
 }
 
+/** Socle commun : fréquence du récapitulatif des messages non lus (candidat + directeur de thèse). */
+export type FrequenceNotification = 'JOURNALIERE' | 'HEBDOMADAIRE';
+
+export interface NotificationPreference {
+  frequence: FrequenceNotification;
+}
+
 /** Un axe de recherche du directeur de thèse. */
 export interface AxeDeRecherche {
   titre: string;
