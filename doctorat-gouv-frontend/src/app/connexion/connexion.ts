@@ -49,7 +49,7 @@ export class Connexion implements OnInit {
     if (this.authService.isLoggedIn()) {
       const user = this.authService.currentUser();
       if (user?.role === 'DIRECTEUR_THESE') {
-        this.router.navigate(['/espace-directeur-these']);
+        this.router.navigate(['/tableau-de-bord-directeur-these']);
       } else {
         this.router.navigate(['/espace-candidat']);
       }
@@ -88,7 +88,7 @@ export class Connexion implements OnInit {
         } else {
           const user = this.authService.currentUser();
           if (user?.role === 'DIRECTEUR_THESE') {
-            this.router.navigate(['/espace-directeur-these']);
+            this.router.navigate(['/tableau-de-bord-directeur-these']);
           } else {
             this.router.navigate(['/espace-candidat']);
           }
