@@ -326,6 +326,11 @@ export class EspaceCandidat implements OnInit {
   saveProfil(): void {
     if (this.profilForm.invalid) {
       this.profilForm.markAllAsTouched();
+      this.successMessage = null;
+      this.errorMessage = 'Veuillez compléter les champs obligatoires signalés en rouge pour enregistrer.';
+      setTimeout(() => {
+        document.querySelector('.ec-main .fr-alert--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
 
