@@ -51,7 +51,7 @@ export class Connexion implements OnInit {
       if (user?.role === 'DIRECTEUR_THESE') {
         this.router.navigate(['/tableau-de-bord-directeur-these']);
       } else {
-        this.router.navigate(['/espace-candidat']);
+        this.router.navigate(['/tableau-de-bord-candidat']);
       }
     }
   }
@@ -90,7 +90,7 @@ export class Connexion implements OnInit {
           if (user?.role === 'DIRECTEUR_THESE') {
             this.router.navigate(['/tableau-de-bord-directeur-these']);
           } else {
-            this.router.navigate(['/espace-candidat']);
+            this.router.navigate(['/tableau-de-bord-candidat']);
           }
         }
       },
