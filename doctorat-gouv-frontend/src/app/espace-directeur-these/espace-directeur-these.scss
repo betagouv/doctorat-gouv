@@ -548,7 +548,9 @@ $font-family: 'Marianne', arial, sans-serif;
 
 .ed-axe-note__icon {
   flex-shrink: 0;
-  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  height: 1.4em;
 }
 
 .ed-icon-btn {

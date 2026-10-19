@@ -528,7 +528,8 @@
                       </div>
                       <p class="ed-axe-note">
                         <span class="fr-icon-information-fill ed-axe-note__icon" aria-hidden="true"></span>
-                        <span>Cela va générer une offre d'accompagnement qui sera publiée sur doctorat.gouv.fr, visible par les candidats et partenaires.</span>
+                        <span *ngIf="axe.contactable">Une offre d'accompagnement sera publiée sur doctorat.gouv.fr et visible par les candidats et partenaires.</span>
+                        <span *ngIf="!axe.contactable">Cet axe de recherche sera visible sur votre profil, mais ne donnera pas lieu à la publication d'une offre d'accompagnement sur doctorat.gouv.fr.</span>
                       </p>
                     </div>
                   </div>
