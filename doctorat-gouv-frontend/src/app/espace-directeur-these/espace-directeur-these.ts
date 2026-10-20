@@ -97,7 +97,7 @@ export class EspaceDirecteurThese implements OnInit {
     });
 
     this.axesForm = this.fb.group({
-      descriptionAxes: ['', [Validators.required, Validators.maxLength(2000)]],
+      descriptionAxes: ['', [Validators.maxLength(2000)]],
     });
   }
 
@@ -269,11 +269,6 @@ export class EspaceDirecteurThese implements OnInit {
   }
 
   saveAxes(): void {
-    if (this.axesForm.invalid) {
-      this.axesForm.markAllAsTouched();
-      this.errorMessage = 'La description des axes de recherche est obligatoire.';
-      return;
-    }
     const invalidAxe = this.axes.some(a => !a.titre?.trim() || !a.precisions?.trim());
     if (invalidAxe) {
       this.errorMessage = 'Chaque axe de recherche doit avoir un titre et des précisions.';
