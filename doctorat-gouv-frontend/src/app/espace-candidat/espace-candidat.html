@@ -113,7 +113,7 @@
                 </div>
                 <div class="ec-field">
                   <span class="ec-field__label">Situation actuelle</span>
-                  <span class="ec-field__value">{{ profil.situation }}</span>
+                  <span class="ec-field__value">{{ profil.situation | situationLibelle }}</span>
                 </div>
                 <div class="ec-field">
                   <span class="ec-field__label">E-mail</span>
@@ -165,10 +165,7 @@
                   <select class="fr-select" id="edit-situation" formControlName="situation"
                           [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null">
                     <option value="">—</option>
-                    <option value="Étudiant au sein d'un master français">Étudiant au sein d'un master français</option>
-                    <option value="Doctorant">Doctorant</option>
-                    <option value="Chercheur">Chercheur</option>
-                    <option value="Autre">Autre</option>
+                    <option *ngFor="let option of situationOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
                   <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
                     La situation est obligatoire.

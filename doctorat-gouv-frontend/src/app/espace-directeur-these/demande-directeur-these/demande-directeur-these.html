@@ -57,7 +57,7 @@
                 </div>
                 <div class="message-box__author-info">
                   <span class="message-box__author-name">{{ demande.candidatNom }}</span>
-                  <span class="message-box__author-role" *ngIf="demande.candidatSituation">{{ demande.candidatSituation }}</span>
+                  <span class="message-box__author-role" *ngIf="demande.candidatSituation">{{ demande.candidatSituation | situationLibelle }}</span>
                 </div>
               </div>
               <div class="message-box__content">
@@ -152,7 +152,7 @@
             </ng-template>
           </div>
           <h3 class="profil-card__name">{{ civiliteNom }}</h3>
-          <p class="profil-card__situation" *ngIf="demande.candidatSituation">{{ demande.candidatSituation }}</p>
+          <p class="profil-card__situation" *ngIf="demande.candidatSituation">{{ demande.candidatSituation | situationLibelle }}</p>
 
           <hr class="profil-card__divider" />
 

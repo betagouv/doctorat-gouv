@@ -5,12 +5,13 @@ import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { CandidatService, ChangementMotDePasseRequest } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
-import { FichierCandidat, FrequenceNotification, ProfilResponse, ProfilUpdateRequest } from '../models/profil.model';
+import { FichierCandidat, FrequenceNotification, ProfilResponse, ProfilUpdateRequest, SITUATIONS, SituationOption } from '../models/profil.model';
+import { SituationLibellePipe } from '../pipes/situation-libelle-pipe';
 
 @Component({
   selector: 'app-espace-candidat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, SituationLibellePipe],
   templateUrl: './espace-candidat.html',
   styleUrl: './espace-candidat.scss',
 })
@@ -103,6 +104,17 @@ export class EspaceCandidat implements OnInit {
 
   get candidaturesCount(): number {
     return this.profil?.nbCandidatures ?? 0;
+  }
+
+  get situationOptions(): SituationOption[] {
+    const options = [...SITUATIONS];
+    const stockee = this.profilForm.get('situation')?.value;
+
+    if (stockee && !options.some(option => option.value === stockee)) {
+      options.push({ value: stockee, label: stockee });
+    }
+
+    return options;
   }
 
   get competences(): string[] {

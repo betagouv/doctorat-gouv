@@ -8,12 +8,13 @@ import { DirecteurTheseService } from '../../services/directeur-these.service';
 import { DemandeDtContextService } from '../../services/demande-dt-context.service';
 import { DemandeDt, FichierCandidat } from '../../models/profil.model';
 import { MessageEchange } from '../../models/echange.model';
+import { SituationLibellePipe } from '../../pipes/situation-libelle-pipe';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-directeur-these',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe],
   templateUrl: './demande-directeur-these.html',
   styleUrl: './demande-directeur-these.scss',
 })

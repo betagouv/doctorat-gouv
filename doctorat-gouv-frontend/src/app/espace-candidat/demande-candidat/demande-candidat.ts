@@ -7,12 +7,13 @@ import { CandidatService } from '../../services/candidat.service';
 import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
 import { DemandeCandidat } from '../../models/demande-candidat.model';
 import { MessageEchange } from '../../models/echange.model';
+import { SituationLibellePipe } from '../../pipes/situation-libelle-pipe';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-candidat',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe],
   templateUrl: './demande-candidat.html',
   styleUrl: './demande-candidat.scss',
 })

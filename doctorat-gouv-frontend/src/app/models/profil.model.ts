@@ -77,6 +77,20 @@ export interface ProfilDtUpdateRequest {
   axes: AxeDeRecherche[];
 }
 
+/** Une option de la liste déroulante « Situation actuelle » (valeur stockée = code). */
+export interface SituationOption {
+  value: string;
+  label: string;
+}
+
+/** Référentiel des situations actuelles du candidat (codes inscrits en base). */
+export const SITUATIONS: SituationOption[] = [
+  { value: 'ETUDIANT_MASTER', label: "Étudiant en master" },
+  { value: 'TITULAIRE_MASTER', label: "Titulaire d'un master" },
+  { value: 'DOCTORANT', label: 'Doctorant' },
+  { value: 'PROFESSIONNEL', label: 'Professionnel' },
+];
+
 /** Socle commun : fréquence du récapitulatif des messages non lus (candidat + directeur de thèse). */
 export type FrequenceNotification = 'JOURNALIERE' | 'HEBDOMADAIRE';
 
