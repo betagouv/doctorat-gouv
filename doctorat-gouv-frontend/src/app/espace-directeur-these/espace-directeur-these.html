@@ -489,9 +489,9 @@
                 La description des axes de recherche est obligatoire.
               </p>
 
-              <!-- Offre d'encadrement (édition) -->
+              <!-- Axe(s) de recherche (édition) -->
               <div class="fr-mt-3w">
-                <h3 class="fr-h6 fr-mb-2w">Offre d'encadrement ({{ axes.length }})</h3>
+                <h3 class="fr-h6 fr-mb-2w">Axe(s) de recherche</h3>
 
                 <div *ngFor="let axe of axes; let i = index" class="ed-axe-card fr-mb-3w">
                   <div class="ed-axe-card__header">
@@ -552,9 +552,9 @@
               </div>
             </form>
 
-            <!-- Offre d'encadrement (lecture) -->
+            <!-- Axe(s) de recherche (lecture) -->
             <div *ngIf="!isEditingAxes" class="fr-mt-3w">
-              <h3 class="fr-h6 fr-mb-2w">Offre d'encadrement ({{ axes.length }})</h3>
+              <h3 class="fr-h6 fr-mb-2w">Axe(s) de recherche</h3>
 
               <div *ngIf="axes.length === 0" class="fr-text--sm fr-py-2w" style="font-style: italic; color: #666;">
                 Aucun axe de recherche renseigné.
