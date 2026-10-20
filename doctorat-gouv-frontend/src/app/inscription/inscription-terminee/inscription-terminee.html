@@ -32,6 +32,10 @@
         </div>
 
         <div class="termine-actions">
+          <a *ngIf="demandeEnCours" class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line"
+             routerLink="/demande-mise-en-relation">
+            Finaliser ma demande de mise en relation
+          </a>
           <a class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line"
              routerLink="/connexion">
             Se connecter

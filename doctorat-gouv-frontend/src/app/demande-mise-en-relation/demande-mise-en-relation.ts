@@ -26,6 +26,7 @@ export class DemandeMiseEnRelation implements OnInit {
 	isSubmitting = false;
 	errorMessage: string | null = null;
 	brouillonSaved = false;
+	showFelicitations = false;
 
 	titreSujet: string = '';
 	idPropositionThese: number | null = null;
@@ -56,6 +57,7 @@ export class DemandeMiseEnRelation implements OnInit {
 
 		this.idPropositionThese = ctx.id;
 		this.titreSujet = ctx.titre || 'Sujet non renseigné';
+		this.showFelicitations = this.contextService.consommerFelicitations();
 
 		this.chargerDemandeExistante();
 	}

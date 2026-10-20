@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
+import { DemandeMiseEnRelationContextService } from '../../services/demande-mise-en-relation-context.service';
 
 @Component({
   selector: 'app-inscription-terminee',
@@ -20,6 +21,7 @@ export class InscriptionTerminee implements OnInit {
     private translate: TranslateService,
     private titleService: Title,
     private authService: AuthService,
+    private demandeContextService: DemandeMiseEnRelationContextService,
   ) { }
 
   ngOnInit(): void {
@@ -28,5 +30,9 @@ export class InscriptionTerminee implements OnInit {
     );
     const user = this.authService.currentUser();
     this.isDirecteur = user?.role === 'DIRECTEUR_THESE';
+  }
+
+  get demandeEnCours(): boolean {
+    return !this.isDirecteur && this.demandeContextService.estDemandeEnCours();
   }
 }

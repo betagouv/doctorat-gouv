@@ -151,17 +151,24 @@ export class PropositionDetail {
 	}
 
 	goToDemandeMiseEnRelation() {
-	  if (!this.thesis || !this.thesisId || this.thesisId === 0) {
-	    return;
-	  }
+		if (!this.thesis || !this.thesisId || this.thesisId === 0) {
+			return;
+		}
 
-	  this.demandeContextService.setContext(
-	    this.thesisId,
-	    this.thesis.theseTitre ?? null,
-	    this.thesis.typeProposition ?? null
-	  );
+		const estConnecte = this.authService.isLoggedIn();
 
-	  this.router.navigate(['/demande-mise-en-relation']);
+		this.demandeContextService.setContext(
+			this.thesisId,
+			this.thesis.theseTitre ?? null,
+			this.thesis.typeProposition ?? null,
+			!estConnecte
+		);
+
+		if (estConnecte) {
+			this.router.navigate(['/demande-mise-en-relation']);
+		} else {
+			this.router.navigate(['/connexion'], { queryParams: { returnUrl: '/demande-mise-en-relation' } });
+		}
 	}
 
 	getThesisTitle(thesis: any): string {

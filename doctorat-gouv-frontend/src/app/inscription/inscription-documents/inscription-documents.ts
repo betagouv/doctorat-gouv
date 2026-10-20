@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { InscriptionStoreService } from '../../services/inscription-store.service';
+import { DemandeMiseEnRelationContextService } from '../../services/demande-mise-en-relation-context.service';
 
 const CV_MAX_SIZE = 1 * 1024 * 1024;        // 1 Mo
 const PIECE_MAX_SIZE = 5 * 1024 * 1024;     // 5 Mo
@@ -42,6 +43,7 @@ export class InscriptionDocuments implements OnInit {
     private metaService: Meta,
     private store: InscriptionStoreService,
     private authService: AuthService,
+    private demandeContextService: DemandeMiseEnRelationContextService,
     private router: Router,
   ) { }
 
@@ -147,6 +149,7 @@ export class InscriptionDocuments implements OnInit {
     this.authService.inscrireComplet(formData).subscribe({
       next: () => {
         this.store.clear();
+        this.demandeContextService.poserNouveauCompte();
         this.router.navigate(['/inscription/terminee']);
       },
       error: (err) => {

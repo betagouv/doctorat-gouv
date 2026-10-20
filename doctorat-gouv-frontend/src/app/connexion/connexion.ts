@@ -47,6 +47,12 @@ export class Connexion implements OnInit {
     this.metaService.updateTag({ name: 'description', content: description });
 
     if (this.authService.isLoggedIn()) {
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      if (returnUrl) {
+        this.router.navigateByUrl(returnUrl);
+        return;
+      }
+
       const user = this.authService.currentUser();
       if (user?.role === 'DIRECTEUR_THESE') {
         this.router.navigate(['/tableau-de-bord-directeur-these']);

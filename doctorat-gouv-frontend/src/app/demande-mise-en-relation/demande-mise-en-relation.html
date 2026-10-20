@@ -14,7 +14,7 @@
 					</svg>
 				</span>
 				<div class="alert-body">
-					<p class="alert-title">Félicitations {{prenom}}, votre profil est complet.</p>
+					<p class="alert-title" *ngIf="showFelicitations">Félicitations {{prenom}}, votre profil est complet.</p>
 					<p class="alert-desc">Finalisez votre demande de mise en relation.</p>
 				</div>
 			</div>
