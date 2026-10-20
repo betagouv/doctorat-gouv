@@ -283,7 +283,7 @@
                 </div>
 
                 <!-- Ligne 4 : Établissement -->
-                <div class="fr-input-group ed-form-grid__full">
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">
                   <label class="fr-label" for="edit-etablissement">Établissement délivrant le doctorat dont vous relevez <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-etablissement" type="text" formControlName="etablissement"
@@ -295,10 +295,11 @@
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">L'établissement est obligatoire.</p>
                 </div>
 
                 <!-- Ligne 5 : Unité de recherche -->
-                <div class="fr-input-group ed-form-grid__full">
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">
                   <label class="fr-label" for="edit-laboratoire">Unité de recherche <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-laboratoire" type="text" formControlName="laboratoire"
@@ -310,10 +311,11 @@
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">L'unité de recherche est obligatoire.</p>
                 </div>
 
                 <!-- Ligne 6 : École doctorale -->
-                <div class="fr-input-group ed-form-grid__full">
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">
                   <label class="fr-label" for="edit-ecole-doctorale">École doctorale <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-ecole-doctorale" type="text" formControlName="ecoleDoctorale"
@@ -325,6 +327,7 @@
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-error-text" *ngIf="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">L'école doctorale est obligatoire.</p>
                 </div>
 
                 <!-- Ligne 7 : Employeur -->
@@ -382,7 +385,7 @@
               <div class="ed-form-grid">
 
                 <!-- Domaine scientifique -->
-                <div class="fr-select-group ed-form-grid__full">
+                <div class="fr-select-group ed-form-grid__full" [class.fr-select-group--error]="profilForm.get('domaineScientifique')?.invalid && profilForm.get('domaineScientifique')?.touched">
                   <label class="fr-label" for="edit-domaine-scientifique">Domaine scientifique <span class="required-star">*</span></label>
                   <p class="fr-hint-text">Sélectionnez un ou plusieurs grands domaines scientifiques d'accréditation des écoles doctorales</p>
                   <select class="fr-select" id="edit-domaine-scientifique" formControlName="domaineScientifique">
@@ -396,13 +399,15 @@
                     <option value="Sciences de l'ingénieur">Sciences de l'ingénieur</option>
                     <option value="Sciences de l'homme et de la société">Sciences de l'homme et de la société</option>
                   </select>
+                  <p class="fr-error-text" *ngIf="profilForm.get('domaineScientifique')?.invalid && profilForm.get('domaineScientifique')?.touched">Le domaine scientifique est obligatoire.</p>
                 </div>
 
                 <!-- Expertise -->
-                <div class="fr-input-group ed-form-grid__full">
+                <div class="fr-input-group ed-form-grid__full" [class.fr-input-group--error]="profilForm.get('expertiseMots')?.invalid && profilForm.get('expertiseMots')?.touched">
                   <label class="fr-label" for="edit-expertise-mots">Votre expertise en quelques mots <span class="required-star">*</span></label>
                   <p class="fr-hint-text">Décrivez vos travaux, publications ou projets de recherche antérieurs.</p>
                   <textarea class="fr-input" id="edit-expertise-mots" formControlName="expertiseMots" rows="4" placeholder="Mes travaux portent sur..."></textarea>
+                  <p class="fr-error-text" *ngIf="profilForm.get('expertiseMots')?.invalid && profilForm.get('expertiseMots')?.touched">Votre expertise est obligatoire.</p>
                 </div>
 
                 <!-- Mots-clés -->
