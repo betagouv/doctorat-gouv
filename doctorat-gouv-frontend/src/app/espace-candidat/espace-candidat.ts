@@ -27,10 +27,6 @@ export class EspaceCandidat implements OnInit {
 
   activeTab: 'profil' | 'motdepasse' | 'notifications' | 'alertes' = 'profil';
 
-  newCompetence = '';
-  competenceError: string | null = null;
-  isAddingCompetence = false;
-
   fichiersError: string | null = null;
   fichiersSuccess: string | null = null;
   isSavingCv = false;
@@ -364,44 +360,6 @@ export class EspaceCandidat implements OnInit {
       error: () => {
         this.isSaving = false;
         this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
-      }
-    });
-  }
-
-  addCompetence(): void {
-    const trimmed = this.newCompetence.trim();
-    if (!trimmed) {
-      this.competenceError = 'Veuillez saisir une compétence.';
-      return;
-    }
-    if (this.competences.includes(trimmed)) {
-      this.competenceError = 'Cette compétence existe déjà.';
-      return;
-    }
-
-    this.isAddingCompetence = true;
-    this.competenceError = null;
-
-    this.candidatService.addCompetence(trimmed).subscribe({
-      next: (data) => {
-        this.profil = data;
-        this.newCompetence = '';
-        this.isAddingCompetence = false;
-      },
-      error: () => {
-        this.isAddingCompetence = false;
-        this.errorMessage = "Erreur lors de l'ajout de la compétence.";
-      }
-    });
-  }
-
-  removeCompetence(competence: string): void {
-    this.candidatService.removeCompetence(competence).subscribe({
-      next: (data) => {
-        this.profil = data;
-      },
-      error: () => {
-        this.errorMessage = 'Erreur lors de la suppression de la compétence.';
       }
     });
   }

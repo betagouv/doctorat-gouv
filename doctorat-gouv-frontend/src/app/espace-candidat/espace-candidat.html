@@ -271,62 +271,6 @@
           </div>
         </section>
 
-        <!-- Section : Compétences -->
-        <section class="ec-card">
-          <div class="ec-card__header">
-            <div class="ec-card__header-row">
-              <div>
-                <h2 class="ec-card__title">
-                  <span class="fr-icon-award-line" aria-hidden="true"></span>
-                  Compétences particulières et domaines de prédilection
-                </h2>
-                <p class="ec-card__desc">Renseignez vos expertises spécifiques, savoir-faire particuliers ou domaines dans lesquels vous êtes spécialisé.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="ec-card__body">
-            <div class="ec-competences">
-              <!-- Liste des compétences -->
-              <div class="ec-competences__list" *ngIf="competences.length > 0">
-                <div class="ec-competences__item" *ngFor="let comp of competences">
-                  <span class="ec-competences__label">{{ comp }}</span>
-                  <button class="ec-competences__delete"
-                          (click)="removeCompetence(comp)"
-                          aria-label="Supprimer la compétence"
-                          title="Supprimer la compétence">
-                    <span class="fr-icon-delete-line" aria-hidden="true"></span>
-                  </button>
-                </div>
-              </div>
-              <p class="ec-competences__empty" *ngIf="competences.length === 0">
-                Aucune compétence renseignée.
-              </p>
-
-              <!-- Ajout de compétence -->
-              <div class="ec-competences__add">
-                <div class="fr-input-group"
-                     [class.fr-input-group--error]="!!competenceError">
-                  <input class="fr-input"
-                         type="text"
-                         [(ngModel)]="newCompetence"
-                         placeholder="Nouvelle compétence"
-                         (keyup.enter)="addCompetence()"
-                         [disabled]="isAddingCompetence"
-                         [attr.aria-invalid]="competenceError ? 'true' : null" />
-                  <p class="fr-error-text" *ngIf="competenceError">{{ competenceError }}</p>
-                </div>
-                <button class="ec-competences__add-btn"
-                        (click)="addCompetence()"
-                        [disabled]="isAddingCompetence">
-                  <span class="fr-icon-add-line" aria-hidden="true"></span>
-                  Ajouter une compétence
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
       </div>
 
       <!-- ============ ONGLET : MOT DE PASSE ============ -->
