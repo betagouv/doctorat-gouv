@@ -563,6 +563,11 @@ public class DirecteurTheseService {
         params.put("nom_directeur", nomDirecteur);
         params.put("lien_conversation", LIEN_CONVERSATION);
 
+        ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
+        if (profilCandidat != null && profilCandidat.getCivilite() != null) {
+            params.put("civilite", profilCandidat.getCivilite());
+        }
+
         String destinataire = candidat.getEmail();
         if (!mailEnabled) {
             if (stubMailbox == null || stubMailbox.isBlank()) {
