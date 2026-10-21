@@ -415,7 +415,7 @@
                   <label class="fr-label">Mots-clés</label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" type="text" [(ngModel)]="newMotCle" [ngModelOptions]="{standalone: true}"
-                           placeholder="Ajouter un mot-clé" (keyup.enter)="addMotCle()" />
+                           placeholder="Ajouter un ou plusieurs mots-clés" (keyup.enter)="addMotCle()" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
                   </div>
                   <div class="ed-tags" *ngIf="motsCles.length > 0">
@@ -459,7 +459,7 @@
                 <h2 class="ed-card__title">
                   Axes de recherche
                 </h2>
-                <p class="ed-card__desc">Cette rubrique permet de décrire, dans les grandes lignes, un ou plusieurs axes dans lesquels s'inscrivent vos travaux de recherche actuels et ceux que vous êtes susceptible de mener ou diriger dans un futur proche.</p>
+                <p class="ed-card__desc">Cette rubrique permet de décrire, dans les grandes lignes, un ou plusieurs axes dans lesquels s'inscrivent vos travaux de recherche actuels et ceux que vous êtes susceptible de mener ou diriger dans un futur proche. Pour chaque axe de recherche, vous pouvez préciser si vous acceptez d'être contacté, par d'éventuels candidats ou partenaires, qui envisagent un projet doctoral en lien avec cet axe de recherche.</p>
               </div>
               <button *ngIf="!isEditingAxes" class="ed-btn-secondary" (click)="startEditAxes()">
                 <span class="fr-icon-edit-line" aria-hidden="true"></span>
