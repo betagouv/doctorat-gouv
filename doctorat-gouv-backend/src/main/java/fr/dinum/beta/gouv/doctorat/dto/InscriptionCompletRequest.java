@@ -41,7 +41,10 @@ public class InscriptionCompletRequest {
     @Size(max = 20, message = "Le téléphone ne doit pas dépasser 20 caractères")
     private String telephone;
 
-    @NotNull(message = "La confirmation du master est obligatoire")
+    /**
+     * Confirmation du grade de master. Obligatoire sauf pour les situations
+     * partenariat (PARTENARIAT_ENTREPRISE / PARTENARIAT_ORGANISATION).
+     */
     private Boolean masterConfirme;
 
     /** Optionnel : si absent, un mot de passe temporaire est généré côté serveur. */

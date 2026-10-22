@@ -125,10 +125,12 @@ public class AuthService {
         profilCandidat.setCivilite(request.getCivilite());
         profilCandidat.setSituation(request.getSituation());
         profilCandidat.setTelephone(request.getTelephone());
-        profilCandidat.setMasterConfirme(request.getMasterConfirme());
+        profilCandidat.setMasterConfirme(Boolean.TRUE.equals(request.getMasterConfirme()));
 
-        String cvPath = inscriptionFileService.storeCv(userId, cv);
-        profilCandidat.setCvFilename(cvPath);
+        if (cv != null && !cv.isEmpty()) {
+            String cvPath = inscriptionFileService.storeCv(userId, cv);
+            profilCandidat.setCvFilename(cvPath);
+        }
         List<String> piecePaths = inscriptionFileService.storePieces(userId, pieces);
         profilCandidat.setPiecesFilenames(piecePaths);
 

@@ -6,6 +6,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { InscriptionStoreService } from '../../services/inscription-store.service';
 import { DemandeMiseEnRelationContextService } from '../../services/demande-mise-en-relation-context.service';
+import { estSituationPartenaire } from '../../models/profil.model';
 
 const CV_MAX_SIZE = 1 * 1024 * 1024;        // 1 Mo
 const PIECE_MAX_SIZE = 5 * 1024 * 1024;     // 5 Mo
@@ -17,9 +18,10 @@ interface PieceSelectionnee {
 }
 
 /**
- * Étape 2 de l'inscription : upload du CV (PDF ≤ 1 Mo) et des pièces complémentaires
- * (PDF ≤ 5 Mo, max 5). À la soumission, envoye un FormData à l'endpoint multipart
- * /api/inscription/complet puis redirige vers la page de confirmation.
+ * Étape 2 de l'inscription.
+ * Candidat classique : CV (PDF ≤ 1 Mo) + pièces complémentaires (PDF ≤ 5 Mo, max 5).
+ * Profil partenariat : 2 documents dédiés (PDF ≤ 5 Mo) — pas de CV.
+ * À la soumission, envoie un FormData à /api/inscription/complet puis redirige.
  */
 @Component({
   selector: 'app-inscription-documents',
@@ -36,6 +38,13 @@ export class InscriptionDocuments implements OnInit {
   pieceErreur: string | null = null;
   globalError: string | null = null;
   isSubmitting = false;
+
+  /** Parcours partenariat : 2 documents dédiés au lieu de CV + pièces. */
+  estPartenaire = false;
+  docOrganisation: File | null = null;
+  docOrganisationErreur: string | null = null;
+  docPartenariat: File | null = null;
+  docPartenariatErreur: string | null = null;
 
   constructor(
     private translate: TranslateService,
@@ -58,9 +67,12 @@ export class InscriptionDocuments implements OnInit {
         : 'Complétez votre profil de candidat en envoyant votre CV et vos pièces complémentaires.',
     });
 
-    if (!this.store.coordonnees()) {
+    const coordonnees = this.store.coordonnees();
+    if (!coordonnees) {
       this.router.navigate(['/inscription/coordonnees']);
+      return;
     }
+    this.estPartenaire = estSituationPartenaire(coordonnees.situation);
   }
 
   onCvSelected(event: Event): void {
@@ -79,6 +91,40 @@ export class InscriptionDocuments implements OnInit {
       return;
     }
     this.cv = file;
+  }
+
+  onDocOrganisationSelected(event: Event): void {
+    this.docOrganisation = this.extraireFichier(event, 'docOrganisationErreur');
+  }
+
+  onDocPartenariatSelected(event: Event): void {
+    this.docPartenariat = this.extraireFichier(event, 'docPartenariatErreur');
+  }
+
+  supprimerDocOrganisation(): void {
+    this.docOrganisation = null;
+    this.docOrganisationErreur = null;
+  }
+
+  supprimerDocPartenariat(): void {
+    this.docPartenariat = null;
+    this.docPartenariatErreur = null;
+  }
+
+  private extraireFichier(event: Event, champErreur: 'docOrganisationErreur' | 'docPartenariatErreur'): File | null {
+    const input = event.target as HTMLInputElement;
+    this[champErreur] = null;
+    const file = input.files?.[0];
+    if (!file) {
+      return null;
+    }
+    const erreur = this.validerPdf(file, PIECE_MAX_SIZE);
+    if (erreur) {
+      this[champErreur] = erreur;
+      input.value = '';
+      return null;
+    }
+    return file;
   }
 
   onPiecesSelected(event: Event): void {
@@ -116,6 +162,12 @@ export class InscriptionDocuments implements OnInit {
   }
 
   get formulaireValide(): boolean {
+    if (this.estPartenaire) {
+      return !!this.docOrganisation
+        && !this.docOrganisationErreur
+        && !!this.docPartenariat
+        && !this.docPartenariatErreur;
+    }
     return !!this.cv
       && !this.cvErreur
       && this.pieces.length > 0
@@ -143,8 +195,13 @@ export class InscriptionDocuments implements OnInit {
 
     const formData = new FormData();
     formData.append('coordonnees', JSON.stringify(coordonnees));
-    formData.append('cv', this.cv as File);
-    this.pieces.forEach(p => formData.append('piecesComplementaires', p.file));
+    if (this.estPartenaire) {
+      formData.append('piecesComplementaires', this.docOrganisation as File);
+      formData.append('piecesComplementaires', this.docPartenariat as File);
+    } else {
+      formData.append('cv', this.cv as File);
+      this.pieces.forEach(p => formData.append('piecesComplementaires', p.file));
+    }
 
     this.authService.inscrireComplet(formData).subscribe({
       next: () => {

@@ -110,6 +110,17 @@ export const SITUATIONS_LEGACY: SituationOption[] = [
   { value: 'PROFESSIONNEL', label: 'Professionnel' },
 ];
 
+/** Situations « partenariat » : inscription adaptée (pas de master, 2 documents spécifiques). */
+export const SITUATIONS_PARTENARIAT: readonly string[] = [
+  'PARTENARIAT_ENTREPRISE',
+  'PARTENARIAT_ORGANISATION',
+];
+
+/** Vrai si la situation demande le parcours d'inscription partenariat. */
+export function estSituationPartenaire(situation: string | null | undefined): boolean {
+  return !!situation && SITUATIONS_PARTENARIAT.includes(situation);
+}
+
 /** Socle commun : fréquence du récapitulatif des messages non lus (candidat + directeur de thèse). */
 export type FrequenceNotification = 'JOURNALIERE' | 'HEBDOMADAIRE';
 

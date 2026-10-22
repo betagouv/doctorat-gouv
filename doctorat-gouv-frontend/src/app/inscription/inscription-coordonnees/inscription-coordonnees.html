@@ -189,8 +189,8 @@
             </p>
           </div>
 
-          <!-- Checkbox Master (candidat seulement) -->
-          <div class="fr-checkbox-group fr-mb-3w" *ngIf="!isDirecteur"
+          <!-- Checkbox Master (candidat seulement, hors profil partenariat) -->
+          <div class="fr-checkbox-group fr-mb-3w" *ngIf="!isDirecteur && !estPartenaire"
                [class.fr-input-group--error]="masterConfirme?.invalid && masterConfirme?.touched">
             <input type="checkbox" id="master" formControlName="masterConfirme"
                    [attr.aria-invalid]="masterConfirme?.invalid && masterConfirme?.touched ? 'true' : null"

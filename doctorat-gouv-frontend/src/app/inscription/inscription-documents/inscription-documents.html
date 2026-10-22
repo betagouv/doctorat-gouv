@@ -25,6 +25,70 @@
         <h2 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'INSCRIPTION.STEP2_TITLE' | translate }}</h2>
         <p class="fr-text--sm fr-mb-3w">{{ 'INSCRIPTION.STEP2_INTRO_2' | translate }}</p>
 
+        <!-- ============ Parcours partenariat : 2 documents dédiés ============ -->
+        <ng-container *ngIf="estPartenaire; else blocClassique">
+
+          <!-- Descriptif de l'organisation -->
+          <div class="fr-upload-group fr-mb-3w" [class.fr-input-group--error]="docOrganisationErreur">
+            <label class="fr-label" for="doc-organisation">
+              {{ 'INSCRIPTION.FIELD_DOC_ORGANISATION' | translate }} <span class="required-star">*</span>
+            </label>
+            <p class="fr-hint-text fr-mb-1w">{{ 'INSCRIPTION.DOC_PARTENAIRE_HELP' | translate }}</p>
+
+            <input
+              class="fr-input"
+              type="file"
+              id="doc-organisation"
+              accept=".pdf,application/pdf"
+              (change)="onDocOrganisationSelected($event)"
+              [attr.aria-invalid]="docOrganisationErreur ? 'true' : null"
+              aria-describedby="doc-organisation-error" />
+
+            <p class="fr-error-text" id="doc-organisation-error" *ngIf="docOrganisationErreur">{{ docOrganisationErreur }}</p>
+
+            <div class="fr-download fr-download--card" *ngIf="docOrganisation">
+              <p class="fr-download__title">
+                {{ docOrganisation.name }} ({{ formatTaille(docOrganisation.size) }})
+              </p>
+              <button type="button" class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-delete-line"
+                      (click)="supprimerDocOrganisation()">
+                {{ 'INSCRIPTION.DELETE_FILE' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Descriptif du partenariat envisagé -->
+          <div class="fr-upload-group fr-mb-3w" [class.fr-input-group--error]="docPartenariatErreur">
+            <label class="fr-label" for="doc-partenariat">
+              {{ 'INSCRIPTION.FIELD_DOC_PARTENARIAT' | translate }} <span class="required-star">*</span>
+            </label>
+            <p class="fr-hint-text fr-mb-1w">{{ 'INSCRIPTION.DOC_PARTENAIRE_HELP' | translate }}</p>
+
+            <input
+              class="fr-input"
+              type="file"
+              id="doc-partenariat"
+              accept=".pdf,application/pdf"
+              (change)="onDocPartenariatSelected($event)"
+              [attr.aria-invalid]="docPartenariatErreur ? 'true' : null"
+              aria-describedby="doc-partenariat-error" />
+
+            <p class="fr-error-text" id="doc-partenariat-error" *ngIf="docPartenariatErreur">{{ docPartenariatErreur }}</p>
+
+            <div class="fr-download fr-download--card" *ngIf="docPartenariat">
+              <p class="fr-download__title">
+                {{ docPartenariat.name }} ({{ formatTaille(docPartenariat.size) }})
+              </p>
+              <button type="button" class="fr-btn fr-btn--tertiary fr-btn--icon-left fr-icon-delete-line"
+                      (click)="supprimerDocPartenariat()">
+                {{ 'INSCRIPTION.DELETE_FILE' | translate }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- ============ Parcours classique : CV + pièces ============ -->
+        <ng-template #blocClassique>
         <!-- ============ CV ============ -->
         <div class="fr-upload-group fr-mb-3w" [class.fr-input-group--error]="cvErreur">
           <label class="fr-label" for="cv">
@@ -86,6 +150,7 @@
             </li>
           </ul>
         </div>
+        </ng-template>
 
         <!-- Erreur globale -->
         <div class="fr-alert fr-alert--error fr-mt-2w" role="alert" *ngIf="globalError">

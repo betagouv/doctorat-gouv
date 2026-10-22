@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,16 +24,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import fr.dinum.beta.gouv.doctorat.config.JwtConfig;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionRequest;
+import fr.dinum.beta.gouv.doctorat.dto.InscriptionCompletRequest;
 import fr.dinum.beta.gouv.doctorat.service.InscriptionFileService;
 import fr.dinum.beta.gouv.doctorat.dto.ConnexionResponse;
 import fr.dinum.beta.gouv.doctorat.dto.InscriptionRequest;
 import fr.dinum.beta.gouv.doctorat.dto.UtilisateurDto;
+import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.DemarcheType;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
@@ -321,5 +326,64 @@ class AuthServiceTest {
 
         assertNotNull(result);
         assertNotNull(result.getToken());
+    }
+
+    // ==================== INSCRIPTION COMPLÈTE (multipart) ====================
+
+    private InscriptionCompletRequest nouvelleInscriptionComplexe(String situation, Boolean masterConfirme) {
+        InscriptionCompletRequest request = new InscriptionCompletRequest();
+        request.setEmail("nouveau@exemple.fr");
+        request.setMotDePasse("MotDePasse1234!");
+        request.setPrenom("Marie");
+        request.setNom("Curie");
+        request.setRole(RoleUtilisateur.CANDIDAT);
+        request.setDemarche(DemarcheType.DOCTORAT);
+        request.setSituation(situation);
+        request.setMasterConfirme(masterConfirme);
+        return request;
+    }
+
+    private void stubInscriptionCompleteOk() {
+        stubInscriptionOk();
+        when(utilisateurRepository.findById("uuid-genere")).thenReturn(Optional.of(utilisateur));
+        when(inscriptionFileService.storePieces(eq("uuid-genere"), any())).thenReturn(List.of("pieces/p1.pdf"));
+    }
+
+    @Test
+    void inscrireComplet_profilPartenaire_sansCv_neStockePasCv() {
+        stubInscriptionCompleteOk();
+        InscriptionCompletRequest request = nouvelleInscriptionComplexe("PARTENARIAT_ENTREPRISE", false);
+
+        ConnexionResponse response = authService.inscrireComplet(request, null, null);
+
+        assertNotNull(response);
+        verify(inscriptionFileService, never()).storeCv(anyString(), any());
+        verify(inscriptionFileService).storePieces(eq("uuid-genere"), any());
+        verify(profilCandidatRepository).save(any(ProfilCandidat.class));
+    }
+
+    @Test
+    void inscrireComplet_profilClassique_avecCv_stockeLeCv() {
+        stubInscriptionCompleteOk();
+        MockMultipartFile cv = new MockMultipartFile("cv", "cv.pdf", "application/pdf", "%PDF-1.4".getBytes());
+        when(inscriptionFileService.storeCv(eq("uuid-genere"), any())).thenReturn("inscription/uuid-genere/cv/x_cv.pdf");
+        InscriptionCompletRequest request = nouvelleInscriptionComplexe("MASTER_FRANCE", true);
+
+        ConnexionResponse response = authService.inscrireComplet(request, cv, null);
+
+        assertNotNull(response);
+        verify(inscriptionFileService).storeCv(eq("uuid-genere"), any());
+    }
+
+    @Test
+    void inscrireComplet_masterConfirmeAbsent_normaliseAFaux() {
+        stubInscriptionCompleteOk();
+        InscriptionCompletRequest request = nouvelleInscriptionComplexe("PARTENARIAT_ORGANISATION", null);
+        ArgumentCaptor<ProfilCandidat> profilCaptor = ArgumentCaptor.forClass(ProfilCandidat.class);
+
+        authService.inscrireComplet(request, null, null);
+
+        verify(profilCandidatRepository).save(profilCaptor.capture());
+        assertEquals(false, profilCaptor.getValue().getMasterConfirme());
     }
 }

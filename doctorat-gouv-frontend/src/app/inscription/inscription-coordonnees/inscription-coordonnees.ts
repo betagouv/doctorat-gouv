@@ -7,7 +7,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { InscriptionStoreService, InscriptionCoordonnees as InscriptionCoordonneesData, Demarche, RoleSelection } from '../../services/inscription-store.service';
 import { AuthService } from '../../services/auth.service';
 import { InscriptionRequest } from '../../models/utilisateur.model';
-import { SITUATIONS } from '../../models/profil.model';
+import { SITUATIONS, estSituationPartenaire } from '../../models/profil.model';
 
 @Component({
   selector: 'app-inscription-coordonnees',
@@ -61,6 +61,8 @@ export class InscriptionCoordonnees implements OnInit {
         ? 'Create an account on the national PhD platform.'
         : 'Créez un compte sur la plateforme nationale du doctorat.',
     });
+
+    this.situation?.valueChanges.subscribe(() => this.majValidationMaster());
   }
 
   get role() { return this.form.get('role'); }
@@ -79,6 +81,24 @@ export class InscriptionCoordonnees implements OnInit {
     return this.role?.value === 'DIRECTEUR_THESE';
   }
 
+  get estPartenaire(): boolean {
+    return estSituationPartenaire(this.situation?.value);
+  }
+
+  /** Le master n'est pas requis pour les profils partenariat. */
+  private majValidationMaster(): void {
+    if (this.isDirecteur) {
+      return;
+    }
+    if (this.estPartenaire) {
+      this.masterConfirme?.clearValidators();
+      this.masterConfirme?.setValue(false, { emitEvent: false });
+    } else {
+      this.masterConfirme?.setValidators([Validators.requiredTrue]);
+    }
+    this.masterConfirme?.updateValueAndValidity();
+  }
+
   onRoleChange(): void {
     if (this.isDirecteur) {
       this.situation?.clearValidators();
@@ -90,13 +110,14 @@ export class InscriptionCoordonnees implements OnInit {
     } else {
       this.situation?.setValidators([Validators.required]);
       this.situation?.markAsPristine();
-      this.masterConfirme?.setValidators([Validators.requiredTrue]);
-      this.masterConfirme?.markAsPristine();
+      this.majValidationMaster();
+      if (!this.estPartenaire) {
+        this.masterConfirme?.markAsPristine();
+      }
       this.demarche?.setValidators([Validators.required]);
       this.demarche?.markAsPristine();
     }
     this.situation?.updateValueAndValidity();
-    this.masterConfirme?.updateValueAndValidity();
     this.demarche?.updateValueAndValidity();
   }
 

@@ -68,8 +68,12 @@ public class InscriptionController {
         }
 
         MultipartFile cv = request.getFile("cv");
-        if (cv == null || cv.isEmpty()) {
+        boolean partenaire = estSituationPartenaire(coordonnees.getSituation());
+        if (!partenaire && (cv == null || cv.isEmpty())) {
             return ResponseEntity.badRequest().body(Map.of("error", "Le CV est obligatoire"));
+        }
+        if (!partenaire && !Boolean.TRUE.equals(coordonnees.getMasterConfirme())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "La confirmation du master est obligatoire"));
         }
 
         List<MultipartFile> pieces = request.getMultiFileMap().get("piecesComplementaires");
@@ -81,6 +85,13 @@ public class InscriptionController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    private static final Set<String> SITUATIONS_PARTENARIAT =
+            Set.of("PARTENARIAT_ENTREPRISE", "PARTENARIAT_ORGANISATION");
+
+    private boolean estSituationPartenaire(String situation) {
+        return situation != null && SITUATIONS_PARTENARIAT.contains(situation);
     }
 
     private String extraireCoordonnees(MultipartHttpServletRequest request) {
