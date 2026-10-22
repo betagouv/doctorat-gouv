@@ -144,7 +144,7 @@ public class ProfilService {
         utilisateur.setMotDePasse(passwordEncoder.encode(request.getNouveauMotDePasse()));
         utilisateur.setDateModification(LocalDateTime.now());
         utilisateurRepository.save(utilisateur);
-        log.info("Mot de passe modifiǸ pour l'utilisateur {}", userId);
+        log.info("Mot de passe modifié pour l'utilisateur {}", userId);
 
         envoyerMailChangementMotDePasse(utilisateur);
     }
@@ -158,12 +158,12 @@ public class ProfilService {
         String destinataire = utilisateur.getEmail();
         if (!mailEnabled) {
             if (stubMailbox == null || stubMailbox.isBlank()) {
-                log.warn("Mode DEV : mail de changement de mot de passe non envoyǸ (boǍte bouchon non configurǸe) pour l'utilisateur {}",
+                log.warn("Mode DEV : mail de changement de mot de passe non envoyé (boîte bouchon non configurée) pour l'utilisateur {}",
                     utilisateur.getId());
                 return;
             }
             destinataire = stubMailbox.trim();
-            log.info("Mode DEV : mail de changement de mot de passe bouchonnǸ vers {}", destinataire);
+            log.info("Mode DEV : mail de changement de mot de passe bouchonné vers {}", destinataire);
         }
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("prenom", utilisateur.getPrenom());
@@ -173,7 +173,7 @@ public class ProfilService {
         try {
             if (destinataire != null && !destinataire.isBlank()) {
                 emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_CHANGEMENT_MOT_DE_PASSE, params);
-                log.info("Mail de changement de mot de passe envoyǸ Ǎ {}", destinataire);
+                log.info("Mail de changement de mot de passe envoyé à {}", destinataire);
             }
         } catch (Exception e) {
             log.error("Erreur lors de l'envoi du mail de changement de mot de passe pour l'utilisateur {}", utilisateur.getId(), e);

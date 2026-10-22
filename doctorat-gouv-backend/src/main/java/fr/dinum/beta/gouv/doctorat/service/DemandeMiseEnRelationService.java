@@ -35,6 +35,9 @@ public class DemandeMiseEnRelationService {
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
 
+    @Value("${app.mail.stub-mailbox:}")
+    private String stubMailbox;
+
     private final PropositionTheseService propositionTheseService;
     private final UtilisateurRepository utilisateurRepository;
     private final DemandeMiseEnRelationRepository demandeRepository;
@@ -313,16 +316,25 @@ public class DemandeMiseEnRelationService {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
         PropositionTheseDto these = propositionTheseService.findById(request.getIdPropositionThese());
 
-        if (mailEnabled) {
-            envoyerMailEncadrant(candidat, these, request);
-            envoyerMailCandidat(candidat, these);
-        } else {
-            log.warn("Mode DEV : mails désactivés");
+        String destinataireEncadrant = these.getDirectionTheseEmail();
+        String destinataireCandidat = candidat.getEmail();
+
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mails de demande non envoyés (boîte bouchon non configurée)");
+                return;
+            }
+            destinataireEncadrant = stubMailbox.trim();
+            destinataireCandidat = stubMailbox.trim();
+            log.info("Mode DEV : mails de demande bouchonnés vers {}", stubMailbox);
         }
+
+        envoyerMailEncadrant(candidat, these, request, destinataireEncadrant);
+        envoyerMailCandidat(candidat, these, destinataireCandidat);
     }
 
     private void envoyerMailEncadrant(Utilisateur candidat, PropositionTheseDto these,
-            DemandeMiseEnRelationRequest request) {
+            DemandeMiseEnRelationRequest request, String destinataire) {
         log.info("Préparation du mail de demande de mise en relation pour l'encadrant");
 
         Map<String, Object> params = new HashMap<>();
@@ -337,10 +349,10 @@ public class DemandeMiseEnRelationService {
         params.put("url_sujet", urlSujet);
 
         try {
-            if (isValidEmail(these.getDirectionTheseEmail())) {
-                emailService.sendTemplateEmail(these.getDirectionTheseEmail(), 31, params);
+            if (isValidEmail(destinataire)) {
+                emailService.sendTemplateEmail(destinataire, 31, params);
                 log.info("Mail de demande de mise en relation envoyé à l'encadrant {}",
-                        these.getDirectionTheseEmail());
+                        destinataire);
             } else {
                 log.warn("Email encadrant invalide ou absent pour la thèse {}", these.getId());
             }
@@ -349,7 +361,7 @@ public class DemandeMiseEnRelationService {
         }
     }
 
-    private void envoyerMailCandidat(Utilisateur candidat, PropositionTheseDto these) {
+    private void envoyerMailCandidat(Utilisateur candidat, PropositionTheseDto these, String destinataire) {
         log.info("Préparation du mail de confirmation pour le candidat");
 
         Map<String, Object> params = new HashMap<>();
@@ -360,9 +372,9 @@ public class DemandeMiseEnRelationService {
                 String.format("https://app.doctorat.gouv.fr/proposition?id=%s", these.getId()));
 
         try {
-            if (isValidEmail(candidat.getEmail())) {
-                emailService.sendTemplateEmail(candidat.getEmail(), 32, params);
-                log.info("Mail de confirmation envoyé au candidat {}", candidat.getEmail());
+            if (isValidEmail(destinataire)) {
+                emailService.sendTemplateEmail(destinataire, 32, params);
+                log.info("Mail de confirmation envoyé au candidat {}", destinataire);
             }
         } catch (JsonProcessingException e) {
             log.error("Erreur lors de l'envoi du mail de confirmation au candidat", e);
