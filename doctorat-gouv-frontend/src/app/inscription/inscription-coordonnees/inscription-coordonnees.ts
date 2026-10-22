@@ -7,6 +7,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { InscriptionStoreService, InscriptionCoordonnees as InscriptionCoordonneesData, Demarche, RoleSelection } from '../../services/inscription-store.service';
 import { AuthService } from '../../services/auth.service';
 import { InscriptionRequest } from '../../models/utilisateur.model';
+import { SITUATIONS } from '../../models/profil.model';
 
 @Component({
   selector: 'app-inscription-coordonnees',
@@ -18,6 +19,8 @@ import { InscriptionRequest } from '../../models/utilisateur.model';
 export class InscriptionCoordonnees implements OnInit {
 
   form: FormGroup;
+
+  readonly situations = SITUATIONS;
 
   showPassword = false;
   isSubmitting = false;

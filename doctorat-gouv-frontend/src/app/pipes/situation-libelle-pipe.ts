@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { SITUATIONS } from '../models/profil.model';
+import { SITUATIONS, SITUATIONS_LEGACY } from '../models/profil.model';
 
 @Pipe({
 	name: 'situationLibelle',
@@ -12,6 +12,8 @@ export class SituationLibellePipe implements PipeTransform {
 			return '—';
 		}
 
-		return SITUATIONS.find(option => option.value === value)?.label ?? value;
+		const option = SITUATIONS.find(o => o.value === value)
+			?? SITUATIONS_LEGACY.find(o => o.value === value);
+		return option?.label ?? value;
 	}
 }

@@ -119,15 +119,12 @@
             <label class="fr-label" for="situation">
               {{ 'INSCRIPTION.FIELD_SITUATION' | translate }} <span class="required-star">*</span>
             </label>
-            <select class="fr-select" id="situation" formControlName="situation"
-                    [attr.aria-invalid]="situation?.invalid && situation?.touched ? 'true' : null"
-                    aria-describedby="situation-error">
-              <option value="" disabled selected>{{ 'INSCRIPTION.SITUATION_PLACEHOLDER' | translate }}</option>
-              <option value="ETUDIANT_MASTER">{{ 'INSCRIPTION.SITUATION_ETUDIANT_MASTER' | translate }}</option>
-              <option value="TITULAIRE_MASTER">{{ 'INSCRIPTION.SITUATION_TITULAIRE_MASTER' | translate }}</option>
-              <option value="DOCTORANT">{{ 'INSCRIPTION.SITUATION_DOCTORANT' | translate }}</option>
-              <option value="PROFESSIONNEL">{{ 'INSCRIPTION.SITUATION_PROFESSIONNEL' | translate }}</option>
-            </select>
+<select class="fr-select" id="situation" formControlName="situation"
+  [attr.aria-invalid]="situation?.invalid && situation?.touched ? 'true' : null"
+  aria-describedby="situation-error">
+  <option value="" disabled selected>{{ 'INSCRIPTION.SITUATION_PLACEHOLDER' | translate }}</option>
+  <option *ngFor="let option of situations" [value]="option.value">{{ option.label }}</option>
+</select>
             <p class="fr-error-text" id="situation-error" *ngIf="situation?.invalid && situation?.touched">
               {{ 'INSCRIPTION.ERROR_SITUATION_REQUIRED' | translate }}
             </p>

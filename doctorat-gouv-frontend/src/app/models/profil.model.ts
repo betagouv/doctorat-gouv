@@ -85,7 +85,26 @@ export interface SituationOption {
 
 /** Référentiel des situations actuelles du candidat (codes inscrits en base). */
 export const SITUATIONS: SituationOption[] = [
-  { value: 'ETUDIANT_MASTER', label: "Étudiant en master" },
+  { value: 'MASTER_FRANCE', label: 'Étudiante ou étudiant en master en France' },
+  { value: 'ECOLE_INGENIEURS_FRANCE', label: "Élève d'une école d'ingénieurs en France" },
+  { value: 'GRANDE_ECOLE_MASTER_FRANCE', label: "Élève d'une autre catégorie de grande école française conférant le grade de master" },
+  { value: 'MASTER_UE', label: "Étudiante ou étudiant en master dans un pays de l'union européenne autre que la France" },
+  { value: 'MASTER_HORS_UE', label: 'Étudiante ou étudiant en master dans un pays en dehors de l\'union européenne' },
+  { value: 'CHERCHEUR_ENTREPRISE', label: 'Chercheuse ou chercheur en entreprise' },
+  { value: 'CHERCHEUR_ACADEMIQUE', label: 'Chercheuse ou chercheur du secteur académique' },
+  { value: 'PROFESSIONNEL_ACTIF', label: 'Autre professionnel.le en activité' },
+  { value: 'PARTENARIAT_ENTREPRISE', label: 'Entreprise souhaitant établir un partenariat' },
+  { value: 'PARTENARIAT_ORGANISATION', label: "Organisation relevant d'une autre catégorie, souhaitant établir un partenariat" },
+  { value: 'AUTRE', label: 'Autre' },
+];
+
+/**
+ * Anciens codes de situation (avant le passage aux 11 options).
+ * Conservés uniquement pour l'affichage des profils existants
+ * via le pipe situationLibelle — jamais proposés dans les selects.
+ */
+export const SITUATIONS_LEGACY: SituationOption[] = [
+  { value: 'ETUDIANT_MASTER', label: 'Étudiant en master' },
   { value: 'TITULAIRE_MASTER', label: "Titulaire d'un master" },
   { value: 'DOCTORANT', label: 'Doctorant' },
   { value: 'PROFESSIONNEL', label: 'Professionnel' },
