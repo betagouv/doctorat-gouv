@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -14,18 +15,22 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
@@ -52,6 +57,8 @@ class ProfilServiceTest {
     private StoragePort storage;
     @Mock
     private InscriptionFileService inscriptionFileService;
+    @Mock
+    private BrevoEmailService emailService;
 
     @InjectMocks
     private ProfilService profilService;
@@ -73,7 +80,7 @@ class ProfilServiceTest {
         profil.setPiecesFilenames(new ArrayList<>(
             List.of("inscription/" + USER_ID + "/pieces/1d55c554-7c27-4789-baac-220aa0b1ab3c_piece.pdf")));
 
-        when(profilCandidatRepository.findByUtilisateurId(USER_ID)).thenReturn(Optional.of(profil));
+        Mockito.lenient().when(profilCandidatRepository.findByUtilisateurId(USER_ID)).thenReturn(Optional.of(profil));
         Mockito.lenient().when(storage.exists(anyString())).thenReturn(true);
         Mockito.lenient().when(storage.size(anyString())).thenReturn(1024L);
     }
@@ -160,6 +167,46 @@ class ProfilServiceTest {
 
         assertThrows(IllegalArgumentException.class,
             () -> profilService.getMonFichier(USER_ID, "piece", 0));
+    }
+
+    private ChangementMotDePasseRequest nouvelleDemandeChangementMdp() {
+        ChangementMotDePasseRequest request = new ChangementMotDePasseRequest();
+        request.setMotDePasseActuel("Ancien1234!");
+        request.setNouveauMotDePasse("Nouveau1234!");
+        request.setConfirmationMotDePasse("Nouveau1234!");
+        return request;
+    }
+
+    private void stubChangementMdpOk() {
+        utilisateur.setMotDePasse("$2a$10$ancien");
+        utilisateur.setDateModification(java.time.LocalDateTime.of(2026, 10, 21, 10, 30));
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+        when(passwordEncoder.matches("Ancien1234!", "$2a$10$ancien")).thenReturn(true);
+        when(passwordEncoder.encode("Nouveau1234!")).thenReturn("$2a$10$nouveau");
+        when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(inv -> inv.getArgument(0));
+    }
+
+    @Test
+    void changerMotDePasse_mailActive_envoieNotification() throws Exception {
+        ReflectionTestUtils.setField(profilService, "mailEnabled", true);
+        stubChangementMdpOk();
+
+        profilService.changerMotDePasse(USER_ID, nouvelleDemandeChangementMdp());
+
+        ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(emailService).sendTemplateEmail(eq("candidat@exemple.fr"), eq(73), paramsCaptor.capture());
+        assertEquals("Candidat", paramsCaptor.getValue().get("prenom"));
+        assertEquals("Test", paramsCaptor.getValue().get("nom"));
+    }
+
+    @Test
+    void changerMotDePasse_mailDesactive_nEnvoiePasDeMail() throws Exception {
+        ReflectionTestUtils.setField(profilService, "mailEnabled", false);
+        stubChangementMdpOk();
+
+        profilService.changerMotDePasse(USER_ID, nouvelleDemandeChangementMdp());
+
+        verify(emailService, never()).sendTemplateEmail(anyString(), anyInt(), anyMap());
     }
 }
 

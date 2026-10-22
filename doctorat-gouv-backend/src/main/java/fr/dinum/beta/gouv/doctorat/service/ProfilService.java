@@ -2,11 +2,14 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,22 +30,34 @@ public class ProfilService {
 
     private static final Logger log = LoggerFactory.getLogger(ProfilService.class);
 
+    /** Template Brevo du mail de notification de changement de mot de passe. */
+    private static final int BREVO_TEMPLATE_CHANGEMENT_MOT_DE_PASSE = 73;
+
+    @Value("${app.mail.enabled:false}")
+    private boolean mailEnabled;
+
+    @Value("${app.mail.stub-mailbox:}")
+    private String stubMailbox;
+
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
     private final StoragePort storage;
     private final InscriptionFileService inscriptionFileService;
+    private final BrevoEmailService emailService;
 
     public ProfilService(UtilisateurRepository utilisateurRepository,
                          ProfilCandidatRepository profilCandidatRepository,
                          PasswordEncoder passwordEncoder,
                          StoragePort storage,
-                         InscriptionFileService inscriptionFileService) {
+                         InscriptionFileService inscriptionFileService,
+                         BrevoEmailService emailService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
         this.storage = storage;
         this.inscriptionFileService = inscriptionFileService;
+        this.emailService = emailService;
     }
 
     public Optional<ProfilResponse> getProfil(String userId) {
@@ -129,7 +144,40 @@ public class ProfilService {
         utilisateur.setMotDePasse(passwordEncoder.encode(request.getNouveauMotDePasse()));
         utilisateur.setDateModification(LocalDateTime.now());
         utilisateurRepository.save(utilisateur);
-        log.info("Mot de passe modifié pour l'utilisateur {}", userId);
+        log.info("Mot de passe modifiǸ pour l'utilisateur {}", userId);
+
+        envoyerMailChangementMotDePasse(utilisateur);
+    }
+
+    /**
+     * Notification de changement de mot de passe (template Brevo 73 :
+     * {@code {{ params.prenom }} {{ params.nom }} {{ params.date }}}). L'échec
+     * d'envoi ne bloque jamais le changement.
+     */
+    private void envoyerMailChangementMotDePasse(Utilisateur utilisateur) {
+        String destinataire = utilisateur.getEmail();
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail de changement de mot de passe non envoyǸ (boǍte bouchon non configurǸe) pour l'utilisateur {}",
+                    utilisateur.getId());
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail de changement de mot de passe bouchonnǸ vers {}", destinataire);
+        }
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("prenom", utilisateur.getPrenom());
+        params.put("nom", utilisateur.getNom());
+        params.put("date", utilisateur.getDateModification()
+            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")));
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_CHANGEMENT_MOT_DE_PASSE, params);
+                log.info("Mail de changement de mot de passe envoyǸ Ǎ {}", destinataire);
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail de changement de mot de passe pour l'utilisateur {}", utilisateur.getId(), e);
+        }
     }
 
     /**
