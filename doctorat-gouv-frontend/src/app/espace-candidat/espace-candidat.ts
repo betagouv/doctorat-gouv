@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,7 +15,7 @@ import { SituationLibellePipe } from '../pipes/situation-libelle-pipe';
   templateUrl: './espace-candidat.html',
   styleUrl: './espace-candidat.scss',
 })
-export class EspaceCandidat implements OnInit {
+export class EspaceCandidat implements OnInit, OnDestroy {
 
   profil: ProfilResponse | null = null;
   profilForm: FormGroup;
@@ -58,6 +58,8 @@ export class EspaceCandidat implements OnInit {
     '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23DDDDDD"><rect width="100" height="100" rx="50"/><text x="50" y="55" text-anchor="middle" fill="%23999" font-size="40" font-family="Arial">?</text></svg>'
   );
 
+  private photoObjectUrl: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private candidatService: CandidatService,
@@ -99,11 +101,7 @@ export class EspaceCandidat implements OnInit {
   }
 
   get photoUrl(): string {
-    const base = this.profil?.photoUrl;
-    if (!base) {
-      return this.defaultAvatar;
-    }
-    return base;
+    return this.photoObjectUrl ?? this.defaultAvatar;
   }
 
   get candidaturesCount(): number {
@@ -268,11 +266,39 @@ export class EspaceCandidat implements OnInit {
       next: (data) => {
         this.profil = data;
         this.populateForm(data);
+        this.loadPhoto();
       },
       error: () => {
         this.errorMessage = 'Erreur lors du chargement du profil.';
       }
     });
+  }
+
+  private loadPhoto(): void {
+    if (!this.profil?.photoUrl) {
+      this.revokePhotoUrl();
+      return;
+    }
+    this.candidatService.telechargerPhoto().subscribe({
+      next: (blob) => {
+        this.revokePhotoUrl();
+        this.photoObjectUrl = URL.createObjectURL(blob);
+      },
+      error: () => {
+        this.revokePhotoUrl();
+      }
+    });
+  }
+
+  private revokePhotoUrl(): void {
+    if (this.photoObjectUrl) {
+      URL.revokeObjectURL(this.photoObjectUrl);
+      this.photoObjectUrl = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.revokePhotoUrl();
   }
 
   switchTab(tab: 'profil' | 'motdepasse' | 'notifications' | 'alertes'): void {
@@ -445,6 +471,7 @@ export class EspaceCandidat implements OnInit {
       next: (data) => {
         this.profil = data;
         this.isSavingPhoto = false;
+        this.loadPhoto();
       },
       error: (err) => {
         this.isSavingPhoto = false;

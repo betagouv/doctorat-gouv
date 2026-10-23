@@ -67,6 +67,10 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  getUserId(): string | null {
+    return this.currentUserSignal()?.id ?? null;
+  }
+
   private setSession(response: ConnexionResponse): void {
     localStorage.setItem(this.TOKEN_KEY, response.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response.utilisateur));

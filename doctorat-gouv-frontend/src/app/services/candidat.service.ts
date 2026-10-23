@@ -6,13 +6,14 @@ import { NotificationPreference, ProfilResponse, ProfilUpdateRequest } from '../
 import { DemandeCandidat } from '../models/demande-candidat.model';
 import { MessageEchange } from '../models/echange.model';
 import { TableauDeBordCandidatItemBackend } from '../models/mise-en-relation.model';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CandidatService {
 
   private readonly apiUrl = `${environment.apiUrl}/candidat`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getProfil(): Observable<ProfilResponse> {
     return this.http.get<ProfilResponse>(`${this.apiUrl}/profil`);
@@ -66,6 +67,11 @@ export class CandidatService {
 
   supprimerPhoto(): Observable<ProfilResponse> {
     return this.http.delete<ProfilResponse>(`${this.apiUrl}/fichiers/photo`);
+  }
+
+  telechargerPhoto(): Observable<Blob> {
+    const userId = this.authService.getUserId();
+    return this.http.get(`${environment.apiUrl}/fichiers/utilisateurs/${userId}/photo`, { responseType: 'blob' });
   }
 
   getDemandesMiseEnRelation(): Observable<TableauDeBordCandidatItemBackend[]> {
