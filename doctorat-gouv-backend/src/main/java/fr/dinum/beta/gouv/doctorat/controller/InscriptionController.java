@@ -88,7 +88,8 @@ public class InscriptionController {
     }
 
     private static final Set<String> SITUATIONS_PARTENARIAT =
-            Set.of("PARTENARIAT_ENTREPRISE", "PARTENARIAT_ORGANISATION");
+            Set.of("PARTENARIAT_ENTREPRISE", "PARTENARIAT_ORGANISATION",
+                    "PROFESSIONNEL_ACTIF", "AUTRE", "CHERCHEUR_ENTREPRISE");
 
     private boolean estSituationPartenaire(String situation) {
         return situation != null && SITUATIONS_PARTENARIAT.contains(situation);

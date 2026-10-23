@@ -114,6 +114,9 @@ export const SITUATIONS_LEGACY: SituationOption[] = [
 export const SITUATIONS_PARTENARIAT: readonly string[] = [
   'PARTENARIAT_ENTREPRISE',
   'PARTENARIAT_ORGANISATION',
+  'PROFESSIONNEL_ACTIF',
+  'AUTRE',
+  'CHERCHEUR_ENTREPRISE',
 ];
 
 /** Vrai si la situation demande le parcours d'inscription partenariat. */
