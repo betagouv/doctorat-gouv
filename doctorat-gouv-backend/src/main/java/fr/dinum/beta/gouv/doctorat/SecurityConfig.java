@@ -67,8 +67,8 @@ public class SecurityConfig {
             .headers(headers -> headers
             	    .contentSecurityPolicy(csp -> csp
             	        .policyDirectives(
-            	            "default-src 'self'; " +
-            	            "img-src 'self' data: https://stats.beta.gouv.fr; " +
+                            "default-src 'self'; " +
+                            "img-src 'self' data: blob: https://stats.beta.gouv.fr; " +
             	            "style-src 'self' 'unsafe-inline'; " +
             	            "script-src 'self' 'unsafe-inline' blob: https://stats.beta.gouv.fr; " +
             	            "font-src 'self' data:; " +
