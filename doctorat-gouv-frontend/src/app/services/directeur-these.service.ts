@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DemandeDt, NotificationPreference, ProfilDtResponse, ProfilDtUpdateRequest, SujetDt } from '../models/profil.model';
 import { MessageEchange } from '../models/echange.model';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class DirecteurTheseService {
 
   private readonly apiUrl = `${environment.apiUrl}/directeur-these`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getProfil(): Observable<ProfilDtResponse> {
     return this.http.get<ProfilDtResponse>(`${this.apiUrl}/profil`);
@@ -30,6 +31,21 @@ export class DirecteurTheseService {
 
   changerMotDePasse(request: ChangementMotDePasseRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mot-de-passe`, request);
+  }
+
+  remplacerPhoto(fichier: File): Observable<ProfilDtResponse> {
+    const formData = new FormData();
+    formData.append('photo', fichier);
+    return this.http.put<ProfilDtResponse>(`${this.apiUrl}/fichiers/photo`, formData);
+  }
+
+  supprimerPhoto(): Observable<ProfilDtResponse> {
+    return this.http.delete<ProfilDtResponse>(`${this.apiUrl}/fichiers/photo`);
+  }
+
+  telechargerPhoto(): Observable<Blob> {
+    const userId = this.authService.getUserId();
+    return this.http.get(`${environment.apiUrl}/fichiers/utilisateurs/${userId}/photo`, { responseType: 'blob' });
   }
 
   getNotifications(): Observable<NotificationPreference> {

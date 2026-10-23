@@ -5,16 +5,25 @@
     <aside class="ed-sidebar">
       <div class="ed-sidebar__card">
         <div class="ed-sidebar__photo-wrapper">
-          <img [src]="photoUrl"
+          <img [appPhotoSrc]="photoUrl"
                [alt]="fullName"
                class="ed-sidebar__photo"
                (error)="onPhotoError($event)" />
           <button class="ed-sidebar__photo-edit"
                   (click)="onPhotoEdit()"
+                  [disabled]="isSavingPhoto"
                   aria-label="Modifier la photo">
             <span class="fr-icon-edit-line" aria-hidden="true"></span>
           </button>
+          <input type="file"
+                 id="photo-input"
+                 accept="image/jpeg,image/png,image/webp"
+                 (change)="onPhotoSelected($event)"
+                 hidden />
+          <span *ngIf="isSavingPhoto" class="ed-sidebar__photo-spinner"
+                role="status" aria-label="Envoi de la photo"></span>
         </div>
+        <p *ngIf="photoError" class="ed-sidebar__photo-error">{{ photoError }}</p>
         <div class="ed-sidebar__info">
           <h2 class="ed-sidebar__name">{{ fullName }}</h2>
           <p class="ed-sidebar__role">Directeur de these</p>

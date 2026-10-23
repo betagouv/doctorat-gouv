@@ -33,8 +33,9 @@
         <section class="message-card">
           <div class="message-card__header">
             <div class="message-card__avatar">
-              <img *ngIf="demande.directeurPhotoUrl; else dtAvatarFallback"
-                   [src]="demande.directeurPhotoUrl"
+              <img *ngIf="demande.directeurPhotoUrl && !photoDirecteurError; else dtAvatarFallback"
+                   [appPhotoSrc]="demande.directeurPhotoUrl"
+                   (appPhotoSrcError)="photoDirecteurError = true"
                    [alt]="directeurNomComplet" />
               <ng-template #dtAvatarFallback>
                 <span class="message-card__avatar-fallback">{{ initiales(directeurNomComplet) }}</span>
@@ -49,7 +50,7 @@
               <div class="message-box__author">
                 <div class="message-box__avatar">
                   <img *ngIf="demande.candidatPhotoUrl; else candidatAvatarFallback"
-                       [src]="demande.candidatPhotoUrl"
+                       [appPhotoSrc]="demande.candidatPhotoUrl"
                        [alt]="demande.candidatNom || 'Candidat'" />
                   <ng-template #candidatAvatarFallback>
                     <span class="message-box__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>

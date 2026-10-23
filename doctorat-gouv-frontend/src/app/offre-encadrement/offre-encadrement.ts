@@ -7,6 +7,7 @@ import { PropositionTheseService } from '../services/proposition-these-service';
 import { ContactContextService } from '../services/contact-context-service';
 import { PropositionTheseDto, OffreEncadrementDto, DirecteurOffreDto } from '../models/proposition-these-dto.model';
 import { Nl2brPipe } from '../pipes/nl2br-pipe';
+import { PhotoSrcDirective } from '../directives/photo-src.directive';
 
 // Page volontairement sans i18n (textes en français en dur).
 const MOIS = [
@@ -17,7 +18,7 @@ const MOIS = [
 @Component({
   selector: 'app-offre-encadrement',
   standalone: true,
-  imports: [CommonModule, RouterModule, Nl2brPipe],
+  imports: [CommonModule, RouterModule, Nl2brPipe, PhotoSrcDirective],
   templateUrl: './offre-encadrement.html',
   styleUrl: './offre-encadrement.scss',
 })

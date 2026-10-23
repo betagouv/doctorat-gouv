@@ -33,8 +33,9 @@
         <section class="message-card">
           <div class="message-card__header">
             <div class="message-card__avatar">
-              <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
-                   [src]="demande.candidatPhotoUrl"
+              <img *ngIf="demande.candidatPhotoUrl && !photoCandidatError; else avatarFallback"
+                   [appPhotoSrc]="demande.candidatPhotoUrl"
+                   (appPhotoSrcError)="photoCandidatError = true"
                    [alt]="demande.candidatNom || 'Candidat'" />
               <ng-template #avatarFallback>
                 <span class="message-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
@@ -48,8 +49,9 @@
             <div class="message-box">
               <div class="message-box__author">
                 <div class="message-box__avatar">
-                  <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
-                       [src]="demande.candidatPhotoUrl"
+                  <img *ngIf="demande.candidatPhotoUrl && !photoCandidatError; else avatarFallback2"
+                       [appPhotoSrc]="demande.candidatPhotoUrl"
+                       (appPhotoSrcError)="photoCandidatError = true"
                        [alt]="demande.candidatNom || 'Candidat'" />
                   <ng-template #avatarFallback2>
                     <span class="message-box__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
@@ -144,8 +146,9 @@
         <!-- Colonne droite : profil candidat -->
         <aside class="profil-card">
           <div class="profil-card__photo">
-            <img *ngIf="demande.candidatPhotoUrl; else avatarFallback3"
-                 [src]="demande.candidatPhotoUrl"
+            <img *ngIf="demande.candidatPhotoUrl && !photoCandidatError; else avatarFallback3"
+                 [appPhotoSrc]="demande.candidatPhotoUrl"
+                 (appPhotoSrcError)="photoCandidatError = true"
                  [alt]="demande.candidatNom || 'Candidat'" />
             <ng-template #avatarFallback3>
               <span class="profil-card__photo-fallback">{{ initiales(demande.candidatNom) }}</span>

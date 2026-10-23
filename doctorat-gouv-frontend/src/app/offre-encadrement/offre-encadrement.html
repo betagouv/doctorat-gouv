@@ -113,7 +113,7 @@
       <aside class="offre-card offre-contact">
         <h2 class="offre-contact__title">Contactez le chercheur</h2>
         <img *ngIf="photoUrl && !photoErreur; else avatarInitiales" class="offre-contact__photo"
-             [src]="photoUrl" [alt]="nomComplet" (error)="photoErreur = true" />
+             [appPhotoSrc]="photoUrl" [alt]="nomComplet" (appPhotoSrcError)="photoErreur = true" (error)="photoErreur = true" />
         <ng-template #avatarInitiales>
           <div class="offre-contact__avatar" aria-hidden="true">{{ initiales }}</div>
         </ng-template>

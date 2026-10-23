@@ -95,6 +95,7 @@ $font-family: 'Marianne', arial, sans-serif;
   position: absolute;
   bottom: 0;
   right: 0;
+  z-index: 1;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -111,6 +112,33 @@ $font-family: 'Marianne', arial, sans-serif;
   &:hover {
     opacity: 0.85;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ed-sidebar__photo-spinner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba($color-blue-france, 0.2);
+  border-top-color: $color-blue-france;
+  animation: ed-spin 0.7s linear infinite;
+}
+
+@keyframes ed-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ed-sidebar__photo-error {
+  font-size: 0.75rem;
+  color: #E10600;
+  margin: 0.25rem 0 0;
+  text-align: center;
 }
 
 .ed-sidebar__name {

@@ -9,12 +9,13 @@ import { DemandeDtContextService } from '../../services/demande-dt-context.servi
 import { DemandeDt, FichierCandidat } from '../../models/profil.model';
 import { MessageEchange } from '../../models/echange.model';
 import { SituationLibellePipe } from '../../pipes/situation-libelle-pipe';
+import { PhotoSrcDirective } from '../../directives/photo-src.directive';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-directeur-these',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe],
+  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe, PhotoSrcDirective],
   templateUrl: './demande-directeur-these.html',
   styleUrl: './demande-directeur-these.scss',
 })
@@ -32,6 +33,8 @@ export class DemandeDirecteurThese implements OnInit, OnDestroy {
   isSendingMessage = false;
   erreurTitre = 'Échec de l\'acceptation';
   erreurTexte = 'La mise en relation n\'a pas pu être acceptée. Veuillez réessayer.';
+
+  photoCandidatError = false;
 
   private demandeId: number | null = null;
   private pollingId: ReturnType<typeof setInterval> | null = null;

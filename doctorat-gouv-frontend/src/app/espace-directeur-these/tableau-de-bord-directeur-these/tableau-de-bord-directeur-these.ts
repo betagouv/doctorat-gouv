@@ -6,11 +6,12 @@ import { AuthService } from '../../services/auth.service';
 import { DemandeDtContextService } from '../../services/demande-dt-context.service';
 import { DirecteurTheseService } from '../../services/directeur-these.service';
 import { DemandeDt } from '../../models/profil.model';
+import { PhotoSrcDirective } from '../../directives/photo-src.directive';
 
 @Component({
   selector: 'app-tableau-de-bord-directeur-these',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PhotoSrcDirective],
   templateUrl: './tableau-de-bord-directeur-these.html',
   styleUrl: './tableau-de-bord-directeur-these.scss',
 })
@@ -18,6 +19,7 @@ export class TableauDeBordDirecteurThese implements OnInit {
 
   prenom = '';
   demandes: DemandeDt[] = [];
+  photoCandidatError = false;
   isLoadingDemandes = true;
   errorDemandes: string | null = null;
 

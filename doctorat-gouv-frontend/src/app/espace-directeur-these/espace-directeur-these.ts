@@ -8,11 +8,12 @@ import { AuthService } from '../services/auth.service';
 import { FilterService } from '../services/filter.service';
 import { ProfilDtResponse, ProfilDtUpdateRequest } from '../models/profil.model';
 import { AxeDeRecherche, FrequenceNotification } from '../models/profil.model';
+import { PhotoSrcDirective } from '../directives/photo-src.directive';
 
 @Component({
   selector: 'app-espace-directeur-these',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, PhotoSrcDirective],
   templateUrl: './espace-directeur-these.html',
   styleUrl: './espace-directeur-these.scss',
 })
@@ -61,6 +62,12 @@ export class EspaceDirecteurThese implements OnInit {
   isSavingNotifications = false;
   notifSuccessMessage: string | null = null;
   notifErrorMessage: string | null = null;
+
+  isSavingPhoto = false;
+  photoError: string | null = null;
+
+  private static readonly PHOTO_MAX_SIZE = 2_097_152; // 2 Mo
+  private static readonly PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
   readonly defaultAvatar = 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23DDDDDD"><rect width="100" height="100" rx="50"/><text x="50" y="55" text-anchor="middle" fill="%23999" font-size="40" font-family="Arial">?</text></svg>'
@@ -402,7 +409,37 @@ export class EspaceDirecteurThese implements OnInit {
   }
 
   onPhotoEdit(): void {
-    // TODO: open photo edit module
+    const input = document.getElementById('photo-input') as HTMLInputElement | null;
+    input?.click();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    if (!fichier) {
+      return;
+    }
+    if (!EspaceDirecteurThese.PHOTO_TYPES.includes(fichier.type)) {
+      this.photoError = 'Seul un fichier JPEG, PNG ou WebP est accepté.';
+      return;
+    }
+    if (fichier.size > EspaceDirecteurThese.PHOTO_MAX_SIZE) {
+      this.photoError = 'La taille du fichier est trop importante (2 Mo maximum).';
+      return;
+    }
+    this.isSavingPhoto = true;
+    this.photoError = null;
+    this.directeurService.remplacerPhoto(fichier).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.isSavingPhoto = false;
+      },
+      error: (err) => {
+        this.isSavingPhoto = false;
+        this.photoError = err.error?.message || 'Erreur lors de la mise à jour de la photo.';
+      }
+    });
   }
 
   onPhotoError(event: Event): void {

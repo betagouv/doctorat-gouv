@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
 import fr.dinum.beta.gouv.doctorat.service.EchangeService;
 import fr.dinum.beta.gouv.doctorat.service.NotificationPreferenceService;
+import fr.dinum.beta.gouv.doctorat.service.ProfilService;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import jakarta.validation.Valid;
 
@@ -50,15 +53,18 @@ public class DirecteurTheseController {
     private final EchangeService echangeService;
     private final NotificationPreferenceService notificationPreferenceService;
     private final StoragePort storage;
+    private final ProfilService profilService;
 
     public DirecteurTheseController(DirecteurTheseService directeurTheseService,
                                     EchangeService echangeService,
                                     NotificationPreferenceService notificationPreferenceService,
-                                    StoragePort storage) {
+                                    StoragePort storage,
+                                    ProfilService profilService) {
         this.directeurTheseService = directeurTheseService;
         this.echangeService = echangeService;
         this.notificationPreferenceService = notificationPreferenceService;
         this.storage = storage;
+        this.profilService = profilService;
     }
 
     @GetMapping("/profil")
@@ -208,6 +214,34 @@ public class DirecteurTheseController {
         log.info("Changement de mot de passe pour le directeur de thèse {}", userId);
         directeurTheseService.changerMotDePasse(userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/fichiers/photo")
+    public ResponseEntity<?> remplacerPhoto(@RequestParam("photo") MultipartFile photo) {
+        String userId = getCurrentUserId();
+        log.info("Remplacement de la photo de profil pour le directeur de thèse {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.remplacerPhoto(userId, photo));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors du remplacement de la photo du DT {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/fichiers/photo")
+    public ResponseEntity<?> supprimerPhoto() {
+        String userId = getCurrentUserId();
+        log.info("Suppression de la photo de profil pour le directeur de thèse {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.supprimerPhoto(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de la suppression de la photo du DT {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/notifications")

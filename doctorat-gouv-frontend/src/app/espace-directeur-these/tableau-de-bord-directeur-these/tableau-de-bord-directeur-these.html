@@ -91,8 +91,9 @@
                [routerLink]="['/demande-directeur-these']"
                (click)="selectDemande(demande.id)">
               <div class="tdb-card__avatar">
-                <img *ngIf="demande.candidatPhotoUrl; else avatarFallback"
-                     [src]="demande.candidatPhotoUrl"
+                <img *ngIf="demande.candidatPhotoUrl && !photoCandidatError; else avatarFallback"
+                     [appPhotoSrc]="demande.candidatPhotoUrl"
+                     (appPhotoSrcError)="photoCandidatError = true"
                      [alt]="demande.candidatNom || 'Candidat'" />
                 <ng-template #avatarFallback>
                   <span class="tdb-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>
@@ -122,8 +123,9 @@
                [routerLink]="['/demande-directeur-these']"
                (click)="selectDemande(demande.id)">
               <div class="tdb-card__avatar">
-                <img *ngIf="demande.candidatPhotoUrl; else avatarFallback2"
-                     [src]="demande.candidatPhotoUrl"
+                <img *ngIf="demande.candidatPhotoUrl && !photoCandidatError; else avatarFallback2"
+                     [appPhotoSrc]="demande.candidatPhotoUrl"
+                     (appPhotoSrcError)="photoCandidatError = true"
                      [alt]="demande.candidatNom || 'Candidat'" />
                 <ng-template #avatarFallback2>
                   <span class="tdb-card__avatar-fallback">{{ initiales(demande.candidatNom) }}</span>

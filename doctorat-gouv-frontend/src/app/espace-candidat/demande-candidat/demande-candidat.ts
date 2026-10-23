@@ -8,12 +8,13 @@ import { DemandeCandidatContextService } from '../../services/demande-candidat-c
 import { DemandeCandidat } from '../../models/demande-candidat.model';
 import { MessageEchange } from '../../models/echange.model';
 import { SituationLibellePipe } from '../../pipes/situation-libelle-pipe';
+import { PhotoSrcDirective } from '../../directives/photo-src.directive';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-demande-candidat',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe],
+  imports: [CommonModule, FormsModule, RouterModule, SituationLibellePipe, PhotoSrcDirective],
   templateUrl: './demande-candidat.html',
   styleUrl: './demande-candidat.scss',
 })
@@ -22,6 +23,7 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
   demande: DemandeCandidat | null = null;
   isLoading = true;
   errorMessage: string | null = null;
+  photoDirecteurError = false;
 
   messages: MessageEchange[] = [];
   messageContenu = '';
