@@ -471,9 +471,9 @@
           <div class="ed-card__body ed-card__body--tight-top">
 
             <!-- En savoir plus -->
-            <details class="fr-accordion ed-axes-en-savoir-plus">
+            <details class="fr-accordion ed-axes-en-savoir-plus" #enSavoirPlus (toggle)="0">
               <summary class="fr-accordion__btn">En savoir plus</summary>
-              <div class="fr-collapse">
+              <div class="fr-collapse" [class.fr-collapse--expanded]="enSavoirPlus.open">
                 <p>Cette description permet aux candidats et aux établissements de comprendre vos domaines de compétence. Elle sera visible sur les offres d'encadrement publiées sur doctorat.gouv.fr.</p>
               </div>
             </details>
