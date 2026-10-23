@@ -58,6 +58,16 @@ export class CandidatService {
     return this.http.delete<ProfilResponse>(`${this.apiUrl}/fichiers/pieces/${index}`);
   }
 
+  remplacerPhoto(fichier: File): Observable<ProfilResponse> {
+    const formData = new FormData();
+    formData.append('photo', fichier);
+    return this.http.put<ProfilResponse>(`${this.apiUrl}/fichiers/photo`, formData);
+  }
+
+  supprimerPhoto(): Observable<ProfilResponse> {
+    return this.http.delete<ProfilResponse>(`${this.apiUrl}/fichiers/photo`);
+  }
+
   getDemandesMiseEnRelation(): Observable<TableauDeBordCandidatItemBackend[]> {
     return this.http.get<TableauDeBordCandidatItemBackend[]>(`${this.apiUrl}/demande-mise-en-relation/mes-demandes`);
   }

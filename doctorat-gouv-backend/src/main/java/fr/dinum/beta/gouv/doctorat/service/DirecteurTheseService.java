@@ -430,7 +430,7 @@ public class DirecteurTheseService {
                     + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
                 dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
                 dto.setCandidatEmail(candidat.getEmail());
-                dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
+                dto.setCandidatPhotoUrl(ProfilService.urlPhoto(candidat));
             }
             dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
             dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
@@ -474,7 +474,7 @@ public class DirecteurTheseService {
             dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
             dto.setCandidatPrenom(candidat.getPrenom());
             dto.setCandidatEmail(candidat.getEmail());
-            dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
+            dto.setCandidatPhotoUrl(ProfilService.urlPhoto(candidat));
             ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
             if (profilCandidat != null) {
                 dto.setCandidatCivilite(profilCandidat.getCivilite());
@@ -744,7 +744,7 @@ public class DirecteurTheseService {
             u.getPrenom(),
             u.getEmail()
         );
-        response.setPhotoUrl(u.getPhotoUrl());
+        response.setPhotoUrl(ProfilService.urlPhoto(u));
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
         response.setOrcid(profil != null ? profil.getOrcid() : null);
         response.setEtablissement(profil != null ? profil.getEtablissement() : null);

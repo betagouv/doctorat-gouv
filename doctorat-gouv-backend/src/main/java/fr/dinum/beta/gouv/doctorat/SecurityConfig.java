@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/candidat/**").authenticated()
                 .requestMatchers("/api/directeur-these/**").authenticated()
                 .requestMatchers("/api/deconnexion").authenticated()
+                .requestMatchers("/api/fichiers/**").authenticated()
 
                 // Fichiers statiques Angular
                 .requestMatchers(

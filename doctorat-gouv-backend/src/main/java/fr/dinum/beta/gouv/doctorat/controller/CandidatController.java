@@ -192,6 +192,34 @@ public class CandidatController {
         }
     }
 
+    @PutMapping("/fichiers/photo")
+    public ResponseEntity<?> remplacerPhoto(@RequestParam("photo") MultipartFile photo) {
+        String userId = getCurrentUserId();
+        log.info("Remplacement de la photo de profil pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.remplacerPhoto(userId, photo));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors du remplacement de la photo de l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/fichiers/photo")
+    public ResponseEntity<?> supprimerPhoto() {
+        String userId = getCurrentUserId();
+        log.info("Suppression de la photo de profil pour l'utilisateur {}", userId);
+        try {
+            return ResponseEntity.ok(profilService.supprimerPhoto(userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de la suppression de la photo de l'utilisateur {}", userId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     private ResponseEntity<Resource> streamerFichier(String key) {
         String filename = StoragePort.displayName(key);
         InputStream content = storage.open(key);

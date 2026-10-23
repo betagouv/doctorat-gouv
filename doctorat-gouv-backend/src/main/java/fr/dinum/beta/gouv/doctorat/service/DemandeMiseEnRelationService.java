@@ -111,14 +111,14 @@ public class DemandeMiseEnRelationService {
         dto.setDirecteurNom(these.getDirectionTheseNom());
         if (these.getDirectionTheseEmail() != null) {
             utilisateurRepository.findByEmailIgnoreCaseAndTrim(these.getDirectionTheseEmail())
-                .ifPresent(dt -> dto.setDirecteurPhotoUrl(dt.getPhotoUrl()));
+                .ifPresent(dt -> dto.setDirecteurPhotoUrl(ProfilService.urlPhoto(dt)));
         }
 
         String nomComplet = ((candidat.getPrenom() != null ? candidat.getPrenom().trim() + " " : "")
             + (candidat.getNom() != null ? candidat.getNom().trim() : "")).trim();
         dto.setCandidatNom(nomComplet.isEmpty() ? null : nomComplet);
         dto.setCandidatPrenom(candidat.getPrenom());
-        dto.setCandidatPhotoUrl(candidat.getPhotoUrl());
+        dto.setCandidatPhotoUrl(ProfilService.urlPhoto(candidat));
         if (profilCandidat != null) {
             dto.setCandidatSituation(profilCandidat.getSituation());
         }

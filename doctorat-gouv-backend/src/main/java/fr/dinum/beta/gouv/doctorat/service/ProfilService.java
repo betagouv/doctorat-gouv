@@ -45,19 +45,22 @@ public class ProfilService {
     private final StoragePort storage;
     private final InscriptionFileService inscriptionFileService;
     private final BrevoEmailService emailService;
+    private final PhotoService photoService;
 
     public ProfilService(UtilisateurRepository utilisateurRepository,
                          ProfilCandidatRepository profilCandidatRepository,
                          PasswordEncoder passwordEncoder,
                          StoragePort storage,
                          InscriptionFileService inscriptionFileService,
-                         BrevoEmailService emailService) {
+                         BrevoEmailService emailService,
+                         PhotoService photoService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
         this.storage = storage;
         this.inscriptionFileService = inscriptionFileService;
         this.emailService = emailService;
+        this.photoService = photoService;
     }
 
     public Optional<ProfilResponse> getProfil(String userId) {
@@ -214,6 +217,34 @@ public class ProfilService {
     }
 
     /**
+     * Remplace la photo de profil : stocke la nouvelle (OOS/local), supprime
+     * l'ancienne du backend, met à jour {@code Utilisateur.photoUrl} avec la clé.
+     */
+    public ProfilResponse remplacerPhoto(String userId, MultipartFile file) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        String newKey = photoService.storePhoto(userId, file);
+        photoService.deletePhotoQuietly(utilisateur.getPhotoUrl());
+        utilisateur.setPhotoUrl(newKey);
+        utilisateurRepository.save(utilisateur);
+        log.info("Photo de profil remplacée pour l'utilisateur {}", userId);
+        return toProfilResponse(utilisateur);
+    }
+
+    /**
+     * Supprime la photo de profil du stockage et de la base.
+     */
+    public ProfilResponse supprimerPhoto(String userId) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        photoService.deletePhotoQuietly(utilisateur.getPhotoUrl());
+        utilisateur.setPhotoUrl(null);
+        utilisateurRepository.save(utilisateur);
+        log.info("Photo de profil supprimée pour l'utilisateur {}", userId);
+        return toProfilResponse(utilisateur);
+    }
+
+    /**
      * Ajoute des pièces complémentaires (limite totale de 5, comme à l'inscription).
      */
     public ProfilResponse ajouterPieces(String userId, List<MultipartFile> files) {
@@ -285,6 +316,18 @@ public class ProfilService {
         return new FichierDto(StoragePort.displayName(key), taille);
     }
 
+    /**
+     * Construit l'URL publique (endpoint authentifié) de la photo d'un
+     * utilisateur, ou {@code null} s'il n'en a pas. La clé de stockage OOS
+     * n'est jamais exposée au front.
+     */
+    public static String urlPhoto(Utilisateur u) {
+        if (u.getPhotoUrl() == null || u.getPhotoUrl().isBlank()) {
+            return null;
+        }
+        return "/api/fichiers/utilisateurs/" + u.getId() + "/photo";
+    }
+
     private ProfilResponse toProfilResponse(Utilisateur u) {
         ProfilCandidat profil = profilCandidatRepository.findByUtilisateurId(u.getId()).orElse(null);
 
@@ -296,7 +339,7 @@ public class ProfilService {
             u.getEmail(),
             profil != null ? profil.getTelephone() : null
         );
-        response.setPhotoUrl(u.getPhotoUrl());
+        response.setPhotoUrl(urlPhoto(u));
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
         response.setNbCandidatures(u.getNbCandidatures() != null ? u.getNbCandidatures() : 0);
         response.setOrcid(profil != null ? profil.getOrcid() : null);

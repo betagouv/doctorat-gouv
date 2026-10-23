@@ -2,6 +2,7 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,6 +60,8 @@ class ProfilServiceTest {
     private InscriptionFileService inscriptionFileService;
     @Mock
     private BrevoEmailService emailService;
+    @Mock
+    private PhotoService photoService;
 
     @InjectMocks
     private ProfilService profilService;
@@ -207,6 +210,61 @@ class ProfilServiceTest {
         profilService.changerMotDePasse(USER_ID, nouvelleDemandeChangementMdp());
 
         verify(emailService, never()).sendTemplateEmail(anyString(), anyInt(), anyMap());
+    }
+
+    private MockMultipartFile jpegPhoto() {
+        byte[] jpeg = new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0, 0, 0, 0, 0, 0, 0};
+        return new MockMultipartFile("photo", "avatar.jpg", "image/jpeg", jpeg);
+    }
+
+    @Test
+    void remplacerPhoto_stockeNouvelleEtSupprimeAncienne() {
+        utilisateur.setPhotoUrl("photos/" + USER_ID + "/ancienne.jpg");
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(photoService.storePhoto(eq(USER_ID), any())).thenReturn("photos/" + USER_ID + "/nouvelle.jpg");
+
+        ProfilResponse response = profilService.remplacerPhoto(USER_ID, jpegPhoto());
+
+        verify(photoService).deletePhotoQuietly("photos/" + USER_ID + "/ancienne.jpg");
+        assertEquals("photos/" + USER_ID + "/nouvelle.jpg", utilisateur.getPhotoUrl());
+        // L'URL exposée au front est l'endpoint, jamais la clé
+        assertEquals("/api/fichiers/utilisateurs/" + USER_ID + "/photo", response.getPhotoUrl());
+    }
+
+    @Test
+    void remplacerPhoto_sansAnciennePhoto_neSupprimeRien() {
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(photoService.storePhoto(eq(USER_ID), any())).thenReturn("photos/" + USER_ID + "/nouvelle.jpg");
+
+        profilService.remplacerPhoto(USER_ID, jpegPhoto());
+
+        verify(photoService, never()).deletePhotoQuietly(anyString());
+    }
+
+    @Test
+    void supprimerPhoto_supprimeDuStockageEtDeLaBase() {
+        utilisateur.setPhotoUrl("photos/" + USER_ID + "/a.jpg");
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.save(any(Utilisateur.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        ProfilResponse response = profilService.supprimerPhoto(USER_ID);
+
+        verify(photoService).deletePhotoQuietly("photos/" + USER_ID + "/a.jpg");
+        assertNull(utilisateur.getPhotoUrl());
+        assertNull(response.getPhotoUrl());
+    }
+
+    @Test
+    void urlPhoto_retourneEndpointSiPhotoPresente() {
+        utilisateur.setPhotoUrl("photos/" + USER_ID + "/a.jpg");
+        assertEquals("/api/fichiers/utilisateurs/" + USER_ID + "/photo", ProfilService.urlPhoto(utilisateur));
+    }
+
+    @Test
+    void urlPhoto_retourneNullSiPasDePhoto() {
+        assertNull(ProfilService.urlPhoto(utilisateur));
     }
 }
 

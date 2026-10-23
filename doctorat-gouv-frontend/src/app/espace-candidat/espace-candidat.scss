@@ -21,6 +21,7 @@ $color-tab-inactive-bg: #F5F5F5;
 $color-border: #DDDDDD;
 $color-tag-bg: #F5F5F5;
 $color-focus-shadow: #E3E3FD;
+$color-error: #E10600;
 
 /* ======== Grille & espacement ======== */
 $sidebar-width: 260px;
@@ -111,6 +112,33 @@ $font-family: 'Marianne', arial, sans-serif;
   &:hover {
     opacity: 0.85;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ec-sidebar__photo-spinner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba($color-blue-france, 0.2);
+  border-top-color: $color-blue-france;
+  animation: ec-spin 0.7s linear infinite;
+}
+
+@keyframes ec-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ec-sidebar__photo-error {
+  font-size: 0.75rem;
+  color: $color-error;
+  margin: 0.25rem 0 0;
+  text-align: center;
 }
 
 .ec-sidebar__name {

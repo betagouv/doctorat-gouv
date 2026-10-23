@@ -303,7 +303,7 @@ public class PropositionTheseService {
             return directeur;
         }
         Utilisateur u = utilisateur.get();
-        directeur.setPhotoUrl(u.getPhotoUrl());
+        directeur.setPhotoUrl(ProfilService.urlPhoto(u));
         Optional<ProfilDirecteurThese> profil = profilDtRepository.findByUtilisateurId(u.getId());
         if (profil.isEmpty()) {
             return directeur;

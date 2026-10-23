@@ -32,10 +32,14 @@ export class EspaceCandidat implements OnInit {
   isSavingCv = false;
   isAddingPieces = false;
   pieceEnCoursSuppression: number | null = null;
+  isSavingPhoto = false;
+  photoError: string | null = null;
 
   private static readonly CV_MAX_SIZE = 1_048_576; // 1 Mo
   private static readonly PIECE_MAX_SIZE = 5_242_880; // 5 Mo
   private static readonly MAX_PIECES = 5;
+  private static readonly PHOTO_MAX_SIZE = 2_097_152; // 2 Mo
+  private static readonly PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -95,7 +99,11 @@ export class EspaceCandidat implements OnInit {
   }
 
   get photoUrl(): string {
-    return this.profil?.photoUrl ?? this.defaultAvatar;
+    const base = this.profil?.photoUrl;
+    if (!base) {
+      return this.defaultAvatar;
+    }
+    return base;
   }
 
   get candidaturesCount(): number {
@@ -412,7 +420,37 @@ export class EspaceCandidat implements OnInit {
   }
 
   onPhotoEdit(): void {
-    // TODO: open photo edit module
+    const input = document.getElementById('photo-input') as HTMLInputElement | null;
+    input?.click();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    if (!fichier) {
+      return;
+    }
+    if (!EspaceCandidat.PHOTO_TYPES.includes(fichier.type)) {
+      this.photoError = 'Seul un fichier JPEG, PNG ou WebP est accepté.';
+      return;
+    }
+    if (fichier.size > EspaceCandidat.PHOTO_MAX_SIZE) {
+      this.photoError = 'La taille du fichier est trop importante (2 Mo maximum).';
+      return;
+    }
+    this.isSavingPhoto = true;
+    this.photoError = null;
+    this.candidatService.remplacerPhoto(fichier).subscribe({
+      next: (data) => {
+        this.profil = data;
+        this.isSavingPhoto = false;
+      },
+      error: (err) => {
+        this.isSavingPhoto = false;
+        this.photoError = err.error?.message || 'Erreur lors de la mise à jour de la photo.';
+      }
+    });
   }
 
   onPhotoError(event: Event): void {
