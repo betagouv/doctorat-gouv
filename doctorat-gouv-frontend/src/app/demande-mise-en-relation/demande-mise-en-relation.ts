@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { DemandeMiseEnRelationContextService } from '../services/demande-mise-en-relation-context.service';
@@ -13,7 +13,8 @@ import { environment } from '../../environments/environment';
 	standalone: true,
 	imports: [
 		CommonModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+		RouterLink
 	],
 	templateUrl: './demande-mise-en-relation.html',
 	styleUrl: './demande-mise-en-relation.scss',
@@ -27,6 +28,9 @@ export class DemandeMiseEnRelation implements OnInit {
 	errorMessage: string | null = null;
 	brouillonSaved = false;
 	showFelicitations = false;
+	demandeEnvoyee = false;
+
+	@ViewChild('confirmationTitle') confirmationTitle?: ElementRef<HTMLElement>;
 
 	titreSujet: string = '';
 	idPropositionThese: number | null = null;
@@ -93,13 +97,23 @@ export class DemandeMiseEnRelation implements OnInit {
 				next: () => {
 					this.isSubmitting = false;
 					this.contextService.clear();
-					this.router.navigate(['/proposition'], { queryParams: { id: this.idPropositionThese } });
+					this.afficherConfirmation();
 				},
 				error: (err) => {
 					this.isSubmitting = false;
 					this.errorMessage = err.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
 				}
 			});
+	}
+
+	/**
+	 * Affiche l'écran de confirmation à la place du formulaire, met à jour
+	 * le titre de l'onglet et déplace le focus sur le titre (accessibilité).
+	 */
+	private afficherConfirmation(): void {
+		this.demandeEnvoyee = true;
+		this.titleService.setTitle('Demande envoyée — Doctorat.gouv.fr');
+		setTimeout(() => this.confirmationTitle?.nativeElement.focus());
 	}
 
 	saveBrouillon(): void {

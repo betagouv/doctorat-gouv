@@ -95,6 +95,67 @@
   line-height: 1.45;
 }
 
+/* --- Écran de confirmation après envoi --- */
+.confirmation {
+  padding: 2.5rem 1rem 2rem;
+  text-align: center;
+}
+
+.confirmation__icon {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+
+  svg {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.confirmation__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #161616;
+  margin: 0 0 0.75rem 0;
+
+  &:focus {
+    outline: 2px solid #000091;
+    outline-offset: 4px;
+  }
+}
+
+.confirmation__text {
+  font-size: 0.95rem;
+  color: #161616;
+  line-height: 1.5;
+  margin: 0 auto 1.5rem;
+  max-width: 34rem;
+}
+
+.confirmation__sujet {
+  background-color: #f5f5ff;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  margin: 0 auto 1.75rem;
+  max-width: 34rem;
+}
+
+.confirmation__sujet-titre {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #161616;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.confirmation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
 /* --- Titre section formulaire --- */
 .form-section-title {
   font-size: 1.5rem;

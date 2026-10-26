@@ -4,6 +4,8 @@
 
 		<div class="panel">
 
+		<ng-container *ngIf="!demandeEnvoyee">
+
 		<!-- Alerte + Sujet dans un même bloc -->
 		<div class="header-block">
 			<div class="alert-success-card" role="alert">
@@ -104,6 +106,43 @@
 				</div>
 
 			</form>
+
+		</ng-container>
+
+			<!-- Écran de confirmation après envoi -->
+			<ng-container *ngIf="demandeEnvoyee">
+				<div class="confirmation" role="status">
+					<span class="confirmation__icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="12" cy="12" r="11" stroke="#000091" stroke-width="1.5" fill="white"/>
+							<path d="M8 12.5L10.5 15L16 9.5" stroke="#000091" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+
+					<h2 class="confirmation__title" tabindex="-1" #confirmationTitle>
+						Votre demande a bien été envoyée
+					</h2>
+
+					<p class="confirmation__text">
+						La direction de thèse sera informée de votre intérêt. Vous pourrez suivre l'évolution de votre
+						demande et échanger avec elle depuis votre tableau de bord.
+					</p>
+
+					<div class="confirmation__sujet">
+						<p class="sujet-label">Sujet concerné</p>
+						<p class="confirmation__sujet-titre">{{ titreSujet }}</p>
+					</div>
+
+					<div class="confirmation__actions">
+						<a class="fr-btn fr-btn--primary" routerLink="/tableau-de-bord-candidat">
+							Voir mon tableau de bord
+						</a>
+						<a class="fr-btn fr-btn--secondary" routerLink="/">
+							Retour à l'accueil
+						</a>
+					</div>
+				</div>
+			</ng-container>
 
 		</div>
 
