@@ -35,6 +35,7 @@ import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
@@ -52,6 +53,8 @@ class ProfilServiceTest {
     private UtilisateurRepository utilisateurRepository;
     @Mock
     private ProfilCandidatRepository profilCandidatRepository;
+    @Mock
+    private DemandeMiseEnRelationRepository demandeRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -103,6 +106,17 @@ class ProfilServiceTest {
         assertEquals(1024L, response.getCv().getSize());
         assertEquals(1, response.getPieces().size());
         assertEquals("piece.pdf", response.getPieces().get(0).getFilename());
+    }
+
+    @Test
+    void getProfil_compteLesDemandesPlutotQueLeChampUtilisateur() {
+        utilisateur.setNbCandidatures(99); // champ hérité, jamais incrémenté côté back
+        when(utilisateurRepository.findById(USER_ID)).thenReturn(Optional.of(utilisateur));
+        when(demandeRepository.countByCandidatId(USER_ID)).thenReturn(3L);
+
+        ProfilResponse response = profilService.getProfil(USER_ID).orElseThrow();
+
+        assertEquals(3, response.getNbCandidatures());
     }
 
     @Test

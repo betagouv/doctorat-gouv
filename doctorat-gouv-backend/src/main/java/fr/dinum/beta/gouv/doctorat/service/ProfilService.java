@@ -20,6 +20,7 @@ import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
@@ -41,6 +42,7 @@ public class ProfilService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
+    private final DemandeMiseEnRelationRepository demandeRepository;
     private final PasswordEncoder passwordEncoder;
     private final StoragePort storage;
     private final InscriptionFileService inscriptionFileService;
@@ -49,6 +51,7 @@ public class ProfilService {
 
     public ProfilService(UtilisateurRepository utilisateurRepository,
                          ProfilCandidatRepository profilCandidatRepository,
+                         DemandeMiseEnRelationRepository demandeRepository,
                          PasswordEncoder passwordEncoder,
                          StoragePort storage,
                          InscriptionFileService inscriptionFileService,
@@ -56,6 +59,7 @@ public class ProfilService {
                          PhotoService photoService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilCandidatRepository = profilCandidatRepository;
+        this.demandeRepository = demandeRepository;
         this.passwordEncoder = passwordEncoder;
         this.storage = storage;
         this.inscriptionFileService = inscriptionFileService;
@@ -341,7 +345,9 @@ public class ProfilService {
         );
         response.setPhotoUrl(urlPhoto(u));
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
-        response.setNbCandidatures(u.getNbCandidatures() != null ? u.getNbCandidatures() : 0);
+        // Comptage calculé à la lecture : le champ Utilisateur.nbCandidatures
+        // n'était jamais incrémenté (toujours 0).
+        response.setNbCandidatures((int) demandeRepository.countByCandidatId(u.getId()));
         response.setOrcid(profil != null ? profil.getOrcid() : null);
         response.setEtablissement(profil != null ? profil.getEtablissement() : null);
         response.setLaboratoire(profil != null ? profil.getLaboratoire() : null);
