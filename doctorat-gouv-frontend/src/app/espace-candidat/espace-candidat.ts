@@ -104,8 +104,12 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     return this.photoObjectUrl ?? this.defaultAvatar;
   }
 
-  get candidaturesCount(): number {
+  get demandesCount(): number {
     return this.profil?.nbCandidatures ?? 0;
+  }
+
+  get demandesLabel(): string {
+    return this.demandesCount > 1 ? 'demandes' : 'demande';
   }
 
   get situationOptions(): SituationOption[] {
