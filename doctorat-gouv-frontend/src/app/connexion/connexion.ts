@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -30,12 +31,21 @@ export class Connexion implements OnInit {
    */
   readonly prcLoginUrl = `${environment.apiUrl}/prc/login?role=DIRECTEUR_THESE`;
 
+  /**
+   * Indique si le bouton PRC est visible : actif *et* prêt (client OIDC découvert).
+   */
+  prcDisponible = false;
+
+  /** Message d'erreur affiché si le backend indique que PRC n'est pas prêt. */
+  prcErreur = false;
+
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService,
     private titleService: Title,
     private metaService: Meta,
     private authService: AuthService,
+    private http: HttpClient, // AJOUTER HttpClient pour interroger /api/prc/statut
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -56,20 +66,14 @@ export class Connexion implements OnInit {
       : 'Connectez-vous à la plateforme nationale du doctorat via Projets Recherche Connect ou avec votre compte.';
     this.metaService.updateTag({ name: 'description', content: description });
 
-    if (this.authService.isLoggedIn()) {
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-      if (returnUrl) {
-        this.router.navigateByUrl(returnUrl);
-        return;
-      }
+    // Retour d'authentification PRC en échec (SecurityConfig renvoie vers /connexion?erreur=prc)
+    this.prcErreur = this.route.snapshot.queryParams['erreur'] === 'prc';
 
-      const user = this.authService.currentUser();
-      if (user?.role === 'DIRECTEUR_THESE') {
-        this.router.navigate(['/tableau-de-bord-directeur-these']);
-      } else {
-        this.router.navigate(['/tableau-de-bord-candidat']);
-      }
-    }
+    // PRC est optionnel : on n'affiche le bouton que si le backend confirme à la fois actif *et* prêt.
+    this.http.get<{ actif: boolean, ready: boolean }>(`${environment.apiUrl}/prc/statut`).subscribe({
+      next: (statut) => this.prcDisponible = statut.actif && statut.ready,
+      error: () => this.prcDisponible = false
+    });
   }
 
   togglePassword(): void {

@@ -20,14 +20,17 @@
     <div class="fr-col-12 fr-col-lg-6 login-column">
       <div class="login-card">
 
-        <!-- 2.1 Section "Connectez-vous" -->
+        <!-- 2.1 Section "Connectez-vous" (affiché seulement si PRC est prêt) -->
         <h2 class="fr-text--bold fr-text--lg fr-mb-2w">{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
         <p class="fr-text--sm fr-mb-3w">
           {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
         </p>
+
+        <!-- Bouton PRC toujours visible, grisé si non prêt -->
         <a [href]="prcLoginUrl"
-           class="login-sso-btn"
-           [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate">
+           [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate"
+           [class.prc-disabled]="!prcDisponible"
+           class="login-sso-btn">
           <span class="sso-icon fr-icon-external-link-line" aria-hidden="true"></span>
           <span class="sso-text">
             <span class="sso-text-line1">{{ 'CONNEXION.PRC_BUTTON_LINE1' | translate }}</span>
@@ -38,14 +41,7 @@
           <a href="https://info.projetsrechercheconnect.fr/" class="fr-link fr-text--sm" target="_blank" rel="noopener">{{ 'CONNEXION.PRC_HELP' | translate }}</a>
         </p>
 
-        <!-- Séparateur "ou" -->
-        <div class="separator-ou fr-mt-3w fr-mb-3w">
-          <hr class="fr-hr">
-          <span class="fr-text--sm fr-text--italic">{{ 'CONNEXION.SEPARATOR_OU' | translate }}</span>
-          <hr class="fr-hr">
-        </div>
-
-        <!-- 2.2 Section "Connectez-vous manuellement" -->
+        <!-- 2.2 Section "Connectez-vous manuellement" (toujours affiché si bouton masqué) -->
         <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'CONNEXION.MANUAL_TITLE' | translate }}</h3>
         <p class="fr-text--sm fr-mb-2w">{{ 'CONNEXION.REQUIRED_FIELDS_NOTE' | translate }}</p>
 

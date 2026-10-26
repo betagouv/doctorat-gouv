@@ -1,11 +1,13 @@
 package fr.dinum.beta.gouv.doctorat;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import fr.dinum.beta.gouv.doctorat.config.PrcProperties;
 import fr.dinum.beta.gouv.doctorat.security.ApiKeyFilter;
 import fr.dinum.beta.gouv.doctorat.security.JwtAuthenticationFilter;
 
@@ -15,9 +17,14 @@ public class SecurityConfig {
     private final ApiKeyFilter apiKeyFilter;
     private final JwtAuthenticationFilter jwtFilter;
 
-    public SecurityConfig(ApiKeyFilter apiKeyFilter, JwtAuthenticationFilter jwtFilter) {
+    /** PRC est optionnel : injecté en ObjectProvider pour ne pas casser les contextes de test. */
+    private final ObjectProvider<PrcProperties> prcProperties;
+
+    public SecurityConfig(ApiKeyFilter apiKeyFilter, JwtAuthenticationFilter jwtFilter,
+                          ObjectProvider<PrcProperties> prcProperties) {
         this.apiKeyFilter = apiKeyFilter;
         this.jwtFilter = jwtFilter;
+        this.prcProperties = prcProperties;
     }
 
     @Bean
@@ -36,6 +43,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/inscription").permitAll()
                 .requestMatchers("/api/inscription/complet").permitAll()
                 .requestMatchers("/api/connexion").permitAll()
+                // PRC : point d'entrée du parcours SSO et statut (pour masquer le bouton)
+                .requestMatchers("/api/prc/login").permitAll()
+                .requestMatchers("/api/prc/statut").permitAll()
                 .requestMatchers("/sitemap.xml").permitAll()
 
                 // API protégées (JWT requis)
@@ -79,6 +89,16 @@ public class SecurityConfig {
             	        )
             	    )
             	);
+
+        // PRC optionnel : on ne branche le flux OAuth2 que s'il est réellement configuré.
+        // Sinon aucun ClientRegistrationRepository n'existe et .oauth2Login() échouerait.
+        PrcProperties prc = prcProperties.getIfAvailable();
+        if (prc != null && prc.isActive()) {
+            http.oauth2Login(oauth2 -> oauth2
+                    // URL de retour enregistrée chez PRC (voir PrcOAuth2Config.REDIRECT_URI)
+                    .loginProcessingUrl("/login/oauth2/code/prc")
+                    .failureUrl("/connexion?erreur=prc"));
+        }
 
         return http.build();
     }
