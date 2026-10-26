@@ -83,7 +83,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Espace candidat — Doctorat.gouv.fr');
+    this.titleService.setTitle('Espace demandeur — Doctorat.gouv.fr');
     this.loadProfil();
     this.loadNotifications();
   }

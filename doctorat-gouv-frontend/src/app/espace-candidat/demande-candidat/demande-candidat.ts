@@ -54,7 +54,7 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle('Demande de mise en relation — Espace candidat — Doctorat.gouv.fr');
+    this.titleService.setTitle('Demande de mise en relation — Espace demandeur — Doctorat.gouv.fr');
     // L'id ne transite pas dans l'URL : contexte en priorité, ?id= en repli (anciens liens).
     const contextId = this.demandeCandidatContext.getDemandeId();
     const idParam = this.route.snapshot.queryParamMap.get('id');

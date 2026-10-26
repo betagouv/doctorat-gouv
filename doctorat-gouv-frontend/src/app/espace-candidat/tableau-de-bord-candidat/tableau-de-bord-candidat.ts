@@ -38,7 +38,7 @@ export class TableauDeBordCandidat implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle('Tableau de bord — Espace candidat — Doctorat.gouv.fr');
+    this.titleService.setTitle('Tableau de bord — Espace demandeur — Doctorat.gouv.fr');
     this.loadPrenom();
     this.loadDemandes();
   }

@@ -1,6 +1,6 @@
 {
   "ESPACE_CANDIDAT": {
-    "TITLE": "Espace candidat",
+    "TITLE": "Espace demandeur",
     "WELCOME": "Bienvenue, {{prenom}} {{nom}}.",
     "INTRO": "Bienvenue dans votre espace personnel. Le tableau de bord sera disponible prochainement.",
     "PROFIL_TITLE": "Mon profil",

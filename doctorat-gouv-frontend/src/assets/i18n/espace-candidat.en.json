@@ -1,6 +1,6 @@
 {
   "ESPACE_CANDIDAT": {
-    "TITLE": "Candidate space",
+    "TITLE": "Applicant space",
     "WELCOME": "Welcome, {{prenom}} {{nom}}.",
     "INTRO": "Welcome to your personal space. The dashboard will be available soon.",
     "PROFIL_TITLE": "My profile",
