@@ -5,6 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-connexion',
@@ -19,6 +20,15 @@ export class Connexion implements OnInit {
   showPassword = false;
   globalError: string | null = null;
   isSubmitting = false;
+
+  /**
+   * URL de redirection vers le backend pour l'authentification via
+   * Projets Recherche Connect (OIDC). C'est une redirection navigateur
+   * (jamais un appel HttpClient) : le backend enregistre le rôle en session
+   * puis renvoie vers la mire PRC.
+   * Phase 1 : PRC cible les directeurs de thèse → rôle imposé DIRECTEUR_THESE.
+   */
+  readonly prcLoginUrl = `${environment.apiUrl}/prc/login?role=DIRECTEUR_THESE`;
 
   constructor(
     private fb: FormBuilder,
@@ -42,8 +52,8 @@ export class Connexion implements OnInit {
     this.titleService.setTitle(titre);
 
     const description = this.translate.currentLang === 'en'
-      ? 'Log in to the national PhD platform with FranceConnect or your account.'
-      : 'Connectez-vous à la plateforme nationale du doctorat via FranceConnect ou avec votre compte.';
+      ? 'Log in to the national PhD platform with Projets Recherche Connect or your account.'
+      : 'Connectez-vous à la plateforme nationale du doctorat via Projets Recherche Connect ou avec votre compte.';
     this.metaService.updateTag({ name: 'description', content: description });
 
     if (this.authService.isLoggedIn()) {
@@ -104,6 +114,8 @@ export class Connexion implements OnInit {
         this.isSubmitting = false;
         if (err.status === 401 || err.status === 400) {
           this.globalError = 'Email ou mot de passe incorrect';
+        } else if (err.status === 503) {
+          this.globalError = 'Projets Recherche Connect n\'est pas activé sur cet environnement. Veuillez utiliser le formulaire ci-dessous.';
         } else {
           this.globalError = 'Service temporairement indisponible. Veuillez réessayer.';
         }

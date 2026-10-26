@@ -23,18 +23,19 @@
         <!-- 2.1 Section "Connectez-vous" -->
         <h2 class="fr-text--bold fr-text--lg fr-mb-2w">{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
         <p class="fr-text--sm fr-mb-3w">
-          {{ 'CONNEXION.FC_DESCRIPTION' | translate }}
+          {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
         </p>
-        <a href="#"
-           class="login-fc-btn">
-          <img src="assets/images/franceconnect-logo.svg" alt="" class="fc-logo" aria-hidden="true">
-          <span class="fc-text">
-            <span class="fc-text-line1">{{ 'CONNEXION.FC_BUTTON_LINE1' | translate }}</span>
-            <span class="fc-text-line2">{{ 'CONNEXION.FC_BUTTON_LINE2' | translate }}</span>
+        <a [href]="prcLoginUrl"
+           class="login-sso-btn"
+           [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate">
+          <span class="sso-icon fr-icon-external-link-line" aria-hidden="true"></span>
+          <span class="sso-text">
+            <span class="sso-text-line1">{{ 'CONNEXION.PRC_BUTTON_LINE1' | translate }}</span>
+            <span class="sso-text-line2">{{ 'CONNEXION.PRC_BUTTON_LINE2' | translate }}</span>
           </span>
         </a>
         <p class="fr-mt-1w">
-          <a href="#" class="fr-link fr-text--sm" target="_blank" rel="noopener">{{ 'CONNEXION.FC_HELP' | translate }}</a>
+          <a href="https://info.projetsrechercheconnect.fr/" class="fr-link fr-text--sm" target="_blank" rel="noopener">{{ 'CONNEXION.PRC_HELP' | translate }}</a>
         </p>
 
         <!-- Séparateur "ou" -->

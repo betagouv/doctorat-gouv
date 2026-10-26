@@ -61,7 +61,7 @@
   flex: 1;
 }
 
-.login-fc-btn {
+.login-sso-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -82,31 +82,39 @@
   margin-right: auto;
 }
 
-.login-fc-btn:hover {
+.login-sso-btn:hover {
   background-color: #12127a;
   color: #FFFFFF;
 }
 
-.fc-logo {
-  height: 40px;
-  width: 40px;
+/* Icône DSFR : hérite de la couleur du bouton (currentColor).
+   --icon-size doit être redéclaré sur ::before : la règle DSFR le pose
+   sur le pseudo-élément, ce qui masque la valeur héritée du parent. */
+.sso-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.fc-text {
+.sso-icon::before {
+  --icon-size: 2rem;
+}
+
+.sso-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   line-height: 1.2;
 }
 
-.fc-text-line1 {
+.sso-text-line1 {
   color: #FFFFFF;
   font-weight: 400;
   font-size: 16px;
 }
 
-.fc-text-line2 {
+.sso-text-line2 {
   color: #FFFFFF;
   font-weight: 700;
   font-size: 16px;
