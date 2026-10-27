@@ -71,6 +71,16 @@ public class Utilisateur {
     @Column(name = "france_connect_id", length = 255)
     private String franceConnectId;
 
+    // --- Liaison Projets Recherche Connect (PRC) ---
+
+    /** Identifiant technique PRC (claim {@code sub} de l'id_token). Clé d'unicité du compte SSO. */
+    @Column(name = "prc_sub", length = 255, unique = true)
+    private String prcSub;
+
+    /** Identifiant référentiel ANR (claim {@code personId} de PRC). */
+    @Column(name = "prc_person_id", length = 50)
+    private String prcPersonId;
+
     // --- Coordonnées d'inscription (profil candidat) ---
 
     @Enumerated(EnumType.STRING)
@@ -184,6 +194,22 @@ public class Utilisateur {
 
     public void setFranceConnectId(String franceConnectId) {
         this.franceConnectId = franceConnectId;
+    }
+
+    public String getPrcSub() {
+        return prcSub;
+    }
+
+    public void setPrcSub(String prcSub) {
+        this.prcSub = prcSub;
+    }
+
+    public String getPrcPersonId() {
+        return prcPersonId;
+    }
+
+    public void setPrcPersonId(String prcPersonId) {
+        this.prcPersonId = prcPersonId;
     }
 
     public DemarcheType getDemarche() {
