@@ -265,6 +265,15 @@ export class EspaceDirecteurThese implements OnInit {
     this.errorMessage = null;
   }
 
+  /**
+   * Depuis la vue lecture : ouvre l'édition et ajoute immédiatement un axe vierge,
+   * pour que l'intention « ajouter un axe » soit explicite sans passer par « Modifier ».
+   */
+  startEditAxesAndAdd(): void {
+    this.startEditAxes();
+    this.addAxe();
+  }
+
   cancelEditAxes(): void {
     this.isEditingAxes = false;
     this.errorMessage = null;
