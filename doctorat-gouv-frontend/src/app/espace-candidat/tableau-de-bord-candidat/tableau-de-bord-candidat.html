@@ -204,6 +204,13 @@
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                          (click)="desarchiver(item, $event)"
+                          [disabled]="desarchivageEnCours.has(item.id)">
+                    <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">
@@ -238,6 +245,13 @@
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                          (click)="desarchiver(item, $event)"
+                          [disabled]="desarchivageEnCours.has(item.id)">
+                    <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">
@@ -272,6 +286,13 @@
               <div class="tdb-card__badges">
                 <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
                 <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <div class="tdb-card__actions">
+                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                          (click)="desarchiver(item, $event)"
+                          [disabled]="desarchivageEnCours.has(item.id)">
+                    <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                  </button>
+                </div>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">

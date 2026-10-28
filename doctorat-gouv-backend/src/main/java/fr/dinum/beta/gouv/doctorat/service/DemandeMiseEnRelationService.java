@@ -185,6 +185,29 @@ public class DemandeMiseEnRelationService {
     }
 
     /**
+     * Désarchive une demande du candidat : elle réapparaît dans le fil « En cours »
+     * du tableau de bord (brouillon, en attente ou mise en relation).
+     *
+     * <p>Une demande <strong>désistée</strong> ne peut pas être réactivée : seul
+     * l'annulation de désistement (outil hors production) la remet en état.</p>
+     */
+    public DemandeMiseEnRelation desarchiverDemande(String userId, long demandeId) {
+        DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        if (!Boolean.TRUE.equals(demande.getArchivee())) {
+            throw new IllegalStateException("Cette demande n'est pas archivée");
+        }
+        if (demande.getDateDesistement() != null) {
+            throw new IllegalStateException("Une demande désistée ne peut pas être réactivée");
+        }
+        demande.setArchivee(Boolean.FALSE);
+        demande.setUpdatedAt(LocalDateTime.now());
+        DemandeMiseEnRelation saved = demandeRepository.save(demande);
+        log.info("Demande désarchivée (id={}) pour candidat {}", saved.getId(), userId);
+        return saved;
+    }
+
+    /**
      * Désistement (« Je ne suis plus intéressé ») : la demande acceptée est
      * archivée (affichée en MISES EN RELATION des archives) avec date et motif,
      * et les deux parties sont notifiées (templates Brevo, bouchonnés hors production).

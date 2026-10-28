@@ -28,6 +28,7 @@ export class TableauDeBordCandidat implements OnInit {
   archivesEnAttente: MiseEnRelationDto[] = [];
   archivesMisesEnRelation: MiseEnRelationDto[] = [];
   archivageEnCours = new Set<number>();
+  desarchivageEnCours = new Set<number>();
 
   private allItems: TableauDeBordCandidatItemBackend[] = [];
 
@@ -144,6 +145,30 @@ export class TableauDeBordCandidat implements OnInit {
       error: () => {
         this.archivageEnCours.delete(item.id);
         this.errorMessage = "Erreur lors de l'archivage de la demande.";
+      },
+    });
+  }
+
+  desarchiver(item: MiseEnRelationDto, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (this.desarchivageEnCours.has(item.id)) {
+      return;
+    }
+    this.desarchivageEnCours.add(item.id);
+    this.errorMessage = null;
+    this.candidatService.desarchiverDemande(item.id).subscribe({
+      next: () => {
+        this.desarchivageEnCours.delete(item.id);
+        const backendItem = this.allItems.find(i => i.id === item.id);
+        if (backendItem) {
+          backendItem.archivee = false;
+        }
+        this.reorganiser();
+      },
+      error: () => {
+        this.desarchivageEnCours.delete(item.id);
+        this.errorMessage = "Erreur lors du désarchivage de la demande.";
       },
     });
   }

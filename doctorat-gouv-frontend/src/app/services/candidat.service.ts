@@ -82,6 +82,10 @@ export class CandidatService {
     return this.http.post<void>(`${this.apiUrl}/demande-mise-en-relation/${demandeId}/archiver`, {});
   }
 
+  desarchiverDemande(demandeId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/demande-mise-en-relation/${demandeId}/desarchiver`, {});
+  }
+
   getDemandeDetail(demandeId: number): Observable<DemandeCandidat> {
     return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/detail`, { demandeId });
   }

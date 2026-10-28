@@ -119,6 +119,26 @@ public class DemandeMiseEnRelationController {
         }
     }
 
+    @PostMapping("/{id}/desarchiver")
+    public ResponseEntity<DemandeMiseEnRelationResponse> desarchiverDemande(
+            @PathVariable("id") long id) {
+
+        String userId = getCurrentUserId();
+        log.info("Désarchivage demande {} pour candidat {}", id, userId);
+
+        try {
+            DemandeMiseEnRelation demande = service.desarchiverDemande(userId, id);
+            DemandeMiseEnRelationResponse response = new DemandeMiseEnRelationResponse(
+                    "Demande désarchivée", true);
+            response.setId(demande.getId());
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<DemandeMiseEnRelationResponse> envoyerDemande(
             @RequestBody DemandeMiseEnRelationRequest request) {
