@@ -25,12 +25,16 @@ import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.MessageEchangeRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
+import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
 @Service
 public class DemandeMiseEnRelationService {
 
     private static final Logger log = LoggerFactory.getLogger(DemandeMiseEnRelationService.class);
+
+    /** Template Brevo de notification du désistement au directeur de thèse. */
+    private static final int BREVO_TEMPLATE_DESISTEMENT = 70;
 
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
@@ -42,6 +46,7 @@ public class DemandeMiseEnRelationService {
     private final UtilisateurRepository utilisateurRepository;
     private final DemandeMiseEnRelationRepository demandeRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
+    private final ProfilDirecteurTheseRepository profilDtRepository;
     private final MessageEchangeRepository messageRepository;
     private final BrevoEmailService emailService;
 
@@ -50,12 +55,14 @@ public class DemandeMiseEnRelationService {
             UtilisateurRepository utilisateurRepository,
             DemandeMiseEnRelationRepository demandeRepository,
             ProfilCandidatRepository profilCandidatRepository,
+            ProfilDirecteurTheseRepository profilDtRepository,
             MessageEchangeRepository messageRepository,
             BrevoEmailService emailService) {
         this.propositionTheseService = propositionTheseService;
         this.utilisateurRepository = utilisateurRepository;
         this.demandeRepository = demandeRepository;
         this.profilCandidatRepository = profilCandidatRepository;
+        this.profilDtRepository = profilDtRepository;
         this.messageRepository = messageRepository;
         this.emailService = emailService;
     }
@@ -210,7 +217,7 @@ public class DemandeMiseEnRelationService {
     /**
      * Désistement (« Je ne suis plus intéressé ») : la demande acceptée est
      * archivée (affichée en MISES EN RELATION des archives) avec date et motif,
-     * et les deux parties sont notifiées (templates Brevo, bouchonnés hors production).
+     * et le directeur de thèse est notifié (template Brevo 70, bouchonné hors production).
      */
     public DemandeMiseEnRelation seDesister(String userId, Long demandeId, String motif) {
         DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
@@ -259,10 +266,79 @@ public class DemandeMiseEnRelationService {
         return getDemandeDetailCandidat(userId, demandeId);
     }
 
-    // TODO(desistement): notifier le DT et le candidat (templates Brevo en attente).
-    // Bouchon : aucun mail envoyé pour l'instant.
+    /**
+     * Notification du directeur de thèse du désistement du candidat
+     * (template Brevo 70 : civilité et nom du DT, nom du candidat, titre du sujet
+     * et motif du désistement). Hors production, le destinataire réel est remplacé
+     * par MAIL_STUB_MAILBOX (même principe que les mails 31/32).
+     * L'échec d'envoi ne bloque jamais le désistement.
+     */
     private void envoyerMailsDesistement(String userId, DemandeMiseEnRelation demande) {
-        log.info("Bouchon : mails de désistement non envoyés pour la demande {}", demande.getId());
+        try {
+            PropositionTheseDto these = propositionTheseService.findById(demande.getPropositionTheseId());
+            Utilisateur candidat = utilisateurRepository.findById(userId).orElse(null);
+            if (candidat == null) {
+                log.warn("Candidat {} introuvable : mail de désistement non envoyé pour la demande {}",
+                    userId, demande.getId());
+                return;
+            }
+
+            String destinataire = these.getDirectionTheseEmail();
+            String civilite = "";
+            String nomDirecteur = "";
+            if (destinataire != null && !destinataire.isBlank()) {
+                Optional<Utilisateur> directeur =
+                    utilisateurRepository.findByEmailIgnoreCaseAndTrim(destinataire.trim());
+                if (directeur.isPresent()) {
+                    Utilisateur dt = directeur.get();
+                    nomDirecteur = nomComplet(dt);
+                    civilite = profilDtRepository.findByUtilisateurId(dt.getId())
+                        .map(p -> p.getCivilite() != null ? p.getCivilite().trim() : "")
+                        .orElse("");
+                }
+            }
+            if (nomDirecteur.isEmpty()) {
+                // Repli sur les données ADUM / AMETHIS de la proposition de thèse.
+                String encadrant = buildEncadrantNom(these);
+                nomDirecteur = "—".equals(encadrant) ? "" : encadrant;
+            }
+
+            if (!mailEnabled) {
+                if (stubMailbox == null || stubMailbox.isBlank()) {
+                    log.warn("Mode DEV : mail de désistement non envoyé (boîte bouchon non configurée) pour la demande {}",
+                        demande.getId());
+                    return;
+                }
+                destinataire = stubMailbox.trim();
+                log.info("Mode DEV : mail de désistement de la demande {} bouchonné vers {}",
+                    demande.getId(), destinataire);
+            }
+
+            if (!isValidEmail(destinataire)) {
+                log.warn("Email du directeur de thèse invalide ou absent pour la demande {}", demande.getId());
+                return;
+            }
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("civilite", civilite);
+            params.put("nom", nomDirecteur);
+            params.put("nom_candidat", nomComplet(candidat));
+            params.put("titre_sujet", these.getTheseTitre() != null ? these.getTheseTitre() : "");
+            params.put("motif_desistement",
+                demande.getMotifDesistement() != null ? demande.getMotifDesistement() : "");
+
+            emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_DESISTEMENT, params);
+            log.info("Mail de désistement envoyé au directeur de thèse {} pour la demande {}",
+                destinataire, demande.getId());
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail de désistement pour la demande {}", demande.getId(), e);
+        }
+    }
+
+    private String nomComplet(Utilisateur utilisateur) {
+        String prenom = utilisateur.getPrenom() != null ? utilisateur.getPrenom().trim() : "";
+        String nom = utilisateur.getNom() != null ? utilisateur.getNom().trim() : "";
+        return (prenom + " " + nom).trim();
     }
 
     private String buildEncadrantNom(PropositionTheseDto these) {
