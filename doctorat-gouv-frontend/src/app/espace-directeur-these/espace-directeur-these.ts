@@ -49,6 +49,8 @@ export class EspaceDirecteurThese implements OnInit {
 
   descriptionAxes = '';
   axes: AxeDeRecherche[] = [];
+  /** Mode « ajouter un axe » : seuls les axes marqués `nouveau` restent éditables. */
+  modeAjoutAxe = false;
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -261,6 +263,7 @@ export class EspaceDirecteurThese implements OnInit {
       this.axesForm.patchValue({ descriptionAxes: this.descriptionAxes });
     }
     this.isEditingAxes = true;
+    this.modeAjoutAxe = false;
     this.successMessage = null;
     this.errorMessage = null;
   }
@@ -268,14 +271,22 @@ export class EspaceDirecteurThese implements OnInit {
   /**
    * Depuis la vue lecture : ouvre l'édition et ajoute immédiatement un axe vierge,
    * pour que l'intention « ajouter un axe » soit explicite sans passer par « Modifier ».
+   * Seul cet axe est éditables : les axes existants restent en lecture seule.
    */
   startEditAxesAndAdd(): void {
     this.startEditAxes();
+    this.modeAjoutAxe = true;
     this.addAxe();
+  }
+
+  /** Un axe est éditable en mode modification, ou s'il vient d'être ajouté. */
+  estModifiable(axe: AxeDeRecherche): boolean {
+    return !this.modeAjoutAxe || axe.nouveau === true;
   }
 
   cancelEditAxes(): void {
     this.isEditingAxes = false;
+    this.modeAjoutAxe = false;
     this.errorMessage = null;
     if (this.profil) {
       this.descriptionAxes = this.profil.descriptionAxes ?? '';
@@ -328,6 +339,7 @@ export class EspaceDirecteurThese implements OnInit {
         this.axes = data.axes ? data.axes.map(a => ({...a})) : [];
         this.axesForm.patchValue({ descriptionAxes: this.descriptionAxes });
         this.isEditingAxes = false;
+        this.modeAjoutAxe = false;
         this.isSavingAxes = false;
         this.successMessage = 'Axes de recherche mis à jour avec succès.';
       },
@@ -339,7 +351,7 @@ export class EspaceDirecteurThese implements OnInit {
   }
 
   addAxe(): void {
-    this.axes.push({ titre: '', precisions: '', contactable: false, externalId: this.newAxeExternalId() });
+    this.axes.push({ titre: '', precisions: '', contactable: false, externalId: this.newAxeExternalId(), nouveau: true });
   }
 
   removeAxe(index: number): void {

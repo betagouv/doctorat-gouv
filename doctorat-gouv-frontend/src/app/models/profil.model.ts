@@ -138,6 +138,11 @@ export interface AxeDeRecherche {
   contactable: boolean;
   /** Identifiant stable de l'axe (génère 1 offre d'accompagnement par axe contactable). */
   externalId: string | null;
+  /**
+   * Axe ajouté dans la session courante (interface uniquement) : en mode « ajouter »,
+   * seuls les axes marqués sont éditables. Jamais envoyé au back (payload mappé champ par champ).
+   */
+  nouveau?: boolean;
 }
 
 /** Un sujet de thèse rattaché au directeur de thèse. */

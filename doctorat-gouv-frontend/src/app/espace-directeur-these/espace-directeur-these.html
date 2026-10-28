@@ -501,13 +501,13 @@
                   <div class="ed-axe-card__header">
                     <span class="ed-axe-card__number">{{ (i + 1) | number:'2.0-0' }}</span>
                     <span class="ed-axe-card__title-label">Axe de recherche n°{{ i + 1 }}</span>
-                    <div class="ed-axe-card__header-actions">
+                    <div class="ed-axe-card__header-actions" *ngIf="estModifiable(axe)">
                       <button type="button" class="ed-icon-btn" (click)="removeAxe(i)" aria-label="Supprimer cet axe">
                         <span class="fr-icon-delete-line" aria-hidden="true"></span>
                       </button>
                     </div>
                   </div>
-                  <div class="ed-axe-card__body">
+                  <div class="ed-axe-card__body" *ngIf="estModifiable(axe); else axeLectureSeule">
                     <div class="fr-input-group fr-mb-3w">
                       <label class="fr-label" for="axe-titre-{{ i }}">Titre <span class="required-star">*</span></label>
                       <input class="fr-input" id="axe-titre-{{ i }}" type="text" [(ngModel)]="axe.titre"
@@ -537,6 +537,26 @@
                       </p>
                     </div>
                   </div>
+
+                  <!-- Axes existants en mode « ajouter » : affichés en lecture seule -->
+                  <ng-template #axeLectureSeule>
+                    <div class="ed-axe-card__body">
+                      <div class="ed-axe-field fr-mb-2w">
+                        <span class="ed-axe-field__label">Titre</span>
+                        <p class="ed-axe-field__value">{{ axe.titre || '—' }}</p>
+                      </div>
+                      <div class="ed-axe-field fr-mb-2w">
+                        <span class="ed-axe-field__label">Précisions</span>
+                        <p class="ed-axe-field__value">{{ axe.precisions || '—' }}</p>
+                      </div>
+                      <div class="ed-axe-field">
+                        <span class="ed-axe-field__label">Vous pouvez me contacter à propos d'un projet doctoral dans ce domaine</span>
+                        <span class="fr-badge fr-badge--sm" [class.fr-badge--success]="axe.contactable">
+                          {{ axe.contactable ? 'Oui' : 'Non' }}
+                        </span>
+                      </div>
+                    </div>
+                  </ng-template>
                 </div>
 
                 <button type="button" class="ed-axes__add-btn fr-mt-2w" (click)="addAxe()">
