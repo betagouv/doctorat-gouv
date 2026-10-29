@@ -8,7 +8,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.ResolvableType;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 
 /**
@@ -62,6 +65,25 @@ class PrcOAuth2ConfigTest {
                 "Spring doit trouver EXACTEMENT UN JwtDecoderFactory<ClientRegistration> : "
                         + "0 (ou plusieurs) et il valide en RS256 par defaut, donc rejette "
                         + "l'id_token PRC signe en PS256");
+    }
+
+    /**
+     * Le service OIDC qui n'appelle pas {@code /userinfo} doit lui aussi etre <strong>unique</strong> :
+     * {@code OAuth2LoginConfigurer} cherche un bean {@code OAuth2UserService<OidcUserRequest, OidcUser>}
+     * via {@code getIfUnique()} et retombe silencieusement sur le service par defaut (celui qui
+     * plante sur le {@code Content-Type: application/jwt} de PRC) s'il n'en trouve pas.
+     */
+    @Test
+    void prc_actif_le_service_oidc_sans_userinfo_est_unique() {
+        AtomicReference<Integer> compte = new AtomicReference<>();
+        ResolvableType type = ResolvableType.forClassWithGenerics(
+                OAuth2UserService.class, OidcUserRequest.class, OidcUser.class);
+
+        runner.withPropertyValues("prc.issuer-uri=http://localhost:9999")
+                .run(context -> compte.set(context.getBeanNamesForType(type).length));
+
+        assertEquals(1, compte.get(),
+                "Spring doit trouver UN SEUL OAuth2UserService<OidcUserRequest, OidcUser>");
     }
 
     @Test

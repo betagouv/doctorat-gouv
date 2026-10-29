@@ -1,5 +1,6 @@
 package fr.dinum.beta.gouv.doctorat.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -8,9 +9,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
@@ -128,6 +133,42 @@ public class PrcOAuth2Config {
 						clientRegistration.getProviderDetails().getIssuerUri())));
 
 		return factory;
+	}
+
+	/**
+	 * Service OIDC qui <strong>n'appelle pas le endpoint {@code /userinfo}</strong>.
+	 *
+	 * <p><strong>Pourquoi ?</strong> PRC renvoie {@code Content-Type: application/jwt}
+	 * alors que nous demandons explicitement {@code Accept: application/json}
+	 * ({@code OAuth2UserRequestEntityConverter}). Spring leve alors :</p>
+	 *
+	 * <pre>
+	 * [invalid_user_info_response] response contains invalid content type
+	 * 'application/jwt;charset=UTF-8'
+	 * </pre>
+	 *
+	 * <p>C'est une deviation a <strong>OIDC Core 1.0 §5.2</strong> (« MUST return a
+	 * Content-Type of application/json ») — et a la propre documentation de PRC, qui
+	 * annonce un objet JSON. Question posee a leur equipe.</p>
+	 *
+	 * <p><strong>On ne lit donc que l'{@code id_token}</strong>, dont les claims sont
+	 * eux aussi signes par PRC et valides (signature + iss + aud). Si un claim manque
+	 * ({@code principalEmail}, {@code state}, {@code type}...), {@link
+	 * fr.dinum.beta.gouv.doctorat.service.PrcAccountService} logue
+	 * « Claims PRC recus » puis refuse proprement : on verra alors quoi que manque.</p>
+	 *
+	 * <p>🔒 <strong>Échapatoire</strong> : si PRC corrige son {@code /userinfo} en JSON,
+	 * activer sans redeployer le code :
+	 * {@code PRC_USERINFO_ENABLED=true} (voir {@code prc.userinfo.enabled}).</p>
+	 */
+	@Bean
+	public OAuth2UserService<OidcUserRequest, OidcUser> prcOidcUserService(
+			@Value("${prc.userinfo.enabled:false}") boolean userInfoActive) {
+
+		OidcUserService service = new OidcUserService();
+		// false = ignorer /userinfo (reponse non conforme). true = comportement standard.
+		service.setRetrieveUserInfo(request -> userInfoActive);
+		return service;
 	}
 
 	/**
