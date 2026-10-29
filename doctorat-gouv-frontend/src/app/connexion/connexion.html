@@ -33,8 +33,11 @@
           {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
         </p>
 
-        <!-- Bouton PRC toujours visible, grisé si non prêt -->
-        <a [href]="prcLoginUrl"
+        <!-- Bouton PRC : toujours visible, grisÉ si non prêt.
+             href retirÉ quand indisponible : le pointer-events CSS
+             ne bloque pas la navigation clavier (EntrÉe). -->
+        <a [attr.href]="prcDisponible ? prcLoginUrl : null"
+           [attr.aria-disabled]="!prcDisponible"
            [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate"
            [class.prc-disabled]="!prcDisponible"
            class="login-sso-btn">

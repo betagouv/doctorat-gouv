@@ -1,3 +1,7 @@
+/* Bouton PRC (login-sso-btn, sso-icon, sso-text, prc-disabled)
+   partagé avec la connexion : voir shared/sso-bouton.scss */
+@use '../../shared/sso-bouton' as *;
+
 :host {
   display: block;
 }

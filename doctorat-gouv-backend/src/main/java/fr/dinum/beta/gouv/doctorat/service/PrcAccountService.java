@@ -67,15 +67,28 @@ public class PrcAccountService {
     }
 
     /**
+     * Resultat d'une connexion PRC : le compte local + l'information de creation.
+     *
+     * <p>{@code compteCree} distingue une <strong>creation JIT</strong> (compte neuf,
+     * profil a completer) d'une <strong>connexion/reconnexion</strong> a un compte deja
+     * existant (aller directement au tableau de bord).</p>
+     *
+     * @param utilisateur le compte local, pret a etre connecte (JWT a generer par l'appelant)
+     * @param compteCree  {@code true} si le compte vient d'etre cree au cours de cet appel
+     */
+    public record ResultatConnexionPrc(Utilisateur utilisateur, boolean compteCree) {
+    }
+
+    /**
      * Retrouve ou cree le compte local correspondant a l'identite PRC.
      *
      * @param oidc utilisateur OIDC charge par Spring (id_token + userinfo fusionnes)
      * @param role role demande a la creation (depuis la session) ; ignore si le compte existe deja
-     * @return le compte local, pret a etre connecte (JWT a generer par l'appelant)
+     * @return le compte local + l'indicateur de creation (pour choisir la page de destination)
      * @throws PrcAccountException si l'identite PRC est non conforme (state/type/email/sub/nom absents)
      */
     @Transactional
-    public Utilisateur trouverOuCreer(OidcUser oidc, RoleUtilisateur role) {
+    public ResultatConnexionPrc trouverOuCreer(OidcUser oidc, RoleUtilisateur role) {
 
         // Decouverte du format reel du userinfo PRC (etape de recette phase 1).
         log.info("Claims PRC recus : {}", oidc.getClaims());
@@ -118,7 +131,8 @@ public class PrcAccountService {
             majIdentite(utilisateur, email, prenom, nom, personId);
             log.info("Connexion PRC : compte {} retrouve par prcSub (role conserve : {})",
                     utilisateur.getId(), utilisateur.getRole());
-            return utilisateurRepository.save(utilisateur);
+            // Compte deja existant : le front ira directement au tableau de bord.
+            return new ResultatConnexionPrc(utilisateurRepository.save(utilisateur), false);
         }
 
         // --- 2. Compte existant trouve par email : LIAISON (jamais de doublon) ---
@@ -135,7 +149,8 @@ public class PrcAccountService {
             // ⚠️ ROLE CONSERVE : on n'applique jamais le role de la session ici.
             log.info("Connexion PRC : compte {} existant LIE par email {} (role conserve : {})",
                     utilisateur.getId(), email, utilisateur.getRole());
-            return utilisateurRepository.save(utilisateur);
+            // Compte deja existant (simple liaison) : le front ira au tableau de bord.
+            return new ResultatConnexionPrc(utilisateurRepository.save(utilisateur), false);
         }
 
         // --- 3. Creation JIT ---
@@ -159,7 +174,8 @@ public class PrcAccountService {
         utilisateur = utilisateurRepository.save(utilisateur);
         log.info("Creation JIT d'un compte PRC : id={} email={} role={} personId={}",
                 utilisateur.getId(), email, role, personId);
-        return utilisateur;
+        // Compte tout juste cree : le front ira completer le profil (auto-rempli par PRC).
+        return new ResultatConnexionPrc(utilisateur, true);
     }
 
     /**

@@ -47,6 +47,15 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
     /** Dernier message d'erreur de découverte, pour un diagnostic clair en cas de nouvel échec. */
     private volatile String derniereErreur;
 
+    /**
+     * Horodatage de la dernière tentative <strong>échouée</strong> ; {@code 0} si aucune.
+     * Sert de cooldown pour ne pas marteler PRC à chaque rechargement de page.
+     */
+    private volatile long dernierEchec = 0L;
+
+    /** Cooldown après un échec : durée pendant laquelle on n'a pas le droit de retenter. */
+    private static final long COOLDOWN_MS = 30_000L;
+
     public PrcClientRegistrationRepository(PrcProperties prcProperties) {
         this.prcProperties = prcProperties;
     }
@@ -138,6 +147,7 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
             // On ne propage PAS : l'application doit rester debout. L'erreur est visible dans
             // les logs et la tentative de connexion échoue proprement (redirection d'erreur).
             derniereErreur = e.getMessage();
+            dernierEchec = System.currentTimeMillis();
             log.error("Projets Recherche Connect : échec de la découverte OIDC sur {} "
                     + "après {} ms. Le reste de l'application fonctionne normalement. "
                     + "Vérifiez PRC_ISSUER_URI (l'URL doit renvoyer du JSON, pas du HTML) : {}",
@@ -182,6 +192,37 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
      */
     public boolean preparer() {
         return findByRegistrationId(PrcOAuth2Config.REGISTRATION_ID) != null;
+    }
+
+    /**
+     * Variante de {@link #preparer()} à usage <strong>passif</strong> : appelée par
+     * {@code GET /api/prc/statut} au chargement de la page de connexion.
+     *
+     * <p><strong>Pourquoi un cooldown ?</strong> cette méthode est exécutée à chaque
+     * affichage de la page. Sans garde-fou, un PRC injoignable déclencherait une tentative
+     * réseau (jusqu'à {@value #COOLDOWN_MS} ms) à chaque rechargement. Après un échec,
+     * on retourne donc {@code false} pendant {@value #COOLDOWN_MS} ms sans toucher au réseau.</p>
+     *
+     * <p>À la différence de {@link #preparer()} (action utilisateur explicite — le clic
+     * sur le bouton), le cooldown n'est <strong>jamais</strong> appliqué ici : l'utilisateur
+     * qui clique doit toujours être servi immédiatement.</p>
+     *
+     * @return {@code true} si le client est prêt (cache, ou découverte réussie maintenant)
+     */
+    public boolean preparerAuChargement() {
+
+        if (clientEnCache != null) {
+            return true; // déjà prêt : aucun coût
+        }
+
+        long depuisEchec = System.currentTimeMillis() - dernierEchec;
+        if (dernierEchec > 0 && depuisEchec < COOLDOWN_MS) {
+            log.debug("Découverte PRC en cooldown : nouvelle tentative dans {} ms",
+                    COOLDOWN_MS - depuisEchec);
+            return false;
+        }
+
+        return preparer();
     }
 
     /**

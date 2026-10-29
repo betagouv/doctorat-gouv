@@ -1,0 +1,93 @@
+/* =========================================================
+ *   Bouton « Continuer avec Projets Recherche Connect »
+ *   Styles partages : connexion.html ET inscription-coordonnees.html
+ *
+ *   Pourquoi un fichier partage ? Angular scope les styles de
+ *   composant via l'attribut _ngcontent. Une regle ecrite dans
+ *   connexion.scss ne s'applique JAMAIS au template d'un autre
+ *   composant. On extrait donc le bouton ici et chaque composant
+ *   l'importe via @use (le contenu est inline puis scope par le
+ *   composant hote — c'est exactement ce qu'on veut).
+ * ========================================================= */
+
+.login-sso-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 64px;
+  width: fit-content;
+  padding: 12px 16px;
+  background-color: #000091;
+  color: #FFFFFF;
+  font-family: 'Marianne', sans-serif;
+  font-size: 16px;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  box-shadow: none;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-sso-btn:hover {
+  background-color: #12127a;
+  color: #FFFFFF;
+}
+
+/* ---------------------------------------------------------
+ * Etat « indisponible » (PRC non configure, ou decouverte
+ * OIDC en echec) : le bouton reste VISIBLE mais grise.
+ *
+ * Specificite : .login-sso-btn.prc-disabled (0,2,0) bat
+ * .login-sso-btn (0,1,0) et .login-sso-btn:hover (0,2,0) —
+ * on ajoute :hover pour que le survol ne ravive PAS le bleu.
+ * --------------------------------------------------------- */
+.login-sso-btn.prc-disabled,
+.login-sso-btn.prc-disabled:hover {
+  background-color: #6A6A6A;
+  color: #FFFFFF;
+}
+
+/* Non cliquable : ni souris, ni clavier (le href est retire
+ * cote template par [attr.href]), ni reflet de survol. */
+.login-sso-btn.prc-disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  /* L'etat reste lisible meme sur fond clair */
+  box-shadow: inset 0 0 0 2px #CECECE;
+}
+
+/* Icône DSFR : hérite de la couleur du bouton (currentColor).
+   --icon-size doit être redéclaré sur ::before : la règle DSFR le pose
+   sur le pseudo-élément, ce qui masque la valeur héritée du parent. */
+.sso-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sso-icon::before {
+  --icon-size: 2rem;
+}
+
+.sso-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.sso-text-line1 {
+  color: #FFFFFF;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.sso-text-line2 {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 16px;
+}

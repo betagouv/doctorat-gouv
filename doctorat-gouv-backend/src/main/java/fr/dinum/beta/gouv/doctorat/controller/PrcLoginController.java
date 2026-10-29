@@ -75,7 +75,10 @@ public class PrcLoginController {
      * Statut de PRC : {@code GET /api/prc/statut} → {@code {"actif":bool,"ready":bool}}.
      *
      * <p>"actif" indique si l'issuer-uri est renseigné (le backend peut être configuré).</p>
-     * <p>"ready" indique si le client OIDC a été découvert (c'est-à-dire qu'il peut traiter les connexions).</p>
+     * <p>"ready" indique si le client OIDC est utilisable. Attention : cet appel
+     * <strong>déclenche</strong> la découverte paresseuse (avec un cooldown après échec) —
+     * sinon le bouton Angular resterait grisé à jamais, la découverte n'étant jamais
+     * enclenchée (le bouton désactivé interdirait le clic qui l'aurait déclenchée).</p>
      */
     @GetMapping("/statut")
     public ResponseEntity<Map<String, Object>> statut() {
@@ -84,7 +87,7 @@ public class PrcLoginController {
         Map<String, Object> map = new HashMap<>();
         map.put("actif", prcProperties.isActive());
         // Sans bean (PRC non configure) : inactif + non pret, aucun decodage reseau.
-        map.put("ready", depot != null && depot.isReady());
+        map.put("ready", depot != null && depot.preparerAuChargement());
         return ResponseEntity.ok(map);
     }
 

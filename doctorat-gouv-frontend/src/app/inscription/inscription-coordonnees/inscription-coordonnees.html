@@ -61,6 +61,29 @@
             <input type="hidden" formControlName="role" aria-hidden="true">
           </fieldset>
 
+          <!-- PRC : proposé uniquement au directeur de thèse (phase 1).
+               href retiré quand indisponible : le pointer-events CSS
+               ne bloque pas la navigation clavier (Entrée). -->
+          <div class="fr-mb-3w" *ngIf="isDirecteur">
+            <a [attr.href]="prcDisponible ? prcLoginUrl : null"
+               [attr.aria-disabled]="!prcDisponible"
+               [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate"
+               [class.prc-disabled]="!prcDisponible"
+               class="login-sso-btn">
+              <span class="sso-icon fr-icon-external-link-line" aria-hidden="true"></span>
+              <span class="sso-text">
+                <span class="sso-text-line1">{{ 'CONNEXION.PRC_BUTTON_LINE1' | translate }}</span>
+                <span class="sso-text-line2">{{ 'CONNEXION.PRC_BUTTON_LINE2' | translate }}</span>
+              </span>
+            </a>
+            <p class="fr-text--sm fr-mt-1w fr-mb-0">
+              <a href="https://info.projetsrechercheconnect.fr/"
+                 class="fr-link fr-text--sm"
+                 target="_blank"
+                 rel="noopener">{{ 'CONNEXION.PRC_HELP' | translate }}</a>
+            </p>
+          </div>
+
           <!-- Démarche (candidat seulement) -->
           <fieldset class="fr-fieldset fr-mb-3w" *ngIf="!isDirecteur">
             <legend class="fr-label">

@@ -69,15 +69,18 @@ public class PrcLoginSuccessHandler implements AuthenticationSuccessHandler {
         RoleUtilisateur role = lireEtPurgerRole(request);
 
         try {
-            Utilisateur utilisateur = prcAccountService.trouverOuCreer(oidc, role);
+            PrcAccountService.ResultatConnexionPrc resultat = prcAccountService.trouverOuCreer(oidc, role);
+            Utilisateur utilisateur = resultat.utilisateur();
             String token = authService.genererToken(utilisateur);
 
-            log.info("Connexion PRC reussie : utilisateur id={} role={} sourceAuth={}",
-                    utilisateur.getId(), utilisateur.getRole(), utilisateur.getSourceAuth());
+            log.info("Connexion PRC reussie : utilisateur id={} role={} sourceAuth={} compteCree={}",
+                    utilisateur.getId(), utilisateur.getRole(), utilisateur.getSourceAuth(), resultat.compteCree());
 
-            // /connexion ?token=... : le front stocke la session puis, deja connecte,
-            // se redirige vers le tableau de bord (meme logique que le login classique).
-            response.sendRedirect(frontendBaseUrl + "/connexion?token=" + token);
+            // Le role retenu est TOUJOURS celui du compte (jamais celui de la session) :
+            // un compte candidat lie via PRC ne doit pas finir sur le tableau directeur.
+            String destination = destinationPour(resultat, utilisateur);
+            log.info("Redirection PRC -> {} (compteCree={})", destination, resultat.compteCree());
+            response.sendRedirect(frontendBaseUrl + destination + "?token=" + token);
 
         } catch (PrcAccountException e) {
             // Refus metier attendu (state/type/claims) : pas un incident technique.
@@ -91,6 +94,45 @@ public class PrcLoginSuccessHandler implements AuthenticationSuccessHandler {
             log.error("Erreur inattendue lors du retour PRC", e);
             redirigerVersErreur(response);
         }
+    }
+
+    /**
+     * Choix de la page de destination apres un retour PRC reussi.
+     *
+     * <ul>
+     *   <li><strong>Compte cree</strong> (creation JIT) → le profil
+     *       ({@code /espace-directeur-these}) : l'onglet « Votre profil » est celui par
+     *       defaut, et ses champs proviennent deja d'{@link Utilisateur} (nom, prenom,
+     *       email renseignes depuis les claims PRC). L'utilisateur complete ensuite
+     *       etablissement, laboratoire, etc.</li>
+     *   <li><strong>Compte existant</strong> → directement le tableau de bord correspondant
+     *       a <strong>son</strong> role : jamais le tableau directeur pour un compte candidat.</li>
+     * </ul>
+     *
+     * <p>Le paramètre {@code token} est presente sur les deux cibles : il est traite au
+     * demarrage de l'app Angular (APP_INITIALIZER), avant le routage et les gardes.</p>
+     */
+    private String destinationPour(PrcAccountService.ResultatConnexionPrc resultat, Utilisateur utilisateur) {
+
+        boolean estDirecteur = utilisateur.getRole() == RoleUtilisateur.DIRECTEUR_THESE;
+
+        if (resultat.compteCree() && estDirecteur) {
+            // Compte neuf : completions du profil d'abord.
+            return "/espace-directeur-these";
+        }
+
+        // Compte existant (ou role non directeur) : tableau de bord du role reel.
+        if (estDirecteur) {
+            return "/tableau-de-bord-directeur-these";
+        }
+        if (utilisateur.getRole() == RoleUtilisateur.CANDIDAT) {
+            return "/tableau-de-bord-candidat";
+        }
+
+        // Autres roles (ecole doctorale, laboratoire, admin) : pas de tableau dedie
+        // en phase 1 -> accueil, l'utilisateur garde ses droits habituels.
+        log.info("Retour PRC pour un role sans tableau dedie : {}", utilisateur.getRole());
+        return "/";
     }
 
     /**

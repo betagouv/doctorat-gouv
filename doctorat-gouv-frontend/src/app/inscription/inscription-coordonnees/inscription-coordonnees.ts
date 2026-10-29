@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -8,6 +9,7 @@ import { InscriptionStoreService, InscriptionCoordonnees as InscriptionCoordonne
 import { AuthService } from '../../services/auth.service';
 import { InscriptionRequest } from '../../models/utilisateur.model';
 import { SITUATIONS, estSituationPartenaire } from '../../models/profil.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-inscription-coordonnees',
@@ -26,6 +28,19 @@ export class InscriptionCoordonnees implements OnInit {
   isSubmitting = false;
   globalError: string | null = null;
 
+  /**
+   * URL de redirection vers le backend pour l'inscription directeur via PRC.
+   * Simple lien de navigation (jamais un appel HttpClient). Le role est
+   * impose a DIRECTEUR_THESE : n'est affiche que si ce role est selectionne.
+   */
+  readonly prcLoginUrl = `${environment.apiUrl}/prc/login?role=DIRECTEUR_THESE`;
+
+  /**
+   * Indique si le bouton PRC est actif : PRC configure ET client OIDC decouvert.
+   * Sinon le bouton reste visible mais grise (cf. shared/sso-bouton.scss).
+   */
+  prcDisponible = false;
+
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService,
@@ -34,6 +49,7 @@ export class InscriptionCoordonnees implements OnInit {
     private store: InscriptionStoreService,
     private router: Router,
     private authService: AuthService,
+    private http: HttpClient,
   ) {
     this.form = this.fb.group({
       role: ['CANDIDAT', [Validators.required]],
@@ -63,6 +79,13 @@ export class InscriptionCoordonnees implements OnInit {
     });
 
     this.situation?.valueChanges.subscribe(() => this.majValidationMaster());
+
+    // PRC est optionnel : bouton actif seulement si le backend confirme
+    // a la fois actif (issuer defini) et ready (client OIDC decouvert).
+    this.http.get<{ actif: boolean; ready: boolean }>(`${environment.apiUrl}/prc/statut`).subscribe({
+      next: (statut) => (this.prcDisponible = statut.actif && statut.ready),
+      error: () => (this.prcDisponible = false),
+    });
   }
 
   get role() { return this.form.get('role'); }
