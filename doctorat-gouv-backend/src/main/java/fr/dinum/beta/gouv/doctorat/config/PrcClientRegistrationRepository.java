@@ -51,7 +51,6 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
     /**
      * Algorithme de signature des {@code id_token} annonce par la discovery
      * ({@code id_token_signing_alg_values_supported}).
-     *
      * <p><strong>Indispensable :</strong> {@code OidcIdTokenDecoderFactory} (Spring Security)
      * a {@code jwsAlgorithmResolver = RS256} codé en dur. PRC annonce au contraire
      * <strong>{@code PS256} uniquement</strong> → sans correction, le jeton est rejeté :
@@ -63,6 +62,20 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
      * IdP local (qui annonce {@code RS256}) de fonctionner avec le même code.</p>
      */
     private volatile String algorithmeSignatureIdToken = "PS256";
+
+    /**
+     * Valeur <strong>brute</strong> du champ {@code issuer} lue dans la discovery, avant
+     * normalisation.
+     *
+     * <p>PRC y publie un identifiant <strong>non-URL</strong> ({@code "856625"}) — le meme
+     * que celui repris dans le claim {@code iss} des id_token. On ecrase l'issuer du
+     * {@code ClientRegistration} (Spring exige une URL), mais il faut conserver la valeur
+     * d'origine : c'est <strong>elle</strong> que le jeton porte, et un comparateur d'issuer
+     * qui ne l'accepterait pas bloquerait toutes les connexions.</p>
+     *
+     * <p>{@code null} tant que la discovery n'a pas eu lieu.</p>
+     */
+    private volatile String issuerOrigine;
 
     /**
      * Horodatage de la dernière tentative <strong>échouée</strong> ; {@code 0} si aucune.
@@ -128,6 +141,10 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
             Map<String, Object> configuration = recupererConfiguration(urlMetadata);
 
             Object issuerMetadata = configuration.get("issuer");
+            // On conserve AVANT toute normalisation : c'est la valeur que PRC met dans
+            // le claim "iss" de ses id_token (voir PrcIdTokenValidator).
+            issuerOrigine = issuerMetadata != null ? String.valueOf(issuerMetadata) : null;
+
             if (!prcProperties.getIssuerUri().equals(String.valueOf(issuerMetadata))) {
                 log.warn("Issuer des métadonnées OIDC (« {} ») différent de l'issuer configuré (« {} »). "
                                 + "Normalisation avec l'URL d'accès au document.",
@@ -229,6 +246,16 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
      */
     public String getIdTokenSigningAlg() {
         return algorithmeSignatureIdToken;
+    }
+
+    /**
+     * Issuer <strong>brut</strong> annonce par la discovery ({@code "856625"} chez PRC),
+     * c'est-a-dire la valeur attendue dans le claim {@code iss} des id_token.
+     *
+     * @return la valeur d'origine, ou {@code null} avant toute decouverte
+     */
+    public String getIssuerOrigine() {
+        return issuerOrigine;
     }
 
     /**

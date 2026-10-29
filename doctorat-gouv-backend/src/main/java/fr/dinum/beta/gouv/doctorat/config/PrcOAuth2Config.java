@@ -10,8 +10,12 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
+
+import fr.dinum.beta.gouv.doctorat.security.PrcIdTokenValidator;
 
 /**
  * Declaration du client OIDC Projets Recherche Connect (PRC).
@@ -95,6 +99,8 @@ public class PrcOAuth2Config {
 			PrcClientRegistrationRepository depot) {
 
 		OidcIdTokenDecoderFactory factory = new OidcIdTokenDecoderFactory();
+
+		// 1) Algorithme de signature : PRC annonce PS256, Spring impose RS256.
 		factory.setJwsAlgorithmResolver(clientRegistration -> {
 			String annonce = depot.getIdTokenSigningAlg();
 			try {
@@ -108,6 +114,19 @@ public class PrcOAuth2Config {
 				return SignatureAlgorithm.PS256;
 			}
 		});
+
+		// 2) Validation des claims : OidcIdTokenValidator parse le claim "iss" en URL,
+		//    alors que PRC y met un identifiant numerique ("856625") -> IllegalArgumentException
+		//    et une 500 au lieu d'un echec d'authentification propre. On remplace donc le
+		//    validateur (classe final), en conservant TOUS ses controles.
+		factory.setJwtValidatorFactory(clientRegistration -> new DelegatingOAuth2TokenValidator<>(
+				// Validite temporelle (exp/iat, skew 60 s) : on garde l'implementation Spring.
+				new JwtTimestampValidator(),
+				new PrcIdTokenValidator(
+						clientRegistration.getClientId(),
+						depot.getIssuerOrigine(),
+						clientRegistration.getProviderDetails().getIssuerUri())));
+
 		return factory;
 	}
 
