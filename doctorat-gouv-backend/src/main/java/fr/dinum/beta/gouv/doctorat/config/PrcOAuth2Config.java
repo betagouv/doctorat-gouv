@@ -7,7 +7,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 
 /**
  * Declaration du client OIDC Projets Recherche Connect (PRC).
@@ -18,8 +22,13 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * demarre et fonctionne exactement comme avant.</p>
  *
  * <p>Le client est reconstruit par decouverte OIDC ({@code /.well-known/openid-configuration})
- * plutot que par saisie manuelle des endpoints : la signature des tokens est alors laissee au
- * defaut de Spring Security via {@code jwks_uri}, conformement a la spec technique PRC.</p>
+ * plutot que par saisie manuelle des endpoints : la signature des id_token est verifiee via le
+ * {@code jwks_uri} de la discovery.</p>
+ *
+ * <p>⚠️ <strong>L'algorithme de signature ne peut PAS etre laisse au defaut de Spring</strong> :
+ * {@code OidcIdTokenDecoderFactory} impose {@code RS256} alors que PRC annonce
+ * {@code PS256} — d'ou le bean {@code prcIdTokenDecoderFactory} qui lit l'algorithme
+ * dans la discovery (voir {@code invalid_id_token} recette 29/10/2026).</p>
  *
  * <p>⚠️ La decouverte est un appel reseau : il est <strong>deferre au premier clic</strong> sur
  * le bouton PRC via {@link PrcClientRegistrationRepository}, pour que l'application demarre
@@ -52,6 +61,54 @@ public class PrcOAuth2Config {
 	@Bean
 	public PrcClientRegistrationRepository clientRegistrationRepository(PrcProperties prc) {
 		return new PrcClientRegistrationRepository(prc);
+	}
+
+	/**
+	 * Verificateur d'id_token : indique a Spring <strong>l'algorithme de signature reel</strong>
+	 * annonce par la discovery, au lieu du RS256 codé en dur.
+	 *
+	 * <p><strong>Pourquoi c'est indispensable :</strong> par defaut,
+	 * {@code OidcIdTokenDecoderFactory} resout toujours
+	 * {@code SignatureAlgorithm.RS256}. Or PRC annonce
+	 * {@code id_token_signing_alg_values_supported: ["PS256"]}. Le decodage echoue alors
+	 * a chaque connexion :</p>
+	 *
+	 * <pre>
+	 * [invalid_id_token] An error occurred while attempting to decode the Jwt:
+	 * Signed JWT rejected: Another algorithm expected, or no matching key(s) found
+	 * </pre>
+	 *
+	 * <p><strong>Point de branchement officiel</strong> :
+	 * {@code OAuth2LoginConfigurer.getJwtDecoderFactoryBean()} recherche un bean de type
+	 * {@code JwtDecoderFactory<ClientRegistration>} et appelle
+	 * {@code OidcAuthorizationCodeAuthenticationProvider.setJwtDecoderFactory(...)}.
+	 * Il doit être <strong>unique</strong> ({@code getIfUnique()}) — c'est le cas ici.</p>
+	 *
+	 * <p>L'algorithme vient de la discovery (et non d'une constante) : le faux IdP local,
+	 * qui annonce {@code RS256}, fonctionne alors avec <strong>le même code</strong>.</p>
+	 *
+	 * <p>Aucun impact hors PRC : ce bean n'existe que si PRC est actif, et
+	 * {@code .oauth2Login()} n'est branche que dans ce meme cas.</p>
+	 */
+	@Bean
+	public JwtDecoderFactory<ClientRegistration> prcIdTokenDecoderFactory(
+			PrcClientRegistrationRepository depot) {
+
+		OidcIdTokenDecoderFactory factory = new OidcIdTokenDecoderFactory();
+		factory.setJwsAlgorithmResolver(clientRegistration -> {
+			String annonce = depot.getIdTokenSigningAlg();
+			try {
+				return SignatureAlgorithm.valueOf(annonce);
+			} catch (IllegalArgumentException inconnu) {
+				// Algorithme annonce mais absent de l'enum Spring : on ne bloque pas la
+				// connexion pour autant, on retombe sur PRC et on trace pour le diagnostic.
+				org.slf4j.LoggerFactory.getLogger(PrcOAuth2Config.class)
+						.warn("Algorithme de signature id_token inconnu de Spring Security : {} "
+								+ "(discovery) — repli sur PS256", annonce, inconnu);
+				return SignatureAlgorithm.PS256;
+			}
+		});
+		return factory;
 	}
 
 	/**

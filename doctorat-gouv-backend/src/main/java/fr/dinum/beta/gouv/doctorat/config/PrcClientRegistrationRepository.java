@@ -1,6 +1,7 @@
 package fr.dinum.beta.gouv.doctorat.config;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -46,6 +47,22 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
 
     /** Dernier message d'erreur de découverte, pour un diagnostic clair en cas de nouvel échec. */
     private volatile String derniereErreur;
+
+    /**
+     * Algorithme de signature des {@code id_token} annonce par la discovery
+     * ({@code id_token_signing_alg_values_supported}).
+     *
+     * <p><strong>Indispensable :</strong> {@code OidcIdTokenDecoderFactory} (Spring Security)
+     * a {@code jwsAlgorithmResolver = RS256} codé en dur. PRC annonce au contraire
+     * <strong>{@code PS256} uniquement</strong> → sans correction, le jeton est rejeté :
+     * {@code invalid_id_token — Signed JWT rejected: Another algorithm expected, or no
+     * matching key(s) found}.</p>
+     *
+     * <p>Valeur par défaut {@code PS256} (algorithme connu de PRC) si la discovery ne
+     * l'expose pas. Lire la découverte plutôt que de figer une constante permet au faux
+     * IdP local (qui annonce {@code RS256}) de fonctionner avec le même code.</p>
+     */
+    private volatile String algorithmeSignatureIdToken = "PS256";
 
     /**
      * Horodatage de la dernière tentative <strong>échouée</strong> ; {@code 0} si aucune.
@@ -122,6 +139,11 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
                 configuration.put("issuer", prcProperties.getIssuerUri());
             }
 
+            // Algorithme de signature des id_token : a lire ICI, car c'est la seule source
+            // de verite. Spring ne l'utilise pas (RS256 en dur) -> voir PrcOAuth2Config.
+            algorithmeSignatureIdToken = lireAlgorithmeSignature(configuration);
+            log.info("Algorithme de signature des id_token PRC : {}", algorithmeSignatureIdToken);
+
             ClientRegistration client = ClientRegistrations
                     .fromOidcConfiguration(configuration)
                     .registrationId(PrcOAuth2Config.REGISTRATION_ID)
@@ -176,6 +198,37 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
             throw new IllegalStateException("Document de découverte OIDC invalide (« issuer » absent) : " + urlMetadata);
         }
         return configuration;
+    }
+
+    /**
+     * Extrait {@code id_token_signing_alg_values_supported} du document de découverte.
+     *
+     * <p>Prend le premier algorithme annoncé. Si absent ou inexploitable, conserve la
+     * valeur par défaut ({@code PS256}) et trace un WARN : on ne veut jamais faire
+     * échouer la connexion pour un champ accessoire.</p>
+     */
+    private String lireAlgorithmeSignature(Map<String, Object> configuration) {
+        Object annonce = configuration.get("id_token_signing_alg_values_supported");
+        if (annonce instanceof List<?> algorithmes && !algorithmes.isEmpty()) {
+            String choisi = String.valueOf(algorithmes.get(0)).trim();
+            if (!choisi.isEmpty()) {
+                return choisi;
+            }
+        }
+        log.warn("Champ « id_token_signing_alg_values_supported » absent de la découverte PRC : "
+                + "utilisation de l'algorithme par défaut {}", algorithmeSignatureIdToken);
+        return algorithmeSignatureIdToken;
+    }
+
+    /**
+     * Algorithme de signature des {@code id_token} a utiliser pour verifier les jetons
+     * (lu dans la discovery). Sert a configurer le {@code JwtDecoderFactory} (voir
+     * {@code PrcOAuth2Config}) — Spring ne le lit pas lui-même.
+     *
+     * @return {@code PS256}, {@code RS256}, ... ; {@code PS256} avant toute découverte
+     */
+    public String getIdTokenSigningAlg() {
+        return algorithmeSignatureIdToken;
     }
 
     /**
