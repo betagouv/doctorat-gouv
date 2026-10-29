@@ -27,7 +27,7 @@ public class PrcLoginFailureHandler implements AuthenticationFailureHandler {
 
     private final String frontendBaseUrl;
 
-    public PrcLoginFailureHandler(@Value("${app.frontend.base-url}") String frontendBaseUrl) {
+    public PrcLoginFailureHandler(@Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}") String frontendBaseUrl) {
         this.frontendBaseUrl = frontendBaseUrl;
     }
 

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,11 +56,17 @@ public class PrcLoginController {
             EnumSet.of(RoleUtilisateur.DIRECTEUR_THESE);
 
     private final PrcProperties prcProperties;
-    private final PrcClientRegistrationRepository prcRegistrationRepo; // NOUVEAU
+    /**
+     * Injection en ObjectProvider et non en type concret : le bean est cree par
+     * {@code PrcOAuth2Config}, CONDITIONNEL a la presence de {@code prc.issuer-uri}.
+     * Sans config PRC (tests, environnement vierge), le bean n'existe pas et une
+     * injection directe ferait echouer le chargement du contexte — donc TOUTES les
+     * classes {@code @SpringBootTest}. C'est le meme motif que {@code SecurityConfig}.
+     */
+    private final ObjectProvider<PrcClientRegistrationRepository> prcRegistrationRepo;
 
-    // NOUVEAU constructeur injectant à la fois PrcProperties et le dépôt paresseux
     public PrcLoginController(PrcProperties prcProperties,
-                              PrcClientRegistrationRepository prcRegistrationRepo) {
+                              ObjectProvider<PrcClientRegistrationRepository> prcRegistrationRepo) {
         this.prcProperties = prcProperties;
         this.prcRegistrationRepo = prcRegistrationRepo;
     }
@@ -72,9 +79,12 @@ public class PrcLoginController {
      */
     @GetMapping("/statut")
     public ResponseEntity<Map<String, Object>> statut() {
+        PrcClientRegistrationRepository depot = prcRegistrationRepo.getIfAvailable();
+
         Map<String, Object> map = new HashMap<>();
         map.put("actif", prcProperties.isActive());
-        map.put("ready", prcRegistrationRepo.isReady());
+        // Sans bean (PRC non configure) : inactif + non pret, aucun decodage reseau.
+        map.put("ready", depot != null && depot.isReady());
         return ResponseEntity.ok(map);
     }
 
@@ -101,9 +111,10 @@ public class PrcLoginController {
         // Découverte OIDC paresseuse : la première connexion la débloque. Un simple contrôle
         // sur isReady() empêcherait toute tentative, la découverte n'étant enclenchée que par
         // Spring Security après cette redirection.
-        if (!prcRegistrationRepo.preparer()) {
-            log.error("Connexion PRC refusée : découverte OIDC en échec sur {}. Détail : {}",
-                    prcProperties.getIssuerUri(), prcRegistrationRepo.getDerniereErreur());
+        PrcClientRegistrationRepository depot = prcRegistrationRepo.getIfAvailable();
+        if (depot == null || !depot.preparer()) {
+            log.error("Connexion PRC refusée : dépôt OIDC indisponible ou découverte en échec sur {}. Détail : {}",
+                    prcProperties.getIssuerUri(), depot != null ? depot.getDerniereErreur() : "bean absent");
             response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(),
                     "Projets Recherche Connect est momentanément indisponible");
             return;

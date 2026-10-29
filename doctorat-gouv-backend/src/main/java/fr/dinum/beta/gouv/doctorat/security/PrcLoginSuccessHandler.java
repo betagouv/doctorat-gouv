@@ -48,7 +48,7 @@ public class PrcLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     public PrcLoginSuccessHandler(PrcAccountService prcAccountService,
                                   AuthService authService,
-                                  @Value("${app.frontend.base-url}") String frontendBaseUrl) {
+                                  @Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}") String frontendBaseUrl) {
         this.prcAccountService = prcAccountService;
         this.authService = authService;
         this.frontendBaseUrl = frontendBaseUrl;
