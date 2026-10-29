@@ -22,6 +22,13 @@
 
         <!-- 2.1 Section "Connectez-vous" (affiché seulement si PRC est prêt) -->
         <h2 class="fr-text--bold fr-text--lg fr-mb-2w">{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
+
+        <!-- Bandeau d'erreur si le retour PRC a échoué -->
+        <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="prcErreur">
+          <h3 class="fr-alert__title">{{ 'CONNEXION.PRC_ERROR_TITLE' | translate }}</h3>
+          <p>{{ 'CONNEXION.PRC_ERROR_DETAIL' | translate }}</p>
+        </div>
+
         <p class="fr-text--sm fr-mb-3w">
           {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
         </p>

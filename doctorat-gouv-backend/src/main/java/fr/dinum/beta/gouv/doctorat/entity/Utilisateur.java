@@ -65,7 +65,7 @@ public class Utilisateur {
     private Boolean actif = true;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private SourceAuth sourceAuth;
 
     @Column(name = "france_connect_id", length = 255)

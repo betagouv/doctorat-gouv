@@ -74,6 +74,23 @@ export class Connexion implements OnInit {
       next: (statut) => this.prcDisponible = statut.actif && statut.ready,
       error: () => this.prcDisponible = false
     });
+
+    // Déjà connecté (login classique ou retour PRC avec ?token= traité au boot) :
+    // inutile d'afficher le formulaire, on va directement au tableau de bord.
+    if (this.authService.isLoggedIn()) {
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      if (returnUrl) {
+        this.router.navigateByUrl(returnUrl);
+        return;
+      }
+
+      const user = this.authService.currentUser();
+      if (user?.role === 'DIRECTEUR_THESE') {
+        this.router.navigate(['/tableau-de-bord-directeur-these']);
+      } else {
+        this.router.navigate(['/tableau-de-bord-candidat']);
+      }
+    }
   }
 
   togglePassword(): void {

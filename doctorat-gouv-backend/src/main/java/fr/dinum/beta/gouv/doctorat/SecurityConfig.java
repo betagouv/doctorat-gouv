@@ -10,6 +10,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import fr.dinum.beta.gouv.doctorat.config.PrcProperties;
 import fr.dinum.beta.gouv.doctorat.security.ApiKeyFilter;
 import fr.dinum.beta.gouv.doctorat.security.JwtAuthenticationFilter;
+import fr.dinum.beta.gouv.doctorat.security.PrcLoginFailureHandler;
+import fr.dinum.beta.gouv.doctorat.security.PrcLoginSuccessHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -20,11 +22,19 @@ public class SecurityConfig {
     /** PRC est optionnel : injecté en ObjectProvider pour ne pas casser les contextes de test. */
     private final ObjectProvider<PrcProperties> prcProperties;
 
+    /** Handlers OAuth2 PRC : absents des slices de test → ObjectProvider comme ci-dessus. */
+    private final ObjectProvider<PrcLoginSuccessHandler> prcSuccessHandler;
+    private final ObjectProvider<PrcLoginFailureHandler> prcFailureHandler;
+
     public SecurityConfig(ApiKeyFilter apiKeyFilter, JwtAuthenticationFilter jwtFilter,
-                          ObjectProvider<PrcProperties> prcProperties) {
+                          ObjectProvider<PrcProperties> prcProperties,
+                          ObjectProvider<PrcLoginSuccessHandler> prcSuccessHandler,
+                          ObjectProvider<PrcLoginFailureHandler> prcFailureHandler) {
         this.apiKeyFilter = apiKeyFilter;
         this.jwtFilter = jwtFilter;
         this.prcProperties = prcProperties;
+        this.prcSuccessHandler = prcSuccessHandler;
+        this.prcFailureHandler = prcFailureHandler;
     }
 
     @Bean
@@ -94,10 +104,15 @@ public class SecurityConfig {
         // Sinon aucun ClientRegistrationRepository n'existe et .oauth2Login() échouerait.
         PrcProperties prc = prcProperties.getIfAvailable();
         if (prc != null && prc.isActive()) {
+            PrcLoginSuccessHandler successHandler = prcSuccessHandler.getIfAvailable();
+            PrcLoginFailureHandler failureHandler = prcFailureHandler.getIfAvailable();
             http.oauth2Login(oauth2 -> oauth2
                     // URL de retour enregistrée chez PRC (voir PrcOAuth2Config.REDIRECT_URI)
                     .loginProcessingUrl("/login/oauth2/code/prc")
-                    .failureUrl("/connexion?erreur=prc"));
+                    // Succès : compte (création JIT ou liaison) + notre JWT + redirection Angular
+                    .successHandler(successHandler)
+                    // Échec : /connexion?erreur=prc (message clair, jamais de page blanche)
+                    .failureHandler(failureHandler));
         }
 
         return http.build();
