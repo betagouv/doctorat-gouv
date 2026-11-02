@@ -75,26 +75,27 @@ main {
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 2rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10rem 2rem 3rem 7rem;
   min-height: 60vh;
 }
 
 .presentation-content {
-  text-align: center;
+  text-align: left;
   max-width: 28rem;
 }
 
 .presentation-content h1 {
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #fff;
 }
 
 .presentation-subtitle {
-  font-size: 1.1rem;
-  color: #161616;
+  font-size: 1.4rem;
+  color: #fff;
   margin-bottom: 2rem;
 }
 
@@ -169,7 +170,7 @@ main {
 @media (max-width: 991px) {
   .presentation-column {
     min-height: auto;
-    padding: 2rem 1.5rem;
+    padding: 8rem 1.5rem 2rem 4rem;
   }
 
   .login-column {
