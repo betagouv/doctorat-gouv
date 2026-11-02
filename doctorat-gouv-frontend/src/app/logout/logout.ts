@@ -35,9 +35,8 @@ export class Logout implements OnInit {
     if (prcToken && endSessionUrl) {
       // Déconnexion PRC (front-channel) : PRC ferme sa session puis redirige vers
       // post_logout_redirect_uri.
-      const state = crypto.randomUUID();
-      const postLogout = encodeURIComponent(window.location.origin + '/');
-      const url = `${endSessionUrl}?id_token_hint=${encodeURIComponent(prcToken)}&state=${state}&post_logout_redirect_uri=${postLogout}`;
+      // PRC ne supporte PAS post_logout_redirect_uri : on ne l'envoie pas.
+      const url = `${endSessionUrl}?id_token_hint=${encodeURIComponent(prcToken)}`;
       window.location.href = url;
     } else {
       this.router.navigate(['/']);
