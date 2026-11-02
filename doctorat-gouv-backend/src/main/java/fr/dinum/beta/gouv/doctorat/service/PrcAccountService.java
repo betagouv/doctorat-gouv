@@ -57,6 +57,20 @@ public class PrcAccountService {
     private static final String ETAT_ACTIF = "active";
     private static final String TYPE_NOMINATIF = "user-nominative";
 
+    /**
+     * Email synthetique pour un compte cree sans email (userinfo indisponible).
+     *
+     * <p>Le TLD {@code .invalid} est reserve par la RFC 2606 : il n'est jamais
+     * routable, donc aucune collision avec une vraie adresse et aucune
+     * notification email ne sera envoyee par erreur. L'email est stable par
+     * {@code sub} (re-login retrouve le meme compte par {@code prcSub}).</p>
+     *
+     * <p>⚠️ <strong>Option A (temporaire)</strong> : a basculer en Option B
+     * (refus propre) une fois PRC corrige (voir {@code spec-technique.md} §6.1).</p>
+     */
+    private static final String SUFFIXE_EMAIL_SQUELETTE = "@sans-email.invalid";
+
+
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -94,13 +108,28 @@ public class PrcAccountService {
         log.info("Claims PRC recus : {}", oidc.getClaims());
 
         // --- Controles metier (spec-technique.md §8) ---
+        // Degradation gracieuse (Option A, temporaire) : si userinfo est indisponible,
+        // `state`/`type` sont absents — on ne peut pas les verifier. PRC reste la source
+        // de verite (il n'aurait pas emis de jeton pour un compte desactive) ; on trace
+        // un WARN pour garder la traçabilite. A basculer en refus strict (Option B)
+        // une fois PRC corrige.
         String state = oidc.getClaimAsString("state");
-        if (state == null || !ETAT_ACTIF.equalsIgnoreCase(state.trim())) {
-            throw new PrcAccountException("Compte PRC non actif (state=" + state + ")");
+        if (state != null && !state.isBlank()) {
+            if (!ETAT_ACTIF.equalsIgnoreCase(state.trim())) {
+                throw new PrcAccountException("Compte PRC non actif (state=" + state + ")");
+            }
+        } else {
+            log.warn("Claim 'state' absent du jeton PRC (userinfo indisponible ?) — "
+                    + "controle saute (Option A, temporaire)");
         }
+
         String type = oidc.getClaimAsString("type");
-        if (type == null || !TYPE_NOMINATIF.equalsIgnoreCase(type.trim())) {
-            throw new PrcAccountException("Identite PRC non nominative (type=" + type + ")");
+        if (type != null && !type.isBlank()) {
+            if (!TYPE_NOMINATIF.equalsIgnoreCase(type.trim())) {
+                throw new PrcAccountException("Identite PRC non nominative (type=" + type + ")");
+            }
+        } else {
+            log.warn("Claim 'type' absent du jeton PRC — controle saute (Option A, temporaire)");
         }
 
         String sub = oidc.getSubject();
@@ -110,7 +139,15 @@ public class PrcAccountService {
 
         String email = EmailUtils.normalize(oidc.getClaimAsString("principalEmail"));
         if (email == null) {
-            throw new PrcAccountException("Aucun email principal transmis par PRC");
+            // Degradation gracieuse (Option A, temporaire) : pas d'email transmis par PRC
+            // (userinfo indisponible). On cree un compte squelette avec un email synthetique
+            // stable (derive du sub) ; l'utilisateur complete son profil depuis
+            // /espace-directeur-these.
+            // TODO Option B (a basculer) : refuser proprement (PrcAccountException) si
+            // l'email manque, pour eviter tout risque de doublon d'identite.
+            email = "prc-" + sub + SUFFIXE_EMAIL_SQUELETTE;
+            log.warn("Aucun email fourni par PRC : creation d'un compte SQUELETTE "
+                    + "(email synthetique {}) — l'utilisateur complete son profil", email);
         }
 
         // Phase 1 : pas d'ecran de choix, on continue avec principalEmail (phase 2).
@@ -162,8 +199,8 @@ public class PrcAccountService {
         // Colonnes NOT NULL : mot de passe aleatoire (jamais connu, l'utilisateur
         // se connecte toujours via PRC) et date de creation.
         utilisateur.setMotDePasse(passwordEncoder.encode(UUID.randomUUID().toString()));
-        utilisateur.setPrenom(prenom);
-        utilisateur.setNom(nom);
+        utilisateur.setPrenom(prenom != null ? prenom : "A renseigner");
+        utilisateur.setNom(nom != null ? nom : "A renseigner");
         utilisateur.setRole(role);
         utilisateur.setSourceAuth(SourceAuth.PROJETS_RECHERCHE_CONNECT);
         utilisateur.setActif(true);
@@ -184,12 +221,18 @@ public class PrcAccountService {
      * l'uniqueite en base pourrait etre violee par un changement d'email chez PRC.
      */
     private void majIdentite(Utilisateur utilisateur, String emailPrc, String prenom, String nom, String personId) {
-        utilisateur.setPrenom(prenom);
-        utilisateur.setNom(nom);
+        // Degradation gracieuse (Option A) : si userinfo indisponible, on ne ecrase
+        // jamais une vraie identite par null.
+        if (prenom != null) {
+            utilisateur.setPrenom(prenom);
+        }
+        if (nom != null) {
+            utilisateur.setNom(nom);
+        }
         if (personId != null && !personId.isBlank()) {
             utilisateur.setPrcPersonId(personId);
         }
-        if (!emailPrc.equalsIgnoreCase(utilisateur.getEmail())) {
+        if (emailPrc != null && !emailPrc.equalsIgnoreCase(utilisateur.getEmail())) {
             log.info("Email PRC ({}) different de l'email du compte ({}) : on conserve l'email du compte",
                     emailPrc, utilisateur.getEmail());
         }
@@ -199,7 +242,7 @@ public class PrcAccountService {
         String prenom = premierNonVide(oidc.getClaimAsString("useFirstName"),
                 oidc.getClaimAsString("firstName"));
         if (prenom == null) {
-            throw new PrcAccountException("PRC n'a transmis aucun prenom (useFirstName / firstName)");
+            return null; // absence toleree (Option A) : placeholder en creation
         }
         return tronquer(prenom);
     }
@@ -208,7 +251,7 @@ public class PrcAccountService {
         String nom = premierNonVide(oidc.getClaimAsString("useLastName"),
                 oidc.getClaimAsString("lastName"));
         if (nom == null) {
-            throw new PrcAccountException("PRC n'a transmis aucun nom (useLastName / lastName)");
+            return null; // absence toleree (Option A) : placeholder en creation
         }
         return tronquer(nom);
     }

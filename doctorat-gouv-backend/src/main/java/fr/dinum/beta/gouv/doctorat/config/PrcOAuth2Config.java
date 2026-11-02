@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -21,6 +20,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 
 import fr.dinum.beta.gouv.doctorat.security.PrcIdTokenValidator;
+import fr.dinum.beta.gouv.doctorat.security.PrcUserInfoService;
 
 /**
  * Declaration du client OIDC Projets Recherche Connect (PRC).
@@ -136,39 +136,41 @@ public class PrcOAuth2Config {
 	}
 
 	/**
-	 * Service OIDC qui <strong>n'appelle pas le endpoint {@code /userinfo}</strong>.
+	 * Service OIDC qui lit {@code /userinfo} <strong>en ignorant le Content-Type</strong>.
 	 *
-	 * <p><strong>Pourquoi ?</strong> PRC renvoie {@code Content-Type: application/jwt}
-	 * alors que nous demandons explicitement {@code Accept: application/json}
-	 * ({@code OAuth2UserRequestEntityConverter}). Spring leve alors :</p>
+	 * <p><strong>Pourquoi ce service ?</strong> PRC renvoie
+	 * {@code Content-Type: application/jwt} alors que nous demandons explicitement
+	 * {@code Accept: application/json} → Spring leve :</p>
 	 *
 	 * <pre>
 	 * [invalid_user_info_response] response contains invalid content type
 	 * 'application/jwt;charset=UTF-8'
 	 * </pre>
 	 *
-	 * <p>C'est une deviation a <strong>OIDC Core 1.0 §5.2</strong> (« MUST return a
-	 * Content-Type of application/json ») — et a la propre documentation de PRC, qui
-	 * annonce un objet JSON. Question posee a leur equipe.</p>
+	 * <p>Deviation <strong>OIDC Core 1.0 §5.2</strong> (« MUST return a Content-Type of
+	 * application/json ») — posee a l'equipe PRC.</p>
 	 *
-	 * <p><strong>On ne lit donc que l'{@code id_token}</strong>, dont les claims sont
-	 * eux aussi signes par PRC et valides (signature + iss + aud). Si un claim manque
-	 * ({@code principalEmail}, {@code state}, {@code type}...), {@link
-	 * fr.dinum.beta.gouv.doctorat.service.PrcAccountService} logue
-	 * « Claims PRC recus » puis refuse proprement : on verra alors quoi que manque.</p>
+	 * <p><strong>Et surtout</strong> : l'id_token de PRC ne contient <strong>aucun claim
+	 * metier</strong> ({@code principalEmail}, {@code state}, {@code type},
+	 * {@code personId}... — constate en recette le 29/10/2026). {@code /userinfo} est
+	 * donc notre <strong>seule source</strong> : on ne peut pas s'en passer.</p>
 	 *
-	 * <p>🔒 <strong>Échapatoire</strong> : si PRC corrige son {@code /userinfo} en JSON,
-	 * activer sans redeployer le code :
-	 * {@code PRC_USERINFO_ENABLED=true} (voir {@code prc.userinfo.enabled}).</p>
+	 * <p>Voir {@link fr.dinum.beta.gouv.doctorat.security.PrcUserInfoService} (format
+	 * JSON / JWS / JWE, verification de signature via {@code jwks_uri} + cle de secours).</p>
+	 *
+	 * <p>🔒 <strong>Bean unique requis</strong> : {@code OAuth2LoginConfigurer} fait un
+	 * {@code getIfUnique()} et retomberait silencieusement sur le service standard —
+	 * celui qui plante sur le Content-Type.</p>
+	 *
+	 * @param prc depot decouvrant la discovery (fournit l'algorithme de signature annonce)
+	 * @param clePubliqueSecours base64 DER de la cle fournie par PRC « en cas de besoin »
+	 *        ({@code PRC_USERINFO_PUBLIC_KEY}) — optionnelle, jamais commitee
 	 */
 	@Bean
-	public OAuth2UserService<OidcUserRequest, OidcUser> prcOidcUserService(
-			@Value("${prc.userinfo.enabled:false}") boolean userInfoActive) {
-
-		OidcUserService service = new OidcUserService();
-		// false = ignorer /userinfo (reponse non conforme). true = comportement standard.
-		service.setRetrieveUserInfo(request -> userInfoActive);
-		return service;
+	public OAuth2UserService<OidcUserRequest, OidcUser> prcUserInfoService(
+			PrcClientRegistrationRepository prc,
+			@Value("${prc.userinfo-public-key:}") String clePubliqueSecours) {
+		return new PrcUserInfoService(prc, clePubliqueSecours);
 	}
 
 	/**
