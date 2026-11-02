@@ -136,6 +136,15 @@ main {
   margin-top: 2rem;
 }
 
+.inscription-page fieldset .fr-radio-group {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.inscription-page fieldset .fr-radio-group:last-child {
+  margin-bottom: 0;
+}
+
 @media (min-width: 992px) {
   .connexion-layout,
   .inscription-layout {
