@@ -93,7 +93,9 @@ export class Header implements AfterViewInit {
   }
 
   logout(): void {
-    this.authService.logout();
+    // NE PAS purger ici : le composant /logout lit prc_id_token et
+    // prc_end_session_url AVANT de purger. Sinon le redirect PRC
+    // ne se declenche jamais (valeurs deja supprimees).
     this.router.navigate(['/logout']);
   }
 
