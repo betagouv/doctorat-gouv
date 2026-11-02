@@ -94,7 +94,7 @@ export class Header implements AfterViewInit {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/']);
+    this.router.navigate(['/logout']);
   }
 
   /** Lien "Mon profil" selon le rôle (candidat vs directeur de thèse). */

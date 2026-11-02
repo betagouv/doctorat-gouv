@@ -3,6 +3,7 @@ import { Search } from './search/search';
 import { PropositionDetail } from './proposition-detail/proposition-detail';
 import { Contact } from './contact/contact';
 import { Connexion } from './connexion/connexion';
+import { Logout } from './logout/logout';
 import { InscriptionCoordonnees } from './inscription/inscription-coordonnees/inscription-coordonnees';
 import { InscriptionDocuments } from './inscription/inscription-documents/inscription-documents';
 import { InscriptionTerminee } from './inscription/inscription-terminee/inscription-terminee';
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: 'proposition', component: PropositionDetail },
   { path: 'contact', component: Contact },
   { path: 'connexion', component: Connexion },
+  { path: 'logout', component: Logout },
   { path: 'inscription', redirectTo: 'inscription/coordonnees', pathMatch: 'full' },
   { path: 'inscription/coordonnees', component: InscriptionCoordonnees },
   { path: 'inscription/documents', component: InscriptionDocuments, canActivate: [inscriptionGuard] },

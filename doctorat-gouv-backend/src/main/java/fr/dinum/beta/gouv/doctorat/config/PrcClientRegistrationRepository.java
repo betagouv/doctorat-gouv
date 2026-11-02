@@ -314,6 +314,24 @@ public class PrcClientRegistrationRepository implements ClientRegistrationReposi
     }
 
     /**
+     * URL de déconnexion côté PRC ({@code end_session_endpoint} de la discovery).
+     *
+     * <p>Même source que {@code OidcClientInitiatedLogoutSuccessHandler} : le champ
+     * n'est pas exposé par un getter typé de {@code ProviderDetails}, on le lit dans
+     * {@code getConfigurationMetadata()} (la map brute de la discovery).</p>
+     *
+     * @return l'URL, ou {@code null} si la découverte n'a pas eu lieu (PRC non prêt)
+     */
+    public String getEndSessionEndpoint() {
+        ClientRegistration client = clientEnCache;
+        if (client == null) {
+            return null;
+        }
+        Object raw = client.getProviderDetails().getConfigurationMetadata().get("end_session_endpoint");
+        return raw != null ? raw.toString() : null;
+    }
+
+    /**
      * Indique si un client OIDC valide a été découvert (prêt à l'utilisation).
      * Utile pour masquer le bouton frontend lorsque la découverte OIDC a échoué.
      */

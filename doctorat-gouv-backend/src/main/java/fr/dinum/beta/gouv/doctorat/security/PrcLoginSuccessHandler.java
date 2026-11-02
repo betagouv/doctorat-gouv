@@ -1,6 +1,8 @@
 package fr.dinum.beta.gouv.doctorat.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +81,20 @@ public class PrcLoginSuccessHandler implements AuthenticationSuccessHandler {
             // Le role retenu est TOUJOURS celui du compte (jamais celui de la session) :
             // un compte candidat lie via PRC ne doit pas finir sur le tableau directeur.
             String destination = destinationPour(resultat, utilisateur);
+
+            // On transmet AUSSI l'id_token PRC (URL-encoded) pour que le front puisse
+            // construire l'URL de deconnexion PRC (phase 1 : stockage cote front).
+            // TODO migration : stocker cet id_token cote backend (session ou table)
+            // et exposer /api/prc/logout, pour ne plus le faire transiter dans l'URL.
+            StringBuilder redirect = new StringBuilder(frontendBaseUrl)
+                    .append(destination)
+                    .append("?token=").append(URLEncoder.encode(token, StandardCharsets.UTF_8));
+            if (oidc.getIdToken() != null && oidc.getIdToken().getTokenValue() != null) {
+                redirect.append("&prc_id_token=")
+                        .append(URLEncoder.encode(oidc.getIdToken().getTokenValue(), StandardCharsets.UTF_8));
+            }
             log.info("Redirection PRC -> {} (compteCree={})", destination, resultat.compteCree());
-            response.sendRedirect(frontendBaseUrl + destination + "?token=" + token);
+            response.sendRedirect(redirect.toString());
 
         } catch (PrcAccountException e) {
             // Refus metier attendu (state/type/claims) : pas un incident technique.

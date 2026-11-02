@@ -15,6 +15,8 @@ export class AuthService {
   private readonly apiUrl = environment.apiUrl;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
+  private readonly PRC_ID_TOKEN_KEY = 'prc_id_token';
+  private readonly PRC_END_SESSION_URL_KEY = 'prc_end_session_url';
 
   private currentUserSignal = signal<Utilisateur | null>(null);
 
@@ -54,6 +56,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.PRC_ID_TOKEN_KEY);
+    localStorage.removeItem(this.PRC_END_SESSION_URL_KEY);
     this.currentUserSignal.set(null);
   }
 
@@ -74,9 +78,15 @@ export class AuthService {
    * 3. on stocke la session puis on PURGE l'URL (le token ne doit pas rester
    *    dans l'historique du navigateur ni l'onglet partageable).
    */
-  loginWithToken(token: string): Observable<Utilisateur> {
-    // 1. Purge AVANT l'appel (voir l'avertissement ci-dessus)
-    this.logout();
+  loginWithToken(token: string, prcIdToken?: string | null): Observable<Utilisateur> {
+    // 1. Purge AVANT l'appel (voir l'avertissement ci-dessus) — on garde prc_id_token
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    this.currentUserSignal.set(null);
+
+    if (prcIdToken) {
+      localStorage.setItem(this.PRC_ID_TOKEN_KEY, prcIdToken);
+    }
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
@@ -98,13 +108,24 @@ export class AuthService {
    * vers `/connexion` alors que le token est en cours de traitement.
    */
   traiterTokenDepuisUrl(): Observable<void> {
-    const token = new URLSearchParams(window.location.search).get('token');
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const prcIdToken = params.get('prc_id_token');
+
+    // Stockage de l'id_token PRC (phase 1 : côté front, pour la déconnexion PRC).
+    // TODO migration : stocker côté backend (session) et exposer /api/prc/logout.
+    if (prcIdToken) {
+      localStorage.setItem(this.PRC_ID_TOKEN_KEY, prcIdToken);
+    }
 
     if (!token) {
+      if (prcIdToken) {
+        this.purgerUrl();
+      }
       return of(undefined);
     }
 
-    return this.loginWithToken(token).pipe(
+    return this.loginWithToken(token, prcIdToken).pipe(
       map(() => undefined),
       catchError(() => {
         // Token expiré/invalidé par le backend : on repart d'une session propre
@@ -122,6 +143,21 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  /** Récupère l'id_token PRC (phase 1 : stocké côté front). */
+  getPrcIdToken(): string | null {
+    return localStorage.getItem(this.PRC_ID_TOKEN_KEY);
+  }
+
+  /** Récupère l'URL de déconnexion PRC (end_session_endpoint), si connue. */
+  getEndSessionUrl(): string | null {
+    return localStorage.getItem(this.PRC_END_SESSION_URL_KEY);
+  }
+
+  /** Stocke l'URL de déconnexion PRC (appelé par la page de connexion). */
+  setEndSessionUrl(url: string): void {
+    localStorage.setItem(this.PRC_END_SESSION_URL_KEY, url);
   }
 
   getUserId(): string | null {

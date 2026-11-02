@@ -86,8 +86,11 @@ public class PrcLoginController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("actif", prcProperties.isActive());
-        // Sans bean (PRC non configure) : inactif + non pret, aucun decodage reseau.
-        map.put("ready", depot != null && depot.preparerAuChargement());
+        boolean ready = depot != null && depot.preparerAuChargement();
+        map.put("ready", ready);
+        // URL de deconnexion PRC (end_session_endpoint) - null si PRC non pret.
+        // Utilisee par la deconnexion frontend (phase 1 : stockage cote front).
+        map.put("endSessionEndpoint", ready && depot != null ? depot.getEndSessionEndpoint() : null);
         return ResponseEntity.ok(map);
     }
 

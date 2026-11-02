@@ -82,8 +82,13 @@ export class InscriptionCoordonnees implements OnInit {
 
     // PRC est optionnel : bouton actif seulement si le backend confirme
     // a la fois actif (issuer defini) et ready (client OIDC decouvert).
-    this.http.get<{ actif: boolean; ready: boolean }>(`${environment.apiUrl}/prc/statut`).subscribe({
-      next: (statut) => (this.prcDisponible = statut.actif && statut.ready),
+    this.http.get<{ actif: boolean; ready: boolean; endSessionEndpoint: string | null }>(`${environment.apiUrl}/prc/statut`).subscribe({
+      next: (statut) => {
+        this.prcDisponible = statut.actif && statut.ready;
+        if (statut.endSessionEndpoint) {
+          this.authService.setEndSessionUrl(statut.endSessionEndpoint);
+        }
+      },
       error: () => (this.prcDisponible = false),
     });
   }
