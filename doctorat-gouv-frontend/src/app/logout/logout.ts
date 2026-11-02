@@ -1,28 +1,62 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 
 /**
  * Composant /logout — point unique de déconnexion.
  *
- * <p>Phase 1 : stockage de l'id_token PRC côté front (localStorage).</p>
+ * Phase 1 : stockage de l'id_token PRC côté front (localStorage).
+ * Page intermédiaire : l'utilisateur voit « Déconnexion réussie » puis est
+ * redirigé vers PRC après 3 secondes (ou clique manuellement).
  *
- * <p>Si un id_token PRC est présent, on redirige le navigateur vers le
- * {@code end_session_endpoint} de PRC (déconnexion front-channel) avec
- * {@code id_token_hint}. Sinon, on purge la session locale et on revient à
- * l'accueil.</p>
- *
- * <p>TODO migration (voir {@code plan-developpement-complet.md} Lot F) :
- * stocker l'id_token côté backend (session HTTP ou table dédiée) et exposer
- * {@code /api/prc/logout}, pour ne plus le manipuler côté front — risques XSS,
- * incohérence multi-onglets, perte lors d'un clear storage.</p>
+ * TODO migration (Lot F) : stocker l'id_token côté backend + /api/prc/logout.
  */
 @Component({
   selector: 'app-logout',
   standalone: true,
-  template: '',
+  template: `
+    <main id="main-content" class="fr-container fr-my-8w">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-alert fr-alert--success fr-mb-4w" role="status">
+            <h3 class="fr-alert__title">Déconnexion réussie</h3>
+            <p>Vous êtes bien déconnecté de Doctorat.gouv.fr.</p>
+          </div>
+
+          <ng-container *ngIf="redirectionPrc">
+            <p class="fr-text--sm fr-mb-3w">
+              Redirection vers Projets Recherche Connect dans {{ compteRebours }} s…
+            </p>
+            <p>
+              <a [href]="redirectionPrc" class="fr-btn fr-btn--primary">
+                Continuer vers Projets Recherche Connect
+              </a>
+            </p>
+            <p class="fr-text--sm fr-mt-2w">
+              <a routerLink="/" class="fr-link">
+                Retour à Doctorat.gouv.fr
+              </a>
+            </p>
+          </ng-container>
+
+          <ng-container *ngIf="!redirectionPrc">
+            <p>
+              <a routerLink="/" class="fr-btn fr-btn--primary">
+                Retour à l'accueil
+              </a>
+            </p>
+          </ng-container>
+        </div>
+      </div>
+    </main>
+  `,
+  imports: [CommonModule, RouterLink],
 })
 export class Logout implements OnInit {
+  redirectionPrc: string | null = null;
+  compteRebours = 3;
+
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
@@ -33,13 +67,18 @@ export class Logout implements OnInit {
     this.authService.logout();
 
     if (prcToken && endSessionUrl) {
-      // Déconnexion PRC (front-channel) : PRC ferme sa session puis redirige vers
-      // post_logout_redirect_uri.
-      // PRC ne supporte PAS post_logout_redirect_uri : on ne l'envoie pas.
-      const url = `${endSessionUrl}?id_token_hint=${encodeURIComponent(prcToken)}`;
-      window.location.href = url;
+      // PRC ne supporte pas post_logout_redirect_uri : on ne l'envoie pas.
+      // Redirection automatique vers PRC après 3 secondes (l'utilisateur peut aussi cliquer).
+      this.redirectionPrc = `${endSessionUrl}?id_token_hint=${encodeURIComponent(prcToken)}`;
+      const timer = setInterval(() => {
+        this.compteRebours--;
+        if (this.compteRebours <= 0) {
+          clearInterval(timer);
+          window.location.href = this.redirectionPrc!;
+        }
+      }, 1000);
     } else {
-      this.router.navigate(['/']);
+      setTimeout(() => this.router.navigate(['/']), 1500);
     }
   }
 }
