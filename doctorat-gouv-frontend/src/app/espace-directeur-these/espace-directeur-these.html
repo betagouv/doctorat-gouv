@@ -305,7 +305,7 @@
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-hint-text" *ngIf="isVerrouille('etablissement')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('etablissement')">Pré-rempli depuis les métadonnées de votre sujet — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">L'établissement est obligatoire.</p>
                 </div>
 
@@ -323,7 +323,7 @@
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-hint-text" *ngIf="isVerrouille('laboratoire')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('laboratoire')">Pré-rempli depuis les métadonnées de votre sujet — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">L'unité de recherche est obligatoire.</p>
                 </div>
 
@@ -341,7 +341,7 @@
                       </li>
                     </ul>
                   </div>
-                  <p class="fr-hint-text" *ngIf="isVerrouille('ecoleDoctorale')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('ecoleDoctorale')">Pré-rempli depuis les métadonnées de votre sujet — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">L'école doctorale est obligatoire.</p>
                 </div>
 

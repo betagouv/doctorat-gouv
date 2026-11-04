@@ -753,7 +753,7 @@ public class DirecteurTheseService {
         response.setPhotoUrl(ProfilService.urlPhoto(u));
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
 
-        // Pré-remplissage depuis les métadonnées ADUM (sujet invitant) : uniquement si
+        // Pré-remplissage depuis les métadonnées du sujet invitant (ADUM/Amethis) : uniquement si
         // le profil n'existe pas encore. Les champs effectivement remplis sont verrouillés
         // côté front (champsVerrouilles) tant que le profil n'a pas été sauvegardé.
         boolean profilNouveau = (profil == null);
