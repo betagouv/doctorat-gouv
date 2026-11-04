@@ -49,6 +49,8 @@ export class EspaceDirecteurThese implements OnInit {
 
   descriptionAxes = '';
   axes: AxeDeRecherche[] = [];
+  /** Champs pré-remplis par ADUM et verrouillés tant que le profil n'est pas sauvegardé. */
+  champsVerrouilles: string[] = [];
   /** Mode « ajouter un axe » : seuls les axes marqués `nouveau` restent éditables. */
   modeAjoutAxe = false;
 
@@ -117,6 +119,10 @@ export class EspaceDirecteurThese implements OnInit {
     this.loadNotifications();
   }
 
+  isVerrouille(champ: string): boolean {
+    return this.champsVerrouilles.includes(champ);
+  }
+
   get prenom(): string {
     return this.profil?.prenom ?? '';
   }
@@ -137,6 +143,7 @@ export class EspaceDirecteurThese implements OnInit {
     this.directeurService.getProfil().subscribe({
       next: (data) => {
         this.profil = data;
+        this.champsVerrouilles = data.champsVerrouilles ?? [];
         this.populateForm(data);
       },
       error: () => {
@@ -228,9 +235,9 @@ export class EspaceDirecteurThese implements OnInit {
       email: this.profilForm.value.email,
       competences: this.profil?.competences ?? [],
       orcid: this.profilForm.value.orcid || null,
-      etablissement: this.profilForm.value.etablissement,
-      laboratoire: this.profilForm.value.laboratoire,
-      ecoleDoctorale: this.profilForm.value.ecoleDoctorale || null,
+      etablissement: this.profilForm.getRawValue().etablissement,
+      laboratoire: this.profilForm.getRawValue().laboratoire,
+      ecoleDoctorale: this.profilForm.getRawValue().ecoleDoctorale || null,
       employeur: this.profilForm.value.employeur || null,
       titre: this.profilForm.value.titre || null,
       precisionTitre: this.profilForm.value.precisionTitre || null,
@@ -245,6 +252,7 @@ export class EspaceDirecteurThese implements OnInit {
     this.directeurService.updateProfil(request).subscribe({
       next: (data) => {
         this.profil = data;
+        this.champsVerrouilles = data.champsVerrouilles ?? [];
         this.isEditing = false;
         this.isSaving = false;
         this.successMessage = 'Profil mis à jour avec succès.';

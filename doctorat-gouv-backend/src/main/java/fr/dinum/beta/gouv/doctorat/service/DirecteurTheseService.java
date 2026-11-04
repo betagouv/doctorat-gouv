@@ -665,16 +665,22 @@ public class DirecteurTheseService {
 
         Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
         if (email != null) {
-            for (PropositionThese p : propositionTheseRepository.findByDirecteurEmail(email)) {
-                if (p.getId() != null) {
-                    sujets.putIfAbsent(p.getId(), p);
+            List<PropositionThese> parEmail = propositionTheseRepository.findByDirecteurEmail(email);
+            if (parEmail != null) {
+                for (PropositionThese p : parEmail) {
+                    if (p.getId() != null) {
+                        sujets.putIfAbsent(p.getId(), p);
+                    }
                 }
             }
         }
         if (orcid != null) {
-            for (PropositionThese p : propositionTheseRepository.findByDirecteurOrcid(orcid)) {
-                if (p.getId() != null) {
-                    sujets.putIfAbsent(p.getId(), p);
+            List<PropositionThese> parOrcid = propositionTheseRepository.findByDirecteurOrcid(orcid);
+            if (parOrcid != null) {
+                for (PropositionThese p : parOrcid) {
+                    if (p.getId() != null) {
+                        sujets.putIfAbsent(p.getId(), p);
+                    }
                 }
             }
         }
@@ -746,15 +752,28 @@ public class DirecteurTheseService {
         );
         response.setPhotoUrl(ProfilService.urlPhoto(u));
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
+
+        // Pré-remplissage depuis les métadonnées ADUM (sujet invitant) : uniquement si
+        // le profil n'existe pas encore. Les champs effectivement remplis sont verrouillés
+        // côté front (champsVerrouilles) tant que le profil n'a pas été sauvegardé.
+        boolean profilNouveau = (profil == null);
+        Map<Long, PropositionThese> sujets = profilNouveau ? findSujetsRattaches(u.getId()) : new LinkedHashMap<>();
+        List<String> champsVerrouilles = new ArrayList<>();
+
+        String etablissement = profil != null ? profil.getEtablissement() : firstNonBlank(sujets, PropositionThese::getEtablissementLibelle);
+        String ecoleDoctorale = profil != null ? profil.getEcoleDoctorale() : firstNonBlank(sujets, PropositionThese::getEcoleDoctoraleLibelle);
+        String laboratoire = profil != null ? profil.getLaboratoire() : firstNonBlank(sujets, PropositionThese::getUniteRechercheLibelle);
+        String domaineScientifique = profil != null ? profil.getDomaineScientifique() : firstNonBlank(sujets, PropositionThese::getDomaineScientifique);
+
         response.setOrcid(profil != null ? profil.getOrcid() : null);
-        response.setEtablissement(profil != null ? profil.getEtablissement() : null);
-        response.setLaboratoire(profil != null ? profil.getLaboratoire() : null);
-        response.setEcoleDoctorale(profil != null ? profil.getEcoleDoctorale() : null);
+        response.setEtablissement(etablissement);
+        response.setLaboratoire(laboratoire);
+        response.setEcoleDoctorale(ecoleDoctorale);
         response.setEmployeur(profil != null ? profil.getEmployeur() : null);
         response.setTitre(profil != null ? profil.getTitre() : null);
         response.setPrecisionTitre(profil != null ? profil.getPrecisionTitre() : null);
         response.setHabilitationRecherche(profil != null ? profil.getHabilitationRecherche() : null);
-        response.setDomaineScientifique(profil != null ? profil.getDomaineScientifique() : null);
+        response.setDomaineScientifique(domaineScientifique);
         response.setExpertiseMots(profil != null ? profil.getExpertiseMots() : null);
         response.setMotsCles(profil != null && profil.getMotsCles() != null ? new ArrayList<>(profil.getMotsCles()) : new ArrayList<>());
         response.setDescriptionAxes(profil != null ? profil.getDescriptionAxes() : null);
@@ -772,6 +791,27 @@ public class DirecteurTheseService {
         } else {
             response.setAxes(new ArrayList<>());
         }
+
+        // Verrouillage transitoire : uniquement les champs effectivement pré-remplis par ADUM,
+        // et uniquement tant que le profil n'a pas été sauvegardé (profil == null).
+        if (profilNouveau) {
+            if (etablissement != null && !etablissement.isBlank()) champsVerrouilles.add("etablissement");
+            if (ecoleDoctorale != null && !ecoleDoctorale.isBlank()) champsVerrouilles.add("ecoleDoctorale");
+            if (laboratoire != null && !laboratoire.isBlank()) champsVerrouilles.add("laboratoire");
+            // domaineScientifique est pré-rempli mais reste éditable (pas verrouillé)
+        }
+        response.setChampsVerrouilles(champsVerrouilles);
+
         return response;
+    }
+
+    private static String firstNonBlank(Map<Long, PropositionThese> sujets,
+                                       java.util.function.Function<PropositionThese, String> getter) {
+        if (sujets == null) return null;
+        for (PropositionThese p : sujets.values()) {
+            String v = getter.apply(p);
+            if (v != null && !v.isBlank()) return v.trim();
+        }
+        return null;
     }
 }

@@ -53,6 +53,7 @@ export interface ProfilDtResponse {
   motsCles: string[];
   descriptionAxes: string | null;
   axes: AxeDeRecherche[];
+  champsVerrouilles: string[];
 }
 
 /** Données envoyées au backend pour modifier le profil directeur de thèse. */

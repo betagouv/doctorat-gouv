@@ -28,8 +28,10 @@ public class ProfilDtResponse {
     private List<String> motsCles;
     private String descriptionAxes;
     private List<AxeDeRecherche> axes;
+    private List<String> champsVerrouilles;
 
     public ProfilDtResponse() {}
+
 
     public ProfilDtResponse(String civilite, String nom, String prenom, String email) {
         this.civilite = civilite;
@@ -94,4 +96,7 @@ public class ProfilDtResponse {
 
     public List<AxeDeRecherche> getAxes() { return axes; }
     public void setAxes(List<AxeDeRecherche> axes) { this.axes = axes; }
+
+    public List<String> getChampsVerrouilles() { return champsVerrouilles; }
+    public void setChampsVerrouilles(List<String> champsVerrouilles) { this.champsVerrouilles = champsVerrouilles; }
 }

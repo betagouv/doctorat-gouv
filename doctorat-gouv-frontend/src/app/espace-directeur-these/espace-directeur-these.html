@@ -296,14 +296,16 @@
                   <label class="fr-label" for="edit-etablissement">Établissement délivrant le doctorat dont vous relevez <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-etablissement" type="text" formControlName="etablissement"
+                           [disabled]="isVerrouille('etablissement')"
                            (input)="filterEtablissements()" (focus)="filterEtablissements()" (blur)="hideEtabSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
-                    <ul class="ed-autocomplete__list" *ngIf="showEtabSuggestions">
+                    <ul class="ed-autocomplete__list" *ngIf="showEtabSuggestions && !isVerrouille('etablissement')">
                       <li *ngFor="let etab of filteredEtablissements">
                         <button type="button" class="ed-autocomplete__option" (mousedown)="selectEtablissement(etab)">{{ etab }}</button>
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('etablissement')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('etablissement')?.invalid && profilForm.get('etablissement')?.touched">L'établissement est obligatoire.</p>
                 </div>
 
@@ -312,14 +314,16 @@
                   <label class="fr-label" for="edit-laboratoire">Unité de recherche <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-laboratoire" type="text" formControlName="laboratoire"
+                           [disabled]="isVerrouille('laboratoire')"
                            (input)="filterLaboratoires()" (focus)="filterLaboratoires()" (blur)="hideLaboSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
-                    <ul class="ed-autocomplete__list" *ngIf="showLaboSuggestions">
+                    <ul class="ed-autocomplete__list" *ngIf="showLaboSuggestions && !isVerrouille('laboratoire')">
                       <li *ngFor="let labo of filteredLaboratoires">
                         <button type="button" class="ed-autocomplete__option" (mousedown)="selectLaboratoire(labo)">{{ labo }}</button>
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('laboratoire')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('laboratoire')?.invalid && profilForm.get('laboratoire')?.touched">L'unité de recherche est obligatoire.</p>
                 </div>
 
@@ -328,14 +332,16 @@
                   <label class="fr-label" for="edit-ecole-doctorale">École doctorale <span class="required-star">*</span></label>
                   <div class="ed-autocomplete">
                     <input class="fr-input" id="edit-ecole-doctorale" type="text" formControlName="ecoleDoctorale"
+                           [disabled]="isVerrouille('ecoleDoctorale')"
                            (input)="filterEcolesDoctorales()" (focus)="filterEcolesDoctorales()" (blur)="hideEcoleSuggestions()" autocomplete="off" />
                     <span class="fr-icon-search-line ed-autocomplete__icon" aria-hidden="true"></span>
-                    <ul class="ed-autocomplete__list" *ngIf="showEcoleSuggestions">
+                    <ul class="ed-autocomplete__list" *ngIf="showEcoleSuggestions && !isVerrouille('ecoleDoctorale')">
                       <li *ngFor="let ecole of filteredEcolesDoctorales">
                         <button type="button" class="ed-autocomplete__option" (mousedown)="selectEcoleDoctorale(ecole)">{{ ecole }}</button>
                       </li>
                     </ul>
                   </div>
+                  <p class="fr-hint-text" *ngIf="isVerrouille('ecoleDoctorale')">Pré-rempli depuis vos métadonnées ADUM — non modifiable.</p>
                   <p class="fr-error-text" *ngIf="profilForm.get('ecoleDoctorale')?.invalid && profilForm.get('ecoleDoctorale')?.touched">L'école doctorale est obligatoire.</p>
                 </div>
 

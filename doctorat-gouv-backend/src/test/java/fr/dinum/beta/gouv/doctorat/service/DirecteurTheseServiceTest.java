@@ -233,4 +233,38 @@ class DirecteurTheseServiceTest {
         assertEquals("DG-11111111", offres.get(0).getMatricule());
         assertEquals("Encadrement IA", offres.get(0).getTitre());
     }
+
+    @Test
+    void getProfil_sansProfil_preRemplitEtVerrouilleDepuisSujetInvitant() {
+        when(profilDtRepository.findByUtilisateurId("dt-1")).thenReturn(Optional.empty());
+
+        PropositionThese sujet = new PropositionThese();
+        sujet.setId(1L);
+        sujet.setEtablissementLibelle("Univ. Invitante");
+        sujet.setEcoleDoctoraleLibelle("ED Invitante");
+        sujet.setUniteRechercheLibelle("Labo Invitant");
+        sujet.setDomaineScientifique("Informatique");
+        when(propositionTheseRepository.findByDirecteurEmail("marie.curie@exemple.fr"))
+                .thenReturn(List.of(sujet));
+
+        ProfilDtResponse response = directeurTheseService.getProfil("dt-1").orElseThrow();
+
+        assertEquals("Univ. Invitante", response.getEtablissement());
+        assertEquals("ED Invitante", response.getEcoleDoctorale());
+        assertEquals("Labo Invitant", response.getLaboratoire());
+        assertEquals("Informatique", response.getDomaineScientifique());
+        assertEquals(List.of("etablissement", "ecoleDoctorale", "laboratoire"), response.getChampsVerrouilles());
+    }
+
+    @Test
+    void getProfil_avecProfil_conserveLesValeursStockees() {
+        // setUp : profil existant avec Université X / Labo Y / ED Z / 9
+        ProfilDtResponse response = directeurTheseService.getProfil("dt-1").orElseThrow();
+
+        assertEquals("Université X", response.getEtablissement());
+        assertEquals("ED Z", response.getEcoleDoctorale());
+        assertEquals("Labo Y", response.getLaboratoire());
+        assertEquals("9", response.getDomaineScientifique());
+        assertEquals(List.of(), response.getChampsVerrouilles());
+    }
 }
