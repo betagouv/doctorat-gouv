@@ -16,6 +16,8 @@ import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import fr.dinum.beta.gouv.doctorat.exception.PrcAccountException;
+import fr.dinum.beta.gouv.doctorat.exception.PrcNotInvitedException;
+import fr.dinum.beta.gouv.doctorat.repository.InvitationDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
 
@@ -51,6 +53,11 @@ public class PrcAccountService {
 
     private static final Logger log = LoggerFactory.getLogger(PrcAccountService.class);
 
+    private static final String MESSAGE_DT_NON_INVITE =
+        "Actuellement, l'inscription et la connexion à la plateforme pour les directeurs de thèse " +
+        "ne sont ouvertes que sur invitation. Si vous êtes concerné, utilisez le lien reçu par e-mail ; " +
+        "sinon, contactez la plateforme.";
+
     /** Longueur max des colonnes {@code prenom} / {@code nom} (length = 100). */
     private static final int MAX_NOM_PRENOM = 100;
 
@@ -72,11 +79,14 @@ public class PrcAccountService {
 
 
     private final UtilisateurRepository utilisateurRepository;
+    private final InvitationDirecteurTheseRepository invitationRepository;
     private final PasswordEncoder passwordEncoder;
 
     public PrcAccountService(UtilisateurRepository utilisateurRepository,
+                             InvitationDirecteurTheseRepository invitationRepository,
                              PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
+        this.invitationRepository = invitationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -193,6 +203,10 @@ public class PrcAccountService {
         // --- 3. Creation JIT ---
         if (role == null) {
             throw new PrcAccountException("Aucun role fourni pour la creation du compte PRC");
+        }
+        if (role == RoleUtilisateur.DIRECTEUR_THESE
+                && !invitationRepository.existsByEmail(email)) {
+            throw new PrcNotInvitedException(MESSAGE_DT_NON_INVITE);
         }
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setEmail(email);

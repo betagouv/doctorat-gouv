@@ -23,6 +23,11 @@
           <p>{{ 'CONNEXION.PRC_ERROR_DETAIL' | translate }}</p>
         </div>
 
+        <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="prcNonInvite">
+          <h3 class="fr-alert__title">Accès réservé aux directeurs de thèse invités</h3>
+          <p>{{ messageDtNonInvite }}</p>
+        </div>
+
         <p class="fr-text--sm fr-mb-3w">
           {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
         </p>

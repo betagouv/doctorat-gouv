@@ -16,6 +16,7 @@ import fr.dinum.beta.gouv.doctorat.controller.PrcLoginController;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.exception.PrcAccountException;
+import fr.dinum.beta.gouv.doctorat.exception.PrcNotInvitedException;
 import fr.dinum.beta.gouv.doctorat.service.AuthService;
 import fr.dinum.beta.gouv.doctorat.service.PrcAccountService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -95,6 +96,11 @@ public class PrcLoginSuccessHandler implements AuthenticationSuccessHandler {
             }
             log.info("Redirection PRC -> {} (compteCree={})", destination, resultat.compteCree());
             response.sendRedirect(redirect.toString());
+
+        } catch (PrcNotInvitedException e) {
+            log.warn("Connexion PRC refusee (DT non invite) : {}", e.getMessage());
+            response.sendRedirect(frontendBaseUrl + "/connexion?erreur=prc_non_invite");
+            return;
 
         } catch (PrcAccountException e) {
             // Refus metier attendu (state/type/claims) : pas un incident technique.

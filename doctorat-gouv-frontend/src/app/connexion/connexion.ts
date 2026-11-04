@@ -38,6 +38,8 @@ export class Connexion implements OnInit {
 
   /** Message d'erreur affiché si le backend indique que PRC n'est pas prêt. */
   prcErreur = false;
+  prcNonInvite = false;
+  readonly messageDtNonInvite = 'Actuellement, l’inscription et la connexion à la plateforme pour les directeurs de thèse ne sont ouvertes que sur invitation. Si vous êtes concerné, utilisez le lien reçu par e-mail ; sinon, contactez la plateforme.';
 
   constructor(
     private fb: FormBuilder,
@@ -68,6 +70,7 @@ export class Connexion implements OnInit {
 
     // Retour d'authentification PRC en échec (SecurityConfig renvoie vers /connexion?erreur=prc)
     this.prcErreur = this.route.snapshot.queryParams['erreur'] === 'prc';
+    this.prcNonInvite = this.route.snapshot.queryParams['erreur'] === 'prc_non_invite';
 
     // PRC est optionnel : on n'affiche le bouton que si le backend confirme à la fois actif *et* prêt.
     this.http.get<{ actif: boolean; ready: boolean; endSessionEndpoint: string | null }>(`${environment.apiUrl}/prc/statut`).subscribe({

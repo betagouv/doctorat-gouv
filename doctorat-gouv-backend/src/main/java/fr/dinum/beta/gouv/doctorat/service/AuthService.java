@@ -25,6 +25,7 @@ import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import fr.dinum.beta.gouv.doctorat.repository.InvitationDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
@@ -39,6 +40,11 @@ public class AuthService {
 
     private static final int BREVO_TEMPLATE_CONFIRMATION_CANDIDAT = 61;
 
+    private static final String MESSAGE_DT_NON_INVITE =
+        "Actuellement, l'inscription et la connexion à la plateforme pour les directeurs de thèse " +
+        "ne sont ouvertes que sur invitation. Si vous êtes concerné, utilisez le lien reçu par e-mail ; " +
+        "sinon, contactez la plateforme.";
+
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
 
@@ -46,6 +52,7 @@ public class AuthService {
     private String stubMailbox;
 
     private final UtilisateurRepository utilisateurRepository;
+    private final InvitationDirecteurTheseRepository invitationRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
@@ -53,12 +60,14 @@ public class AuthService {
     private final BrevoEmailService emailService;
 
     public AuthService(UtilisateurRepository utilisateurRepository,
+                       InvitationDirecteurTheseRepository invitationRepository,
                        ProfilCandidatRepository profilCandidatRepository,
                        PasswordEncoder passwordEncoder,
                        JwtConfig jwtConfig,
                        InscriptionFileService inscriptionFileService,
                        BrevoEmailService emailService) {
         this.utilisateurRepository = utilisateurRepository;
+        this.invitationRepository = invitationRepository;
         this.profilCandidatRepository = profilCandidatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtConfig = jwtConfig;
@@ -69,6 +78,11 @@ public class AuthService {
     public ConnexionResponse inscrire(InscriptionRequest request) {
         String email = EmailUtils.normalize(request.getEmail());
         log.info("Inscription de {}", email);
+
+        if (request.getRole() == RoleUtilisateur.DIRECTEUR_THESE
+                && !invitationRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException(MESSAGE_DT_NON_INVITE);
+        }
 
         if (utilisateurRepository.existsByEmailIgnoreCaseAndTrim(email)) {
             throw new IllegalArgumentException("Un compte existe déjà avec cet email");
@@ -111,6 +125,11 @@ public class AuthService {
         base.setPrenom(request.getPrenom());
         base.setNom(request.getNom());
         base.setRole(request.getRole() != null ? request.getRole() : RoleUtilisateur.CANDIDAT);
+
+        if (base.getRole() == RoleUtilisateur.DIRECTEUR_THESE
+                && !invitationRepository.existsByEmail(EmailUtils.normalize(request.getEmail()))) {
+            throw new IllegalArgumentException(MESSAGE_DT_NON_INVITE);
+        }
 
         ConnexionResponse response = inscrire(base);
         String userId = response.getUtilisateur().getId();

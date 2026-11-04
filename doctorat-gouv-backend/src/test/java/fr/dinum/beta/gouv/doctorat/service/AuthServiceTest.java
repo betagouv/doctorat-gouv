@@ -40,6 +40,7 @@ import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.DemarcheType;
 import fr.dinum.beta.gouv.doctorat.enums.RoleUtilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
+import fr.dinum.beta.gouv.doctorat.repository.InvitationDirecteurTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 
@@ -57,6 +58,9 @@ class AuthServiceTest {
 
     @Mock
     private InscriptionFileService inscriptionFileService;
+
+    @Mock
+    private InvitationDirecteurTheseRepository invitationRepository;
 
     @Mock
     private ProfilCandidatRepository profilCandidatRepository;
@@ -308,6 +312,7 @@ class AuthServiceTest {
         ReflectionTestUtils.setField(authService, "mailEnabled", true);
         InscriptionRequest request = nouvelleInscriptionCandidat();
         request.setRole(RoleUtilisateur.DIRECTEUR_THESE);
+        when(invitationRepository.existsByEmail("nouveau@exemple.fr")).thenReturn(true);
         stubInscriptionOk();
 
         authService.inscrire(request);
