@@ -39,7 +39,6 @@ export class Connexion implements OnInit {
   /** Message d'erreur affiché si le backend indique que PRC n'est pas prêt. */
   prcErreur = false;
   prcNonInvite = false;
-  readonly messageDtNonInvite = 'Actuellement, l’inscription et la connexion à la plateforme pour les directeurs de thèse ne sont ouvertes que sur invitation. Si vous êtes concerné, utilisez le lien reçu par e-mail ; sinon, contactez la plateforme.';
 
   constructor(
     private fb: FormBuilder,
@@ -58,15 +57,9 @@ export class Connexion implements OnInit {
   }
 
   ngOnInit(): void {
-    const titre = this.translate.currentLang === 'en'
-      ? 'Login — Doctorat.gouv.fr'
-      : 'Connexion — Doctorat.gouv.fr';
-    this.titleService.setTitle(titre);
+    this.titleService.setTitle(this.translate.instant('CONNEXION.META_TITLE'));
 
-    const description = this.translate.currentLang === 'en'
-      ? 'Log in to the national PhD platform with Projets Recherche Connect or your account.'
-      : 'Connectez-vous à la plateforme nationale du doctorat via Projets Recherche Connect ou avec votre compte.';
-    this.metaService.updateTag({ name: 'description', content: description });
+    this.metaService.updateTag({ name: 'description', content: this.translate.instant('CONNEXION.META_DESCRIPTION') });
 
     // Retour d'authentification PRC en échec (SecurityConfig renvoie vers /connexion?erreur=prc)
     this.prcErreur = this.route.snapshot.queryParams['erreur'] === 'prc';
@@ -143,11 +136,11 @@ export class Connexion implements OnInit {
       error: (err) => {
         this.isSubmitting = false;
         if (err.status === 401 || err.status === 400) {
-          this.globalError = 'Email ou mot de passe incorrect';
+          this.globalError = this.translate.instant('CONNEXION.ERROR_INVALID_CREDENTIALS');
         } else if (err.status === 503) {
-          this.globalError = 'Projets Recherche Connect n\'est pas activé sur cet environnement. Veuillez utiliser le formulaire ci-dessous.';
+          this.globalError = this.translate.instant('CONNEXION.ERROR_PRC_NOT_ENABLED');
         } else {
-          this.globalError = 'Service temporairement indisponible. Veuillez réessayer.';
+          this.globalError = this.translate.instant('CONNEXION.ERROR_SERVICE_TEMPORARILY_UNAVAILABLE');
         }
       }
     });
