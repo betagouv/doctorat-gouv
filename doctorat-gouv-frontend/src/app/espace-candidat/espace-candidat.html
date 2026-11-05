@@ -12,7 +12,7 @@
           <button class="ec-sidebar__photo-edit"
                   (click)="onPhotoEdit()"
                   [disabled]="isSavingPhoto"
-                  aria-label="Modifier la photo">
+                  [attr.aria-label]="'ESPACE_CANDIDAT.SIDEBAR_EDIT_PHOTO' | translate">
             <span class="fr-icon-edit-line" aria-hidden="true"></span>
           </button>
           <input type="file"
@@ -21,7 +21,7 @@
                  (change)="onPhotoSelected($event)"
                  hidden />
           <span *ngIf="isSavingPhoto" class="ec-sidebar__photo-spinner"
-                role="status" aria-label="Envoi de la photo"></span>
+                role="status" [attr.aria-label]="'ESPACE_CANDIDAT.SIDEBAR_PHOTO_UPLOADING' | translate"></span>
         </div>
         <p *ngIf="photoError" class="ec-sidebar__photo-error">{{ photoError }}</p>
         <div class="ec-sidebar__info">
@@ -34,7 +34,7 @@
       </div>
       <a routerLink="/tableau-de-bord-candidat" class="ec-sidebar__dashboard-link">
         <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
-        Tableau de bord
+        {{ 'ESPACE_CANDIDAT.SIDEBAR_DASHBOARD' | translate }}
       </a>
     </aside>
 
@@ -50,54 +50,54 @@
       </div>
 
       <!-- Onglets de navigation -->
-      <nav class="ec-tabs" role="tablist" aria-label="Espace demandeur">
+      <nav class="ec-tabs" role="tablist" [attr.aria-label]="'ESPACE_CANDIDAT.TITLE' | translate">
         <button class="ec-tabs__tab"
                 [class.ec-tabs__tab--active]="activeTab === 'profil'"
                 (click)="switchTab('profil')"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'profil'">
-          Votre profil
+          {{ 'ESPACE_CANDIDAT.TAB_PROFIL' | translate }}
         </button>
         <button class="ec-tabs__tab"
                 [class.ec-tabs__tab--active]="activeTab === 'motdepasse'"
                 (click)="switchTab('motdepasse')"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'motdepasse'">
-          Mot de passe
+          {{ 'ESPACE_CANDIDAT.TAB_MOT_DE_PASSE' | translate }}
         </button>
         <button class="ec-tabs__tab"
                 [class.ec-tabs__tab--active]="activeTab === 'notifications'"
                 (click)="switchTab('notifications')"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'notifications'">
-          Notifications
+          {{ 'ESPACE_CANDIDAT.TAB_NOTIFICATIONS' | translate }}
         </button>
         <button class="ec-tabs__tab"
                 [class.ec-tabs__tab--active]="activeTab === 'alertes'"
                 (click)="switchTab('alertes')"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'alertes'">
-          Alertes
+          {{ 'ESPACE_CANDIDAT.TAB_ALERTES' | translate }}
         </button>
       </nav>
 
       <!-- ============ ONGLET : VOTRE PROFIL ============ -->
       <div *ngIf="activeTab === 'profil'" class="ec-tab-content">
 
-        <!-- Section : Informations personnelles -->
+        <!-- Section : {{ 'ESPACE_CANDIDAT.PERSONAL_INFO_TITLE' | translate }} -->
         <section class="ec-card">
           <div class="ec-card__header">
             <div class="ec-card__header-row">
               <div>
                 <h2 class="ec-card__title">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Informations personnelles
+                  {{ 'ESPACE_CANDIDAT.PERSONAL_INFO_TITLE' | translate }}
                 </h2>
-                <p class="ec-card__desc">Renseignez vos coordonnées et informations de contact.</p>
+                <p class="ec-card__desc">{{ 'ESPACE_CANDIDAT.PERSONAL_INFO_SUBTITLE' | translate }}</p>
               </div>
               <button *ngIf="!isEditing" class="ec-btn-secondary" (click)="startEdit()">
                 <span class="fr-icon-edit-line" aria-hidden="true"></span>
-                Modifier
+                {{ 'ESPACE_CANDIDAT.PROFIL_EDIT' | translate }}
               </button>
             </div>
           </div>
@@ -108,27 +108,27 @@
             <div *ngIf="!isEditing && profil" class="ec-profil">
               <div class="ec-form-grid">
                 <div class="ec-field">
-                  <span class="ec-field__label">Prénom</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_PRENOM' | translate }}</span>
                   <span class="ec-field__value">{{ profil.prenom }}</span>
                 </div>
                 <div class="ec-field">
-                  <span class="ec-field__label">Nom</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_NOM' | translate }}</span>
                   <span class="ec-field__value">{{ profil.nom }}</span>
                 </div>
                 <div class="ec-field">
-                  <span class="ec-field__label">Civilité</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_CIVILITE' | translate }}</span>
                   <span class="ec-field__value">{{ profil.civilite || '—' }}</span>
                 </div>
                 <div class="ec-field">
-                  <span class="ec-field__label">Situation actuelle</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_SITUATION' | translate }}</span>
                   <span class="ec-field__value">{{ profil.situation | situationLibelle }}</span>
                 </div>
                 <div class="ec-field">
-                  <span class="ec-field__label">E-mail</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }}</span>
                   <span class="ec-field__value">{{ profil.email }}</span>
                 </div>
                 <div class="ec-field">
-                  <span class="ec-field__label">Téléphone mobile</span>
+                  <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_TELEPHONE' | translate }}</span>
                   <span class="ec-field__value">{{ profil.telephone || '—' }}</span>
                 </div>
               </div>
@@ -140,26 +140,26 @@
 
                 <!-- Ligne 1 : Prénom / Nom -->
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                  <label class="fr-label" for="edit-prenom">Prénom <span class="required-star">*</span></label>
+                  <label class="fr-label" for="edit-prenom">{{ 'ESPACE_CANDIDAT.FIELD_PRENOM' | translate }} <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-prenom" type="text" formControlName="prenom"
                          [attr.aria-invalid]="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched ? 'true' : null" />
                   <p class="fr-error-text" *ngIf="profilForm.get('prenom')?.invalid && profilForm.get('prenom')?.touched">
-                    Le prénom est obligatoire.
+                    {{ 'ESPACE_CANDIDAT.ERROR_PRENOM_REQUIRED' | translate }}
                   </p>
                 </div>
 
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
-                  <label class="fr-label" for="edit-nom">Nom <span class="required-star">*</span></label>
+                  <label class="fr-label" for="edit-nom">{{ 'ESPACE_CANDIDAT.FIELD_NOM' | translate }} <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-nom" type="text" formControlName="nom"
                          [attr.aria-invalid]="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched ? 'true' : null" />
                   <p class="fr-error-text" *ngIf="profilForm.get('nom')?.invalid && profilForm.get('nom')?.touched">
-                    Le nom est obligatoire.
+                    {{ 'ESPACE_CANDIDAT.ERROR_NOM_REQUIRED' | translate }}
                   </p>
                 </div>
 
                 <!-- Ligne 2 : Civilité / Situation -->
                 <div class="fr-select-group">
-                  <label class="fr-label" for="edit-civilite">Civilité</label>
+                  <label class="fr-label" for="edit-civilite">{{ 'ESPACE_CANDIDAT.FIELD_CIVILITE' | translate }}</label>
                   <select class="fr-select" id="edit-civilite" formControlName="civilite">
                     <option value="">—</option>
                     <option value="M">Monsieur</option>
@@ -169,29 +169,29 @@
                 </div>
 
                 <div class="fr-select-group" [class.fr-select-group--error]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                  <label class="fr-label" for="edit-situation">Situation actuelle <span class="required-star">*</span></label>
+                  <label class="fr-label" for="edit-situation">{{ 'ESPACE_CANDIDAT.FIELD_SITUATION' | translate }} <span class="required-star">*</span></label>
                   <select class="fr-select" id="edit-situation" formControlName="situation"
                           [attr.aria-invalid]="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched ? 'true' : null">
                     <option value="">—</option>
                     <option *ngFor="let option of situationOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
                   <p class="fr-error-text" *ngIf="profilForm.get('situation')?.invalid && profilForm.get('situation')?.touched">
-                    La situation est obligatoire.
+                    {{ 'ESPACE_CANDIDAT.ERROR_SITUATION_REQUIRED' | translate }}
                   </p>
                 </div>
 
                 <!-- Ligne 3 : Email / Téléphone -->
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                  <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
+                  <label class="fr-label" for="edit-email">{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }} <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-email" type="email" formControlName="email"
                          [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
                   <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
-                    {{ profilForm.get('email')?.errors?.['required'] ? "L'adresse électronique est obligatoire." : "L'adresse électronique n'est pas valide." }}
+                    {{ profilForm.get('email')?.errors?.['required'] ? ('ESPACE_CANDIDAT.ERROR_EMAIL_REQUIRED' | translate) : ('ESPACE_CANDIDAT.ERROR_EMAIL_INVALID' | translate) }}
                   </p>
                 </div>
 
                 <div class="fr-input-group">
-                  <label class="fr-label" for="edit-telephone">Téléphone mobile</label>
+                  <label class="fr-label" for="edit-telephone">{{ 'ESPACE_CANDIDAT.FIELD_TELEPHONE' | translate }}</label>
                   <input class="fr-input" id="edit-telephone" type="tel" formControlName="telephone" />
                 </div>
 
@@ -200,10 +200,10 @@
               <div class="ec-actions">
                 <button type="submit" class="ec-btn-primary" [disabled]="isSaving">
                   <span class="fr-icon-check-line" aria-hidden="true"></span>
-                  Enregistrer
+                  {{ 'ESPACE_CANDIDAT.PROFIL_SAVE' | translate }}
                 </button>
                 <button type="button" class="ec-btn-secondary" (click)="cancelEdit()" [disabled]="isSaving">
-                  Annuler
+                  {{ 'ESPACE_CANDIDAT.PROFIL_CANCEL' | translate }}
                 </button>
               </div>
             </form>
@@ -218,9 +218,9 @@
               <div>
                 <h2 class="ec-card__title">
                   <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-                  Mes documents
+                  {{ 'ESPACE_CANDIDAT.DOCUMENTS_TITLE' | translate }}
                 </h2>
-                <p class="ec-card__desc">Votre CV et vos pièces complémentaires (PDF uniquement). Remplacer ou supprimer un fichier le supprime définitivement du stockage.</p>
+                <p class="ec-card__desc">{{ 'ESPACE_CANDIDAT.DOCUMENTS_SUBTITLE' | translate }}</p>
               </div>
             </div>
           </div>
@@ -235,17 +235,17 @@
 
             <!-- CV -->
             <div class="ec-field">
-              <span class="ec-field__label">Curriculum vitae (PDF, 1 Mo max)</span>
+              <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.CV_LABEL' | translate }}</span>
               <div *ngIf="cv; else pasDeCv" class="ec-competences__item">
                 <span class="ec-competences__label">{{ cv.filename }} ({{ formatTaille(cv.size) }})</span>
-                <button type="button" class="ec-btn-secondary" (click)="ouvrirCv()">Voir</button>
-                <label class="ec-btn-secondary" for="remplacer-cv">Remplacer</label>
+                <button type="button" class="ec-btn-secondary" (click)="ouvrirCv()">{{ 'ESPACE_CANDIDAT.DOC_VIEW' | translate }}</button>
+                <label class="ec-btn-secondary" for="remplacer-cv">{{ 'ESPACE_CANDIDAT.DOC_REPLACE' | translate }}</label>
                 <input class="fr-sr-only" type="file" id="remplacer-cv" accept=".pdf,application/pdf"
                        (change)="onRemplacerCv($event)" [disabled]="isSavingCv" />
               </div>
               <ng-template #pasDeCv>
-                <span class="ec-competences__empty">Aucun CV déposé.</span>
-                <label class="ec-btn-secondary" for="remplacer-cv">Déposer un CV</label>
+                <span class="ec-competences__empty">{{ 'ESPACE_CANDIDAT.NO_CV' | translate }}</span>
+                <label class="ec-btn-secondary" for="remplacer-cv">{{ 'ESPACE_CANDIDAT.UPLOAD_CV' | translate }}</label>
                 <input class="fr-sr-only" type="file" id="remplacer-cv" accept=".pdf,application/pdf"
                        (change)="onRemplacerCv($event)" [disabled]="isSavingCv" />
               </ng-template>
@@ -253,25 +253,25 @@
 
             <!-- Pièces complémentaires -->
             <div class="ec-field fr-mt-3w">
-              <span class="ec-field__label">Pièces complémentaires (PDF, 5 Mo max, 5 maximum)</span>
+              <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.PIECES_LABEL' | translate }}</span>
               <div class="ec-competences__list" *ngIf="pieces.length > 0">
                 <div class="ec-competences__item" *ngFor="let piece of pieces; let i = index">
                   <span class="ec-competences__label">{{ piece.filename }} ({{ formatTaille(piece.size) }})</span>
-                  <button type="button" class="ec-btn-secondary" (click)="ouvrirPiece(i)">Voir</button>
+                  <button type="button" class="ec-btn-secondary" (click)="ouvrirPiece(i)">{{ 'ESPACE_CANDIDAT.DOC_VIEW' | translate }}</button>
                   <button type="button" class="ec-competences__delete"
                           (click)="supprimerPiece(i)"
                           [disabled]="pieceEnCoursSuppression === i"
-                          aria-label="Supprimer la pièce"
-                          title="Supprimer définitivement la pièce">
+                          [attr.aria-label]="'ESPACE_CANDIDAT.DELETE_PIECE' | translate"
+                          [attr.title]="'ESPACE_CANDIDAT.DELETE_PIECE_DEFINITIVE' | translate">
                     <span class="fr-icon-delete-line" aria-hidden="true"></span>
                   </button>
                 </div>
               </div>
               <p class="ec-competences__empty" *ngIf="pieces.length === 0">
-                Aucune pièce complémentaire.
+                {{ 'ESPACE_CANDIDAT.NO_PIECE' | translate }}
               </p>
               <div *ngIf="pieces.length < 5">
-                <label class="ec-btn-secondary" for="ajouter-pieces">Ajouter des pièces</label>
+                <label class="ec-btn-secondary" for="ajouter-pieces">{{ 'ESPACE_CANDIDAT.ADD_PIECES' | translate }}</label>
                 <input class="fr-sr-only" type="file" id="ajouter-pieces" accept=".pdf,application/pdf" multiple
                        (change)="onAjouterPieces($event)" [disabled]="isAddingPieces" />
               </div>
@@ -286,7 +286,7 @@
         <section class="ec-card">
           <div class="ec-card__header">
             <h2 class="ec-card__title">
-              Gestion du mot de passe
+              {{ 'ESPACE_CANDIDAT.PASSWORD_TITLE' | translate }}
             </h2>
           </div>
           <div class="ec-card__body">
@@ -304,7 +304,7 @@
               <!-- Mot de passe actuel -->
               <div class="fr-input-group"
                    [class.fr-input-group--error]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
-                <label class="fr-label" for="mdp-actuel">Mot de passe actuel <span class="required-star">*</span></label>
+                <label class="fr-label" for="mdp-actuel">{{ 'ESPACE_CANDIDAT.PASSWORD_CURRENT' | translate }} <span class="required-star">*</span></label>
                 <div class="fr-password">
                   <input class="fr-input"
                          [attr.type]="showCurrentPassword ? 'text' : 'password'"
@@ -314,7 +314,7 @@
                          [attr.aria-invalid]="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched ? 'true' : null" />
                 </div>
                 <p class="fr-error-text" *ngIf="motDePasseForm.get('motDePasseActuel')?.invalid && motDePasseForm.get('motDePasseActuel')?.touched">
-                  Le mot de passe actuel est obligatoire.
+                  {{ 'ESPACE_CANDIDAT.PASSWORD_CURRENT_REQUIRED' | translate }}
                 </p>
               </div>
 
@@ -322,12 +322,12 @@
               <div class="fr-input-group"
                    [class.fr-input-group--error]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
                 <div class="ec-mdp-label-row">
-                  <label class="fr-label" for="mdp-nouveau">Nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-label" for="mdp-nouveau">{{ 'ESPACE_CANDIDAT.PASSWORD_NEW' | translate }} <span class="required-star">*</span></label>
                   <label class="fr-checkbox-group fr-checkbox-group--sm">
                     <input type="checkbox"
                            [checked]="showNewPassword"
                            (change)="toggleNewPassword()" />
-                    <span class="fr-checkbox-group__label">Afficher</span>
+                    <span class="fr-checkbox-group__label">{{ 'ESPACE_CANDIDAT.SHOW_PASSWORD' | translate }}</span>
                   </label>
                 </div>
                 <div class="fr-password">
@@ -339,19 +339,19 @@
                          [attr.aria-invalid]="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched ? 'true' : null" />
                 </div>
                 <p class="fr-error-text" *ngIf="motDePasseForm.get('nouveauMotDePasse')?.invalid && motDePasseForm.get('nouveauMotDePasse')?.touched">
-                  Le nouveau mot de passe est obligatoire (12 caractères minimum).
+                  {{ 'ESPACE_CANDIDAT.PASSWORD_NEW_REQUIRED' | translate }}
                 </p>
-                <p class="fr-hint-text">Votre mot de passe doit être différent des 5 derniers mots de passe.</p>
+                <p class="fr-hint-text">{{ 'ESPACE_CANDIDAT.PASSWORD_DIFFERENT' | translate }}</p>
                 <div class="ec-mdp-constraints">
                   <p class="ec-mdp-constraints__title">
                     <span class="fr-icon-information-line" aria-hidden="true"></span>
-                    Votre mot de passe doit contenir au moins :
+                    {{ 'ESPACE_CANDIDAT.PASSWORD_CONSTRAINTS_TITLE' | translate }}
                   </p>
                   <ul class="ec-mdp-constraints__list">
-                    <li>12 caractères minimum</li>
-                    <li>1 lettre en majuscule</li>
-                    <li>1 chiffre minimum</li>
-                    <li>Les caractères spéciaux suivants sont autorisés % &amp; &lt; &gt; = |</li>
+                    <li>{{ 'ESPACE_CANDIDAT.PASSWORD_MIN_12' | translate }}</li>
+                    <li>{{ 'ESPACE_CANDIDAT.PASSWORD_UPPERCASE' | translate }}</li>
+                    <li>{{ 'ESPACE_CANDIDAT.PASSWORD_DIGIT' | translate }}</li>
+                    <li>{{ 'ESPACE_CANDIDAT.PASSWORD_SPECIALS' | translate }}</li>
                   </ul>
                 </div>
               </div>
@@ -360,12 +360,12 @@
               <div class="fr-input-group"
                    [class.fr-input-group--error]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
                 <div class="ec-mdp-label-row">
-                  <label class="fr-label" for="mdp-confirmation">Confirmation du nouveau mot de passe <span class="required-star">*</span></label>
+                  <label class="fr-label" for="mdp-confirmation">{{ 'ESPACE_CANDIDAT.PASSWORD_CONFIRM' | translate }} <span class="required-star">*</span></label>
                   <label class="fr-checkbox-group fr-checkbox-group--sm">
                     <input type="checkbox"
                            [checked]="showConfirmPassword"
                            (change)="toggleConfirmPassword()" />
-                    <span class="fr-checkbox-group__label">Afficher</span>
+                    <span class="fr-checkbox-group__label">{{ 'ESPACE_CANDIDAT.SHOW_PASSWORD' | translate }}</span>
                   </label>
                 </div>
                 <div class="fr-password">
@@ -377,7 +377,7 @@
                          [attr.aria-invalid]="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched ? 'true' : null" />
                 </div>
                 <p class="fr-error-text" *ngIf="motDePasseForm.get('confirmationMotDePasse')?.invalid && motDePasseForm.get('confirmationMotDePasse')?.touched">
-                  La confirmation du mot de passe est obligatoire.
+                  {{ 'ESPACE_CANDIDAT.PASSWORD_CONFIRM_REQUIRED' | translate }}
                 </p>
               </div>
 
@@ -385,7 +385,7 @@
               <div class="ec-mdp-actions">
                 <button type="submit" class="ec-btn-primary" [disabled]="isSavingPassword">
                   <span class="fr-icon-check-line" aria-hidden="true"></span>
-                  Enregistrer
+                  {{ 'ESPACE_CANDIDAT.PROFIL_SAVE' | translate }}
                 </button>
               </div>
 
@@ -403,9 +403,9 @@
               <div>
                 <h2 class="ec-card__title">
                   <span class="fr-icon-mail-line" aria-hidden="true"></span>
-                  Notifications par e-mail
+                  {{ 'ESPACE_CANDIDAT.NOTIFICATIONS_TITLE' | translate }}
                 </h2>
-                <p class="ec-card__desc">Choisissez à quelle fréquence recevoir un e-mail récapitulant vos messages non lus.</p>
+                <p class="ec-card__desc">{{ 'ESPACE_CANDIDAT.NOTIFICATIONS_SUBTITLE' | translate }}</p>
               </div>
             </div>
           </div>
@@ -419,22 +419,22 @@
             </div>
 
             <fieldset class="fr-fieldset" [disabled]="isLoadingNotifications">
-              <legend class="fr-fieldset__legend">Fréquence d'envoi</legend>
+              <legend class="fr-fieldset__legend">{{ 'ESPACE_CANDIDAT.NOTIFICATIONS_FREQUENCY' | translate }}</legend>
               <div class="fr-fieldset__content">
                 <div class="fr-radio-group">
                   <input type="radio" id="freq-journaliere" name="frequence-notifications"
                          value="JOURNALIERE" [(ngModel)]="frequenceNotification" />
                   <label class="fr-label" for="freq-journaliere">
-                    Journalière
-                    <span class="fr-hint-text">Un e-mail récapitulatif chaque jour en cas de messages non lus.</span>
+                    {{ 'ESPACE_CANDIDAT.NOTIFICATIONS_DAILY' | translate }}
+                    <span class="fr-hint-text">{{ 'ESPACE_CANDIDAT.NOTIFICATIONS_DAILY_HINT' | translate }}</span>
                   </label>
                 </div>
                 <div class="fr-radio-group">
                   <input type="radio" id="freq-hebdomadaire" name="frequence-notifications"
                          value="HEBDOMADAIRE" [(ngModel)]="frequenceNotification" />
                   <label class="fr-label" for="freq-hebdomadaire">
-                    Hebdomadaire
-                    <span class="fr-hint-text">Un e-mail récapitulatif chaque semaine en cas de messages non lus.</span>
+                    {{ 'ESPACE_CANDIDAT.NOTIFICATIONS_WEEKLY' | translate }}
+                    <span class="fr-hint-text">{{ 'ESPACE_CANDIDAT.NOTIFICATIONS_WEEKLY_HINT' | translate }}</span>
                   </label>
                 </div>
               </div>
@@ -444,7 +444,7 @@
               <button type="button" class="ec-btn-primary" (click)="saveNotifications()"
                       [disabled]="isLoadingNotifications || isSavingNotifications">
                 <span class="fr-icon-check-line" aria-hidden="true"></span>
-                Enregistrer
+                {{ 'ESPACE_CANDIDAT.PROFIL_SAVE' | translate }}
               </button>
             </div>
           </div>
@@ -455,7 +455,7 @@
       <div *ngIf="activeTab === 'alertes'" class="ec-tab-content">
         <section class="ec-card">
           <div class="ec-card__body">
-            <p>Alertes</p>
+            <p>{{ 'ESPACE_CANDIDAT.ALERTES_TITLE' | translate }}</p>
           </div>
         </section>
       </div>

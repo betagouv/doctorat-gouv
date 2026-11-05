@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CandidatService, ChangementMotDePasseRequest } from '../services/candidat.service';
 import { AuthService } from '../services/auth.service';
 import { FichierCandidat, FrequenceNotification, ProfilResponse, ProfilUpdateRequest, SITUATIONS, SituationOption } from '../models/profil.model';
@@ -11,7 +12,7 @@ import { SituationLibellePipe } from '../pipes/situation-libelle-pipe';
 @Component({
   selector: 'app-espace-candidat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, SituationLibellePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, SituationLibellePipe, TranslateModule],
   templateUrl: './espace-candidat.html',
   styleUrl: './espace-candidat.scss',
 })
@@ -65,6 +66,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     private candidatService: CandidatService,
     private authService: AuthService,
     private titleService: Title,
+    private translate: TranslateService,
   ) {
     this.profilForm = this.fb.group({
       civilite: [''],
@@ -83,7 +85,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Espace demandeur — Doctorat.gouv.fr');
+    this.titleService.setTitle(this.translate.instant('ESPACE_CANDIDAT.META_TITLE'));
     this.loadProfil();
     this.loadNotifications();
   }
@@ -147,7 +149,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.candidatService.telechargerCv().subscribe({
       next: (blob) => this.ouvrirBlob(blob),
       error: () => {
-        this.fichiersError = 'CV indisponible. Veuillez réessayer.';
+        this.fichiersError = this.translate.instant('ESPACE_CANDIDAT.CV_UNAVAILABLE');
       }
     });
   }
@@ -156,7 +158,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.candidatService.telechargerPiece(index).subscribe({
       next: (blob) => this.ouvrirBlob(blob),
       error: () => {
-        this.fichiersError = 'Pièce indisponible. Veuillez réessayer.';
+        this.fichiersError = this.translate.instant('ESPACE_CANDIDAT.PIECE_UNAVAILABLE');
       }
     });
   }
@@ -180,7 +182,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       next: (data) => {
         this.profil = data;
         this.isSavingCv = false;
-        this.fichiersSuccess = 'CV remplacé avec succès. L’ancien fichier a été supprimé.';
+        this.fichiersSuccess = this.translate.instant('ESPACE_CANDIDAT.CV_REPLACED_SUCCESS');
       },
       error: (err) => {
         this.isSavingCv = false;
@@ -197,7 +199,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       return;
     }
     if (this.pieces.length + fichiers.length > EspaceCandidat.MAX_PIECES) {
-      this.fichiersError = `Maximum ${EspaceCandidat.MAX_PIECES} pièces complémentaires autorisées.`;
+      this.fichiersError = this.translate.instant('ESPACE_CANDIDAT.MAX_PIECES_ERROR', { max: EspaceCandidat.MAX_PIECES });
       return;
     }
     for (const fichier of fichiers) {
@@ -214,11 +216,11 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       next: (data) => {
         this.profil = data;
         this.isAddingPieces = false;
-        this.fichiersSuccess = 'Pièce(s) ajoutée(s) avec succès.';
+        this.fichiersSuccess = this.translate.instant('ESPACE_CANDIDAT.PIECES_ADDED_SUCCESS');
       },
       error: (err) => {
         this.isAddingPieces = false;
-        this.fichiersError = err.error?.message || 'Erreur lors de l’ajout des pièces.';
+        this.fichiersError = err.error?.message || this.translate.instant('ESPACE_CANDIDAT.PIECES_ADD_ERROR');
       }
     });
   }
@@ -228,7 +230,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     if (!piece) {
       return;
     }
-    if (!confirm(`Supprimer définitivement « ${piece.filename} » ? L’ancien fichier sera supprimé du stockage.`)) {
+    if (!confirm(this.translate.instant('ESPACE_CANDIDAT.DELETE_PIECE_CONFIRM', { filename: piece.filename }))) {
       return;
     }
     this.pieceEnCoursSuppression = index;
@@ -238,11 +240,11 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       next: (data) => {
         this.profil = data;
         this.pieceEnCoursSuppression = null;
-        this.fichiersSuccess = 'Pièce supprimée avec succès.';
+        this.fichiersSuccess = this.translate.instant('ESPACE_CANDIDAT.PIECE_DELETED_SUCCESS');
       },
       error: () => {
         this.pieceEnCoursSuppression = null;
-        this.fichiersError = 'Erreur lors de la suppression de la pièce.';
+        this.fichiersError = this.translate.instant('ESPACE_CANDIDAT.PIECE_DELETE_ERROR');
       }
     });
   }
@@ -330,7 +332,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       },
       error: () => {
         this.isLoadingNotifications = false;
-        this.notifErrorMessage = 'Erreur lors du chargement des préférences.';
+        this.notifErrorMessage = this.translate.instant('ESPACE_CANDIDAT.NOTIF_LOAD_ERROR');
       }
     });
   }
@@ -343,11 +345,11 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       next: (data) => {
         this.frequenceNotification = data.frequence;
         this.isSavingNotifications = false;
-        this.notifSuccessMessage = 'Préférences enregistrées avec succès.';
+        this.notifSuccessMessage = this.translate.instant('ESPACE_CANDIDAT.NOTIF_SAVE_SUCCESS');
       },
       error: () => {
         this.isSavingNotifications = false;
-        this.notifErrorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        this.notifErrorMessage = this.translate.instant('ESPACE_CANDIDAT.GENERIC_ERROR');
       }
     });
   }
@@ -373,7 +375,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     if (this.profilForm.invalid) {
       this.profilForm.markAllAsTouched();
       this.successMessage = null;
-      this.errorMessage = 'Veuillez compléter les champs obligatoires signalés en rouge pour enregistrer.';
+      this.errorMessage = this.translate.instant('ESPACE_CANDIDAT.PROFILE_FIELDS_REQUIRED');
       setTimeout(() => {
         document.querySelector('.ec-main .fr-alert--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
@@ -393,11 +395,11 @@ export class EspaceCandidat implements OnInit, OnDestroy {
         this.profil = data;
         this.isEditing = false;
         this.isSaving = false;
-        this.successMessage = 'Profil mis à jour avec succès.';
+        this.successMessage = this.translate.instant('ESPACE_CANDIDAT.PROFILE_UPDATE_SUCCESS');
       },
       error: () => {
         this.isSaving = false;
-        this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        this.errorMessage = this.translate.instant('ESPACE_CANDIDAT.GENERIC_ERROR');
       }
     });
   }
@@ -427,12 +429,12 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.candidatService.changerMotDePasse(request).subscribe({
       next: () => {
         this.isSavingPassword = false;
-        this.passwordSuccessMessage = 'Mot de passe modifié avec succès.';
+        this.passwordSuccessMessage = this.translate.instant('ESPACE_CANDIDAT.PASSWORD_UPDATE_SUCCESS');
         this.motDePasseForm.reset();
       },
       error: (err) => {
         this.isSavingPassword = false;
-        this.passwordErrorMessage = err.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        this.passwordErrorMessage = err.error?.message || this.translate.instant('ESPACE_CANDIDAT.GENERIC_ERROR');
       }
     });
   }
@@ -462,11 +464,11 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       return;
     }
     if (!EspaceCandidat.PHOTO_TYPES.includes(fichier.type)) {
-      this.photoError = 'Seul un fichier JPEG, PNG ou WebP est accepté.';
+      this.photoError = this.translate.instant('ESPACE_CANDIDAT.PHOTO_INVALID_FORMAT');
       return;
     }
     if (fichier.size > EspaceCandidat.PHOTO_MAX_SIZE) {
-      this.photoError = 'La taille du fichier est trop importante (2 Mo maximum).';
+      this.photoError = this.translate.instant('ESPACE_CANDIDAT.PHOTO_TOO_LARGE');
       return;
     }
     this.isSavingPhoto = true;
@@ -479,7 +481,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.isSavingPhoto = false;
-        this.photoError = err.error?.message || 'Erreur lors de la mise à jour de la photo.';
+        this.photoError = err.error?.message || this.translate.instant('ESPACE_CANDIDAT.PHOTO_UPDATE_ERROR');
       }
     });
   }
