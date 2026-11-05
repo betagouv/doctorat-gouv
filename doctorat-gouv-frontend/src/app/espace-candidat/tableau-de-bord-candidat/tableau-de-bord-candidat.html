@@ -2,13 +2,13 @@
   <div class="tdb-container">
 
     <!-- ======== FIL D'ARIANE : retour profil ======== -->
-    <nav class="fr-breadcrumb fr-mb-2w" aria-label="Fil d'Ariane">
+    <nav class="fr-breadcrumb fr-mb-2w" [attr.aria-label]="'TDB.ARIA_BREADCRUMB' | translate">
       <ol class="fr-breadcrumb__list">
         <li>
-          <a class="fr-breadcrumb__link" routerLink="/espace-candidat">Mon profil</a>
+          <a class="fr-breadcrumb__link" routerLink="/espace-candidat">{{ 'TDB.BREADCRUMB_PROFILE' | translate }}</a>
         </li>
         <li>
-          <span class="fr-breadcrumb__link" aria-current="page">Tableau de bord</span>
+          <span class="fr-breadcrumb__link" aria-current="page">{{ 'TDB.BREADCRUMB_DASHBOARD' | translate }}</span>
         </li>
       </ol>
     </nav>
@@ -20,35 +20,35 @@
           <img src="assets/icons/picto-tableau-loupe.png" alt="" width="72" height="72" aria-hidden="true"/>
         </div>
         <div>
-          <h1 class="tdb-header__title">Ravi de vous voir {{ prenom }}</h1>
-          <p class="tdb-header__subtitle">Un rapide coup d'oeil sur votre activité</p>
+          <h1 class="tdb-header__title">{{ 'TDB.GREETING' | translate:{ prenom: prenom } }}</h1>
+          <p class="tdb-header__subtitle">{{ 'TDB.SUBTITLE' | translate }}</p>
         </div>
       </div>
       <a routerLink="/espace-candidat" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-line fr-mt-2w">
-        Retour à mon profil
+        {{ 'TDB.BACK_TO_PROFILE' | translate }}
       </a>
     </header>
 
-    <!-- ======== SUIVI DES MISES EN RELATION ======== -->
+    <!-- ======== SUIVI DES {{ 'TDB.COL_RELATIONS' | translate }} ======== -->
     <section class="tdb-section">
       <div class="tdb-section__header">
-        <h2 class="tdb-section__title">Suivi des mises en relation</h2>
+        <h2 class="tdb-section__title">{{ 'TDB.SECTION_TITLE' | translate }}</h2>
         <div class="tdb-section__filters">
           <button class="tdb-filter-btn"
                   [class.tdb-filter-btn--active]="activeFilter === 'en_cours'"
                   (click)="setFilter('en_cours')">
-            En cours
+            {{ 'TDB.FILTER_IN_PROGRESS' | translate }}
           </button>
           <button class="tdb-filter-btn"
                   [class.tdb-filter-btn--active]="activeFilter === 'archivees'"
                   (click)="setFilter('archivees')">
-            Archivées
+            {{ 'TDB.FILTER_ARCHIVED' | translate }}
           </button>
         </div>
       </div>
 
       <div class="fr-alert fr-alert--info fr-mb-3w" *ngIf="isLoading" role="status">
-        Chargement du tableau de bord...
+        {{ 'TDB.LOADING' | translate }}
       </div>
       <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="errorMessage" role="alert">
         {{ errorMessage }}
@@ -57,24 +57,24 @@
       <!-- ======== KANBAN (En cours) ======== -->
       <div class="tdb-kanban" *ngIf="activeFilter === 'en_cours' && !isLoading && !errorMessage && !hasNoResults">
 
-        <!-- Colonne BROUILLON -->
+        <!-- Colonne {{ 'TDB.COL_DRAFT' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            BROUILLON <span class="tdb-column__count">({{ brouillons.length }})</span>
+            {{ 'TDB.COL_DRAFT' | translate }} <span class="tdb-column__count">({{ brouillons.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="brouillons.length === 0">Aucun brouillon.</p>
+          <p class="tdb-column__empty" *ngIf="brouillons.length === 0">{{ 'TDB.NO_DRAFT' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of brouillons"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
+                <span class="tdb-badge tdb-badge--brouillon">{{ 'TDB.COL_DRAFT' | translate }}</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__edit" aria-label="Modifier le brouillon">
+                  <button class="tdb-card__edit" [attr.aria-label]="'TDB.ARIA_EDIT_DRAFT' | translate">
                     <span class="fr-icon-edit-line" aria-hidden="true"></span>
                   </button>
-                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
+                  <button class="tdb-card__archive" [attr.aria-label]="'TDB.ARIA_ARCHIVE' | translate" [attr.title]="'TDB.ARIA_ARCHIVED' | translate" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
                       <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
@@ -91,32 +91,32 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- Colonne EN ATTENTE -->
+        <!-- Colonne {{ 'TDB.COL_PENDING' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            EN ATTENTE <span class="tdb-column__count">({{ enAttente.length }})</span>
+            {{ 'TDB.COL_PENDING' | translate }} <span class="tdb-column__count">({{ enAttente.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="enAttente.length === 0">Aucune demande en attente.</p>
+          <p class="tdb-column__empty" *ngIf="enAttente.length === 0">{{ 'TDB.NO_PENDING' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of enAttente"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
+                <span class="tdb-badge tdb-badge--en-attente">{{ 'TDB.COL_PENDING_RELATION' | translate }}</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Archiver" title="Archivé" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
+                  <button class="tdb-card__archive" [attr.aria-label]="'TDB.ARIA_ARCHIVE' | translate" [attr.title]="'TDB.ARIA_ARCHIVED' | translate" (click)="archiver(item, $event)" [disabled]="archivageEnCours.has(item.id)">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M2 2H14V4H2V2Z" stroke="#000091" stroke-width="1.2"/>
                       <path d="M3 5H13V14H3V5Z" stroke="#000091" stroke-width="1.2"/>
@@ -133,33 +133,33 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- Colonne MISES EN RELATION -->
+        <!-- Colonne {{ 'TDB.COL_RELATIONS' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            MISES EN RELATION <span class="tdb-column__count">({{ misesEnRelation.length }})</span>
+            {{ 'TDB.COL_RELATIONS' | translate }} <span class="tdb-column__count">({{ misesEnRelation.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="misesEnRelation.length === 0">Aucune mise en relation.</p>
+          <p class="tdb-column__empty" *ngIf="misesEnRelation.length === 0">{{ 'TDB.NO_RELATION' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of misesEnRelation"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
+                <span class="tdb-badge tdb-badge--mise-en-relation">{{ 'TDB.STATUS_RELATED' | translate }}</span>
                 <span *ngIf="item.candidatureEnvoyee" class="tdb-card__candidature">
                   <span class="tdb-card__candidature-dot"></span>
-                  Candidaté
+                  {{ 'TDB.STATUS_APPLIED' | translate }}
                 </span>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
@@ -170,11 +170,11 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span *ngIf="item.nbMessages" class="tdb-card__messages">
                   <span class="fr-icon-mail-line" aria-hidden="true"></span>
                   {{ item.nbMessages }} nouveau{{ item.nbMessages > 1 ? 'x' : '' }} message{{ item.nbMessages > 1 ? 's' : '' }}
@@ -190,22 +190,22 @@
       <!-- ======== ARCHIVES (Kanban) ======== -->
       <div class="tdb-kanban" *ngIf="activeFilter === 'archivees' && !isLoading && !errorMessage && !hasNoResults">
 
-        <!-- Colonne BROUILLON -->
+        <!-- Colonne {{ 'TDB.COL_DRAFT' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            BROUILLON <span class="tdb-column__count">({{ archivesBrouillons.length }})</span>
+            {{ 'TDB.COL_DRAFT' | translate }} <span class="tdb-column__count">({{ archivesBrouillons.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="archivesBrouillons.length === 0">Aucun brouillon archivé.</p>
+          <p class="tdb-column__empty" *ngIf="archivesBrouillons.length === 0">{{ 'TDB.ARCHIVED_DRAFT' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesBrouillons"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--brouillon">BROUILLON</span>
-                <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <span class="tdb-badge tdb-badge--brouillon">{{ 'TDB.COL_DRAFT' | translate }}</span>
+                <span class="tdb-badge tdb-badge--archive">{{ 'TDB.ARCHIVED' | translate }}</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                  <button class="tdb-card__archive" [attr.aria-label]="'TDB.ARIA_UNARCHIVE' | translate" [attr.title]="'TDB.ARIA_UNARCHIVE' | translate"
                           (click)="desarchiver(item, $event)"
                           [disabled]="desarchivageEnCours.has(item.id)">
                     <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
@@ -220,33 +220,33 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- Colonne EN ATTENTE -->
+        <!-- Colonne {{ 'TDB.COL_PENDING' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            EN ATTENTE <span class="tdb-column__count">({{ archivesEnAttente.length }})</span>
+            {{ 'TDB.COL_PENDING' | translate }} <span class="tdb-column__count">({{ archivesEnAttente.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="archivesEnAttente.length === 0">Aucune demande archivée en attente.</p>
+          <p class="tdb-column__empty" *ngIf="archivesEnAttente.length === 0">{{ 'TDB.ARCHIVED_PENDING' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesEnAttente"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--en-attente">EN ATTENTE DE MISE EN RELATION</span>
-                <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <span class="tdb-badge tdb-badge--en-attente">{{ 'TDB.COL_PENDING_RELATION' | translate }}</span>
+                <span class="tdb-badge tdb-badge--archive">{{ 'TDB.ARCHIVED' | translate }}</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                  <button class="tdb-card__archive" [attr.aria-label]="'TDB.ARIA_UNARCHIVE' | translate" [attr.title]="'TDB.ARIA_UNARCHIVE' | translate"
                           (click)="desarchiver(item, $event)"
                           [disabled]="desarchivageEnCours.has(item.id)">
                     <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
@@ -261,33 +261,33 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- Colonne MISES EN RELATION -->
+        <!-- Colonne {{ 'TDB.COL_RELATIONS' | translate }} -->
         <div class="tdb-column">
           <h3 class="tdb-column__header">
-            MISES EN RELATION <span class="tdb-column__count">({{ archivesMisesEnRelation.length }})</span>
+            {{ 'TDB.COL_RELATIONS' | translate }} <span class="tdb-column__count">({{ archivesMisesEnRelation.length }})</span>
           </h3>
-          <p class="tdb-column__empty" *ngIf="archivesMisesEnRelation.length === 0">Aucune mise en relation archivée.</p>
+          <p class="tdb-column__empty" *ngIf="archivesMisesEnRelation.length === 0">{{ 'TDB.ARCHIVED_RELATION' | translate }}</p>
           <div class="tdb-column__cards">
             <a *ngFor="let item of archivesMisesEnRelation"
                class="tdb-card"
                [routerLink]="['/demande-candidat']"
                (click)="selectDemande(item.id)">
               <div class="tdb-card__badges">
-                <span class="tdb-badge tdb-badge--mise-en-relation">MIS EN RELATION</span>
-                <span class="tdb-badge tdb-badge--archive">ARCHIVÉ</span>
+                <span class="tdb-badge tdb-badge--mise-en-relation">{{ 'TDB.STATUS_RELATED' | translate }}</span>
+                <span class="tdb-badge tdb-badge--archive">{{ 'TDB.ARCHIVED' | translate }}</span>
                 <div class="tdb-card__actions">
-                  <button class="tdb-card__archive" aria-label="Désarchiver" title="Désarchiver"
+                  <button class="tdb-card__archive" [attr.aria-label]="'TDB.ARIA_UNARCHIVE' | translate" [attr.title]="'TDB.ARIA_UNARCHIVE' | translate"
                           (click)="desarchiver(item, $event)"
                           [disabled]="desarchivageEnCours.has(item.id)">
                     <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
@@ -302,11 +302,11 @@
                 </span>
                 <span class="tdb-card__meta-item">
                   <span class="fr-icon-user-line" aria-hidden="true"></span>
-                  Encadré par {{ item.encadrantNom }}
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
                 </span>
               </div>
               <div class="tdb-card__footer">
-                <span class="tdb-card__date">Contacté le {{ item.dateContact }}</span>
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
                 <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
               </div>
             </a>
@@ -321,16 +321,16 @@
           <span class="fr-icon-file-text-line" aria-hidden="true"></span>
         </div>
         <ng-container *ngIf="activeFilter === 'archivees'; else videEnCours">
-          <h3 class="tdb-empty__title">Aucune demande archivée pour le moment</h3>
-          <a routerLink="/search" class="tdb-empty__btn">Explorer les offres</a>
+          <h3 class="tdb-empty__title">{{ 'TDB.NO_ARCHIVED' | translate }}</h3>
+          <a routerLink="/search" class="tdb-empty__btn">{{ 'TDB.EXPLORE_OFFERS' | translate }}</a>
         </ng-container>
         <ng-template #videEnCours>
-          <h3 class="tdb-empty__title">Aucune demande pour le moment</h3>
+          <h3 class="tdb-empty__title">{{ 'TDB.NO_REQUEST' | translate }}</h3>
           <p class="tdb-empty__text">
-            Vous n'avez pas encore envoyé de demande de mise en relation avec une direction de thèse.<br/>
-            Dès votre première demande, vous pourrez suivre son avancement depuis ce tableau de bord.
+            {{ 'TDB.NO_REQUEST_TEXT' | translate }}<br/>
+            {{ 'TDB.NO_REQUEST_HINT' | translate }}
           </p>
-          <a routerLink="/search" class="tdb-empty__btn">Explorer les offres</a>
+          <a routerLink="/search" class="tdb-empty__btn">{{ 'TDB.EXPLORE_OFFERS' | translate }}</a>
         </ng-template>
       </div>
     </section>

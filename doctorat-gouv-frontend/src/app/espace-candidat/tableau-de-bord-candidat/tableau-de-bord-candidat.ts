@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CandidatService } from '../../services/candidat.service';
 import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
 import { MiseEnRelationDto, TableauDeBordCandidatItemBackend } from '../../models/mise-en-relation.model';
@@ -9,7 +10,7 @@ import { MiseEnRelationDto, TableauDeBordCandidatItemBackend } from '../../model
 @Component({
   selector: 'app-tableau-de-bord-candidat',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './tableau-de-bord-candidat.html',
   styleUrl: './tableau-de-bord-candidat.scss',
 })
@@ -36,10 +37,11 @@ export class TableauDeBordCandidat implements OnInit {
     private titleService: Title,
     private candidatService: CandidatService,
     private demandeCandidatContext: DemandeCandidatContextService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle('Tableau de bord — Espace demandeur — Doctorat.gouv.fr');
+    this.titleService.setTitle('Tableau de bord — Doctorat.gouv.fr');
     this.loadPrenom();
     this.loadDemandes();
   }
@@ -168,7 +170,7 @@ export class TableauDeBordCandidat implements OnInit {
       },
       error: () => {
         this.desarchivageEnCours.delete(item.id);
-        this.errorMessage = "Erreur lors du désarchivage de la demande.";
+        this.errorMessage = this.translate.instant('TDB.UNARCHIVE_ERROR');
       },
     });
   }
