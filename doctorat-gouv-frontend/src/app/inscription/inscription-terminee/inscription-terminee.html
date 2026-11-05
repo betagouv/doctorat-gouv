@@ -14,7 +14,7 @@
         <div class="fr-alert fr-alert--success fr-mb-3w" role="status">
           <h2 class="fr-alert__title">{{ 'INSCRIPTION.TERMINE_ALERT_TITLE' | translate }}</h2>
           <p *ngIf="!isDirecteur">{{ 'INSCRIPTION.TERMINE_ALERT_TEXT' | translate }}</p>
-          <p *ngIf="isDirecteur">Votre compte directeur de thèse a été créé avec succès.</p>
+          <p *ngIf="isDirecteur">{{ 'INSCRIPTION.TERMINE_DIRECTEUR_SUCCESS' | translate }}</p>
         </div>
 
         <!-- Candidat : étapes suivantes -->
@@ -28,17 +28,17 @@
 
         <!-- Directeur : message spécifique -->
         <div *ngIf="isDirecteur" class="fr-mb-3w">
-          <p class="fr-text--sm fr-mb-2w">Vous pouvez dès à présent vous connecter pour gérer vos demandes de co-direction.</p>
+          <p class="fr-text--sm fr-mb-2w">{{ 'INSCRIPTION.TERMINE_DIRECTEUR_NEXT' | translate }}</p>
         </div>
 
         <div class="termine-actions">
           <a *ngIf="demandeEnCours" class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line"
              routerLink="/demande-mise-en-relation">
-            Finaliser ma demande de mise en relation
+            {{ 'INSCRIPTION.TERMINE_BTN_FINALISER_DEMANDE' | translate }}
           </a>
           <a class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line"
              routerLink="/connexion">
-            Se connecter
+            {{ 'INSCRIPTION.GO_LOGIN' | translate }}
           </a>
           <a class="fr-btn fr-btn--secondary" routerLink="/">
             {{ 'INSCRIPTION.TERMINE_BTN_HOME' | translate }}

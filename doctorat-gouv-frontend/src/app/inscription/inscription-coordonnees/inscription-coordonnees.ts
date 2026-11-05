@@ -67,15 +67,10 @@ export class InscriptionCoordonnees implements OnInit {
   }
 
   ngOnInit(): void {
-    const titre = this.translate.currentLang === 'en'
-      ? 'Sign up — Doctorat.gouv.fr'
-      : 'Inscription — Doctorat.gouv.fr';
-    this.titleService.setTitle(titre);
+    this.titleService.setTitle(this.translate.instant('INSCRIPTION.META_TITLE'));
     this.metaService.updateTag({
       name: 'description',
-      content: this.translate.currentLang === 'en'
-        ? 'Create an account on the national PhD platform.'
-        : 'Créez un compte sur la plateforme nationale du doctorat.',
+      content: this.translate.instant('INSCRIPTION.META_DESCRIPTION'),
     });
 
     this.situation?.valueChanges.subscribe(() => this.majValidationMaster());
@@ -201,7 +196,7 @@ export class InscriptionCoordonnees implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.globalError = err?.error?.error || 'Une erreur est survenue. Veuillez réessayer.';
+        this.globalError = err?.error?.error || this.translate.instant('INSCRIPTION.ERROR_SUBMIT');
       }
     });
   }

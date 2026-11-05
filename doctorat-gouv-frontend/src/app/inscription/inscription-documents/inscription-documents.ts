@@ -57,14 +57,10 @@ export class InscriptionDocuments implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.titleService.setTitle(
-      this.translate.currentLang === 'en' ? 'Sign up — Doctorat.gouv.fr' : 'Inscription — Doctorat.gouv.fr'
-    );
+    this.titleService.setTitle(this.translate.instant('INSCRIPTION.META_TITLE'));
     this.metaService.updateTag({
       name: 'description',
-      content: this.translate.currentLang === 'en'
-        ? 'Complete your candidate profile by uploading your CV and supporting documents.'
-        : 'Complétez votre profil de candidat en envoyant votre CV et vos pièces complémentaires.',
+      content: this.translate.instant('INSCRIPTION.META_DESCRIPTION'),
     });
 
     const coordonnees = this.store.coordonnees();
