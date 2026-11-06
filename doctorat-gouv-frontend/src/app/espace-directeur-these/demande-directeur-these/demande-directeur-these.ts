@@ -24,8 +24,10 @@ export class DemandeDirecteurThese implements OnInit, OnDestroy {
   demande: DemandeDt | null = null;
   isLoading = true;
   isAccepting = false;
+  isRefusing = false;
   isResetting = false;
   errorMessage: string | null = null;
+  explicationRefus = '';
 
   messages: MessageEchange[] = [];
   messageContenu = '';
@@ -44,6 +46,8 @@ export class DemandeDirecteurThese implements OnInit, OnDestroy {
 
   @ViewChild('dialogSucces') dialogSucces?: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogErreur') dialogErreur?: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialogRefus') dialogRefus?: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialogRefusSucces') dialogRefusSucces?: ElementRef<HTMLDialogElement>;
   @ViewChild('messagesList') messagesList?: ElementRef<HTMLElement>;
 
   private readonly apiUrl = `${environment.apiUrl}/directeur-these`;
@@ -176,9 +180,45 @@ export class DemandeDirecteurThese implements OnInit, OnDestroy {
     });
   }
 
+  ouvrirDialogRefus(): void {
+    this.explicationRefus = '';
+    this.dialogRefus?.nativeElement.showModal();
+  }
+
+  fermerDialogRefus(): void {
+    this.dialogRefus?.nativeElement.close();
+  }
+
+  refuser(): void {
+    if (!this.demande || this.isRefusing || this.demande.statut !== 'CREE') {
+      return;
+    }
+    const explication = this.explicationRefus.trim();
+    if (!explication) {
+      return;
+    }
+    this.isRefusing = true;
+    this.directeurService.refuserDemande(this.demande.id, explication).subscribe({
+      next: (data) => {
+        this.demande = data;
+        this.isRefusing = false;
+        this.dialogRefus?.nativeElement.close();
+        this.dialogRefusSucces?.nativeElement.showModal();
+      },
+      error: () => {
+        this.isRefusing = false;
+        this.erreurTitre = 'Échec du refus';
+        this.erreurTexte = 'La demande n\'a pas pu être refusée. Veuillez réessayer.';
+        this.dialogErreur?.nativeElement.showModal();
+      }
+    });
+  }
+
   fermerDialogues(): void {
     this.dialogSucces?.nativeElement.close();
     this.dialogErreur?.nativeElement.close();
+    this.dialogRefus?.nativeElement.close();
+    this.dialogRefusSucces?.nativeElement.close();
   }
 
   chargerMessages(silencieux: boolean): void {

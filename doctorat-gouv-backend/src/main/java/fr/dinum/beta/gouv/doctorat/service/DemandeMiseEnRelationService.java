@@ -98,6 +98,10 @@ public class DemandeMiseEnRelationService {
         dto.setDateDesistement(demande.getDateDesistement() != null
             ? demande.getDateDesistement().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             : null);
+        dto.setDateRefus(demande.getDateRefus() != null
+            ? demande.getDateRefus().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            : null);
+        dto.setExplicationRefus(demande.getExplicationRefus());
 
         dto.setPropositionTheseId(these.getId());
         dto.setTitreSujet(these.getTheseTitre());

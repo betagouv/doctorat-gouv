@@ -12,6 +12,8 @@ public class DemandeCandidatDetailResponse {
     private String dateDemande;
     private boolean archivee;
     private String dateDesistement;
+    private String dateRefus;
+    private String explicationRefus;
 
     private Long propositionTheseId;
     private String titreSujet;
@@ -50,6 +52,12 @@ public class DemandeCandidatDetailResponse {
 
     public String getDateDesistement() { return dateDesistement; }
     public void setDateDesistement(String dateDesistement) { this.dateDesistement = dateDesistement; }
+
+    public String getDateRefus() { return dateRefus; }
+    public void setDateRefus(String dateRefus) { this.dateRefus = dateRefus; }
+
+    public String getExplicationRefus() { return explicationRefus; }
+    public void setExplicationRefus(String explicationRefus) { this.explicationRefus = explicationRefus; }
 
     public Long getPropositionTheseId() { return propositionTheseId; }
     public void setPropositionTheseId(Long propositionTheseId) { this.propositionTheseId = propositionTheseId; }

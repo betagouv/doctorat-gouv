@@ -76,6 +76,10 @@ export class DirecteurTheseService {
     return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/accepter`, { id });
   }
 
+  refuserDemande(id: number, explication: string): Observable<DemandeDt> {
+    return this.http.post<DemandeDt>(`${this.apiUrl}/mises-en-relation/refuser`, { id, explication });
+  }
+
   getMessages(demandeId: number): Observable<MessageEchange[]> {
     return this.http.post<MessageEchange[]>(`${this.apiUrl}/mises-en-relation/messages`, { demandeId });
   }

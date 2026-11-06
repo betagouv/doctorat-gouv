@@ -34,6 +34,7 @@ import fr.dinum.beta.gouv.doctorat.dto.MessageListeRequest;
 import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceRequest;
 import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtResponse;
+import fr.dinum.beta.gouv.doctorat.dto.RefuserDemandeRequest;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilDtUpdateRequest;
 import fr.dinum.beta.gouv.doctorat.dto.SujetDtResponse;
 import fr.dinum.beta.gouv.doctorat.service.DirecteurTheseService;
@@ -169,6 +170,17 @@ public class DirecteurTheseController {
         log.info("Acceptation de la demande {} par le directeur de thèse {}", request.getId(), userId);
         try {
             return ResponseEntity.ok(directeurTheseService.accepterDemande(userId, request.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/mises-en-relation/refuser")
+    public ResponseEntity<DemandeDtResponse> refuserDemande(@Valid @RequestBody RefuserDemandeRequest request) {
+        String userId = getCurrentUserId();
+        log.info("Refus de la demande {} par le directeur de thèse {}", request.getId(), userId);
+        try {
+            return ResponseEntity.ok(directeurTheseService.refuserDemande(userId, request.getId(), request.getExplication()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

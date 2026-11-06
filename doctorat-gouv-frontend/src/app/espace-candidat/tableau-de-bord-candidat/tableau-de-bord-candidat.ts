@@ -24,6 +24,7 @@ export class TableauDeBordCandidat implements OnInit {
   brouillons: MiseEnRelationDto[] = [];
   enAttente: MiseEnRelationDto[] = [];
   misesEnRelation: MiseEnRelationDto[] = [];
+  refusees: MiseEnRelationDto[] = [];
   archives: MiseEnRelationDto[] = [];
   archivesBrouillons: MiseEnRelationDto[] = [];
   archivesEnAttente: MiseEnRelationDto[] = [];
@@ -89,6 +90,7 @@ export class TableauDeBordCandidat implements OnInit {
     this.brouillons = [];
     this.enAttente = [];
     this.misesEnRelation = [];
+    this.refusees = [];
     this.archives = [];
     this.archivesBrouillons = [];
     this.archivesEnAttente = [];
@@ -98,6 +100,7 @@ export class TableauDeBordCandidat implements OnInit {
       const archivee = item.archivee === true;
       const isBrouillon = item.statut === 'BROUILLON';
       const isAcceptee = item.statut === 'ACCEPTEE';
+      const isRefusee = item.statut === 'REFUSEE';
       const mapped: MiseEnRelationDto = {
         id: item.id,
         propositionTheseId: item.propositionTheseId,
@@ -105,7 +108,7 @@ export class TableauDeBordCandidat implements OnInit {
         etablissement: item.etablissement?.trim() ? item.etablissement : '—',
         encadrantNom: item.encadrantNom?.trim() ? item.encadrantNom : '—',
         dateContact: this.formatDate(item.dateContact),
-        statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : isAcceptee ? 'mise_en_relation' : 'en_attente',
+        statut: archivee ? 'archive' : isBrouillon ? 'brouillon' : isAcceptee ? 'mise_en_relation' : isRefusee ? 'refusee' : 'en_attente',
         nbMessages: item.nbMessagesNonLus ?? undefined,
       };
       if (archivee) {
@@ -121,6 +124,8 @@ export class TableauDeBordCandidat implements OnInit {
         this.brouillons.push(mapped);
       } else if (isAcceptee) {
         this.misesEnRelation.push(mapped);
+      } else if (isRefusee) {
+        this.refusees.push(mapped);
       } else {
         this.enAttente.push(mapped);
       }

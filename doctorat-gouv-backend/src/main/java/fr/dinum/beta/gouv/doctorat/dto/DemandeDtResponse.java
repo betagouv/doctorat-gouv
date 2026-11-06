@@ -27,6 +27,8 @@ public class DemandeDtResponse {
     private List<FichierCandidatDto> candidatPieces = new ArrayList<>();
     private String dateDemande;
     private String dateAcceptation;
+    private String dateRefus;
+    private String explicationRefus;
     private Integer nbMessagesNonLus;
     private String statut;
     private String motivations;
@@ -105,6 +107,12 @@ public class DemandeDtResponse {
 
     public String getDateAcceptation() { return dateAcceptation; }
     public void setDateAcceptation(String dateAcceptation) { this.dateAcceptation = dateAcceptation; }
+
+    public String getDateRefus() { return dateRefus; }
+    public void setDateRefus(String dateRefus) { this.dateRefus = dateRefus; }
+
+    public String getExplicationRefus() { return explicationRefus; }
+    public void setExplicationRefus(String explicationRefus) { this.explicationRefus = explicationRefus; }
 
     public Integer getNbMessagesNonLus() { return nbMessagesNonLus; }
     public void setNbMessagesNonLus(Integer nbMessagesNonLus) { this.nbMessagesNonLus = nbMessagesNonLus; }

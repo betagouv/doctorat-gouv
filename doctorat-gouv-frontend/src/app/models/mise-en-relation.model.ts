@@ -1,6 +1,6 @@
-export type StatutMiseEnRelation = 'brouillon' | 'en_attente' | 'mise_en_relation' | 'archive';
+export type StatutMiseEnRelation = 'brouillon' | 'en_attente' | 'mise_en_relation' | 'archive' | 'refusee';
 
-export type StatutDemandeBackend = 'BROUILLON' | 'CREE' | 'ACCEPTEE';
+export type StatutDemandeBackend = 'BROUILLON' | 'CREE' | 'ACCEPTEE' | 'REFUSEE';
 
 export interface TableauDeBordCandidatItemBackend {
   id: number;

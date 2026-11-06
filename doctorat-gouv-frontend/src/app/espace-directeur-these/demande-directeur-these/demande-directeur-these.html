@@ -87,7 +87,7 @@
                 <span class="fr-icon-check-line" aria-hidden="true"></span>
                 {{ isAccepting ? 'Acceptation en cours...' : 'Accepter la mise en relation' }}
               </button>
-              <button type="button" class="btn-decline" title="Bientôt disponible">
+              <button type="button" class="btn-decline" (click)="ouvrirDialogRefus()">
                 <span class="fr-icon-close-line" aria-hidden="true"></span>
                 Décliner la demande
               </button>
@@ -96,6 +96,14 @@
             <p class="message-accepted" *ngIf="demande.statut === 'ACCEPTEE'">
               <span class="fr-icon-check-line" aria-hidden="true"></span>
               Mise en relation acceptée le {{ formatDateEnvoi(demande.dateAcceptation) }}
+            </p>
+
+            <p class="message-declined" *ngIf="demande.statut === 'REFUSEE'">
+              <span class="fr-icon-close-line" aria-hidden="true"></span>
+              Demande refusée le {{ formatDateEnvoi(demande.dateRefus) }}
+            </p>
+            <p class="message-declined__explication" *ngIf="demande.statut === 'REFUSEE' && demande.explicationRefus">
+              « {{ demande.explicationRefus }} »
             </p>
 
             <div class="message-reset" *ngIf="demande.statut === 'ACCEPTEE' && isHorsProd">
@@ -227,6 +235,38 @@
       </div>
       <p class="demande-dialog__text">
         {{ erreurTexte }}
+      </p>
+      <div class="demande-dialog__actions">
+        <button type="button" class="btn-decline" (click)="fermerDialogues()">Fermer</button>
+      </div>
+    </dialog>
+
+    <dialog #dialogRefus class="demande-dialog" aria-labelledby="dialog-refus-titre">
+      <div class="demande-dialog__header">
+        <span class="demande-dialog__icon fr-icon-close-line" aria-hidden="true"></span>
+        <h2 id="dialog-refus-titre" class="demande-dialog__title">Décliner la demande</h2>
+      </div>
+      <p class="demande-dialog__text">
+        Merci d'indiquer au candidat la raison du refus.
+      </p>
+      <textarea class="echanges__input" rows="4" maxlength="2000"
+                [(ngModel)]="explicationRefus"></textarea>
+      <div class="demande-dialog__actions">
+        <button type="button" class="btn-decline" (click)="fermerDialogRefus()">Annuler</button>
+        <button type="button" class="btn-accept" [disabled]="isRefusing || !explicationRefus.trim()"
+                (click)="refuser()">
+          {{ isRefusing ? 'Refus en cours...' : 'Confirmer le refus' }}
+        </button>
+      </div>
+    </dialog>
+
+    <dialog #dialogRefusSucces class="demande-dialog" aria-labelledby="dialog-refus-succes-titre">
+      <div class="demande-dialog__header">
+        <span class="demande-dialog__icon demande-dialog__icon--success fr-icon-checkbox-circle-line" aria-hidden="true"></span>
+        <h2 id="dialog-refus-succes-titre" class="demande-dialog__title">Demande refusée</h2>
+      </div>
+      <p class="demande-dialog__text">
+        {{ demande?.candidatNom }} a été notifié par e-mail.
       </p>
       <div class="demande-dialog__actions">
         <button type="button" class="btn-decline" (click)="fermerDialogues()">Fermer</button>

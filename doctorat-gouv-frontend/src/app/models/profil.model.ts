@@ -186,6 +186,8 @@ export interface DemandeDt {
   candidatPieces?: FichierCandidat[];
   dateDemande: string | null;
   dateAcceptation?: string | null;
+  dateRefus?: string | null;
+  explicationRefus?: string | null;
   nbMessagesNonLus?: number | null;
   statut: string | null;
   motivations?: string | null;

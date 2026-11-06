@@ -47,7 +47,9 @@ public class DirecteurTheseService {
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseService.class);
 
     private static final String LIEN_CONVERSATION = "https://app.doctorat.gouv.fr/demande-candidat";
+    private static final String LIEN_RECHERCHE = "https://app.doctorat.gouv.fr/";
     private static final int BREVO_TEMPLATE_ACCEPTATION = 67;
+    private static final int BREVO_TEMPLATE_REFUS = 68;
 
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
@@ -455,7 +457,8 @@ public class DirecteurTheseService {
         PropositionThese p = sujets.get(d.getPropositionTheseId());
         if (p == null
             || (d.getStatut() != StatutDemandeMiseEnRelation.CREE
-                && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE)
+                && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+                && d.getStatut() != StatutDemandeMiseEnRelation.REFUSEE)
             || Boolean.TRUE.equals(d.getArchivee())) {
             throw new IllegalArgumentException("Demande introuvable");
         }
@@ -493,6 +496,8 @@ public class DirecteurTheseService {
         }
         dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
         dto.setDateAcceptation(d.getDateAcceptation() != null ? d.getDateAcceptation().format(dateTimeFormatter) : null);
+        dto.setDateRefus(d.getDateRefus() != null ? d.getDateRefus().format(dateTimeFormatter) : null);
+        dto.setExplicationRefus(d.getExplicationRefus());
         dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
         dto.setMotivations(d.getMotivations());
         return dto;
@@ -520,6 +525,81 @@ public class DirecteurTheseService {
 
         envoyerMailAcceptation(userId, d);
         return getDemandeDetail(userId, demandeId);
+    }
+
+    /**
+     * Refuse une demande de mise en relation : passage au statut REFUSEE,
+     * enregistrement de la date de refus et de l'explication transmise,
+     * et notification du candidat (template Brevo 68, bouchonné hors production).
+     */
+    public DemandeDtResponse refuserDemande(String userId, Long demandeId, String explication) {
+        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        PropositionThese p = sujets.get(d.getPropositionTheseId());
+        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.CREE
+            || Boolean.TRUE.equals(d.getArchivee())) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        String texte = explication != null ? explication.trim() : "";
+        if (texte.isEmpty()) {
+            throw new IllegalArgumentException("L'explication du refus est obligatoire");
+        }
+        if (texte.length() > 2000) {
+            texte = texte.substring(0, 2000);
+        }
+        d.setStatut(StatutDemandeMiseEnRelation.REFUSEE);
+        d.setDateRefus(LocalDateTime.now());
+        d.setExplicationRefus(texte);
+        d.setUpdatedAt(LocalDateTime.now());
+        demandeMiseEnRelationRepository.save(d);
+        log.info("Demande {} refusée par le directeur de thèse {}", demandeId, userId);
+
+        envoyerMailRefus(userId, d, texte);
+        return getDemandeDetail(userId, demandeId);
+    }
+
+    private void envoyerMailRefus(String userId, DemandeMiseEnRelation d, String explication) {
+        Utilisateur candidat = utilisateurRepository.findById(d.getCandidatId()).orElse(null);
+        if (candidat == null) {
+            log.warn("Candidat introuvable pour la demande {}, mail de refus non envoyé", d.getId());
+            return;
+        }
+        Utilisateur directeur = utilisateurRepository.findById(userId).orElse(null);
+        String nomDirecteur = directeur != null
+            ? ((directeur.getPrenom() != null ? directeur.getPrenom().trim() + " " : "")
+                + (directeur.getNom() != null ? directeur.getNom().trim() : "")).trim()
+            : "";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("prenom", candidat.getPrenom());
+        params.put("nom_directeur", nomDirecteur);
+        params.put("explication_refus", explication);
+        params.put("lien_recherche", LIEN_RECHERCHE);
+
+        ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
+        if (profilCandidat != null && profilCandidat.getCivilite() != null) {
+            params.put("civilite", profilCandidat.getCivilite());
+        }
+
+        String destinataire = candidat.getEmail();
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail de refus non envoyé (boîte bouchon non configurée) pour la demande {}",
+                    d.getId());
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail de refus de la demande {} bouchonné vers {}", d.getId(), destinataire);
+        }
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_REFUS, params);
+                log.info("Mail de refus envoyé à {} pour la demande {}", destinataire, d.getId());
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail de refus pour la demande {}", d.getId(), e);
+        }
     }
 
     /**
