@@ -72,6 +72,10 @@
 	  <a *ngIf="!authService.isLoggedIn()" routerLink="/connexion" class="fr-btn fr-btn--secondary fr-mr-2w header-login-btn">
 	    {{ 'HEADER.SE_CONNECTER' | translate }}
 	  </a>
+	  <a *ngIf="authService.isLoggedIn()" href="https://doctorat.gouv.fr/" target="_blank" rel="noopener" class="header-back-link">
+	    <span class="fr-icon-arrow-go-back-line" aria-hidden="true"></span>
+	    {{ 'HEADER.BACK_TO_SITE' | translate }}
+	  </a>
 	  <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="fr-btn fr-btn--secondary fr-mr-2w header-login-btn">
 	    {{ 'HEADER.SE_DECONNECTER' | translate }}
 	  </button>
@@ -155,6 +159,10 @@
   <!-- Bouton Se connecter / Se déconnecter mobile -->
   <a *ngIf="!authService.isLoggedIn()" routerLink="/connexion" class="fr-btn fr-btn--secondary mobile-login-btn">
     {{ 'HEADER.SE_CONNECTER' | translate }}
+  </a>
+  <a *ngIf="authService.isLoggedIn()" href="https://doctorat.gouv.fr/" target="_blank" rel="noopener" class="header-back-link">
+    <span class="fr-icon-arrow-go-back-line" aria-hidden="true"></span>
+    {{ 'HEADER.BACK_TO_SITE' | translate }}
   </a>
   <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="fr-btn fr-btn--secondary mobile-login-btn">
     {{ 'HEADER.SE_DECONNECTER' | translate }}

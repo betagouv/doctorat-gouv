@@ -12,7 +12,8 @@
 	"MON_PROFIL": "Mon profil",
 	"TABLEAU_DE_BORD": "Tableau de bord",
 	"SE_CONNECTER": "Se connecter",
-	"SE_DECONNECTER": "Se déconnecter"
+	"SE_DECONNECTER": "Se déconnecter",
+	"BACK_TO_SITE": "Retour au site"
   },
   "INFO": {
     "LAUNCH_TITLE": "Lancement de la plateforme : le site est encore en phase d'expérimentation, n'hésitez pas à",

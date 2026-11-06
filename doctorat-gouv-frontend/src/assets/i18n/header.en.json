@@ -12,7 +12,8 @@
 	"MON_PROFIL": "My profile",
 	"TABLEAU_DE_BORD": "Dashboard",
 	"SE_CONNECTER": "Log in",
-	"SE_DECONNECTER": "Log out"
+	"SE_DECONNECTER": "Log out",
+	"BACK_TO_SITE": "Back to the website"
   },
   "INFO": {
      "LAUNCH_TITLE": "Platform launch: The website is still in beta.",
