@@ -19,6 +19,7 @@ export class TableauDeBordDirecteurThese implements OnInit {
 
   prenom = '';
   demandes: DemandeDt[] = [];
+  activeFilter: 'en_cours' | 'archivees' = 'en_cours';
   photoCandidatError = false;
   isLoadingDemandes = true;
   errorDemandes: string | null = null;
@@ -59,14 +60,37 @@ export class TableauDeBordDirecteurThese implements OnInit {
     this.demandeDtContext.setDemandeId(id);
   }
 
-  /** Colonne EN ATTENTE : demandes envoyées, en attente de décision du DT. */
-  get enAttente(): DemandeDt[] {
-    return this.demandes.filter(d => d.statut === 'CREE');
+  setFilter(filter: 'en_cours' | 'archivees'): void {
+    this.activeFilter = filter;
   }
 
-  /** Colonne MISES EN RELATION : demandes acceptées par le DT (fonctionnalité à venir). */
+  /** Colonne EN ATTENTE : demandes envoyées, en attente de décision du DT. */
+  get enAttente(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'CREE' && !this.isArchivee(d));
+  }
+
+  /** Colonne MISES EN RELATION : demandes acceptées par le DT. */
   get misesEnRelation(): DemandeDt[] {
-    return this.demandes.filter(d => d.statut === 'ACCEPTEE');
+    return this.demandes.filter(d => d.statut === 'ACCEPTEE' && !this.isArchivee(d));
+  }
+
+  /** Colonne REFUSÉES. */
+  get refusees(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'REFUSEE');
+  }
+
+  /** Archivées - Mises en relation. */
+  get archivesMisesEnRelation(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'ACCEPTEE' && this.isArchivee(d));
+  }
+
+  /** Archivées - Refusées. */
+  get archivesRefusees(): DemandeDt[] {
+    return this.demandes.filter(d => d.statut === 'REFUSEE' && this.isArchivee(d));
+  }
+
+  private isArchivee(d: DemandeDt): boolean {
+    return d.statut === 'REFUSEE' || d.archivee === true;
   }
 
   initiales(nom: string | null): string {

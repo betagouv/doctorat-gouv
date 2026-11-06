@@ -29,6 +29,7 @@ export class TableauDeBordCandidat implements OnInit {
   archivesBrouillons: MiseEnRelationDto[] = [];
   archivesEnAttente: MiseEnRelationDto[] = [];
   archivesMisesEnRelation: MiseEnRelationDto[] = [];
+  archivesRefusees: MiseEnRelationDto[] = [];
   archivageEnCours = new Set<number>();
   desarchivageEnCours = new Set<number>();
 
@@ -95,9 +96,10 @@ export class TableauDeBordCandidat implements OnInit {
     this.archivesBrouillons = [];
     this.archivesEnAttente = [];
     this.archivesMisesEnRelation = [];
+    this.archivesRefusees = [];
 
     for (const item of this.allItems) {
-      const archivee = item.archivee === true;
+      const archivee = item.archivee === true || item.statut === 'REFUSEE';
       const isBrouillon = item.statut === 'BROUILLON';
       const isAcceptee = item.statut === 'ACCEPTEE';
       const isRefusee = item.statut === 'REFUSEE';
@@ -117,6 +119,8 @@ export class TableauDeBordCandidat implements OnInit {
           this.archivesBrouillons.push(mapped);
         } else if (isAcceptee) {
           this.archivesMisesEnRelation.push(mapped);
+        } else if (isRefusee) {
+          this.archivesRefusees.push(mapped);
         } else {
           this.archivesEnAttente.push(mapped);
         }

@@ -246,6 +246,14 @@ $font-family: 'Marianne', arial, sans-serif;
   background: $color-page-bg;
   padding: 1.5rem;
   margin: 0;
+
+.tdb-kanban--3cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.tdb-column {
+  min-width: 0;
+}
 }
 
 /* ======== Colonne ======== */
@@ -385,7 +393,16 @@ $font-family: 'Marianne', arial, sans-serif;
 
 /* ======== Responsive ======== */
 @media (max-width: 992px) {
-  .tdb-kanban {
+  .tdb-kanban:not(.tdb-kanban--3cols) {
+    grid-template-columns: 1fr;
+  }
+  .tdb-kanban--3cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .tdb-kanban--3cols {
     grid-template-columns: 1fr;
   }
 }

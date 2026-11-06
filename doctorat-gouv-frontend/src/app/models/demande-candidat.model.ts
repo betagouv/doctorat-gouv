@@ -6,6 +6,8 @@ export interface DemandeCandidat {
   dateDemande: string | null;
   archivee: boolean;
   dateDesistement: string | null;
+  dateRefus: string | null;
+  explicationRefus: string | null;
   propositionTheseId: number;
   titreSujet: string | null;
   dateMiseEnLigne: string | null;

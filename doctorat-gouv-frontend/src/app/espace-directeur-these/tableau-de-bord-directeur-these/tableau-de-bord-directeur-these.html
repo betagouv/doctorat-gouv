@@ -59,10 +59,14 @@
             Action groupée
           </button>
           <div class="tdb-section__filters">
-            <button type="button" class="tdb-filter-btn tdb-filter-btn--active" title="Bientôt disponible">
+            <button type="button" class="tdb-filter-btn"
+                    [class.tdb-filter-btn--active]="activeFilter === 'en_cours'"
+                    (click)="setFilter('en_cours')">
               En cours
             </button>
-            <button type="button" class="tdb-filter-btn" title="Bientôt disponible">
+            <button type="button" class="tdb-filter-btn"
+                    [class.tdb-filter-btn--active]="activeFilter === 'archivees'"
+                    (click)="setFilter('archivees')">
               Archivées
             </button>
           </div>
@@ -76,8 +80,8 @@
         {{ errorDemandes }}
       </div>
 
-      <!-- ======== KANBAN ======== -->
-      <div class="tdb-kanban" *ngIf="!isLoadingDemandes && !errorDemandes">
+      <!-- ======== KANBAN EN COURS ======== -->
+      <div class="tdb-kanban" *ngIf="!isLoadingDemandes && !errorDemandes && activeFilter === 'en_cours'">
 
         <!-- Colonne EN ATTENTE -->
         <div class="tdb-column">
@@ -141,6 +145,55 @@
                     <span class="fr-icon-mail-line" aria-hidden="true"></span>
                     {{ demande.nbMessagesNonLus }} nouveau{{ demande.nbMessagesNonLus > 1 ? 'x' : '' }} message{{ demande.nbMessagesNonLus > 1 ? 's' : '' }}
                   </span>
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======== KANBAN ARCHIVÉES ======== -->
+      <div class="tdb-kanban" *ngIf="!isLoadingDemandes && !errorDemandes && activeFilter === 'archivees'">
+
+        <!-- Colonne MISES EN RELATION (archivées) -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            MISES EN RELATION <span class="tdb-column__count">({{ archivesMisesEnRelation.length }})</span>
+          </h3>
+          <p class="tdb-column__empty" *ngIf="archivesMisesEnRelation.length === 0">Aucune mise en relation archivée.</p>
+          <div class="tdb-column__cards">
+            <a *ngFor="let demande of archivesMisesEnRelation"
+               class="tdb-card"
+               [routerLink]="['/demande-directeur-these']"
+               (click)="selectDemande(demande.id)">
+              <div class="tdb-card__content">
+                <h4 class="tdb-card__name">{{ demande.candidatNom || 'Candidat' }}</h4>
+                <p class="tdb-card__title">{{ demande.titreSujet || 'Titre non renseigné' }}</p>
+                <p class="tdb-card__footer">
+                  <span class="tdb-card__date">Candidature le {{ formatDateCandidature(demande.dateDemande) }}</span>
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Colonne REFUSÉES (archivées) -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            REFUSÉES <span class="tdb-column__count">({{ archivesRefusees.length }})</span>
+          </h3>
+          <p class="tdb-column__empty" *ngIf="archivesRefusees.length === 0">Aucune demande refusée.</p>
+          <div class="tdb-column__cards">
+            <a *ngFor="let demande of archivesRefusees"
+               class="tdb-card"
+               [routerLink]="['/demande-directeur-these']"
+               (click)="selectDemande(demande.id)">
+              <div class="tdb-card__content">
+                <h4 class="tdb-card__name">{{ demande.candidatNom || 'Candidat' }}</h4>
+                <p class="tdb-card__title">{{ demande.titreSujet || 'Titre non renseigné' }}</p>
+                <p class="tdb-card__footer">
+                  <span class="tdb-card__date">Candidature le {{ formatDateCandidature(demande.dateDemande) }}</span>
                 </p>
               </div>
             </a>

@@ -27,6 +27,7 @@ public class DemandeDtResponse {
     private List<FichierCandidatDto> candidatPieces = new ArrayList<>();
     private String dateDemande;
     private String dateAcceptation;
+    private Boolean archivee;
     private String dateRefus;
     private String explicationRefus;
     private Integer nbMessagesNonLus;
@@ -107,6 +108,9 @@ public class DemandeDtResponse {
 
     public String getDateAcceptation() { return dateAcceptation; }
     public void setDateAcceptation(String dateAcceptation) { this.dateAcceptation = dateAcceptation; }
+
+    public Boolean getArchivee() { return archivee; }
+    public void setArchivee(Boolean archivee) { this.archivee = archivee; }
 
     public String getDateRefus() { return dateRefus; }
     public void setDateRefus(String dateRefus) { this.dateRefus = dateRefus; }

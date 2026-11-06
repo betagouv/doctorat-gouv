@@ -188,7 +188,7 @@
       </div>
 
       <!-- ======== ARCHIVES (Kanban) ======== -->
-      <div class="tdb-kanban" *ngIf="activeFilter === 'archivees' && !isLoading && !errorMessage && !hasNoResults">
+      <div class="tdb-kanban tdb-kanban--4cols" *ngIf="activeFilter === 'archivees' && !isLoading && !errorMessage && !hasNoResults">
 
         <!-- Colonne {{ 'TDB.COL_DRAFT' | translate }} -->
         <div class="tdb-column">
@@ -293,6 +293,40 @@
                     <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
                   </button>
                 </div>
+              </div>
+              <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
+              <div class="tdb-card__meta">
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-building-line" aria-hidden="true"></span>
+                  {{ item.etablissement }}
+                </span>
+                <span class="tdb-card__meta-item">
+                  <span class="fr-icon-user-line" aria-hidden="true"></span>
+                  {{ 'TDB.SUPERVISED_BY' | translate:{ name: item.encadrantNom } }}
+                </span>
+              </div>
+              <div class="tdb-card__footer">
+                <span class="tdb-card__date">{{ 'TDB.CONTACTED_ON' | translate:{ date: item.dateContact } }}</span>
+                <span class="fr-icon-arrow-right-line tdb-card__arrow" aria-hidden="true"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Colonne Refusées (archivées) -->
+        <div class="tdb-column">
+          <h3 class="tdb-column__header">
+            Demandes refusées <span class="tdb-column__count">({{ archivesRefusees.length }})</span>
+          </h3>
+          <p class="tdb-column__empty" *ngIf="archivesRefusees.length === 0">Aucune demande refusée.</p>
+          <div class="tdb-column__cards">
+            <a *ngFor="let item of archivesRefusees"
+               class="tdb-card"
+               [routerLink]="['/demande-candidat']"
+               (click)="selectDemande(item.id)">
+              <div class="tdb-card__badges">
+                <span class="tdb-badge tdb-badge--refusee">Refusée</span>
+                <span class="tdb-badge tdb-badge--archive">{{ 'TDB.ARCHIVED' | translate }}</span>
               </div>
               <h4 class="tdb-card__title">{{ item.titreSujet }}</h4>
               <div class="tdb-card__meta">

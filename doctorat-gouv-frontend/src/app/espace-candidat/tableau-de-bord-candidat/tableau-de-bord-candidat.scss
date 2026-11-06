@@ -162,6 +162,14 @@ $font-family: 'Marianne', arial, sans-serif;
   padding: 1.5rem;
 }
 
+.tdb-kanban--4cols {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tdb-column {
+  min-width: 0;
+}
+
 /* ======== Colonne ======== */
 .tdb-column__header {
   font-family: $font-family;
@@ -427,9 +435,19 @@ $font-family: 'Marianne', arial, sans-serif;
 
 /* ======== Responsive ======== */
 @media (max-width: 992px) {
-  .tdb-kanban {
+  .tdb-kanban:not(.tdb-kanban--4cols) {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+  .tdb-kanban--4cols {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tdb-kanban--4cols {
+    grid-template-columns: 1fr;
   }
 }
 

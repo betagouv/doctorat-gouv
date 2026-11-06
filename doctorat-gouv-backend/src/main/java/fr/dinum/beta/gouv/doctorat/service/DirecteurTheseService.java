@@ -412,9 +412,9 @@ public class DirecteurTheseService {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         List<DemandeDtResponse> response = new ArrayList<>();
         for (DemandeMiseEnRelation d : demandes) {
-            if ((d.getStatut() != StatutDemandeMiseEnRelation.CREE
-                    && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE)
-                || Boolean.TRUE.equals(d.getArchivee())) {
+            if (d.getStatut() != StatutDemandeMiseEnRelation.CREE
+                    && d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+                    && d.getStatut() != StatutDemandeMiseEnRelation.REFUSEE) {
                 continue;
             }
             PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -435,6 +435,8 @@ public class DirecteurTheseService {
                 dto.setCandidatPhotoUrl(ProfilService.urlPhoto(candidat));
             }
             dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
+            dto.setArchivee(Boolean.TRUE.equals(d.getArchivee())
+                || d.getStatut() == StatutDemandeMiseEnRelation.REFUSEE);
             dto.setStatut(d.getStatut() != null ? d.getStatut().name() : null);
             dto.setNbMessagesNonLus((int) messageRepository
                 .countByDemandeIdAndAuteurIdNotAndLuFalse(d.getId(), userId));
@@ -495,6 +497,7 @@ public class DirecteurTheseService {
             }
         }
         dto.setDateDemande(d.getUpdatedAt() != null ? d.getUpdatedAt().format(dateTimeFormatter) : null);
+        dto.setArchivee(Boolean.TRUE.equals(d.getArchivee()));
         dto.setDateAcceptation(d.getDateAcceptation() != null ? d.getDateAcceptation().format(dateTimeFormatter) : null);
         dto.setDateRefus(d.getDateRefus() != null ? d.getDateRefus().format(dateTimeFormatter) : null);
         dto.setExplicationRefus(d.getExplicationRefus());
@@ -551,6 +554,7 @@ public class DirecteurTheseService {
         d.setStatut(StatutDemandeMiseEnRelation.REFUSEE);
         d.setDateRefus(LocalDateTime.now());
         d.setExplicationRefus(texte);
+        d.setArchivee(Boolean.TRUE);
         d.setUpdatedAt(LocalDateTime.now());
         demandeMiseEnRelationRepository.save(d);
         log.info("Demande {} refusée par le directeur de thèse {}", demandeId, userId);
@@ -624,6 +628,7 @@ public class DirecteurTheseService {
         d.setDateAcceptation(null);
         d.setDateRefus(null);
         d.setExplicationRefus(null);
+        d.setArchivee(Boolean.FALSE);
         d.setUpdatedAt(LocalDateTime.now());
         demandeMiseEnRelationRepository.save(d);
         log.info("Demande {} réinitialisée à l'état CREE par le directeur de thèse {}", demandeId, userId);

@@ -186,6 +186,7 @@ export interface DemandeDt {
   candidatPieces?: FichierCandidat[];
   dateDemande: string | null;
   dateAcceptation?: string | null;
+  archivee?: boolean | null;
   dateRefus?: string | null;
   explicationRefus?: string | null;
   nbMessagesNonLus?: number | null;

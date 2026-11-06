@@ -114,6 +114,20 @@
                 <p class="fr-error-text" *ngIf="messageErreur" role="alert">{{ messageErreur }}</p>
               </div>
             </ng-container>
+
+            <ng-container *ngIf="demande.statut === 'REFUSEE'">
+              <p class="message-cta">
+                Votre demande de mise en relation a été refusée par la direction de thèse.
+              </p>
+              <div class="message-box" *ngIf="demande.explicationRefus">
+                <div class="message-box__content">
+                  <p>« {{ demande.explicationRefus }} »</p>
+                </div>
+                <div class="message-box__sent">
+                  Refus notifié le {{ formatDateEnvoi(demande.dateRefus) }}
+                </div>
+              </div>
+            </ng-container>
           </div>
         </section>
 

@@ -169,7 +169,8 @@ public class DemandeMiseEnRelationService {
                     encadrantNom,
                     demande.getUpdatedAt(),
                     demande.getStatut().name(),
-                    Boolean.TRUE.equals(demande.getArchivee()));
+                    Boolean.TRUE.equals(demande.getArchivee())
+                        || demande.getStatut() == StatutDemandeMiseEnRelation.REFUSEE);
             item.setNbMessagesNonLus((int) messageRepository
                 .countByDemandeIdAndAuteurIdNotAndLuFalse(demande.getId(), userId));
             result.add(item);
