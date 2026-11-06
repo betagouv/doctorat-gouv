@@ -247,10 +247,14 @@
         <h2 id="dialog-refus-titre" class="demande-dialog__title">Décliner la demande</h2>
       </div>
       <p class="demande-dialog__text">
-        Merci d'indiquer au candidat la raison du refus.
+        Merci d'indiquer au candidat la raison du refus (obligatoire, 2000 caractères max.).
       </p>
-      <textarea class="echanges__input" rows="4" maxlength="2000"
-                [(ngModel)]="explicationRefus"></textarea>
+      <div class="refus-dialog__field">
+        <label class="echanges__label" for="explication-refus">Explication du refus <span class="refus-dialog__required">*</span></label>
+        <textarea id="explication-refus" class="echanges__input" rows="4" maxlength="2000" required
+                  [(ngModel)]="explicationRefus"></textarea>
+        <span class="echanges__compteur">{{ explicationRefus.length }} / 2000</span>
+      </div>
       <div class="demande-dialog__actions">
         <button type="button" class="btn-decline" (click)="fermerDialogRefus()">Annuler</button>
         <button type="button" class="btn-accept" [disabled]="isRefusing || !explicationRefus.trim()"

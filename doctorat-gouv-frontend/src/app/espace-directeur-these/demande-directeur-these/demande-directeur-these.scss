@@ -678,6 +678,20 @@ $font-family: 'Marianne', arial, sans-serif;
   margin: 0;
 }
 
+.refus-dialog__field {
+  padding: 1rem 1.5rem 0;
+}
+
+.refus-dialog__required {
+  color: $color-error;
+}
+
+.refus-dialog__field .echanges__input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.25rem;
+}
+
 .demande-dialog__actions {
   display: flex;
   justify-content: flex-end;
