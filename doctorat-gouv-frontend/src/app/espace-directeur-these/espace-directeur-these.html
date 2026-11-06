@@ -356,10 +356,7 @@
                   <label class="fr-label" for="edit-titre">Votre titre <span class="required-star">*</span></label>
                   <select class="fr-select" id="edit-titre" formControlName="titre">
                     <option value="">Sélectionner une option</option>
-                    <option value="Docteur / Docteure">Docteur / Docteure</option>
-                    <option value="Professeur des universités">Professeur des universités</option>
-                    <option value="Directeur de recherche">Directeur de recherche</option>
-                    <option value="Autre">Autre</option>
+                    <option *ngFor="let titre of titresDisponibles" [value]="titre">{{ titre }}</option>
                   </select>
                 </div>
 

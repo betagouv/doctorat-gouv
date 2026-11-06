@@ -131,6 +131,22 @@ export class EspaceDirecteurThese implements OnInit {
     return this.profil?.nom ?? '';
   }
 
+  /** Titres proposés selon la civilité choisie (masculin par défaut). */
+  get titresDisponibles(): string[] {
+    const civilite = this.profilForm.get('civilite')?.value;
+    const feminin = civilite === 'Madame';
+    const base = feminin
+      ? ['Docteure', 'Habilitée à diriger des recherches', 'Maîtresse de conférences', 'Chargée de recherche', 'Professeure des Universités', 'Directrice de recherche']
+      : ['Docteur', 'Habilité à diriger des recherches', 'Maître de conférences', 'Chargé de recherche', 'Professeur des Universités', 'Directeur de recherche'];
+    const titres = [...base, 'Autre'];
+    // Préserve l'affichage d'une valeur historique non présente dans la nouvelle liste (pas de casse de l'existant).
+    const courant = (this.profilForm.get('titre')?.value ?? '').trim();
+    if (courant && !titres.includes(courant)) {
+      titres.push(courant);
+    }
+    return titres;
+  }
+
   get fullName(): string {
     return `${this.prenom} ${this.nom}`;
   }
