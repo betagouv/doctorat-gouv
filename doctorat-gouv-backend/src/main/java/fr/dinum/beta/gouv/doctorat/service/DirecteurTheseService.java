@@ -614,12 +614,16 @@ public class DirecteurTheseService {
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
-        if (p == null || d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+        if (p == null
+            || (d.getStatut() != StatutDemandeMiseEnRelation.ACCEPTEE
+                && d.getStatut() != StatutDemandeMiseEnRelation.REFUSEE)
             || Boolean.TRUE.equals(d.getArchivee())) {
             throw new IllegalArgumentException("Demande introuvable");
         }
         d.setStatut(StatutDemandeMiseEnRelation.CREE);
         d.setDateAcceptation(null);
+        d.setDateRefus(null);
+        d.setExplicationRefus(null);
         d.setUpdatedAt(LocalDateTime.now());
         demandeMiseEnRelationRepository.save(d);
         log.info("Demande {} réinitialisée à l'état CREE par le directeur de thèse {}", demandeId, userId);

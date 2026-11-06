@@ -106,7 +106,7 @@
               « {{ demande.explicationRefus }} »
             </p>
 
-            <div class="message-reset" *ngIf="demande.statut === 'ACCEPTEE' && isHorsProd">
+            <div class="message-reset" *ngIf="(demande.statut === 'ACCEPTEE' || demande.statut === 'REFUSEE') && isHorsProd">
               <button type="button" class="btn-reset"
                       [disabled]="isResetting"
                       (click)="reinitialiser()">

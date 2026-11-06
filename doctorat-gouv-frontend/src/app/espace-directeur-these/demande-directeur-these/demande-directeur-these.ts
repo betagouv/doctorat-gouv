@@ -278,7 +278,7 @@ export class DemandeDirecteurThese implements OnInit, OnDestroy {
 
   /** Outil hors prod : fait revenir une demande acceptée à l'état CREE. */
   reinitialiser(): void {
-    if (!this.demande || this.isResetting || this.demande.statut !== 'ACCEPTEE') {
+    if (!this.demande || this.isResetting || (this.demande.statut !== 'ACCEPTEE' && this.demande.statut !== 'REFUSEE')) {
       return;
     }
     if (!confirm('Réinitialiser cette demande à l’état CREE (outil hors production) ?')) {
