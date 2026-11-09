@@ -151,6 +151,14 @@ export class EspaceDirecteurThese implements OnInit {
     return `${this.prenom} ${this.nom}`;
   }
 
+  /**
+   * Vrai si le compte est rattaché à Projets Recherche Connect (sourceAuth du compte).
+   * Un tel compte n'a pas de mot de passe local exploitable : le changement est géré par PRC.
+   */
+  get estComptePrc(): boolean {
+    return this.authService.currentUser()?.sourceAuth === 'PROJETS_RECHERCHE_CONNECT';
+  }
+
   get photoUrl(): string {
     return this.profil?.photoUrl ?? this.defaultAvatar;
   }

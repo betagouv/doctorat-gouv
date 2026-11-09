@@ -630,15 +630,26 @@
           </div>
           <div class="ed-card__body">
 
-            <!-- Messages -->
-            <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="passwordSuccessMessage" role="alert">
-              {{ passwordSuccessMessage }}
-            </div>
-            <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="passwordErrorMessage" role="alert">
-              {{ passwordErrorMessage }}
+            <!-- Compte PRC : le mot de passe se gère chez le fournisseur d'identité -->
+            <div class="fr-alert fr-alert--info fr-mb-3w" *ngIf="estComptePrc" role="alert">
+              <h3 class="fr-alert__title">Vous êtes connecté via Projets Recherche Connect</h3>
+              <p>
+                Votre compte utilise l'authentification de Projets Recherche Connect : le mot de passe
+                ne peut pas être modifié depuis doctorat.gouv.fr. Rendez-vous sur votre compte
+                Projets Recherche Connect pour le gérer.
+              </p>
             </div>
 
-            <form [formGroup]="motDePasseForm" (ngSubmit)="changerMotDePasse()" class="ed-mdp-form">
+            <ng-container *ngIf="!estComptePrc">
+              <!-- Messages -->
+              <div class="fr-alert fr-alert--success fr-mb-3w" *ngIf="passwordSuccessMessage" role="alert">
+                {{ passwordSuccessMessage }}
+              </div>
+              <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="passwordErrorMessage" role="alert">
+                {{ passwordErrorMessage }}
+              </div>
+
+              <form [formGroup]="motDePasseForm" (ngSubmit)="changerMotDePasse()" class="ed-mdp-form">
 
               <!-- Mot de passe actuel -->
               <div class="fr-input-group"
@@ -728,7 +739,8 @@
                 </button>
               </div>
 
-            </form>
+              </form>
+            </ng-container>
 
           </div>
         </section>

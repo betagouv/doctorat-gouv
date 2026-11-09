@@ -221,11 +221,16 @@ public class DirecteurTheseController {
     }
 
     @PutMapping("/mot-de-passe")
-    public ResponseEntity<Void> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
+    public ResponseEntity<?> changerMotDePasse(@Valid @RequestBody ChangementMotDePasseRequest request) {
         String userId = getCurrentUserId();
         log.info("Changement de mot de passe pour le directeur de thèse {}", userId);
-        directeurTheseService.changerMotDePasse(userId, request);
-        return ResponseEntity.ok().build();
+        try {
+            directeurTheseService.changerMotDePasse(userId, request);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            // Mot de passe incorrect, non correspondent ou compte PRC : refus métier, pas un incident.
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     @PutMapping("/fichiers/photo")

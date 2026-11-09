@@ -30,6 +30,7 @@ import fr.dinum.beta.gouv.doctorat.entity.ProfilCandidat;
 import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
 import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
+import fr.dinum.beta.gouv.doctorat.enums.SourceAuth;
 import fr.dinum.beta.gouv.doctorat.enums.SourceThese;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
@@ -50,6 +51,11 @@ public class DirecteurTheseService {
     private static final String LIEN_RECHERCHE = "https://app.doctorat.gouv.fr/";
     private static final int BREVO_TEMPLATE_ACCEPTATION = 67;
     private static final int BREVO_TEMPLATE_REFUS = 68;
+
+    /** Message renvoyé à un compte connecté via PRC qui tente de changer son mot de passe. */
+    private static final String MESSAGE_MDP_PRC =
+        "Vous êtes connecté via Projets Recherche Connect : le mot de passe de votre compte "
+        + "se gère directement sur Projets Recherche Connect et ne peut pas être modifié ici.";
 
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
@@ -779,6 +785,11 @@ public class DirecteurTheseService {
     public void changerMotDePasse(String userId, ChangementMotDePasseRequest request) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+
+        // Compte PRC : mot de passe aléatoire jamais connu, la gestion passe par PRC.
+        if (utilisateur.getSourceAuth() == SourceAuth.PROJETS_RECHERCHE_CONNECT) {
+            throw new IllegalArgumentException(MESSAGE_MDP_PRC);
+        }
 
         if (!passwordEncoder.matches(request.getMotDePasseActuel(), utilisateur.getMotDePasse())) {
             throw new IllegalArgumentException("Le mot de passe actuel est incorrect");
