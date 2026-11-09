@@ -72,13 +72,6 @@
                 [attr.aria-selected]="activeTab === 'notifications'">
           {{ 'ESPACE_CANDIDAT.TAB_NOTIFICATIONS' | translate }}
         </button>
-        <button class="ec-tabs__tab"
-                [class.ec-tabs__tab--active]="activeTab === 'alertes'"
-                (click)="switchTab('alertes')"
-                role="tab"
-                [attr.aria-selected]="activeTab === 'alertes'">
-          {{ 'ESPACE_CANDIDAT.TAB_ALERTES' | translate }}
-        </button>
       </nav>
 
       <!-- ============ ONGLET : VOTRE PROFIL ============ -->
@@ -447,15 +440,6 @@
                 {{ 'ESPACE_CANDIDAT.PROFIL_SAVE' | translate }}
               </button>
             </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- ============ ONGLET : ALERTES ============ -->
-      <div *ngIf="activeTab === 'alertes'" class="ec-tab-content">
-        <section class="ec-card">
-          <div class="ec-card__body">
-            <p>{{ 'ESPACE_CANDIDAT.ALERTES_TITLE' | translate }}</p>
           </div>
         </section>
       </div>

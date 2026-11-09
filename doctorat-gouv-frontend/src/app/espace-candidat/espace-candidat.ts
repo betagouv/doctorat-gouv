@@ -26,7 +26,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  activeTab: 'profil' | 'motdepasse' | 'notifications' | 'alertes' = 'profil';
+  activeTab: 'profil' | 'motdepasse' | 'notifications' = 'profil';
 
   fichiersError: string | null = null;
   fichiersSuccess: string | null = null;
@@ -307,7 +307,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.revokePhotoUrl();
   }
 
-  switchTab(tab: 'profil' | 'motdepasse' | 'notifications' | 'alertes'): void {
+  switchTab(tab: 'profil' | 'motdepasse' | 'notifications'): void {
     this.activeTab = tab;
     this.successMessage = null;
     this.errorMessage = null;
