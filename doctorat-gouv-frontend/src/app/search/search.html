@@ -395,9 +395,12 @@
 
 		</button>
 
+
+
 	  </div>
 
 	</div>
+
 
   </div>
 </div>
@@ -562,6 +565,50 @@
 				</span>
 			</span>
 		</p>
+
+
+	<!-- Enregistrement des filtres (candidat connecte) -->
+	<div class="fr-mt-2w" *ngIf="isCandidateConnected()">
+	  <button class="fr-btn"
+	          data-testid="save-filters-button"
+	          (click)="openSaveFilterPrompt()">
+	    Enregistrer les filtres
+	  </button>
+
+	  <select *ngIf="savedFilters.length"
+	          class="fr-select fr-ml-2w"
+	          style="display:inline-block; width:auto;"
+	          (change)="onSavedFilterSelect($event)">
+	    <option value="">Filtres enregistres...</option>
+	    <option *ngFor="let sf of savedFilters" [value]="sf.id">{{ sf.name }}</option>
+	  </select>
+
+	  <div class="fr-mt-2w fr-p-2w fr-border fr-border--grey-200 fr-radius-1w" style="max-width: 32rem;" *ngIf="showSaveFilterPrompt">
+	    <p class="fr-text--bold fr-mb-1w">Nom du filtre</p>
+	    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+	      <div class="fr-col-12">
+	        <input type="text"
+	               class="fr-input"
+	               [(ngModel)]="savedFilterName"
+	               placeholder="Nom du filtre"
+	               (keyup.enter)="confirmSaveFilter()">
+	      </div>
+	      <div class="fr-col-12 fr-mt-1w">
+	        <button class="fr-btn" (click)="confirmSaveFilter()">Enregistrer</button>
+	        <button class="fr-btn fr-btn--secondary fr-ml-1w" (click)="closeSaveFilterPrompt()">Annuler</button>
+	      </div>
+	    </div>
+	  </div>
+
+	  <div class="fr-mt-2w" *ngIf="savedFilters.length">
+	    <ul class="fr-tags-group__list">
+	      <li *ngFor="let sf of savedFilters" class="fr-mr-2w">
+	        <button class="fr-tag" (click)="applySavedFilter(sf)">{{ sf.name }}</button>
+	        <button class="fr-tag__btn" (click)="deleteSavedFilter(sf)" title="Supprimer">x</button>
+	      </li>
+	    </ul>
+	  </div>
+	</div>
 
 		<!-- ===================== LOADING SCALEWAY ===================== -->
 		<!-- Mode simple (Albert-like) par défaut -->
@@ -1126,7 +1173,7 @@
     </div>
 
   </section>
-  
+
   <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top fr-mt-3w"
           data-fr-back-to-top (click)="scrollToTop()">
     {{ 'SEARCH.BACK_TO_TOP' | translate }}

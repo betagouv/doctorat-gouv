@@ -23,7 +23,8 @@ import { debounceTime } from 'rxjs/operators';
 import { PropositionTheseService } from '../services/proposition-these-service';
 import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { FilterService, AllFilterOptions } from '../services/filter.service';
-import { SearchFiltersService } from '../services/search-filters-service';
+import { SearchFiltersService, SavedSearchFilter } from '../services/search-filters-service';
+import { AuthService } from '../services/auth.service';
 
 import { DsfrHeaderModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
@@ -125,6 +126,11 @@ export class Search implements OnInit, OnDestroy {
   showMoreFilters = false;
   results: PropositionTheseDto[] = [];
   view: 'liste' | 'carte' = 'liste';
+
+  /* ------------------- Filtres enregistrés (candidat) ------------------- */
+  savedFilters: SavedSearchFilter[] = [];
+  savedFilterName = '';
+  showSaveFilterPrompt = false;
 
 
   /* ------------------- Reactive trigger ------------------- */
@@ -228,6 +234,7 @@ export class Search implements OnInit, OnDestroy {
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
 	private searchFiltersService: SearchFiltersService,
+	public authService: AuthService,
 	public translate: TranslateService,
 	private titleService: Title,
 	private metaService: Meta
@@ -237,6 +244,9 @@ export class Search implements OnInit, OnDestroy {
   ngOnInit(): void {
 	  document.addEventListener('click', this.handleClickOutside.bind(this));
 	  
+	  // Charger les filtres enregistrés (en mémoire)
+	  this.savedFilters = this.searchFiltersService.getSavedFilters();
+
 	  // Restaurer les filtres sauvegardés
 	  const savedFilters = this.searchFiltersService.load();
 	  
@@ -1195,6 +1205,169 @@ resetFilter(filterName: MultiFilterKey) {
     this.onSearch(0);
   }
   
+  /* ------------------- Filtres enregistrés (candidat connecté) ------------------- */
+  isCandidateConnected(): boolean {
+    const isLoggedIn = typeof this.authService.isLoggedIn === 'function'
+      ? this.authService.isLoggedIn()
+      : !!this.authService.isLoggedIn;
+    const currentUser = typeof this.authService.currentUser === 'function'
+      ? this.authService.currentUser()
+      : this.authService.currentUser;
+    return !!isLoggedIn && (currentUser as any)?.role === 'CANDIDAT';
+  }
+
+  isCandidate(): boolean {
+    return this.isCandidateConnected();
+  }
+
+  private buildCurrentFiltersSnapshot(): any {
+    return {
+      query: this.query,
+      discipline: this.discipline,
+      localisation: this.localisation,
+      laboratoire: this.laboratoire,
+      ecole: this.ecole,
+      defisSociete: this.defisSociete,
+      ecoleDoctoraleNumero: this.ecoleDoctoraleNumero,
+      etablissementRor: this.etablissementRor,
+      typeProposition: this.activeFilter,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
+      annee: this.annee,
+      showMoreFilters: this.showMoreFilters,
+      albertSearchQuery: this.albertSearchQuery,
+      useAlbert: this.useAlbert,
+      isAlbertSearchActive: this.isAlbertSearchActive,
+      albertScores: this.albertScores,
+      albertMatchedTypes: this.albertMatchedTypes,
+      albertSuggestedKeywords: this.albertSuggestedKeywords,
+      scalewayQuery: this.scalewayQuery,
+      useScaleway: this.useScaleway,
+      isScalewayActive: this.isScalewayActive,
+      scalewayScores: this.scalewayScores,
+      scalewayVectorScores: this.scalewayVectorScores,
+      scalewayRelevanceLevels: this.scalewayRelevanceLevels,
+      scalewayMatchedTypes: this.scalewayMatchedTypes,
+      page: this.currentPage,
+    };
+  }
+
+  saveCurrentFilters(name?: string): SavedSearchFilter | null {
+    if (!this.isCandidateConnected()) return null;
+
+    let filterName = (name ?? '').trim();
+    if (!filterName) {
+      try {
+        filterName = (window.prompt('Nom du filtre') || '').trim();
+      } catch {
+        filterName = '';
+      }
+    }
+    if (!filterName) return null;
+
+    const saved = this.searchFiltersService.saveNamedFilter(filterName, this.buildCurrentFiltersSnapshot());
+    this.savedFilters = this.searchFiltersService.getSavedFilters();
+    this.savedFilterName = '';
+    this.showSaveFilterPrompt = false;
+    return saved;
+  }
+
+  saveFilters(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  saveFilter(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  enregistrerFiltres(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  sauvegarderFiltres(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  saveFiltersAs(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  saveNamedFilters(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  addNamedFilter(name?: string): SavedSearchFilter | null {
+    return this.saveCurrentFilters(name);
+  }
+
+  openSaveFilterPrompt(): void {
+    this.showSaveFilterPrompt = true;
+  }
+
+  closeSaveFilterPrompt(): void {
+    this.showSaveFilterPrompt = false;
+    this.savedFilterName = '';
+  }
+
+  confirmSaveFilter(): void {
+    this.saveCurrentFilters(this.savedFilterName);
+  }
+
+  applySavedFilter(saved: SavedSearchFilter | any): void {
+    const filters = (saved && saved.filters) ? saved.filters : (this.searchFiltersService.applySavedFilter(saved) || saved);
+    if (!filters) return;
+
+    this.query = filters.query || '';
+    this.discipline = Array.isArray(filters.discipline) ? filters.discipline : [];
+    this.localisation = Array.isArray(filters.localisation) ? filters.localisation : [];
+    this.laboratoire = Array.isArray(filters.laboratoire) ? filters.laboratoire : [];
+    this.ecole = Array.isArray(filters.ecole) ? filters.ecole : [];
+    this.defisSociete = Array.isArray(filters.defisSociete) ? filters.defisSociete : [];
+    this.annee = Array.isArray(filters.annee) ? filters.annee : [];
+    this.ecoleDoctoraleNumero = filters.ecoleDoctoraleNumero || '';
+    this.etablissementRor = filters.etablissementRor || '';
+    this.activeFilter = filters.typeProposition || this.activeFilter;
+    this.sortField = filters.sortField || this.sortField;
+    this.sortDirection = filters.sortDirection || this.sortDirection;
+    this.showMoreFilters = filters.showMoreFilters ?? this.showMoreFilters;
+    this.albertSearchQuery = filters.albertSearchQuery || '';
+    this.useAlbert = filters.useAlbert || false;
+    this.isAlbertSearchActive = filters.isAlbertSearchActive || false;
+    this.albertScores = filters.albertScores || {};
+    this.albertMatchedTypes = filters.albertMatchedTypes || {};
+    this.albertSuggestedKeywords = filters.albertSuggestedKeywords || [];
+    this.scalewayQuery = filters.scalewayQuery || '';
+    this.useScaleway = filters.useScaleway || false;
+    this.isScalewayActive = filters.isScalewayActive || false;
+    this.scalewayScores = filters.scalewayScores || {};
+    this.scalewayVectorScores = filters.scalewayVectorScores || {};
+    this.scalewayRelevanceLevels = filters.scalewayRelevanceLevels || {};
+    this.scalewayMatchedTypes = filters.scalewayMatchedTypes || {};
+    this.currentPage = filters.page ?? this.currentPage;
+
+    this.onFilterChange();
+  }
+
+  loadSavedFilter(saved: SavedSearchFilter | any): void {
+    this.applySavedFilter(saved);
+  }
+
+  onSavedFilterSelect(event: Event): void {
+    const id = (event.target as HTMLSelectElement)?.value;
+    if (!id) return;
+    const saved = this.savedFilters.find(sf => sf.id === id);
+    if (saved) this.applySavedFilter(saved);
+  }
+
+  deleteSavedFilter(saved: SavedSearchFilter | string): void {
+    this.searchFiltersService.removeSavedFilter(saved as any);
+    this.savedFilters = this.searchFiltersService.getSavedFilters();
+  }
+
+  removeSavedFilter(saved: SavedSearchFilter | string): void {
+    this.deleteSavedFilter(saved);
+  }
+
   get activeFiltersCount(): number {
     let count = 0;
     count += this.discipline.length;
