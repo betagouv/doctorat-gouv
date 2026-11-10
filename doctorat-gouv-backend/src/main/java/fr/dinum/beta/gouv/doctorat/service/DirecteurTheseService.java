@@ -747,32 +747,23 @@ public class DirecteurTheseService {
     }
 
     /**
-     * Sujets rattachés au DT par comparaison de son e-mail et/ou ORCID
-     * avec les champs direction/codirection des propositions.
+     * Sujets rattachés au DT par comparaison de son e-mail avec les champs
+     * direction/codirection des propositions.
+     * Le rattachement par ORCID est désactivé (V1) : l'ORCID est saisi librement
+     * par l'utilisateur et n'est pas vérifié. Il pourra être réintroduit via un
+     * claim PRC vérifié (Option B).
      */
     private Map<Long, PropositionThese> findSujetsRattaches(String userId) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
-        ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
 
         String email = normalizeEmail(utilisateur.getEmail());
-        String orcid = normalizeOrcid(profil != null ? profil.getOrcid() : null);
 
         Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
         if (email != null) {
             List<PropositionThese> parEmail = propositionTheseRepository.findByDirecteurEmail(email);
             if (parEmail != null) {
                 for (PropositionThese p : parEmail) {
-                    if (p.getId() != null) {
-                        sujets.putIfAbsent(p.getId(), p);
-                    }
-                }
-            }
-        }
-        if (orcid != null) {
-            List<PropositionThese> parOrcid = propositionTheseRepository.findByDirecteurOrcid(orcid);
-            if (parOrcid != null) {
-                for (PropositionThese p : parOrcid) {
                     if (p.getId() != null) {
                         sujets.putIfAbsent(p.getId(), p);
                     }
@@ -822,11 +813,12 @@ public class DirecteurTheseService {
     }
 
     private boolean isDirectionMatch(PropositionThese p, String email, String orcid) {
+        // Le rattachement par ORCID est désactivé (V1) : on ne compare que l'e-mail.
         if (email != null
             && (email.equals(normalizeEmail(p.getDirectionTheseEmail())))) {
             return true;
         }
-        return orcid != null && orcid.equals(normalizeOrcid(p.getDirectionTheseOrcid()));
+        return false;
     }
 
     private String normalizeEmail(String email) {

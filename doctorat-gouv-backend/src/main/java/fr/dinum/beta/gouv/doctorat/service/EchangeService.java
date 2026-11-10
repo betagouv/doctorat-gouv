@@ -145,8 +145,11 @@ public class EchangeService {
     }
 
     /**
-     * Sujets rattachés au DT par comparaison de son e-mail et/ou ORCID
-     * avec les champs direction/codirection des propositions.
+     * Sujets rattachés au DT par comparaison de son e-mail avec les champs
+     * direction/codirection des propositions.
+     * Le rattachement par ORCID est désactivé (V1) : l'ORCID est saisi librement
+     * par l'utilisateur et n'est pas vérifié. Il pourra être réintroduit via un
+     * claim PRC vérifié (Option B).
      */
     private Map<Long, PropositionThese> findSujetsRattaches(String userId) {
         Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
@@ -154,21 +157,11 @@ public class EchangeService {
         if (utilisateur == null) {
             return sujets;
         }
-        ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
 
         String email = EmailUtils.normalize(utilisateur.getEmail());
-        String orcid = profil != null && profil.getOrcid() != null && !profil.getOrcid().trim().isEmpty()
-            ? profil.getOrcid().trim() : null;
 
         if (email != null) {
             for (PropositionThese p : propositionTheseRepository.findByDirecteurEmail(email)) {
-                if (p.getId() != null) {
-                    sujets.putIfAbsent(p.getId(), p);
-                }
-            }
-        }
-        if (orcid != null) {
-            for (PropositionThese p : propositionTheseRepository.findByDirecteurOrcid(orcid)) {
                 if (p.getId() != null) {
                     sujets.putIfAbsent(p.getId(), p);
                 }
