@@ -13,16 +13,14 @@ import org.springframework.stereotype.Service;
 import fr.dinum.beta.gouv.doctorat.dto.MessageDto;
 import fr.dinum.beta.gouv.doctorat.entity.DemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.entity.MessageEchange;
-import fr.dinum.beta.gouv.doctorat.entity.ProfilDirecteurThese;
-import fr.dinum.beta.gouv.doctorat.entity.PropositionThese;
+
 import fr.dinum.beta.gouv.doctorat.entity.Utilisateur;
 import fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation;
 import fr.dinum.beta.gouv.doctorat.repository.DemandeMiseEnRelationRepository;
 import fr.dinum.beta.gouv.doctorat.repository.MessageEchangeRepository;
-import fr.dinum.beta.gouv.doctorat.repository.ProfilDirecteurTheseRepository;
-import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
+
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
-import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
+
 
 /**
  * Échanges de messages entre le candidat et le directeur de thèse
@@ -37,19 +35,16 @@ public class EchangeService {
     private final DemandeMiseEnRelationRepository demandeRepository;
     private final MessageEchangeRepository messageRepository;
     private final UtilisateurRepository utilisateurRepository;
-    private final ProfilDirecteurTheseRepository profilDtRepository;
-    private final PropositionTheseRepository propositionTheseRepository;
+    private final DirecteurTheseAuthorizationService directeurTheseAuthorizationService;
 
     public EchangeService(DemandeMiseEnRelationRepository demandeRepository,
                           MessageEchangeRepository messageRepository,
                           UtilisateurRepository utilisateurRepository,
-                          ProfilDirecteurTheseRepository profilDtRepository,
-                          PropositionTheseRepository propositionTheseRepository) {
+                          DirecteurTheseAuthorizationService directeurTheseAuthorizationService) {
         this.demandeRepository = demandeRepository;
         this.messageRepository = messageRepository;
         this.utilisateurRepository = utilisateurRepository;
-        this.profilDtRepository = profilDtRepository;
-        this.propositionTheseRepository = propositionTheseRepository;
+        this.directeurTheseAuthorizationService = directeurTheseAuthorizationService;
     }
 
     /**
@@ -105,7 +100,7 @@ public class EchangeService {
         if (userId != null && userId.equals(demande.getCandidatId())) {
             return demande;
         }
-        if (findSujetsRattaches(userId).containsKey(demande.getPropositionTheseId())) {
+        if (directeurTheseAuthorizationService.findSujetsRattaches(userId).containsKey(demande.getPropositionTheseId())) {
             return demande;
         }
         throw new IllegalArgumentException("Demande introuvable");
@@ -144,29 +139,5 @@ public class EchangeService {
         return dtos;
     }
 
-    /**
-     * Sujets rattachés au DT par comparaison de son e-mail avec les champs
-     * direction/codirection des propositions.
-     * Le rattachement par ORCID est désactivé (V1) : l'ORCID est saisi librement
-     * par l'utilisateur et n'est pas vérifié. Il pourra être réintroduit via un
-     * claim PRC vérifié (Option B).
-     */
-    private Map<Long, PropositionThese> findSujetsRattaches(String userId) {
-        Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
-        Utilisateur utilisateur = utilisateurRepository.findById(userId).orElse(null);
-        if (utilisateur == null) {
-            return sujets;
-        }
 
-        String email = EmailUtils.normalize(utilisateur.getEmail());
-
-        if (email != null) {
-            for (PropositionThese p : propositionTheseRepository.findByDirecteurEmail(email)) {
-                if (p.getId() != null) {
-                    sujets.putIfAbsent(p.getId(), p);
-                }
-            }
-        }
-        return sujets;
-    }
 }

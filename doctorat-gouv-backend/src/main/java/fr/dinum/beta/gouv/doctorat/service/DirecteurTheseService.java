@@ -73,6 +73,7 @@ public class DirecteurTheseService {
     private final BrevoEmailService emailService;
     private final Environment environment;
     private final StoragePort storage;
+    private final DirecteurTheseAuthorizationService directeurTheseAuthorizationService;
 
     public DirecteurTheseService(UtilisateurRepository utilisateurRepository,
                                   ProfilDirecteurTheseRepository profilDtRepository,
@@ -83,7 +84,8 @@ public class DirecteurTheseService {
                                   PasswordEncoder passwordEncoder,
                                   BrevoEmailService emailService,
                                   Environment environment,
-                                  StoragePort storage) {
+                                  StoragePort storage,
+                                  DirecteurTheseAuthorizationService directeurTheseAuthorizationService) {
         this.utilisateurRepository = utilisateurRepository;
         this.profilDtRepository = profilDtRepository;
         this.profilCandidatRepository = profilCandidatRepository;
@@ -94,6 +96,7 @@ public class DirecteurTheseService {
         this.emailService = emailService;
         this.environment = environment;
         this.storage = storage;
+        this.directeurTheseAuthorizationService = directeurTheseAuthorizationService;
     }
 
     public Optional<ProfilDtResponse> getProfil(String userId) {
@@ -352,7 +355,7 @@ public class DirecteurTheseService {
      * avec les champs direction/codirection de la proposition de thèse.
      */
     public List<SujetDtResponse> getSujets(String userId) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
         ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
@@ -372,7 +375,7 @@ public class DirecteurTheseService {
      * (source DOCTORAT_GOUV, actives et inactives) depuis ses axes contactables.
      */
     public List<SujetDtResponse> getOffres(String userId) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
         ProfilDirecteurThese profil = profilDtRepository.findByUtilisateurId(userId).orElse(null);
@@ -395,7 +398,7 @@ public class DirecteurTheseService {
      * sur les sujets rattachés au directeur de thèse.
      */
     public List<DemandeDtResponse> getDemandes(String userId) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         if (sujets.isEmpty()) {
             return new ArrayList<>();
         }
@@ -459,7 +462,7 @@ public class DirecteurTheseService {
      * Accessible aux statuts CREE et ACCEPTEE (non archivée).
      */
     public DemandeDtResponse getDemandeDetail(String userId, Long demandeId) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -518,7 +521,7 @@ public class DirecteurTheseService {
      * (template Brevo 67, bouchonné hors production).
      */
     public DemandeDtResponse accepterDemande(String userId, Long demandeId) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -542,7 +545,7 @@ public class DirecteurTheseService {
      * et notification du candidat (template Brevo 68, bouchonné hors production).
      */
     public DemandeDtResponse refuserDemande(String userId, Long demandeId, String explication) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -620,7 +623,7 @@ public class DirecteurTheseService {
         if (environment.acceptsProfiles(Profiles.of("prod"))) {
             throw new IllegalStateException("Réinitialisation interdite en production");
         }
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -702,7 +705,7 @@ public class DirecteurTheseService {
      * après vérification que la demande appartient bien au DT.
      */
     public String getCandidatFichier(String userId, Long demandeId, String type, Integer index) {
-        Map<Long, PropositionThese> sujets = findSujetsRattaches(userId);
+        Map<Long, PropositionThese> sujets = directeurTheseAuthorizationService.findSujetsRattaches(userId);
         DemandeMiseEnRelation d = demandeMiseEnRelationRepository.findById(demandeId)
             .orElseThrow(() -> new IllegalArgumentException("Fichier introuvable"));
         PropositionThese p = sujets.get(d.getPropositionTheseId());
@@ -746,32 +749,7 @@ public class DirecteurTheseService {
         return StoragePort.displayName(key);
     }
 
-    /**
-     * Sujets rattachés au DT par comparaison de son e-mail avec les champs
-     * direction/codirection des propositions.
-     * Le rattachement par ORCID est désactivé (V1) : l'ORCID est saisi librement
-     * par l'utilisateur et n'est pas vérifié. Il pourra être réintroduit via un
-     * claim PRC vérifié (Option B).
-     */
-    private Map<Long, PropositionThese> findSujetsRattaches(String userId) {
-        Utilisateur utilisateur = utilisateurRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
-        String email = normalizeEmail(utilisateur.getEmail());
-
-        Map<Long, PropositionThese> sujets = new LinkedHashMap<>();
-        if (email != null) {
-            List<PropositionThese> parEmail = propositionTheseRepository.findByDirecteurEmail(email);
-            if (parEmail != null) {
-                for (PropositionThese p : parEmail) {
-                    if (p.getId() != null) {
-                        sujets.putIfAbsent(p.getId(), p);
-                    }
-                }
-            }
-        }
-        return sujets;
-    }
 
     public void changerMotDePasse(String userId, ChangementMotDePasseRequest request) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
@@ -849,7 +827,7 @@ public class DirecteurTheseService {
         // le profil n'existe pas encore. Les champs effectivement remplis sont verrouillés
         // côté front (champsVerrouilles) tant que le profil n'a pas été sauvegardé.
         boolean profilNouveau = (profil == null);
-        Map<Long, PropositionThese> sujets = profilNouveau ? findSujetsRattaches(u.getId()) : new LinkedHashMap<>();
+        Map<Long, PropositionThese> sujets = profilNouveau ? directeurTheseAuthorizationService.findSujetsRattaches(u.getId()) : new LinkedHashMap<>();
         List<String> champsVerrouilles = new ArrayList<>();
 
         String etablissement = profil != null ? profil.getEtablissement() : firstNonBlank(sujets, PropositionThese::getEtablissementLibelle);
