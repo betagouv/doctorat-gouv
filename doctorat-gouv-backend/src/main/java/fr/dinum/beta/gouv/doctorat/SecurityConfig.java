@@ -64,10 +64,10 @@ public class SecurityConfig {
                 // Albert (désactivé, mais route publique si activé)
                 .requestMatchers("/api/albert/propositions").permitAll()
 
-                // API protégées (JWT requis)
+                // API protégées (JWT requis + rôle)
                 .requestMatchers("/api/me").authenticated()
-                .requestMatchers("/api/candidat/**").authenticated()
-                .requestMatchers("/api/directeur-these/**").authenticated()
+                .requestMatchers("/api/candidat/**").hasRole("CANDIDAT")
+                .requestMatchers("/api/directeur-these/**").hasRole("DIRECTEUR_THESE")
                 .requestMatchers("/api/deconnexion").authenticated()
                 .requestMatchers("/api/fichiers/**").authenticated()
 
