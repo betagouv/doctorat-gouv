@@ -57,6 +57,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/prc/login").permitAll()
                 .requestMatchers("/api/prc/statut").permitAll()
                 .requestMatchers("/sitemap.xml").permitAll()
+                // Recherche vectorielle publique
+                .requestMatchers("/api/scaleway/propositions").permitAll()
+                // Export et EURAXESS protégés par ApiKeyFilter
+                .requestMatchers("/api/export/**").permitAll()
+                // Albert (désactivé, mais route publique si activé)
+                .requestMatchers("/api/albert/propositions").permitAll()
 
                 // API protégées (JWT requis)
                 .requestMatchers("/api/me").authenticated()
@@ -81,7 +87,8 @@ public class SecurityConfig {
                     "/browser/**"
                 ).permitAll()
 
-                // Toutes les autres routes → Angular doit les gérer
+                // Refus par défaut pour toute route API non déclarée ci-dessus
+                .requestMatchers("/api/**").denyAll()
                 .anyRequest().permitAll()
             )
             .headers(headers -> headers

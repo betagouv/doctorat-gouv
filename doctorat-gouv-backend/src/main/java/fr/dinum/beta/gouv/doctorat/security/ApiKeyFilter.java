@@ -24,6 +24,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Value("${EURAXESS_API_KEY:}")
     private String euraxessApiKey;
 
+    @Value("${SCALEWAY_INDEX_API_KEY:}")
+    private String scalewayIndexApiKey;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -49,11 +52,22 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     }
 
     private String expectedKeyFor(HttpServletRequest request) {
-        return isEuraxessFeed(request) ? euraxessApiKey : expectedApiKey;
+        if (isEuraxessFeed(request)) {
+            return euraxessApiKey;
+        }
+        if (isIndexAdminRequest(request)) {
+            return scalewayIndexApiKey;
+        }
+        return expectedApiKey;
     }
 
     private static boolean isEuraxessFeed(HttpServletRequest request) {
         return request.getRequestURI().equals("/api/euraxess/feed");
+    }
+
+    private static boolean isIndexAdminRequest(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.startsWith("/api/scaleway/index/") || uri.startsWith("/api/albert/index/");
     }
 
     private void sendUnauthorized(HttpServletResponse response, String message) throws IOException {
@@ -65,6 +79,6 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return !(uri.startsWith("/api/export/") || isEuraxessFeed(request));
+        return !(uri.startsWith("/api/export/") || isEuraxessFeed(request) || isIndexAdminRequest(request));
     }
 }
