@@ -42,6 +42,9 @@ public class DemandeMiseEnRelationService {
     @Value("${app.mail.stub-mailbox:}")
     private String stubMailbox;
 
+    @Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}")
+    private String frontendBaseUrl;
+
     private final PropositionTheseService propositionTheseService;
     private final UtilisateurRepository utilisateurRepository;
     private final DemandeMiseEnRelationRepository demandeRepository;
@@ -449,7 +452,7 @@ public class DemandeMiseEnRelationService {
         params.put("motivation", request.getMotivations());
         params.put("nom_plateforme", "Doctorat.gouv");
 
-        String urlSujet = String.format("https://app.doctorat.gouv.fr/proposition?id=%s", these.getId());
+        String urlSujet = String.format("%s/proposition?id=%s", frontendBaseUrl, these.getId());
         params.put("url_sujet", urlSujet);
 
         try {
@@ -473,7 +476,7 @@ public class DemandeMiseEnRelationService {
         params.put("titre_sujet", these.getTheseTitre());
         params.put("nom_plateforme", "Doctorat.gouv");
         params.put("url_sujet",
-                String.format("https://app.doctorat.gouv.fr/proposition?id=%s", these.getId()));
+                String.format("%s/proposition?id=%s", frontendBaseUrl, these.getId()));
 
         try {
             if (isValidEmail(destinataire)) {

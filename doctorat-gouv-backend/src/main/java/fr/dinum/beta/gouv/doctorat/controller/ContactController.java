@@ -60,6 +60,9 @@ public class ContactController {
     
 	private final PropositionTheseService propositionTheseService;
 
+	@Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}")
+	private String frontendBaseUrl;
+
     public ContactController(BrevoEmailService emailService, PropositionTheseService propositionTheseService) {
         this.emailService = emailService;
         this.propositionTheseService = propositionTheseService;
@@ -105,7 +108,9 @@ public class ContactController {
 	    params.put("profil", req.profilLabel);
 	    params.put("email", req.email);
 	    params.put("motivation", req.message);
-	    params.put("url_ressources", req.urlVitrine);
+	    // Lien construit côté serveur (V4) — on ignore req.urlVitrine
+	    String urlCoteServeur = String.format("%s/proposition?id=%s", frontendBaseUrl, req.getIdPropositionThese());
+	    params.put("url_ressources", urlCoteServeur);
 	    params.put("nom_plateforme", "Doctorat.gouv");
 	    
 	    // Récupération de l’URL de candidature
@@ -113,20 +118,33 @@ public class ContactController {
 
 	    List<Attachment> attachments = new ArrayList<>();
 
-	    if (req.cvBase64 != null && !req.cvBase64.isBlank()) {
+	    if (req.cvBase64 != null && !req.cvBase64.isBlank() && isValidPdfBase64(req.cvBase64)) {
 	        attachments.add(new Attachment("cv.pdf", req.cvBase64));
 	    }
 
-	    if (req.documentBase64 != null && !req.documentBase64.isBlank()) {
+	    if (req.documentBase64 != null && !req.documentBase64.isBlank() && isValidPdfBase64(req.documentBase64)) {
 	        attachments.add(new Attachment("autre_document.pdf", req.documentBase64));
 	    }
 
+	    // Destinataire déduit côté serveur depuis la proposition (V4)
+	    String destinataireEncadrant = null;
 	    try {
-	    	if (isValidEmail(req.emailEncadrant)) {
-	    		int templateId = resolveTemplateIdEncadrant(req.getTypeOffre());
-	    		log.info("Envoi de l'email à l'encadrant avec template {}", templateId);
-	    	    emailService.sendTemplateEmailWithAttachments(req.emailEncadrant, templateId, params, attachments);
-	    	}
+	        PropositionTheseDto proposition = propositionTheseService.findById(req.getIdPropositionThese());
+	        if (proposition != null) {
+	            destinataireEncadrant = proposition.getDirectionTheseEmail();
+	        }
+	    } catch (Exception e) {
+	        log.warn("Impossible de récupérer la proposition {} pour déduire le destinataire", req.getIdPropositionThese(), e);
+	    }
+	    if (destinataireEncadrant == null || !isValidEmail(destinataireEncadrant)) {
+	        log.warn("Destinataire encadrant introuvable ou invalide pour la proposition {}", req.getIdPropositionThese());
+	        return;
+	    }
+
+	    try {
+	    	int templateId = resolveTemplateIdEncadrant(req.getTypeOffre());
+	    	log.info("Envoi de l'email à l'encadrant avec template {}", templateId);
+	    	emailService.sendTemplateEmailWithAttachments(destinataireEncadrant, templateId, params, attachments);
 	    } catch (JsonProcessingException e) {
 	        log.error("Error sending template email to encadrant", e);
 	    }
@@ -149,7 +167,7 @@ public class ContactController {
 		params.put("email", request.email);
 		params.put("motivation", request.message);
 		params.put("nom_plateforme", "DOCTORAT GOUV");
-		String url = String.format("https://app.doctorat.gouv.fr/proposition?id=%s", request.getIdPropositionThese());
+		String url = String.format("%s/proposition?id=%s", frontendBaseUrl, request.getIdPropositionThese());
 		params.put("url_ressources", url);
 		
         
@@ -242,6 +260,37 @@ public class ContactController {
 	    return email != null
 	        && !email.isBlank()
 	        && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+	}
+
+	/**
+	 * Vérifie qu'une chaîne Base64 décode en un fichier PDF valide (magic bytes %PDF).
+	 * Limite aussi la taille à 5 Mo.
+	 */
+	private boolean isValidPdfBase64(String base64) {
+	    if (base64 == null || base64.isBlank()) {
+	        return false;
+	    }
+	    try {
+	        // Supprimer le préfixe data:application/pdf;base64, si présent
+	        String clean = base64;
+	        int commaIndex = clean.indexOf(',');
+	        if (commaIndex >= 0) {
+	            clean = clean.substring(commaIndex + 1);
+	        }
+	        byte[] decoded = java.util.Base64.getDecoder().decode(clean);
+	        // Taille max 5 Mo
+	        if (decoded.length > 5 * 1024 * 1024) {
+	            return false;
+	        }
+	        // Magic bytes %PDF
+	        return decoded.length >= 4
+	            && decoded[0] == 0x25  // %
+	            && decoded[1] == 0x50  // P
+	            && decoded[2] == 0x44  // D
+	            && decoded[3] == 0x46; // F
+	    } catch (IllegalArgumentException e) {
+	        return false;
+	    }
 	}
 
 }
