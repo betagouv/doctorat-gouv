@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,28 @@ public class AuthController {
         try {
             ConnexionResponse response = authService.inscrire(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/activation")
+    public ResponseEntity<?> activerCompte(@RequestParam String token) {
+        log.info("GET /api/activation - token: {}", token);
+        try {
+            ConnexionResponse response = authService.activerCompte(token);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/confirmation-email")
+    public ResponseEntity<?> confirmerChangementEmail(@RequestParam String token) {
+        log.info("GET /api/confirmation-email - token: {}", token);
+        try {
+            authService.confirmerChangementEmail(token);
+            return ResponseEntity.ok(Map.of("message", "Email confirmé avec succès"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

@@ -149,15 +149,8 @@ public class PrcAccountService {
 
         String email = EmailUtils.normalize(oidc.getClaimAsString("principalEmail"));
         if (email == null) {
-            // Degradation gracieuse (Option A, temporaire) : pas d'email transmis par PRC
-            // (userinfo indisponible). On cree un compte squelette avec un email synthetique
-            // stable (derive du sub) ; l'utilisateur complete son profil depuis
-            // /espace-directeur-these.
-            // TODO Option B (a basculer) : refuser proprement (PrcAccountException) si
-            // l'email manque, pour eviter tout risque de doublon d'identite.
-            email = "prc-" + sub + SUFFIXE_EMAIL_SQUELETTE;
-            log.warn("Aucun email fourni par PRC : creation d'un compte SQUELETTE "
-                    + "(email synthetique {}) — l'utilisateur complete son profil", email);
+            // Option B : refus propre si PRC ne fournit pas d'email.
+            throw new PrcAccountException("Aucun email fourni par PRC (principalEmail manquant)");
         }
 
         // Phase 1 : pas d'ecran de choix, on continue avec principalEmail (phase 2).
@@ -183,9 +176,15 @@ public class PrcAccountService {
         }
 
         // --- 2. Compte existant trouve par email : LIAISON (jamais de doublon) ---
+        // LIAISON uniquement si le compte local a un email verifie (V2).
+        // Sinon, refus et proposition de fusion depuis la session authentifiee.
         Optional<Utilisateur> parEmail = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email);
         if (parEmail.isPresent()) {
             Utilisateur utilisateur = parEmail.get();
+            if (!Boolean.TRUE.equals(utilisateur.getEmailVerified())) {
+                throw new PrcAccountException("Compte local existant avec cet email mais email non verifie : "
+                        + "liaison refusee. Connectez-vous avec votre mot de passe puis liez PRC depuis votre profil.");
+            }
             if (utilisateur.getPrcSub() != null && !utilisateur.getPrcSub().equals(sub)) {
                 log.warn("Compte {} rattache au sub PRC {} puis au nouveau sub {} "
                         + "(identite PRC mise a jour)", utilisateur.getId(), utilisateur.getPrcSub(), sub);
@@ -218,6 +217,8 @@ public class PrcAccountService {
         utilisateur.setRole(role);
         utilisateur.setSourceAuth(SourceAuth.PROJETS_RECHERCHE_CONNECT);
         utilisateur.setActif(true);
+        utilisateur.setEmailVerified(true);
+        utilisateur.setEmailVerifiedAt(LocalDateTime.now());
         utilisateur.setDateCreation(LocalDateTime.now());
         utilisateur.setPrcSub(sub);
         utilisateur.setPrcPersonId(personId);

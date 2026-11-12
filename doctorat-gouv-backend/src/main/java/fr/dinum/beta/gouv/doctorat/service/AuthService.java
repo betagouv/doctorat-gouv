@@ -51,6 +51,12 @@ public class AuthService {
     @Value("${app.mail.stub-mailbox:}")
     private String stubMailbox;
 
+    @Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}")
+    private String frontendBaseUrl;
+
+    @Value("${app.email.verification.dev-mode:false}")
+    private boolean emailVerificationDevMode;
+
     private final UtilisateurRepository utilisateurRepository;
     private final InvitationDirecteurTheseRepository invitationRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
@@ -75,6 +81,8 @@ public class AuthService {
         this.emailService = emailService;
     }
 
+    private static final int BREVO_TEMPLATE_ACTIVATION = 76;
+
     public ConnexionResponse inscrire(InscriptionRequest request) {
         String email = EmailUtils.normalize(request.getEmail());
         log.info("Inscription de {}", email);
@@ -95,16 +103,110 @@ public class AuthService {
         utilisateur.setNom(request.getNom());
         utilisateur.setRole(request.getRole());
         utilisateur.setSourceAuth(SourceAuth.MANUEL);
-        utilisateur.setActif(true);
+        utilisateur.setActif(false);
+        utilisateur.setEmailVerified(false);
         utilisateur.setDateCreation(LocalDateTime.now());
+
+        // Token d'activation (usage unique, durée 24 h)
+        String activationToken = UUID.randomUUID().toString();
+        utilisateur.setEmailVerificationToken(activationToken);
+        utilisateur.setEmailVerificationExpiresAt(LocalDateTime.now().plusHours(24));
 
         utilisateur = utilisateurRepository.save(utilisateur);
 
-        envoyerMailConfirmationCandidat(utilisateur);
+        envoyerMailActivation(utilisateur, activationToken);
 
-        String token = genererToken(utilisateur);
+        // Pas de JWT : le compte doit être activé avant connexion
         UtilisateurDto dto = toDto(utilisateur);
-        return new ConnexionResponse(dto, token, jwtConfig.getExpirationMs());
+        return new ConnexionResponse(dto, null, 0);
+    }
+
+    /**
+     * Active un compte à partir du token d'activation reçu par e-mail.
+     * Retourne un JWT si l'activation réussit.
+     */
+    public ConnexionResponse activerCompte(String token) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token d'activation invalide"));
+
+        if (utilisateur.getEmailVerificationExpiresAt() == null
+                || utilisateur.getEmailVerificationExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Le lien d'activation a expiré");
+        }
+
+        utilisateur.setActif(true);
+        utilisateur.setEmailVerified(true);
+        utilisateur.setEmailVerifiedAt(LocalDateTime.now());
+        utilisateur.setEmailVerificationToken(null);
+        utilisateur.setEmailVerificationExpiresAt(null);
+        utilisateurRepository.save(utilisateur);
+
+        String jwt = genererToken(utilisateur);
+        UtilisateurDto dto = toDto(utilisateur);
+        return new ConnexionResponse(dto, jwt, jwtConfig.getExpirationMs());
+    }
+
+    /**
+     * Confirme un changement d'e-mail à partir du token reçu par e-mail.
+     * Applique le nouvel e-mail (pendingEmail) et marque l'e-mail comme vérifié.
+     */
+    public void confirmerChangementEmail(String token) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token de confirmation invalide"));
+
+        if (utilisateur.getEmailVerificationExpiresAt() == null
+                || utilisateur.getEmailVerificationExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Le lien de confirmation a expiré");
+        }
+
+        if (utilisateur.getPendingEmail() == null || utilisateur.getPendingEmail().isBlank()) {
+            throw new IllegalArgumentException("Aucun changement d'e-mail en attente");
+        }
+
+        String nouvelEmail = utilisateur.getPendingEmail();
+        // Vérifier que le nouvel email n'est pas déjà utilisé
+        utilisateurRepository.findByEmailIgnoreCaseAndTrim(nouvelEmail)
+                .filter(u -> !u.getId().equals(utilisateur.getId()))
+                .ifPresent(u -> { throw new IllegalArgumentException("Un compte existe déjà avec cet email"); });
+
+        utilisateur.setEmail(nouvelEmail);
+        utilisateur.setPendingEmail(null);
+        utilisateur.setEmailVerified(true);
+        utilisateur.setEmailVerifiedAt(LocalDateTime.now());
+        utilisateur.setEmailVerificationToken(null);
+        utilisateur.setEmailVerificationExpiresAt(null);
+        utilisateurRepository.save(utilisateur);
+    }
+
+    /**
+     * Envoie le mail d'activation (template Brevo) avec le lien d'activation.
+     * L'échec d'envoi ne bloque jamais l'inscription.
+     */
+    private void envoyerMailActivation(Utilisateur utilisateur, String token) {
+        String destinataire = utilisateur.getEmail();
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail d'activation non envoyé pour {}", destinataire);
+                if (emailVerificationDevMode) {
+                    log.info("Mode DEV (email.verification.dev-mode=true) : token d'activation pour {} = {}", utilisateur.getEmail(), token);
+                }
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail d'activation bouchonné vers {}", destinataire);
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("prenom", utilisateur.getPrenom());
+        params.put("nom", utilisateur.getNom());
+        params.put("lien_activation", frontendBaseUrl + "/activation?token=" + token);
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_ACTIVATION, params);
+                log.info("Mail d'activation envoyé à {}", destinataire);
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail d'activation à {}", destinataire, e);
+        }
     }
 
     /**
@@ -199,6 +301,10 @@ public class AuthService {
 
         Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email ou mot de passe incorrect"));
+
+        if (!Boolean.TRUE.equals(utilisateur.getActif()) || !Boolean.TRUE.equals(utilisateur.getEmailVerified())) {
+            throw new IllegalArgumentException("Email ou mot de passe incorrect");
+        }
 
         if (!passwordEncoder.matches(request.getMotDePasse(), utilisateur.getMotDePasse())) {
             throw new IllegalArgumentException("Email ou mot de passe incorrect");

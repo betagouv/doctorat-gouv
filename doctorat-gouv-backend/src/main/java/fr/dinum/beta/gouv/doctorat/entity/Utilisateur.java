@@ -64,6 +64,30 @@ public class Utilisateur {
     @Column(nullable = false)
     private Boolean actif = true;
 
+    // --- Vérification de l'e-mail (V2) ---
+
+    /** Indique si l'e-mail a été vérifié (lien d'activation consommé ou compte PRC). */
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
+
+    /** Date et heure de validation de l'e-mail. */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "email_verified_at")
+    private LocalDateTime emailVerifiedAt;
+
+    /** Token d'activation en cours (usage unique). */
+    @Column(name = "email_verification_token", length = 255)
+    private String emailVerificationToken;
+
+    /** Date d'expiration du token d'activation. */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "email_verification_expires_at")
+    private LocalDateTime emailVerificationExpiresAt;
+
+    /** Nouvel e-mail en attente de confirmation (changement d'e-mail en deux temps). */
+    @Column(name = "pending_email", length = 255)
+    private String pendingEmail;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private SourceAuth sourceAuth;
@@ -178,6 +202,46 @@ public class Utilisateur {
 
     public void setActif(Boolean actif) {
         this.actif = actif;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public LocalDateTime getEmailVerifiedAt() {
+        return emailVerifiedAt;
+    }
+
+    public void setEmailVerifiedAt(LocalDateTime emailVerifiedAt) {
+        this.emailVerifiedAt = emailVerifiedAt;
+    }
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public LocalDateTime getEmailVerificationExpiresAt() {
+        return emailVerificationExpiresAt;
+    }
+
+    public void setEmailVerificationExpiresAt(LocalDateTime emailVerificationExpiresAt) {
+        this.emailVerificationExpiresAt = emailVerificationExpiresAt;
+    }
+
+    public String getPendingEmail() {
+        return pendingEmail;
+    }
+
+    public void setPendingEmail(String pendingEmail) {
+        this.pendingEmail = pendingEmail;
     }
 
     public SourceAuth getSourceAuth() {

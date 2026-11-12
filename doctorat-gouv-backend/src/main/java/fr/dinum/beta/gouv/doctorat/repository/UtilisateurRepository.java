@@ -27,6 +27,9 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, String
     /** Recherche par l'identifiant technique PRC (claim {@code sub}), unique en base. */
     Optional<Utilisateur> findByPrcSub(String prcSub);
 
+    /** Recherche par le token d'activation d'e-mail (usage unique). */
+    Optional<Utilisateur> findByEmailVerificationToken(String token);
+
     boolean existsByEmail(String email);
 
     @Query("SELECT u FROM Utilisateur u WHERE LOWER(TRIM(u.email)) = LOWER(TRIM(:email))")
