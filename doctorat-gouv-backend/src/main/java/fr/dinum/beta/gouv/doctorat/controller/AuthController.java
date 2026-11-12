@@ -46,7 +46,7 @@ public class AuthController {
     }
 
     @GetMapping("/activation")
-    public ResponseEntity<?> activerCompte(@RequestParam String token) {
+    public ResponseEntity<?> activerCompte(@RequestParam("token") String token) {
         log.info("GET /api/activation - token: {}", token);
         try {
             ConnexionResponse response = authService.activerCompte(token);
@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @GetMapping("/confirmation-email")
-    public ResponseEntity<?> confirmerChangementEmail(@RequestParam String token) {
+    public ResponseEntity<?> confirmerChangementEmail(@RequestParam("token") String token) {
         log.info("GET /api/confirmation-email - token: {}", token);
         try {
             authService.confirmerChangementEmail(token);

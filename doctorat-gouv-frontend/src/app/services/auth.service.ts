@@ -40,7 +40,19 @@ export class AuthService {
     const normalized = { ...request, email: this.normalizeEmail(request.email) };
     return this.http.post<ConnexionResponse>(`${this.apiUrl}/inscription`, normalized).pipe(
       tap(response => {
-        this.setSession(response);
+        if (response.token) {
+          this.setSession(response);
+        }
+      })
+    );
+  }
+
+  activerCompte(token: string): Observable<ConnexionResponse> {
+    return this.http.get<ConnexionResponse>(`${this.apiUrl}/activation?token=${encodeURIComponent(token)}`).pipe(
+      tap(response => {
+        if (response.token) {
+          this.setSession(response);
+        }
       })
     );
   }
@@ -111,6 +123,15 @@ export class AuthService {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     const prcIdToken = params.get('prc_id_token');
+
+    // Ne pas traiter le token sur la page d'activation : c'est un token d'activation,
+    // pas un JWT. Le composant Activation s'en charge lui-même.
+    if (window.location.pathname.startsWith('/activation')) {
+      if (prcIdToken) {
+        this.purgerUrl();
+      }
+      return of(undefined);
+    }
 
     // Stockage de l'id_token PRC (phase 1 : côté front, pour la déconnexion PRC).
     // TODO migration : stocker côté backend (session) et exposer /api/prc/logout.

@@ -53,6 +53,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/inscription").permitAll()
                 .requestMatchers("/api/inscription/complet").permitAll()
                 .requestMatchers("/api/connexion").permitAll()
+                .requestMatchers("/api/activation").permitAll()
+                .requestMatchers("/api/confirmation-email").permitAll()
                 // PRC : point d'entrée du parcours SSO et statut (pour masquer le bouton)
                 .requestMatchers("/api/prc/login").permitAll()
                 .requestMatchers("/api/prc/statut").permitAll()

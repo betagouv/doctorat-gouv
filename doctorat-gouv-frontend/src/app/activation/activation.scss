@@ -1,0 +1,43 @@
+.activation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.activation-card {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.activation-loading p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.activation-success h1 {
+  color: #18753c;
+}
+
+.activation-error h1 {
+  color: #ce0500;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  background: #000091;
+  color: #fff;
+}

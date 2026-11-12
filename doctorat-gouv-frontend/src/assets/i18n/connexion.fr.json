@@ -35,5 +35,16 @@
     "PLACEHOLDER_PASSWORD": "Votre mot de passe",
     "CREATE_ACCOUNT_DESCRIPTION": "Créez votre compte dès maintenant pour rejoindre la plateforme.",
     "ERROR_SERVICE_UNAVAILABLE": "La connexion est temporairement indisponible. Merci de réessayer ultérieurement."
+  },
+  "ACTIVATION": {
+    "LOADING": "Activation de votre compte en cours...",
+    "SUCCESS_TITLE": "Compte activé avec succès",
+    "SUCCESS_MESSAGE": "Votre compte a été activé. Vous allez être redirigé.",
+    "REDIRECTING": "Redirection en cours...",
+    "ERROR_TITLE": "Erreur d'activation",
+    "ERROR_MISSING_TOKEN": "Lien d'activation invalide (token manquant).",
+    "ERROR_INVALID_OR_EXPIRED": "Le lien d'activation est invalide ou a expiré.",
+    "ERROR_SERVICE_UNAVAILABLE": "Service temporairement indisponible. Veuillez réessayer plus tard.",
+    "GO_TO_LOGIN": "Aller à la page de connexion"
   }
 }

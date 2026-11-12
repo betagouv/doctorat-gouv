@@ -35,5 +35,16 @@
     "PLACEHOLDER_PASSWORD": "Your password",
     "CREATE_ACCOUNT_DESCRIPTION": "Create your account now to join the platform.",
     "ERROR_SERVICE_UNAVAILABLE": "Login is temporarily unavailable. Please try again later."
+  },
+  "ACTIVATION": {
+    "LOADING": "Activating your account...",
+    "SUCCESS_TITLE": "Account activated successfully",
+    "SUCCESS_MESSAGE": "Your account has been activated. You will be redirected.",
+    "REDIRECTING": "Redirecting...",
+    "ERROR_TITLE": "Activation error",
+    "ERROR_MISSING_TOKEN": "Invalid activation link (missing token).",
+    "ERROR_INVALID_OR_EXPIRED": "The activation link is invalid or has expired.",
+    "ERROR_SERVICE_UNAVAILABLE": "Service temporarily unavailable. Please try again later.",
+    "GO_TO_LOGIN": "Go to login page"
   }
 }

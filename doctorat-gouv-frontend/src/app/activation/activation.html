@@ -1,0 +1,27 @@
+<div class="activation-container">
+  <div class="activation-card">
+    @if (isLoading) {
+      <div class="activation-loading">
+        <p>{{ 'ACTIVATION.LOADING' | translate }}</p>
+      </div>
+    }
+
+    @if (isSuccess) {
+      <div class="activation-success">
+        <h1>{{ 'ACTIVATION.SUCCESS_TITLE' | translate }}</h1>
+        <p>{{ 'ACTIVATION.SUCCESS_MESSAGE' | translate }}</p>
+        <p>{{ 'ACTIVATION.REDIRECTING' | translate }}</p>
+      </div>
+    }
+
+    @if (isError) {
+      <div class="activation-error">
+        <h1>{{ 'ACTIVATION.ERROR_TITLE' | translate }}</h1>
+        <p>{{ errorMessage | translate }}</p>
+        <a routerLink="/connexion" class="btn btn-primary">
+          {{ 'ACTIVATION.GO_TO_LOGIN' | translate }}
+        </a>
+      </div>
+    }
+  </div>
+</div>
