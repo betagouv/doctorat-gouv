@@ -47,8 +47,8 @@ public class DirecteurTheseService {
 
     private static final Logger log = LoggerFactory.getLogger(DirecteurTheseService.class);
 
-    private static final String LIEN_CONVERSATION = "https://app.doctorat.gouv.fr/demande-candidat";
-    private static final String LIEN_RECHERCHE = "https://app.doctorat.gouv.fr/";
+    private static final String LIEN_CONVERSATION = "/demande-candidat";
+    private static final String LIEN_RECHERCHE = "/";
     private static final int BREVO_TEMPLATE_ACCEPTATION = 67;
     private static final int BREVO_TEMPLATE_REFUS = 68;
 
@@ -633,7 +633,7 @@ public class DirecteurTheseService {
         params.put("prenom", candidat.getPrenom());
         params.put("nom_directeur", nomDirecteur);
         params.put("explication_refus", explication);
-        params.put("lien_recherche", LIEN_RECHERCHE);
+        params.put("lien_recherche", frontendBaseUrl + LIEN_RECHERCHE);
 
         ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
         if (profilCandidat != null && profilCandidat.getCivilite() != null) {
@@ -704,7 +704,7 @@ public class DirecteurTheseService {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("prenom", candidat.getPrenom());
         params.put("nom_directeur", nomDirecteur);
-        params.put("lien_conversation", LIEN_CONVERSATION);
+        params.put("lien_conversation", frontendBaseUrl + LIEN_CONVERSATION);
 
         ProfilCandidat profilCandidat = profilCandidatRepository.findByUtilisateurId(candidat.getId()).orElse(null);
         if (profilCandidat != null && profilCandidat.getCivilite() != null) {
