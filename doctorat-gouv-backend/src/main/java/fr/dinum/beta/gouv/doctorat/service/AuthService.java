@@ -115,7 +115,7 @@ public class AuthService {
         // Token d'activation (usage unique, durée 24 h)
         String activationToken = UUID.randomUUID().toString();
         utilisateur.setEmailVerificationToken(activationToken);
-        utilisateur.setEmailVerificationExpiresAt(LocalDateTime.now().plusHours(24));
+        utilisateur.setEmailVerificationExpiresAt(LocalDateTime.now().plusHours(12));
 
         utilisateur = utilisateurRepository.save(utilisateur);
 
