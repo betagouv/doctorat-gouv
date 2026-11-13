@@ -103,6 +103,7 @@
     "SITUATION_LEGACY_ETUDIANT_MASTER": "Master's student",
     "SITUATION_LEGACY_TITULAIRE_MASTER": "Master's degree holder",
     "SITUATION_LEGACY_DOCTORANT": "PhD student",
-    "SITUATION_LEGACY_PROFESSIONNEL": "Professional"
+    "SITUATION_LEGACY_PROFESSIONNEL": "Professional",
+    "DIRECTEUR_INVITATION_INFO": "Registration as a thesis director is only possible by invitation. Please use the email address corresponding to the invitation received by email, which must be the address known to Adum or Amethis."
   }
 }

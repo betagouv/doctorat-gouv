@@ -103,6 +103,7 @@
     "SITUATION_LEGACY_ETUDIANT_MASTER": "Étudiant en master",
     "SITUATION_LEGACY_TITULAIRE_MASTER": "Titulaire d'un master",
     "SITUATION_LEGACY_DOCTORANT": "Doctorant",
-    "SITUATION_LEGACY_PROFESSIONNEL": "Professionnel"
+    "SITUATION_LEGACY_PROFESSIONNEL": "Professionnel",
+    "DIRECTEUR_INVITATION_INFO": "L'inscription en tant que directeur de thèse n'est possible que sur invitation. Veuillez utiliser l'adresse e-mail correspondant à l'invitation reçue par courriel, qui doit être l'adresse connue par Adum ou Amethis."
   }
 }

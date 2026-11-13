@@ -55,6 +55,13 @@
             <input type="hidden" formControlName="role" aria-hidden="true">
           </fieldset>
 
+          <!-- Message d'information pour les directeurs de thèse -->
+          @if (isDirecteur) {
+            <div class="fr-alert fr-alert--info fr-mb-3w" role="status">
+              <p>{{ 'INSCRIPTION.DIRECTEUR_INVITATION_INFO' | translate }}</p>
+            </div>
+          }
+
           <!-- PRC : proposé uniquement au directeur de thèse (phase 1).
                href retiré quand indisponible : le pointer-events CSS
                ne bloque pas la navigation clavier (Entrée). -->
