@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -93,7 +94,11 @@ public class AuthService {
         }
 
         if (utilisateurRepository.existsByEmailIgnoreCaseAndTrim(email)) {
-            throw new IllegalArgumentException("Un compte existe déjà avec cet email");
+            // Réponse neutre (V5) : on ne révèle pas si l'email existe déjà
+            log.info("Inscription tentée avec un email déjà existant : {}", email);
+            UtilisateurDto dto = new UtilisateurDto();
+            dto.setEmail(email);
+            return new ConnexionResponse(dto, null, 0);
         }
 
         Utilisateur utilisateur = new Utilisateur();
@@ -233,6 +238,14 @@ public class AuthService {
             throw new IllegalArgumentException(MESSAGE_DT_NON_INVITE);
         }
 
+        // Réponse neutre (V5) : si l'email existe déjà, on ne révèle pas
+        if (utilisateurRepository.existsByEmailIgnoreCaseAndTrim(EmailUtils.normalize(request.getEmail()))) {
+            log.info("Inscription complète tentée avec un email déjà existant : {}", request.getEmail());
+            UtilisateurDto dto = new UtilisateurDto();
+            dto.setEmail(EmailUtils.normalize(request.getEmail()));
+            return new ConnexionResponse(dto, null, 0);
+        }
+
         ConnexionResponse response = inscrire(base);
         String userId = response.getUtilisateur().getId();
 
@@ -299,17 +312,31 @@ public class AuthService {
         String email = EmailUtils.normalize(request.getEmail());
         log.info("Connexion de {}", email);
 
-        Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email)
-                .orElseThrow(() -> new IllegalArgumentException("Email ou mot de passe incorrect"));
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findByEmailIgnoreCaseAndTrim(email);
 
-        if (!Boolean.TRUE.equals(utilisateur.getActif()) || !Boolean.TRUE.equals(utilisateur.getEmailVerified())) {
+        // Hash BCrypt factice pour homogénéiser le temps de réponse (V5)
+        String hashFactice = "$2a$10$abcdefghijklmnopqrstuv";
+
+        boolean motDePasseValide;
+        if (utilisateurOpt.isPresent()) {
+            Utilisateur utilisateur = utilisateurOpt.get();
+            if (!Boolean.TRUE.equals(utilisateur.getActif()) || !Boolean.TRUE.equals(utilisateur.getEmailVerified())) {
+                // Compte non activé : matches factice pour homogénéiser
+                passwordEncoder.matches(request.getMotDePasse(), hashFactice);
+                throw new IllegalArgumentException("Email ou mot de passe incorrect");
+            }
+            motDePasseValide = passwordEncoder.matches(request.getMotDePasse(), utilisateur.getMotDePasse());
+        } else {
+            // Compte inexistant : matches factice pour homogénéiser le temps de réponse
+            passwordEncoder.matches(request.getMotDePasse(), hashFactice);
+            motDePasseValide = false;
+        }
+
+        if (!motDePasseValide) {
             throw new IllegalArgumentException("Email ou mot de passe incorrect");
         }
 
-        if (!passwordEncoder.matches(request.getMotDePasse(), utilisateur.getMotDePasse())) {
-            throw new IllegalArgumentException("Email ou mot de passe incorrect");
-        }
-
+        Utilisateur utilisateur = utilisateurOpt.get();
         String token = genererToken(utilisateur);
         UtilisateurDto dto = toDto(utilisateur);
 
