@@ -1116,7 +1116,18 @@ public class ScalewaySearchController {
 			return ResponseEntity.badRequest().body(Map.of("error", "Le paramètre query est requis"));
 		}
 		query = query.trim();
-		int limit = Integer.parseInt(allParams.getOrDefault("limit", "100"));
+		int limit;
+		try {
+			limit = Integer.parseInt(allParams.getOrDefault("limit", "100"));
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Le paramètre 'limit' doit être un nombre entier.");
+		}
+		if (limit < 1) {
+			limit = 1;
+		}
+		if (limit > 200) {
+			limit = 200;
+		}
 
 		if (queryLogEnabled) {
 			scalewayQueryLogRepository.save(new ScalewayQueryLog(query, java.time.LocalDateTime.now()));

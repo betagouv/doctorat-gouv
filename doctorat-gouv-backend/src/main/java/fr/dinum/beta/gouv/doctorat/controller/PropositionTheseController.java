@@ -33,6 +33,8 @@ public class PropositionTheseController {
 	    @RequestParam Map<String, String> filters,
 	    @RequestParam(name = "page", defaultValue = "0") int page,
 	    @RequestParam(name = "size", defaultValue = "27") int size) {
+	    if (size < 1) size = 1;
+	    if (size > 200) size = 200;
 	    return propositionTheseService.search(filters, page, size);
 	}
 	

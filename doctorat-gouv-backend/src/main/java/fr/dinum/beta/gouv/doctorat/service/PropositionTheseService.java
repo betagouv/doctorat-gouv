@@ -98,6 +98,12 @@ public class PropositionTheseService {
             sortField = "dateMiseEnLigne";
         }
 
+        // Liste blanche des champs de tri autorisés (V7)
+        List<String> allowedSortFields = List.of("dateMiseEnLigne", "theseTitre", "etablissementLibelle", "dateLimiteCandidature", "annee");
+        if (!allowedSortFields.contains(sortField)) {
+            sortField = "dateMiseEnLigne";
+        }
+
         Sort.Direction direction = "ASC".equalsIgnoreCase(sortDirection)
                 ? Sort.Direction.ASC
                 : Sort.Direction.DESC;
