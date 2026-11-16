@@ -19,6 +19,19 @@ public interface DemandeMiseEnRelationRepository extends JpaRepository<DemandeMi
 
     boolean existsByCandidatIdAndPropositionTheseId(String candidatId, Long propositionTheseId);
 
+    /**
+     * Vérifie si un candidat a une demande non archivée (CREE ou ACCEPTEE)
+     * sur l'un des sujets fournis.
+     */
+    @Query("SELECT COUNT(d) > 0 FROM DemandeMiseEnRelation d " +
+           "WHERE d.candidatId = :candidatId " +
+           "AND (d.statut = fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation.CREE " +
+           "     OR d.statut = fr.dinum.beta.gouv.doctorat.enums.StatutDemandeMiseEnRelation.ACCEPTEE) " +
+           "AND (d.archivee IS NULL OR d.archivee = FALSE) " +
+           "AND d.propositionTheseId IN :sujetIds")
+    boolean existsDemandeNonArchiveeByCandidatAndSujets(@Param("candidatId") String candidatId,
+                                                        @Param("sujetIds") List<Long> sujetIds);
+
     List<DemandeMiseEnRelation> findByCandidatIdOrderByUpdatedAtDesc(String candidatId);
 
     List<DemandeMiseEnRelation> findByPropositionTheseIdInOrderByUpdatedAtDesc(List<Long> propositionTheseIds);
