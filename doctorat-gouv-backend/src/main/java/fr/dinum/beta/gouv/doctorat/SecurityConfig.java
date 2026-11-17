@@ -12,6 +12,7 @@ import fr.dinum.beta.gouv.doctorat.security.ApiKeyFilter;
 import fr.dinum.beta.gouv.doctorat.security.JwtAuthenticationFilter;
 import fr.dinum.beta.gouv.doctorat.security.PrcLoginFailureHandler;
 import fr.dinum.beta.gouv.doctorat.security.PrcLoginSuccessHandler;
+import fr.dinum.beta.gouv.doctorat.security.RateLimitFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -26,15 +27,20 @@ public class SecurityConfig {
     private final ObjectProvider<PrcLoginSuccessHandler> prcSuccessHandler;
     private final ObjectProvider<PrcLoginFailureHandler> prcFailureHandler;
 
+    /** Filtre de rate limiting : absent de certains contexts de test → ObjectProvider. */
+    private final ObjectProvider<RateLimitFilter> rateLimitFilter;
+
     public SecurityConfig(ApiKeyFilter apiKeyFilter, JwtAuthenticationFilter jwtFilter,
                           ObjectProvider<PrcProperties> prcProperties,
                           ObjectProvider<PrcLoginSuccessHandler> prcSuccessHandler,
-                          ObjectProvider<PrcLoginFailureHandler> prcFailureHandler) {
+                          ObjectProvider<PrcLoginFailureHandler> prcFailureHandler,
+                          ObjectProvider<RateLimitFilter> rateLimitFilter) {
         this.apiKeyFilter = apiKeyFilter;
         this.jwtFilter = jwtFilter;
         this.prcProperties = prcProperties;
         this.prcSuccessHandler = prcSuccessHandler;
         this.prcFailureHandler = prcFailureHandler;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -43,7 +49,17 @@ public class SecurityConfig {
             .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Rate limiting (Bucket4j) : branché en tête de chaîne si le bean existe
+        // (absent de certains contexts de test). Le filtre se charge lui-même de
+        // n'appliquer que les chemins couverts par une règle.
+        RateLimitFilter rlFilter = rateLimitFilter.getIfAvailable();
+        if (rlFilter != null) {
+            http.addFilterBefore(rlFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
+        http
             .authorizeHttpRequests(auth -> auth
                 // API publiques
                 .requestMatchers("/api/propositions-these/**").permitAll()
