@@ -39,6 +39,9 @@
 		<!-- AWS SDK v2 (stockage objet OOS, S3-compatible). >= 2.30.0 : checksum par defaut
 			incompatible OOS, desactive dans le code (etape 3) + via AWS_REQUEST_CHECKSUM_CALCULATION. -->
 		<aws.sdk.version>2.55.14</aws.sdk.version>
+		<!-- Bucket4j : rate limiting (token bucket). JDK17+ : artefact bucket4j_jdk17-core
+			(l'ancien bucket4j-core est redirige). -->
+		<bucket4j.version>8.22.0</bucket4j.version>
 	</properties>
 
 	<dependencyManagement>
@@ -165,6 +168,17 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.6</version>
+		</dependency>
+		<!-- Rate limiting (token bucket) : Buckets stockes en memoire via Caffeine. -->
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j_jdk17-core</artifactId>
+			<version>${bucket4j.version}</version>
+		</dependency>
+		<!-- Cache des buckets en memoire (expiration auto, version geree par le BOM Spring Boot). -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
