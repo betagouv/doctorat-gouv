@@ -43,8 +43,8 @@ public class AuthService {
 
     private static final String MESSAGE_DT_NON_INVITE =
         "Actuellement, l'inscription et la connexion à la plateforme pour les directeurs de thèse " +
-        "ne sont ouvertes que sur invitation. Si vous êtes concerné, utilisez le lien reçu par e-mail ; " +
-        "sinon, contactez la plateforme.";
+        "ne sont ouvertes que sur invitation. Si votre adresse e-mail est connue d'ADUM ou d'Amethis, " +
+        "vous avez reçu (ou recevrez) un e-mail d'invitation ; sinon, contactez la plateforme.";
 
     @Value("${app.mail.enabled:false}")
     private boolean mailEnabled;
