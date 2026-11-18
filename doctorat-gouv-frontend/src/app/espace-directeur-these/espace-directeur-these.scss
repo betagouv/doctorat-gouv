@@ -51,9 +51,9 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   gap: $column-gap;
   align-items: flex-start;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 $page-margin-x;
+  max-width: none;
+  margin: 0;
+  padding: 0 2rem 0 11rem;
 }
 
 .ed-sidebar {
