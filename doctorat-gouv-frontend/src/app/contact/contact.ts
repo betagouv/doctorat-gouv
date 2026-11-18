@@ -143,7 +143,7 @@ export class Contact implements OnInit {
 	    confirmMasterControl?.updateValueAndValidity();
 	  });
 	  
-	  const { id, sujet, email, typeOffre, sujetAttribue } = this.contactContextService.getContext();
+	  const { id, sujet, typeOffre, sujetAttribue } = this.contactContextService.getContext();
 	  this.sujetAttribue = sujetAttribue === 'oui' ? 'oui' : 'non'; // Normalisation de la valeur
 
 	  // 🔥 Vérification du contexte dès l'initialisation 
@@ -174,7 +174,7 @@ export class Contact implements OnInit {
 		}
 
 		// Vérification du contexte dès l'initialisation 
-		const { id, sujet, email, typeOffre } = this.contactContextService.getContext();
+		const { id, sujet, typeOffre } = this.contactContextService.getContext();
 		if (!id || id === 0) { 
 		   this.sujetValide = false; 
 		   this.sujetErreurMessage = 'CONTACT.NO_VALID_SUBJECT'; 
@@ -215,7 +215,6 @@ export class Contact implements OnInit {
 			// 🔥 Ajout des données du contexte 
 			idPropositionThese: id,
 			titreSujet: sujet, 
-			emailEncadrant: email,
 			typeOffre: typeOffre,
 			
 			// 🔥 Langue active (utile si le backend doit faire du traitement spécifique selon la langue)

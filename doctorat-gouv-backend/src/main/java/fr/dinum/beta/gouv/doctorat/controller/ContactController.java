@@ -221,12 +221,24 @@ public class ContactController {
 	        throw new IllegalArgumentException("ID de proposition invalide.");
 	    }
 
-	    if (req.getEmailEncadrant() == null || !isValidEmail(req.getEmailEncadrant())) {
-	        throw new IllegalArgumentException("Email encadrant invalide.");
-	    }
-
 	    if (req.getEmail() == null || !isValidEmail(req.getEmail())) {
 	        throw new IllegalArgumentException("Email candidat invalide.");
+	    }
+
+	    if (req.getNom() == null || req.getNom().trim().length() < 2 || req.getNom().trim().length() > 30) {
+	        throw new IllegalArgumentException("Nom invalide.");
+	    }
+
+	    if (req.getPrenom() == null || req.getPrenom().trim().length() < 2 || req.getPrenom().trim().length() > 30) {
+	        throw new IllegalArgumentException("Prenom invalide.");
+	    }
+
+	    if (req.getMessage() == null || req.getMessage().trim().length() < 255 || req.getMessage().trim().length() > 3500) {
+	        throw new IllegalArgumentException("Message invalide.");
+	    }
+
+	    if (req.getTitreSujet() != null && req.getTitreSujet().trim().length() > 500) {
+	        throw new IllegalArgumentException("Titre de sujet invalide.");
 	    }
 
 	}
@@ -268,6 +280,10 @@ public class ContactController {
 	 */
 	private boolean isValidPdfBase64(String base64) {
 	    if (base64 == null || base64.isBlank()) {
+	        return false;
+	    }
+	    // Garde-fou DoS : borner la taille de la chaîne avant décodage (5 Mo décodés ~ 6,7 Mo Base64)
+	    if (base64.length() > 7_000_000) {
 	        return false;
 	    }
 	    try {

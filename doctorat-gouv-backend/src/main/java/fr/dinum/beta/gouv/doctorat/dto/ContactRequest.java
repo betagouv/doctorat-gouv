@@ -17,7 +17,6 @@ public class ContactRequest {
 	public Boolean confirmMaster;
 	public String message;
 
-	public String emailEncadrant;
 	public String cvBase64;
 	public String documentBase64;
 	public String titreSujet;
@@ -97,14 +96,6 @@ public class ContactRequest {
 
 	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	public String getEmailEncadrant() {
-		return emailEncadrant;
-	}
-
-	public void setEmailEncadrant(String emailEncadrant) {
-		this.emailEncadrant = emailEncadrant;
 	}
 
 	public String getCvBase64() {
