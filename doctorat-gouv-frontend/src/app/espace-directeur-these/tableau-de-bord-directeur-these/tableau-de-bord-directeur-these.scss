@@ -31,9 +31,10 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-container {
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 0 4rem;
+  max-width: none;
+  width: auto;
+  margin: 0;
+  padding: 0 2rem 0 11rem;
 }
 
 /* Fil d'ariane aligné avec le menu du header (padding-left 11rem) */
@@ -54,7 +55,7 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-left: 3rem;
+  margin-left: 0;
 }
 
 .tdb-header__icon {
@@ -97,7 +98,7 @@ $font-family: 'Marianne', arial, sans-serif;
   border-radius: 4px;
   padding: 0.625rem 1.25rem;
   cursor: pointer;
-  margin-right: 3rem;
+  margin-right: 0;
 
   &:hover {
     background: rgba($color-blue-france, 0.05);
@@ -155,8 +156,8 @@ $font-family: 'Marianne', arial, sans-serif;
   background: $color-white;
   border: 1px solid $color-border;
   border-radius: 8px;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 0;
   overflow: hidden;
 }
