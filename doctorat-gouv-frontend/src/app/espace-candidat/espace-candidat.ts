@@ -28,6 +28,10 @@ export class EspaceCandidat implements OnInit, OnDestroy {
 
   activeTab: 'profil' | 'motdepasse' | 'notifications' = 'profil';
 
+  // Flag pour basculer vers l'optimisation de la largeur des cartes (voir docs/ihm/alignement-horizontal.md).
+  // Par défaut false : cartes en pleine largeur.
+  alignementRecommande = false;
+
   fichiersError: string | null = null;
   fichiersSuccess: string | null = null;
   isSavingCv = false;

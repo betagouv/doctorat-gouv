@@ -52,9 +52,9 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   gap: $column-gap;
   align-items: flex-start;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 $page-margin-x;
+  max-width: none;
+  margin: 0;
+  padding: 0 2rem 0 11rem;
 }
 
 .ec-sidebar {
@@ -239,6 +239,11 @@ $font-family: 'Marianne', arial, sans-serif;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: $section-spacing;
   min-height: 0px;
+}
+
+/* Variante optimisée : limite la largeur des cartes (opt-in via flag TS) */
+.ec-layout--aligne .ec-card {
+  max-width: 900px;
 }
 
 .ec-card .ec-card__body {
