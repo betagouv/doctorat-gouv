@@ -36,6 +36,11 @@ $font-family: 'Marianne', arial, sans-serif;
   padding: 0 4rem;
 }
 
+/* Fil d'ariane aligné avec le menu du header (padding-left 11rem) */
+.tdb-page .fr-breadcrumb {
+  margin-left: 0;
+}
+
 /* ======== En-tete ======== */
 .tdb-header {
   display: flex;
