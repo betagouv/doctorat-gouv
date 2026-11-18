@@ -227,6 +227,11 @@ $font-family: 'Marianne', arial, sans-serif;
   min-height: 0px;
 }
 
+/* Variante optimisée : limite la largeur des cartes (opt-in via flag TS) */
+.ed-layout--aligne .ed-card {
+  max-width: 900px;
+}
+
 .ed-card .ed-card__body {
   padding: 2rem !important;
 }

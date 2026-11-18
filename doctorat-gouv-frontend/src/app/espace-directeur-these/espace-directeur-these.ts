@@ -32,6 +32,10 @@ export class EspaceDirecteurThese implements OnInit {
 
   activeTab: 'profil' | 'axes' | 'parametres' | 'notifications' = 'profil';
 
+  // Flag pour basculer vers l'alignement recommandé (voir docs/ihm/alignement-horizontal.md).
+  // Par défaut false : affichage actuel conservé.
+  alignementRecommande = false;
+
   etablissements: string[] = [];
   filteredEtablissements: string[] = [];
   showEtabSuggestions = false;
