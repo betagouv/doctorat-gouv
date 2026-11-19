@@ -41,9 +41,9 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-container {
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 0 4rem;
+  max-width: none;
+  margin: 0;
+  padding: 0 2rem 0 11rem;
 }
 
 /* ======== En-tête ======== */
@@ -59,7 +59,6 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-left: 3rem;
 }
 
 .tdb-header__icon {
@@ -97,8 +96,8 @@ $font-family: 'Marianne', arial, sans-serif;
   border: 1px solid $color-border;
   border-radius: 8px;
   padding: 0;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 .tdb-section__header {
