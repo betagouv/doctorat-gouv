@@ -34,7 +34,7 @@ export class EspaceDirecteurThese implements OnInit {
 
   // Flag pour basculer vers l'alignement recommandé (voir docs/ihm/alignement-horizontal.md).
   // Par défaut false : affichage actuel conservé.
-  alignementRecommande = false;
+  alignementRecommande = true;
 
   etablissements: string[] = [];
   filteredEtablissements: string[] = [];

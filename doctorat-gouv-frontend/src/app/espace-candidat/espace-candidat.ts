@@ -30,7 +30,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
 
   // Flag pour basculer vers l'optimisation de la largeur des cartes (voir docs/ihm/alignement-horizontal.md).
   // Par défaut false : cartes en pleine largeur.
-  alignementRecommande = false;
+  alignementRecommande = true;
 
   fichiersError: string | null = null;
   fichiersSuccess: string | null = null;
