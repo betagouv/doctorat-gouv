@@ -30,6 +30,7 @@ import fr.dinum.beta.gouv.doctorat.repository.InvitationDirecteurTheseRepository
 import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
+import fr.dinum.beta.gouv.doctorat.util.TokenUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -112,14 +113,15 @@ public class AuthService {
         utilisateur.setEmailVerified(false);
         utilisateur.setDateCreation(LocalDateTime.now());
 
-        // Token d'activation (usage unique, durée 24 h)
-        String activationToken = UUID.randomUUID().toString();
-        utilisateur.setEmailVerificationToken(activationToken);
+        // Token d'activation (usage unique, durée 12 h) : on stocke uniquement le hash,
+        // le token brut est envoyé par e-mail.
+        String activationTokenBrut = UUID.randomUUID().toString();
+        utilisateur.setEmailVerificationToken(TokenUtils.hash(activationTokenBrut));
         utilisateur.setEmailVerificationExpiresAt(LocalDateTime.now().plusHours(12));
 
         utilisateur = utilisateurRepository.save(utilisateur);
 
-        envoyerMailActivation(utilisateur, activationToken);
+        envoyerMailActivation(utilisateur, activationTokenBrut);
 
         // Pas de JWT : le compte doit être activé avant connexion
         UtilisateurDto dto = toDto(utilisateur);
@@ -131,7 +133,7 @@ public class AuthService {
      * Retourne un JWT si l'activation réussit.
      */
     public ConnexionResponse activerCompte(String token) {
-        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(token)
+        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(TokenUtils.hash(token))
                 .orElseThrow(() -> new IllegalArgumentException("Token d'activation invalide"));
 
         if (utilisateur.getEmailVerificationExpiresAt() == null
@@ -156,7 +158,7 @@ public class AuthService {
      * Applique le nouvel e-mail (pendingEmail) et marque l'e-mail comme vérifié.
      */
     public void confirmerChangementEmail(String token) {
-        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(token)
+        Utilisateur utilisateur = utilisateurRepository.findByEmailVerificationToken(TokenUtils.hash(token))
                 .orElseThrow(() -> new IllegalArgumentException("Token de confirmation invalide"));
 
         if (utilisateur.getEmailVerificationExpiresAt() == null

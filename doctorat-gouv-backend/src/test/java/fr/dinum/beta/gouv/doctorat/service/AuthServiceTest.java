@@ -2,8 +2,11 @@ package fr.dinum.beta.gouv.doctorat.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,7 +87,10 @@ class AuthServiceTest {
         utilisateur.setRole(RoleUtilisateur.CANDIDAT);
         utilisateur.setSourceAuth(SourceAuth.MANUEL);
         utilisateur.setActif(true);
+        utilisateur.setEmailVerified(true);
         utilisateur.setDateCreation(LocalDateTime.now());
+
+        ReflectionTestUtils.setField(authService, "frontendBaseUrl", "https://app.doctorat.gouv.fr");
     }
 
     // ==================== INSCRIPTION ====================
@@ -105,22 +111,20 @@ class AuthServiceTest {
             u.setId("uuid-genere");
             return u;
         });
-        when(jwtConfig.getExpirationMs()).thenReturn(86400000L);
-        when(jwtConfig.getSecret()).thenReturn("VGhpc0lzQVZlcnlMb25nU2VjcmV0S2V5Rm9ySlRXVGVzdGluZ1B1cnBvc2Vz");
 
         ConnexionResponse result = authService.inscrire(request);
 
         assertNotNull(result);
-        assertNotNull(result.getToken());
+        assertNull(result.getToken());
         assertNotNull(result.getUtilisateur());
         assertEquals("nouveau@exemple.fr", result.getUtilisateur().getEmail());
         assertEquals("Marie", result.getUtilisateur().getPrenom());
         assertEquals("Curie", result.getUtilisateur().getNom());
         assertEquals(RoleUtilisateur.CANDIDAT, result.getUtilisateur().getRole());
         assertEquals(SourceAuth.MANUEL, result.getUtilisateur().getSourceAuth());
-        assertEquals(true, result.getUtilisateur().getActif());
+        assertEquals(false, result.getUtilisateur().getActif());
         assertNotNull(result.getUtilisateur().getDateCreation());
-        assertEquals(86400000L, result.getExpiresIn());
+        assertEquals(0L, result.getExpiresIn());
 
         verify(utilisateurRepository).existsByEmailIgnoreCaseAndTrim("nouveau@exemple.fr");
         verify(passwordEncoder).encode("MotDePasse1234!");
@@ -128,7 +132,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void inscrire_emailDejaExistant_lanceException() {
+    void inscrire_emailDejaExistant_reponseNeutreSansMail() throws Exception {
         InscriptionRequest request = new InscriptionRequest();
         request.setEmail("existant@exemple.fr");
         request.setMotDePasse("MotDePasse1234!");
@@ -138,13 +142,13 @@ class AuthServiceTest {
 
         when(utilisateurRepository.existsByEmailIgnoreCaseAndTrim("existant@exemple.fr")).thenReturn(true);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> authService.inscrire(request)
-        );
+        ConnexionResponse result = authService.inscrire(request);
 
-        assertEquals("Un compte existe déjà avec cet email", exception.getMessage());
+        assertNotNull(result);
+        assertNull(result.getToken());
+        assertEquals("existant@exemple.fr", result.getUtilisateur().getEmail());
         verify(utilisateurRepository, never()).save(any());
+        verify(emailService, never()).sendTemplateEmail(anyString(), anyInt(), anyMap());
     }
 
     // ==================== CONNEXION ====================
@@ -279,12 +283,10 @@ class AuthServiceTest {
             u.setId("uuid-genere");
             return u;
         });
-        when(jwtConfig.getExpirationMs()).thenReturn(86400000L);
-        when(jwtConfig.getSecret()).thenReturn("VGhpc0lzQVZlcnlMb25nU2VjcmV0S2V5Rm9ySlRXVGVzdGluZ1B1cnBvc2Vz");
     }
 
     @Test
-    void inscrire_candidatMailActive_envoieTemplate61AvecPrenomNom() throws Exception {
+    void inscrire_candidatMailActive_envoieTemplate76AvecLienActivation() throws Exception {
         ReflectionTestUtils.setField(authService, "mailEnabled", true);
         stubInscriptionOk();
 
@@ -292,9 +294,29 @@ class AuthServiceTest {
 
         assertNotNull(result);
         ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(emailService).sendTemplateEmail(eq("nouveau@exemple.fr"), eq(61), paramsCaptor.capture());
+        verify(emailService).sendTemplateEmail(eq("nouveau@exemple.fr"), eq(76), paramsCaptor.capture());
         assertEquals("Marie", paramsCaptor.getValue().get("prenom"));
         assertEquals("Curie", paramsCaptor.getValue().get("nom"));
+        String lien = (String) paramsCaptor.getValue().get("lien_activation");
+        assertNotNull(lien);
+        assertTrue(lien.matches("https://app\\.doctorat\\.gouv\\.fr/activation\\?token=.+"));
+    }
+
+    @Test
+    void inscrire_directeurInviteMailActive_envoieTemplate76AvecLienActivation() throws Exception {
+        ReflectionTestUtils.setField(authService, "mailEnabled", true);
+        InscriptionRequest request = nouvelleInscriptionCandidat();
+        request.setRole(RoleUtilisateur.DIRECTEUR_THESE);
+        when(invitationRepository.existsByEmail("nouveau@exemple.fr")).thenReturn(true);
+        stubInscriptionOk();
+
+        authService.inscrire(request);
+
+        ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(emailService).sendTemplateEmail(eq("nouveau@exemple.fr"), eq(76), paramsCaptor.capture());
+        String lien = (String) paramsCaptor.getValue().get("lien_activation");
+        assertNotNull(lien);
+        assertTrue(lien.matches("https://app\\.doctorat\\.gouv\\.fr/activation\\?token=.+"));
     }
 
     @Test
@@ -304,20 +326,18 @@ class AuthServiceTest {
 
         authService.inscrire(nouvelleInscriptionCandidat());
 
-        verify(emailService, never()).sendTemplateEmail(anyString(), eq(61), anyMap());
+        verify(emailService, never()).sendTemplateEmail(anyString(), eq(76), anyMap());
     }
 
     @Test
-    void inscrire_roleNonCandidat_nEnvoiePasDeMail() throws Exception {
+    void inscrire_roleNonCandidatSansInvitation_lanceException() throws Exception {
         ReflectionTestUtils.setField(authService, "mailEnabled", true);
         InscriptionRequest request = nouvelleInscriptionCandidat();
         request.setRole(RoleUtilisateur.DIRECTEUR_THESE);
-        when(invitationRepository.existsByEmail("nouveau@exemple.fr")).thenReturn(true);
-        stubInscriptionOk();
+        when(invitationRepository.existsByEmail("nouveau@exemple.fr")).thenReturn(false);
 
-        authService.inscrire(request);
-
-        verify(emailService, never()).sendTemplateEmail(anyString(), eq(61), anyMap());
+        assertThrows(IllegalArgumentException.class, () -> authService.inscrire(request));
+        verify(emailService, never()).sendTemplateEmail(anyString(), anyInt(), anyMap());
     }
 
     @Test
@@ -325,12 +345,12 @@ class AuthServiceTest {
         ReflectionTestUtils.setField(authService, "mailEnabled", true);
         stubInscriptionOk();
         doThrow(new RuntimeException("Brevo KO"))
-                .when(emailService).sendTemplateEmail(anyString(), eq(61), anyMap());
+                .when(emailService).sendTemplateEmail(anyString(), eq(76), anyMap());
 
         ConnexionResponse result = authService.inscrire(nouvelleInscriptionCandidat());
 
         assertNotNull(result);
-        assertNotNull(result.getToken());
+        assertNull(result.getToken());
     }
 
     // ==================== INSCRIPTION COMPLÈTE (multipart) ====================

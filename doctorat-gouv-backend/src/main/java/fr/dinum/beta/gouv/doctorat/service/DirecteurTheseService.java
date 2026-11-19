@@ -41,6 +41,7 @@ import fr.dinum.beta.gouv.doctorat.repository.PropositionTheseRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
+import fr.dinum.beta.gouv.doctorat.util.TokenUtils;
 
 @Service
 public class DirecteurTheseService {
@@ -122,11 +123,12 @@ public class DirecteurTheseService {
                 .filter(u -> !u.getId().equals(userId))
                 .ifPresent(u -> { throw new IllegalArgumentException("Un compte existe déjà avec cet email"); });
             // Changement d'e-mail en deux temps (V2) : stockage en attente + confirmation
-            String token = java.util.UUID.randomUUID().toString();
+            // On stocke uniquement le hash du token ; le token brut est envoyé par e-mail.
+            String tokenBrut = java.util.UUID.randomUUID().toString();
             utilisateur.setPendingEmail(normalizedEmail);
-            utilisateur.setEmailVerificationToken(token);
+            utilisateur.setEmailVerificationToken(TokenUtils.hash(tokenBrut));
             utilisateur.setEmailVerificationExpiresAt(java.time.LocalDateTime.now().plusHours(1));
-            envoyerMailConfirmationChangementEmail(utilisateur, normalizedEmail, token);
+            envoyerMailConfirmationChangementEmail(utilisateur, normalizedEmail, tokenBrut);
             log.info("Changement d'e-mail en attente pour l'utilisateur {} : {}", userId, normalizedEmail);
         } else {
             utilisateur.setPendingEmail(null);
