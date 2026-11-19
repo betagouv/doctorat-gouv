@@ -201,7 +201,6 @@ export class InscriptionDocuments implements OnInit {
 
     this.authService.inscrireComplet(formData).subscribe({
       next: () => {
-        this.store.clear();
         this.demandeContextService.poserNouveauCompte();
         this.router.navigate(['/inscription/terminee']);
       },
