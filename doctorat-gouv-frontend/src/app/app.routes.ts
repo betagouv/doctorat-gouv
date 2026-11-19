@@ -32,7 +32,7 @@ export const routes: Routes = [
   { path: 'inscription', redirectTo: 'inscription/coordonnees', pathMatch: 'full' },
   { path: 'inscription/coordonnees', component: InscriptionCoordonnees },
   { path: 'inscription/documents', component: InscriptionDocuments, canActivate: [inscriptionGuard] },
-  { path: 'inscription/terminee', component: InscriptionTerminee, canActivate: [authGuard] },
+  { path: 'inscription/terminee', component: InscriptionTerminee },
   { path: 'espace-candidat', component: EspaceCandidat, canActivate: [authGuard] },
   { path: 'tableau-de-bord-candidat', component: TableauDeBordCandidat, canActivate: [authGuard] },
   { path: 'demande-candidat', component: DemandeCandidatComponent, canActivate: [authGuard] },
