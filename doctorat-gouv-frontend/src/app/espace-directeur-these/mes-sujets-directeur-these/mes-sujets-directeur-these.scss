@@ -28,9 +28,9 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-container {
-  max-width: 1800px;
+  max-width: 90%;
   margin: 0 auto;
-  padding: 0 4rem;
+  padding: 0;
 }
 
 /* ======== En-tete ======== */
@@ -42,7 +42,6 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-left: 3rem;
 }
 
 .tdb-header__icon {
@@ -77,7 +76,7 @@ $font-family: 'Marianne', arial, sans-serif;
 .tdb-header__nav {
   display: flex;
   gap: 1rem;
-  margin: 1rem 0 0 3rem;
+  margin: 1rem 0 0 0;
 }
 
 .tdb-header__link {
@@ -100,8 +99,8 @@ $font-family: 'Marianne', arial, sans-serif;
   border: 1px solid $color-border;
   border-radius: 8px;
   padding: 0;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 /* ======== Etat vide ======== */
