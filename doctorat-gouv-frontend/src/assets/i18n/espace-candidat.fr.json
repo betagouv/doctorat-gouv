@@ -93,6 +93,7 @@
     "GENERIC_ERROR": "Une erreur est survenue. Veuillez réessayer.",
     "PROFILE_FIELDS_REQUIRED": "Veuillez compléter les champs obligatoires signalés en rouge pour enregistrer.",
     "PROFILE_UPDATE_SUCCESS": "Profil mis à jour avec succès.",
+    "PROFILE_EMAIL_PENDING": "Un e-mail de confirmation a été envoyé à votre nouvelle adresse. Votre e-mail actuel reste actif jusqu'à validation du lien reçu.",
     "PASSWORD_UPDATE_SUCCESS": "Mot de passe modifié avec succès.",
     "PHOTO_INVALID_FORMAT": "Seul un fichier JPEG, PNG ou WebP est accepté.",
     "PHOTO_UPDATE_ERROR": "Erreur lors de la mise à jour de la photo.",

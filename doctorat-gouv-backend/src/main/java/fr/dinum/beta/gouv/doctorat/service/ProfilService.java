@@ -25,6 +25,7 @@ import fr.dinum.beta.gouv.doctorat.repository.ProfilCandidatRepository;
 import fr.dinum.beta.gouv.doctorat.repository.UtilisateurRepository;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
 import fr.dinum.beta.gouv.doctorat.util.EmailUtils;
+import fr.dinum.beta.gouv.doctorat.util.TokenUtils;
 
 @Service
 public class ProfilService {
@@ -39,6 +40,12 @@ public class ProfilService {
 
     @Value("${app.mail.stub-mailbox:}")
     private String stubMailbox;
+
+    @Value("${app.frontend.base-url:https://app.doctorat.gouv.fr}")
+    private String frontendBaseUrl;
+
+    @Value("${app.email.verification.dev-mode:false}")
+    private boolean emailVerificationDevMode;
 
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilCandidatRepository profilCandidatRepository;
@@ -82,8 +89,17 @@ public class ProfilService {
             utilisateurRepository.findByEmailIgnoreCaseAndTrim(normalizedEmail)
                 .filter(u -> !u.getId().equals(userId))
                 .ifPresent(u -> { throw new IllegalArgumentException("Un compte existe déjà avec cet email"); });
+            // Changement d'e-mail en deux temps (V2) : stockage en attente + confirmation
+            // par lien. L'e-mail actuel reste actif jusqu'à validation.
+            String tokenBrut = java.util.UUID.randomUUID().toString();
+            utilisateur.setPendingEmail(normalizedEmail);
+            utilisateur.setEmailVerificationToken(TokenUtils.hash(tokenBrut));
+            utilisateur.setEmailVerificationExpiresAt(java.time.LocalDateTime.now().plusHours(1));
+            envoyerMailConfirmationChangementEmail(utilisateur, normalizedEmail, tokenBrut);
+            log.info("Changement d'e-mail en attente pour le candidat {} : {}", userId, normalizedEmail);
+        } else {
+            utilisateur.setPendingEmail(null);
         }
-        utilisateur.setEmail(normalizedEmail);
         if (request.getCompetences() != null) {
             utilisateur.setCompetences(new ArrayList<>(request.getCompetences()));
         }
@@ -105,6 +121,37 @@ public class ProfilService {
 
         log.info("Profil mis à jour pour l'utilisateur {}", userId);
         return toProfilResponse(utilisateur);
+    }
+
+    /**
+     * Envoie le mail de confirmation de changement d'e-mail (template Brevo 76).
+     * L'échec d'envoi ne bloque jamais la mise à jour du profil.
+     */
+    private void envoyerMailConfirmationChangementEmail(Utilisateur utilisateur, String nouvelEmail, String token) {
+        String destinataire = nouvelEmail;
+        if (!mailEnabled) {
+            if (stubMailbox == null || stubMailbox.isBlank()) {
+                log.warn("Mode DEV : mail de confirmation de changement d'e-mail non envoyé pour {}", destinataire);
+                if (emailVerificationDevMode) {
+                    log.info("Mode DEV (email.verification.dev-mode=true) : token de confirmation pour {} = {}", utilisateur.getEmail(), token);
+                }
+                return;
+            }
+            destinataire = stubMailbox.trim();
+            log.info("Mode DEV : mail de confirmation de changement d'e-mail bouchonné vers {}", destinataire);
+        }
+        java.util.Map<String, Object> params = new java.util.LinkedHashMap<>();
+        params.put("prenom", utilisateur.getPrenom());
+        params.put("nom", utilisateur.getNom());
+        params.put("lien_confirmation", frontendBaseUrl + "/confirmation-email?token=" + token);
+        try {
+            if (destinataire != null && !destinataire.isBlank()) {
+                emailService.sendTemplateEmail(destinataire, 76, params);
+                log.info("Mail de confirmation de changement d'e-mail envoyé à {}", destinataire);
+            }
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi du mail de confirmation de changement d'e-mail à {}", destinataire, e);
+        }
     }
 
     public ProfilResponse addCompetence(String userId, String competence) {

@@ -277,13 +277,18 @@ export class EspaceDirecteurThese implements OnInit {
       axes: (this.profil?.axes ?? []).map(a => ({titre: a.titre, precisions: a.precisions, contactable: a.contactable, externalId: a.externalId ?? null})),
     };
 
+    const emailDemande = request.email;
     this.directeurService.updateProfil(request).subscribe({
       next: (data) => {
         this.profil = data;
         this.champsVerrouilles = data.champsVerrouilles ?? [];
         this.isEditing = false;
         this.isSaving = false;
-        this.successMessage = 'Profil mis à jour avec succès.';
+        if (emailDemande && data.email && emailDemande.trim().toLowerCase() !== data.email.trim().toLowerCase()) {
+          this.successMessage = "Un e-mail de confirmation a été envoyé à votre nouvelle adresse. Votre e-mail actuel reste actif jusqu'à validation du lien reçu.";
+        } else {
+          this.successMessage = 'Profil mis à jour avec succès.';
+        }
       },
       error: () => {
         this.isSaving = false;

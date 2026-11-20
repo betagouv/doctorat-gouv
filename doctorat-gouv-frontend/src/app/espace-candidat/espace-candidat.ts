@@ -394,12 +394,17 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       competences: this.competences,
     };
 
+    const emailDemande = request.email;
     this.candidatService.updateProfil(request).subscribe({
       next: (data) => {
         this.profil = data;
         this.isEditing = false;
         this.isSaving = false;
-        this.successMessage = this.translate.instant('ESPACE_CANDIDAT.PROFILE_UPDATE_SUCCESS');
+        if (emailDemande && data.email && emailDemande.trim().toLowerCase() !== data.email.trim().toLowerCase()) {
+          this.successMessage = this.translate.instant('ESPACE_CANDIDAT.PROFILE_EMAIL_PENDING');
+        } else {
+          this.successMessage = this.translate.instant('ESPACE_CANDIDAT.PROFILE_UPDATE_SUCCESS');
+        }
       },
       error: () => {
         this.isSaving = false;
