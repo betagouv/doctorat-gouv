@@ -252,10 +252,11 @@ public class CandidatController {
     }
 
     @DeleteMapping("/filtres-recherche/{id}")
-    public ResponseEntity<Void> deleteFiltreRecherche(@PathVariable String id) {
+    public ResponseEntity<Void> deleteFiltreRecherche(@PathVariable("id") String id) {
         String userId = getCurrentUserId();
+        log.info("Suppression filtre de recherche id={} pour candidat {}", id, userId);
         filtreRechercheService.supprimer(userId, id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     private String getCurrentUserId() {

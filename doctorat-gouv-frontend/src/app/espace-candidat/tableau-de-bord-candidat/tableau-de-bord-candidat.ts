@@ -91,9 +91,11 @@ export class TableauDeBordCandidat implements OnInit {
   private loadSavedFilters(): void {
     this.candidatService.getFiltresRecherche().subscribe({
       next: (list: any[]) => {
+        console.log('savedFilters loaded', list);
         this.savedFilters = list ?? [];
       },
-      error: () => {
+      error: (err) => {
+        console.error('loadSavedFilters error', err);
         this.savedFilters = [];
       },
     });
@@ -118,9 +120,14 @@ export class TableauDeBordCandidat implements OnInit {
 
   deleteFiltre(sf: any, event: Event): void {
     event.stopPropagation();
+    console.log('deleteFiltre click', sf);
     this.candidatService.deleteFiltreRecherche(sf.id).subscribe({
       next: () => {
-        this.savedFilters = this.savedFilters.filter(s => s.id !== sf.id);
+        this.loadSavedFilters();
+      },
+      error: (err) => {
+        console.error('Erreur suppression filtre en base', err);
+        this.loadSavedFilters();
       },
     });
   }

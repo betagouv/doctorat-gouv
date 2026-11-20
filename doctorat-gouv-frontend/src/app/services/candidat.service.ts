@@ -115,8 +115,8 @@ export class CandidatService {
     return this.http.post<any>(`${this.apiUrl}/filtres-recherche`, request);
   }
 
-  deleteFiltreRecherche(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/filtres-recherche/${id}`);
+  deleteFiltreRecherche(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/filtres-recherche/${id}`, { responseType: 'text' });
   }
 }
 
