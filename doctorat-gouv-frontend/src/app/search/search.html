@@ -1179,6 +1179,20 @@
 
   </section>
 
+  <!-- Boîte de dialogue de confirmation de suppression -->
+  <div class="sf-modal-overlay" *ngIf="showDeleteConfirm" (click)="cancelDeleteFilter()">
+    <div class="sf-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <h3 class="sf-modal__title">Supprimer ce filtre ?</h3>
+      <p class="sf-modal__text">
+        Le filtre « {{ getDeleteFilterName() }} » sera définitivement supprimé.
+      </p>
+      <div class="sf-modal__actions">
+        <button class="fr-btn fr-btn--secondary" (click)="cancelDeleteFilter()">Annuler</button>
+        <button class="fr-btn" (click)="confirmDeleteFilter()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
   <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-arrow-up-s-line fr-back-to-top fr-mt-3w"
           data-fr-back-to-top (click)="scrollToTop()">
     {{ 'SEARCH.BACK_TO_TOP' | translate }}

@@ -668,3 +668,42 @@ $font-family: 'Marianne', arial, sans-serif;
 .tdb-alert__tag-icon {
   color: $color-text-secondary;
 }
+
+
+/* ======== Modale de confirmation de suppression ======== */
+.sf-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sf-modal {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem 2rem;
+  max-width: 28rem;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.sf-modal__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: #161616;
+}
+
+.sf-modal__text {
+  margin: 0 0 1.25rem;
+  color: #3a3a3a;
+}
+
+.sf-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

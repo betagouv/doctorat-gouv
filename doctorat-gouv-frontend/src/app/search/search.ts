@@ -1425,7 +1425,26 @@ resetFilter(filterName: MultiFilterKey) {
     if (saved) this.applySavedFilter(saved);
   }
 
+  showDeleteConfirm = false;
+  filterToDelete: SavedSearchFilter | string | null = null;
+
   deleteSavedFilter(saved: SavedSearchFilter | string): void {
+    this.filterToDelete = saved;
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDeleteFilter(): void {
+    this.showDeleteConfirm = false;
+    this.filterToDelete = null;
+  }
+
+  confirmDeleteFilter(): void {
+    const saved = this.filterToDelete;
+    if (!saved) {
+      this.cancelDeleteFilter();
+      return;
+    }
+
     const id = typeof saved === 'string' ? saved : (saved as any)?.id;
     this.searchFiltersService.removeSavedFilter(saved as any);
     this.savedFilters = this.savedFilters.filter(sf => {
@@ -1450,10 +1469,18 @@ resetFilter(filterName: MultiFilterKey) {
         error: (err) => console.error('Erreur suppression filtre en base', err)
       });
     }
+
+    this.cancelDeleteFilter();
   }
 
   removeSavedFilter(saved: SavedSearchFilter | string): void {
     this.deleteSavedFilter(saved);
+  }
+
+  getDeleteFilterName(): string {
+    const saved = this.filterToDelete;
+    if (!saved) return '';
+    return typeof saved === 'string' ? saved : ((saved as any)?.name || '');
   }
 
   getSavedFilterName(id: string | null): string {

@@ -35,6 +35,8 @@ export class TableauDeBordCandidat implements OnInit {
   desarchivageEnCours = new Set<number>();
 
   savedFilters: any[] = [];
+  showDeleteConfirm = false;
+  filterToDelete: any = null;
 
   private allItems: TableauDeBordCandidatItemBackend[] = [];
 
@@ -121,7 +123,21 @@ export class TableauDeBordCandidat implements OnInit {
 
   deleteFiltre(sf: any, event: Event): void {
     event.stopPropagation();
-    console.log('deleteFiltre click', sf);
+    this.filterToDelete = sf;
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDeleteFilter(): void {
+    this.showDeleteConfirm = false;
+    this.filterToDelete = null;
+  }
+
+  confirmDeleteFilter(): void {
+    const sf = this.filterToDelete;
+    if (!sf) {
+      this.cancelDeleteFilter();
+      return;
+    }
     this.candidatService.deleteFiltreRecherche(sf.id).subscribe({
       next: () => {
         this.loadSavedFilters();
@@ -131,6 +147,7 @@ export class TableauDeBordCandidat implements OnInit {
         this.loadSavedFilters();
       },
     });
+    this.cancelDeleteFilter();
   }
 
   nouvelleAlerte(): void {
