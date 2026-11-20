@@ -25,10 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.FiltreRechercheRequest;
+import fr.dinum.beta.gouv.doctorat.dto.FiltreRechercheResponse;
 import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceRequest;
 import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilResponse;
 import fr.dinum.beta.gouv.doctorat.dto.ProfilUpdateRequest;
+import fr.dinum.beta.gouv.doctorat.service.FiltreRechercheService;
 import fr.dinum.beta.gouv.doctorat.service.NotificationPreferenceService;
 import fr.dinum.beta.gouv.doctorat.service.ProfilService;
 import fr.dinum.beta.gouv.doctorat.service.storage.StoragePort;
@@ -43,13 +46,16 @@ public class CandidatController {
     private final ProfilService profilService;
     private final NotificationPreferenceService notificationPreferenceService;
     private final StoragePort storage;
+    private final FiltreRechercheService filtreRechercheService;
 
     public CandidatController(ProfilService profilService,
                               NotificationPreferenceService notificationPreferenceService,
-                              StoragePort storage) {
+                              StoragePort storage,
+                              FiltreRechercheService filtreRechercheService) {
         this.profilService = profilService;
         this.notificationPreferenceService = notificationPreferenceService;
         this.storage = storage;
+        this.filtreRechercheService = filtreRechercheService;
     }
 
     @GetMapping("/profil")
@@ -230,6 +236,26 @@ public class CandidatController {
                 "inline; filename=\"" + filename.replace("\"", "") + "\"")
             .contentLength(storage.size(key))
             .body(resource);
+    }
+
+    @GetMapping("/filtres-recherche")
+    public ResponseEntity<List<FiltreRechercheResponse>> getFiltresRecherche() {
+        String userId = getCurrentUserId();
+        return ResponseEntity.ok(filtreRechercheService.lister(userId));
+    }
+
+    @PostMapping("/filtres-recherche")
+    public ResponseEntity<FiltreRechercheResponse> createFiltreRecherche(@Valid @RequestBody FiltreRechercheRequest request) {
+        String userId = getCurrentUserId();
+        FiltreRechercheResponse response = filtreRechercheService.creer(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/filtres-recherche/{id}")
+    public ResponseEntity<Void> deleteFiltreRecherche(@PathVariable String id) {
+        String userId = getCurrentUserId();
+        filtreRechercheService.supprimer(userId, id);
+        return ResponseEntity.noContent().build();
     }
 
     private String getCurrentUserId() {

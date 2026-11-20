@@ -105,6 +105,19 @@ export class CandidatService {
   annulerDesistement(demandeId: number): Observable<DemandeCandidat> {
     return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/annuler-desistement`, { demandeId });
   }
+
+  /* ------------------- Filtres de recherche enregistrés ------------------- */
+  getFiltresRecherche(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/filtres-recherche`);
+  }
+
+  createFiltreRecherche(request: { nom: string; filtres: any }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/filtres-recherche`, request);
+  }
+
+  deleteFiltreRecherche(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/filtres-recherche/${id}`);
+  }
 }
 
 export interface ChangementMotDePasseRequest {

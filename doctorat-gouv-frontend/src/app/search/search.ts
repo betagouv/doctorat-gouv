@@ -25,6 +25,7 @@ import { PropositionTheseDto } from '../models/proposition-these-dto.model';
 import { FilterService, AllFilterOptions } from '../services/filter.service';
 import { SearchFiltersService, SavedSearchFilter } from '../services/search-filters-service';
 import { AuthService } from '../services/auth.service';
+import { CandidatService } from '../services/candidat.service';
 
 import { DsfrHeaderModule } from '@edugouvfr/ngx-dsfr';
 import { DsfrTagModule } from '@edugouvfr/ngx-dsfr';
@@ -234,6 +235,7 @@ export class Search implements OnInit, OnDestroy {
     private propositionService: PropositionTheseService,
     private filterService: FilterService,
 	private searchFiltersService: SearchFiltersService,
+	private candidatService: CandidatService,
 	public authService: AuthService,
 	public translate: TranslateService,
 	private titleService: Title,
@@ -244,8 +246,24 @@ export class Search implements OnInit, OnDestroy {
   ngOnInit(): void {
 	  document.addEventListener('click', this.handleClickOutside.bind(this));
 	  
-	  // Charger les filtres enregistrés (en mémoire)
-	  this.savedFilters = this.searchFiltersService.getSavedFilters();
+	  // Charger les filtres enregistrés
+	  if (this.isCandidateConnected()) {
+	    this.candidatService.getFiltresRecherche().subscribe({
+	      next: (list: any[]) => {
+	        this.savedFilters = (list || []).map((sf: any) => ({
+	          id: sf.id,
+	          name: sf.nom ?? sf.name,
+	          filters: sf.filtres ?? sf.filters,
+	          createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
+	        })) as SavedSearchFilter[];
+	      },
+	      error: () => {
+	        this.savedFilters = this.searchFiltersService.getSavedFilters();
+	      }
+	    });
+	  } else {
+	    this.savedFilters = this.searchFiltersService.getSavedFilters();
+	  }
 
 	  // Restaurer les filtres sauvegardés
 	  const savedFilters = this.searchFiltersService.load();
@@ -1265,10 +1283,31 @@ resetFilter(filterName: MultiFilterKey) {
     }
     if (!filterName) return null;
 
-    const saved = this.searchFiltersService.saveNamedFilter(filterName, this.buildCurrentFiltersSnapshot());
-    this.savedFilters = this.searchFiltersService.getSavedFilters();
+    const snapshot = this.buildCurrentFiltersSnapshot();
+    const saved = this.searchFiltersService.saveNamedFilter(filterName, snapshot);
+    this.savedFilters = [...this.savedFilters, saved];
     this.savedFilterName = '';
     this.showSaveFilterPrompt = false;
+
+    // Persistance en base de données pour le candidat connecté
+    if (this.isCandidateConnected()) {
+      this.candidatService.createFiltreRecherche({ nom: filterName, filtres: snapshot }).subscribe({
+        next: () => {
+          this.candidatService.getFiltresRecherche().subscribe({
+            next: (list: any[]) => {
+              this.savedFilters = (list || []).map((sf: any) => ({
+                id: sf.id,
+                name: sf.nom ?? sf.name,
+                filters: sf.filtres ?? sf.filters,
+                createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
+              })) as SavedSearchFilter[];
+            }
+          });
+        },
+        error: (err) => console.error('Erreur sauvegarde filtre en base', err)
+      });
+    }
+
     return saved;
   }
 
@@ -1360,8 +1399,30 @@ resetFilter(filterName: MultiFilterKey) {
   }
 
   deleteSavedFilter(saved: SavedSearchFilter | string): void {
+    const id = typeof saved === 'string' ? saved : (saved as any)?.id;
     this.searchFiltersService.removeSavedFilter(saved as any);
-    this.savedFilters = this.searchFiltersService.getSavedFilters();
+    this.savedFilters = this.savedFilters.filter(sf => {
+      if (typeof saved === 'string') return sf.id !== saved && sf.name !== saved;
+      return sf.id !== (saved as any)?.id && sf.name !== (saved as any)?.name;
+    });
+
+    if (this.isCandidateConnected() && id && !String(id).startsWith('sf_')) {
+      this.candidatService.deleteFiltreRecherche(String(id)).subscribe({
+        next: () => {
+          this.candidatService.getFiltresRecherche().subscribe({
+            next: (list: any[]) => {
+              this.savedFilters = (list || []).map((sf: any) => ({
+                id: sf.id,
+                name: sf.nom ?? sf.name,
+                filters: sf.filtres ?? sf.filters,
+                createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
+              })) as SavedSearchFilter[];
+            }
+          });
+        },
+        error: (err) => console.error('Erreur suppression filtre en base', err)
+      });
+    }
   }
 
   removeSavedFilter(saved: SavedSearchFilter | string): void {
