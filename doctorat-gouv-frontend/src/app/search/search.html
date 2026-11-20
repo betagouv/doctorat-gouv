@@ -601,9 +601,14 @@
 	  </div>
 
 	  <div class="fr-mt-2w" *ngIf="savedFilters.length">
+	    <p class="fr-text--sm fr-mb-1w" *ngIf="activeSavedFilterId">
+	      Filtre actif : <strong>{{ getSavedFilterName(activeSavedFilterId) }}</strong>
+	    </p>
 	    <ul class="fr-tags-group__list">
 	      <li *ngFor="let sf of savedFilters" class="fr-mr-2w">
-	        <button class="fr-tag" (click)="applySavedFilter(sf)">{{ sf.name }}</button>
+	        <button class="fr-tag saved-filter-tag"
+	                [class.saved-filter-tag--active]="activeSavedFilterId === sf.id"
+	                (click)="applySavedFilter(sf)">{{ sf.name }}</button>
 	        <button class="fr-tag__btn" (click)="deleteSavedFilter(sf)" title="Supprimer">x</button>
 	      </li>
 	    </ul>

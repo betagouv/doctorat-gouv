@@ -132,6 +132,8 @@ export class Search implements OnInit, OnDestroy {
   savedFilters: SavedSearchFilter[] = [];
   savedFilterName = '';
   showSaveFilterPrompt = false;
+  activeSavedFilterId: string | null = null;
+  private applyingSavedFilter = false;
 
 
   /* ------------------- Reactive trigger ------------------- */
@@ -256,13 +258,16 @@ export class Search implements OnInit, OnDestroy {
 	          filters: sf.filtres ?? sf.filters,
 	          createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
 	        })) as SavedSearchFilter[];
+	        this.syncActiveSavedFilter();
 	      },
 	      error: () => {
 	        this.savedFilters = this.searchFiltersService.getSavedFilters();
+	        this.syncActiveSavedFilter();
 	      }
 	    });
 	  } else {
 	    this.savedFilters = this.searchFiltersService.getSavedFilters();
+	    this.syncActiveSavedFilter();
 	  }
 
 	  // Restaurer les filtres sauvegardés
@@ -470,6 +475,9 @@ resetFilter(filterName: MultiFilterKey) {
 
   /* ------------------- Filters ------------------- */
   onFilterChange(): void {
+    if (!this.applyingSavedFilter) {
+      this.activeSavedFilterId = null;
+    }
     // Sauvegarder les filtres
 		this.searchFiltersService.save({
 		  query: this.query,
@@ -1164,6 +1172,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.etablissementRor = '';
 
     this.activeFilter = 'all';
+    this.activeSavedFilterId = null;
     this.sortField = 'dateMiseEnLigne';
     this.sortDirection = 'DESC';
 
@@ -1356,6 +1365,9 @@ resetFilter(filterName: MultiFilterKey) {
     const filters = (saved && saved.filters) ? saved.filters : (this.searchFiltersService.applySavedFilter(saved) || saved);
     if (!filters) return;
 
+    this.applyingSavedFilter = true;
+    this.activeSavedFilterId = (saved && saved.id) ? saved.id : null;
+
     this.query = filters.query || '';
     this.discipline = Array.isArray(filters.discipline) ? filters.discipline : [];
     this.localisation = Array.isArray(filters.localisation) ? filters.localisation : [];
@@ -1385,6 +1397,7 @@ resetFilter(filterName: MultiFilterKey) {
     this.currentPage = filters.page ?? this.currentPage;
 
     this.onFilterChange();
+    this.applyingSavedFilter = false;
   }
 
   loadSavedFilter(saved: SavedSearchFilter | any): void {
@@ -1427,6 +1440,25 @@ resetFilter(filterName: MultiFilterKey) {
 
   removeSavedFilter(saved: SavedSearchFilter | string): void {
     this.deleteSavedFilter(saved);
+  }
+
+  getSavedFilterName(id: string | null): string {
+    if (!id) return '';
+    return this.savedFilters.find(sf => sf.id === id)?.name || '';
+  }
+
+  private syncActiveSavedFilter(): void {
+    const current = this.buildCurrentFiltersSnapshot();
+    const match = this.savedFilters.find(sf => this.savedFilterEquals(sf.filters, current));
+    this.activeSavedFilterId = match ? match.id : null;
+  }
+
+  private savedFilterEquals(a: any, b: any): boolean {
+    if (!a || !b) return false;
+    const keys = ['query', 'discipline', 'localisation', 'laboratoire', 'ecole', 'defisSociete',
+      'ecoleDoctoraleNumero', 'etablissementRor', 'typeProposition', 'sortField', 'sortDirection',
+      'annee', 'showMoreFilters', 'albertSearchQuery', 'useAlbert', 'scalewayQuery', 'useScaleway'];
+    return keys.every(k => JSON.stringify(a[k]) === JSON.stringify(b[k]));
   }
 
   get activeFiltersCount(): number {

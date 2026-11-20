@@ -1287,3 +1287,17 @@
 
 
 
+
+
+/* ======== Filtres enregistrés sélectionnés ======== */
+.saved-filter-tag {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.saved-filter-tag--active {
+  background-color: #000091 !important;
+  color: #ffffff !important;
+  border-color: #000091 !important;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(0, 0, 145, 0.25);
+}
