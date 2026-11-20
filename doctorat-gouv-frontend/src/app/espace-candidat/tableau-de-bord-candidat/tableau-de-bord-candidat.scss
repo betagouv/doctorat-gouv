@@ -476,7 +476,7 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 
-/* ======== Panneaux bas : citation + filtres enregistrés ======== */
+/* ======== Panneaux bas : citation + filtres enregistrï¿½s ======== */
 .tdb-panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -598,6 +598,14 @@ $font-family: 'Marianne', arial, sans-serif;
 
   &:last-child {
     border-bottom: none;
+  }
+}
+
+.tdb-alert--clickable {
+  cursor: pointer;
+
+  &:hover {
+    background: #F8F8FF;
   }
 }
 

@@ -403,7 +403,7 @@
 
         <p class="tdb-panel__empty" *ngIf="savedFilters.length === 0">{{ 'TDB.SAVED_FILTERS_EMPTY' | translate }}</p>
 
-        <div class="tdb-alert" *ngFor="let sf of savedFilters">
+        <div class="tdb-alert tdb-alert--clickable" *ngFor="let sf of savedFilters" (click)="editFiltre(sf, $event)">
           <div class="tdb-alert__header">
             <h4 class="tdb-alert__title">{{ sf.nom ?? sf.name }}</h4>
             <div class="tdb-alert__actions">
