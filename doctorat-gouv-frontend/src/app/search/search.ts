@@ -407,6 +407,20 @@ export class Search implements OnInit, OnDestroy {
           clearInterval(interval);
         }
       }, 20);
+    } else if (savedScrollPos?.scrollTo === 'info-banner') {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        const banner = document.getElementById('info-banner');
+        if (banner) {
+          const headerOffset = 80;
+          const top = banner.getBoundingClientRect().top + window.scrollY - headerOffset;
+          window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+          clearInterval(interval);
+        } else if (attempts > 50) {
+          clearInterval(interval);
+        }
+      }, 20);
     }
   }
 

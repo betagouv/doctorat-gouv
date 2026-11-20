@@ -114,7 +114,8 @@ export class TableauDeBordCandidat implements OnInit {
 
   editFiltre(sf: any, event: Event): void {
     event.stopPropagation();
-    this.searchFiltersService.save({ ...sf.filtres, page: 0 });
+    const { scrollPosition, scrollTo, ...rest } = sf?.filtres ?? sf?.filters ?? {};
+    this.searchFiltersService.save({ ...rest, page: 0, scrollTo: 'info-banner' });
     this.router.navigate(['/search']);
   }
 
