@@ -205,7 +205,7 @@ public class DirecteurTheseService {
         params.put("lien_confirmation", frontendBaseUrl + "/confirmation-email?token=" + token);
         try {
             if (destinataire != null && !destinataire.isBlank()) {
-                emailService.sendTemplateEmail(destinataire, 76, params);
+                emailService.sendTemplateEmail(destinataire, 78, params);
                 log.info("Mail de confirmation de changement d'e-mail envoyé à {}", destinataire);
             }
         } catch (Exception e) {
