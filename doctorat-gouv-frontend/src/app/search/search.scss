@@ -1318,7 +1318,7 @@
   background: #ffffff;
   border-radius: 0.5rem;
   padding: 1.5rem 2rem;
-  max-width: 28rem;
+  max-width: 36rem;
   width: 90%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
@@ -1389,7 +1389,7 @@
 }
 
 
-/* ======== Groupe bouton + lien (sans décalage) ======== */
+/* ======== Groupe bouton + lien (sans dï¿½calage) ======== */
 .save-search-group {
   display: inline-flex;
   flex-direction: column;
@@ -1402,4 +1402,23 @@
 .save-search-link {
   font-size: 0.85rem;
   cursor: pointer;
+}
+
+
+/* ======== Lien Fermer de la modale ======== */
+.sf-modal__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.sf-modal__close {
+  background: none;
+  border: none;
+  color: #000091;
+  font-family: 'Marianne', arial, sans-serif;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
 }

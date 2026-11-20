@@ -435,7 +435,10 @@
     <!-- Modale de confirmation de suppression -->
     <div class="sf-modal-overlay" *ngIf="showDeleteConfirm" (click)="cancelDeleteFilter()">
       <div class="sf-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
-        <h3 class="sf-modal__title">Supprimer ce filtre ?</h3>
+        <div class="sf-modal__header">
+          <button class="sf-modal__close" (click)="cancelDeleteFilter()">Fermer</button>
+        </div>
+        <h3 class="sf-modal__title">Supprimer cette recherche enregistrée ?</h3>
         <p class="sf-modal__text">
           Le filtre « {{ filterToDelete?.nom ?? filterToDelete?.name ?? 'ce filtre' }} » sera définitivement supprimé.
         </p>
