@@ -15,7 +15,7 @@
 	width: 100% !important;
 	margin-top: 0.1rem;
 	margin-left: 0rem;
-	padding-left: 11rem;
+	padding-left: 5%;
 	display: flex;
 	justify-content: flex-start;
 }
@@ -41,7 +41,8 @@
 /* Logo Doctorat */
 .fr-header__service img {
   height: 70px;
-  width: 12.5rem;
+  width: auto;
+  object-fit: contain;
   display: block;
 }
 
@@ -169,7 +170,7 @@
 .info-banner {
   background-color: rgb(232, 232, 255);
   border-bottom: 1px solid #d5d5f0;
-  padding: 0.75rem 1rem 0.75rem 11rem;
+  padding: 0.75rem 1rem 0.75rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -515,7 +516,7 @@
 .menu-desktop {
   display: flex;
   justify-content: flex-start;
-  padding-left: 11rem;
+  padding-left: 5%;
 }
 
 .fr-nav__link {
