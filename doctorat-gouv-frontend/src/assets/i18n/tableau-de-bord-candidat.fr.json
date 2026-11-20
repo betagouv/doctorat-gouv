@@ -34,6 +34,11 @@
     "ARIA_ARCHIVED": "Archivé",
     "ARIA_UNARCHIVE": "Désarchiver",
     "ARIA_EDIT_DRAFT": "Modifier le brouillon",
-    "UNARCHIVE_ERROR": "Erreur lors du désarchivage de la demande."
+    "UNARCHIVE_ERROR": "Erreur lors du désarchivage de la demande.",
+    "SAVED_FILTERS_TITLE": "Mes alertes",
+    "NEW_FILTER": "Nouvelle alerte",
+    "SAVED_FILTERS_EMPTY": "Aucune alerte enregistrée pour le moment.",
+    "EDIT_FILTER": "Modifier",
+    "DELETE_FILTER": "Supprimer"
   }
 }

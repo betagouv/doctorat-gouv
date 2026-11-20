@@ -34,6 +34,11 @@
     "ARIA_ARCHIVED": "Archived",
     "ARIA_UNARCHIVE": "Unarchive",
     "ARIA_EDIT_DRAFT": "Edit draft",
-    "UNARCHIVE_ERROR": "Error unarchiving the request."
+    "UNARCHIVE_ERROR": "Error unarchiving the request.",
+    "SAVED_FILTERS_TITLE": "My alerts",
+    "NEW_FILTER": "New alert",
+    "SAVED_FILTERS_EMPTY": "No alert saved at the moment.",
+    "EDIT_FILTER": "Edit",
+    "DELETE_FILTER": "Delete"
   }
 }

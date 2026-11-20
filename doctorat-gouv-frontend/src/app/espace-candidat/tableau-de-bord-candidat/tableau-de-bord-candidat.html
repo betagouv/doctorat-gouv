@@ -369,5 +369,68 @@
       </div>
     </section>
 
+    <!-- ======== PANNEAUX : TÉMOIGNAGE + FILTRES ENREGISTRÉS ======== -->
+    <div class="tdb-panels">
+
+      <!-- Panneau citation -->
+      <div class="tdb-panel tdb-panel--quote">
+        <div class="tdb-panel__quote-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" stroke="#000091" stroke-width="1.5"/>
+            <path d="M11 13.5C11 11.5 12.5 10 14.5 10C16.5 10 18 11.5 18 13.5C18 16 15.5 16.5 15 18.5H13C13 16.5 14.5 15 14.5 13.5C14.5 12.8 14 12.5 13.5 12.5C13 12.5 12.5 12.9 12.5 13.5H11Z" fill="#000091"/>
+            <path d="M17 13.5C17 11.5 18.5 10 20.5 10C22.5 10 24 11.5 24 13.5C24 16 21.5 16.5 21 18.5H19C19 16.5 20.5 15 20.5 13.5C20.5 12.8 20 12.5 19.5 12.5C19 12.5 18.5 12.9 18.5 13.5H17Z" fill="#000091"/>
+          </svg>
+        </div>
+        <p class="tdb-panel__quote-text">
+          « La plateforme nationale du doctorat évolue pour vous permettre d'échanger facilement avec les directeurs des thèses.
+          N'hésitez pas à nous <a href="mailto:contact@doctorat.gouv.fr">partager votre avis</a> après quelques utilisations »
+        </p>
+        <div class="tdb-panel__quote-author">
+          <div class="tdb-panel__quote-avatar" aria-hidden="true">C</div>
+          <div>
+            <strong>Cyprien</strong><br/>
+            <span class="tdb-panel__quote-role">de l'équipe Doctorat.gouv.fr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panneau filtres enregistrés ("Mes alertes") -->
+      <div class="tdb-panel tdb-panel--alerts">
+        <div class="tdb-panel__header">
+          <h3 class="tdb-panel__title">{{ 'TDB.SAVED_FILTERS_TITLE' | translate }}</h3>
+          <a class="tdb-panel__link" (click)="nouvelleAlerte()">{{ 'TDB.NEW_FILTER' | translate }}</a>
+        </div>
+
+        <p class="tdb-panel__empty" *ngIf="savedFilters.length === 0">{{ 'TDB.SAVED_FILTERS_EMPTY' | translate }}</p>
+
+        <div class="tdb-alert" *ngFor="let sf of savedFilters">
+          <div class="tdb-alert__header">
+            <h4 class="tdb-alert__title">{{ sf.nom ?? sf.name }}</h4>
+            <div class="tdb-alert__actions">
+              <button class="tdb-alert__btn" (click)="editFiltre(sf, $event)"
+                      [attr.aria-label]="'TDB.EDIT_FILTER' | translate"
+                      [attr.title]="'TDB.EDIT_FILTER' | translate">
+                <span class="fr-icon-edit-line" aria-hidden="true"></span>
+              </button>
+              <button class="tdb-alert__btn" (click)="deleteFiltre(sf, $event)"
+                      [attr.aria-label]="'TDB.DELETE_FILTER' | translate"
+                      [attr.title]="'TDB.DELETE_FILTER' | translate">
+                <span class="fr-icon-delete-line" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <div class="tdb-alert__tags" *ngIf="getFiltreTags(sf.filtres ?? sf.filters).length">
+            <span class="tdb-alert__tag" *ngFor="let tag of getFiltreTags(sf.filtres ?? sf.filters)">
+              <span class="tdb-alert__tag-icon" aria-hidden="true">
+                {{ tag.type === 'localisation' ? '📍' : '#' }}
+              </span>
+              {{ tag.value }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </main>

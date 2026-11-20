@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CandidatService } from '../../services/candidat.service';
 import { DemandeCandidatContextService } from '../../services/demande-candidat-context.service';
+import { SearchFiltersService } from '../../services/search-filters-service';
 import { MiseEnRelationDto, TableauDeBordCandidatItemBackend } from '../../models/mise-en-relation.model';
 
 @Component({
@@ -33,12 +34,16 @@ export class TableauDeBordCandidat implements OnInit {
   archivageEnCours = new Set<number>();
   desarchivageEnCours = new Set<number>();
 
+  savedFilters: any[] = [];
+
   private allItems: TableauDeBordCandidatItemBackend[] = [];
 
   constructor(
     private titleService: Title,
     private candidatService: CandidatService,
     private demandeCandidatContext: DemandeCandidatContextService,
+    private searchFiltersService: SearchFiltersService,
+    private router: Router,
     private translate: TranslateService,
   ) {}
 
@@ -46,6 +51,7 @@ export class TableauDeBordCandidat implements OnInit {
     this.titleService.setTitle('Tableau de bord — Doctorat.gouv.fr');
     this.loadPrenom();
     this.loadDemandes();
+    this.loadSavedFilters();
   }
 
   setFilter(filter: 'en_cours' | 'archivees'): void {
@@ -80,6 +86,47 @@ export class TableauDeBordCandidat implements OnInit {
         this.errorMessage = 'Erreur lors du chargement du tableau de bord.';
       },
     });
+  }
+
+  private loadSavedFilters(): void {
+    this.candidatService.getFiltresRecherche().subscribe({
+      next: (list: any[]) => {
+        this.savedFilters = list ?? [];
+      },
+      error: () => {
+        this.savedFilters = [];
+      },
+    });
+  }
+
+  getFiltreTags(filtres: any): { type: string; value: string }[] {
+    const tags: { type: string; value: string }[] = [];
+    (filtres?.discipline ?? []).forEach((v: string) => tags.push({ type: 'discipline', value: v }));
+    (filtres?.localisation ?? []).forEach((v: string) => tags.push({ type: 'localisation', value: v }));
+    (filtres?.laboratoire ?? []).forEach((v: string) => tags.push({ type: 'laboratoire', value: v }));
+    (filtres?.ecole ?? []).forEach((v: string) => tags.push({ type: 'ecole', value: v }));
+    (filtres?.defisSociete ?? []).forEach((v: string) => tags.push({ type: 'defisSociete', value: v }));
+    (filtres?.annee ?? []).forEach((v: string) => tags.push({ type: 'annee', value: v }));
+    return tags;
+  }
+
+  editFiltre(sf: any, event: Event): void {
+    event.stopPropagation();
+    this.searchFiltersService.save({ ...sf.filtres, page: 0 });
+    this.router.navigate(['/search']);
+  }
+
+  deleteFiltre(sf: any, event: Event): void {
+    event.stopPropagation();
+    this.candidatService.deleteFiltreRecherche(sf.id).subscribe({
+      next: () => {
+        this.savedFilters = this.savedFilters.filter(s => s.id !== sf.id);
+      },
+    });
+  }
+
+  nouvelleAlerte(): void {
+    this.router.navigate(['/search']);
   }
 
   private repartirDemandes(items: TableauDeBordCandidatItemBackend[]): void {
