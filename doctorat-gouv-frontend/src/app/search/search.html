@@ -381,6 +381,22 @@
 
 	  <!-- Bouton Réinitialiser -->
 	  <div class="fr-col-12 fr-col-md-6 fr-text--right reset-all-container">
+		<!-- Enregistrer cette recherche (candidat connecté) -->
+		<ng-container *ngIf="isCandidateConnected()">
+		  <div class="save-search-group">
+		    <button class="fr-btn fr-btn--secondary save-search-btn"
+		            data-testid="save-filters-button"
+		            [disabled]="!canSaveCurrentSearch() || isSearchSaved"
+		            [class.save-search-btn--saved]="isSearchSaved"
+		            (click)="saveCurrentFilters()">
+		      <span class="fr-icon-bookmark-line" *ngIf="!isSearchSaved" aria-hidden="true"></span>
+		      <span class="fr-icon-bookmark-fill" *ngIf="isSearchSaved" aria-hidden="true"></span>
+		      {{ isSearchSaved ? 'Recherche enregistrée' : 'Enregistrer cette recherche' }}
+		    </button>
+		    <a *ngIf="showDashboardLink" class="save-search-link" (click)="goToDashboard()">Voir dans mon tableau de bord</a>
+		  </div>
+		</ng-container>
+
 		<button class="fr-btn fr-btn--secondary reset-all-btn"
 		        [disabled]="activeFiltersCount === 0"
 		        (click)="resetAllFilters()">
@@ -567,40 +583,8 @@
 		</p>
 
 
-	<!-- Enregistrement des filtres (candidat connecte) -->
-	<div class="fr-mt-2w" *ngIf="isCandidateConnected()">
-	  <button class="fr-btn"
-	          data-testid="save-filters-button"
-	          (click)="openSaveFilterPrompt()">
-	    Enregistrer les filtres
-	  </button>
-
-	  <select *ngIf="savedFilters.length"
-	          class="fr-select fr-ml-2w"
-	          style="display:inline-block; width:auto;"
-	          (change)="onSavedFilterSelect($event)">
-	    <option value="">Filtres enregistres...</option>
-	    <option *ngFor="let sf of savedFilters" [value]="sf.id">{{ sf.name }}</option>
-	  </select>
-
-	  <div class="fr-mt-2w fr-p-2w fr-border fr-border--grey-200 fr-radius-1w" style="max-width: 32rem;" *ngIf="showSaveFilterPrompt">
-	    <p class="fr-text--bold fr-mb-1w">Nom du filtre</p>
-	    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
-	      <div class="fr-col-12">
-	        <input type="text"
-	               class="fr-input"
-	               [(ngModel)]="savedFilterName"
-	               placeholder="Nom du filtre"
-	               (keyup.enter)="confirmSaveFilter()">
-	      </div>
-	      <div class="fr-col-12 fr-mt-1w">
-	        <button class="fr-btn" (click)="confirmSaveFilter()">Enregistrer</button>
-	        <button class="fr-btn fr-btn--secondary fr-ml-1w" (click)="closeSaveFilterPrompt()">Annuler</button>
-	      </div>
-	    </div>
-	  </div>
-
-	  <div class="fr-mt-2w" *ngIf="savedFilters.length">
+	<!-- Filtres enregistres (candidat connecte) -->
+	<div class="fr-mt-2w" *ngIf="isCandidateConnected() && savedFilters.length">
 	    <p class="fr-text--sm fr-mb-1w" *ngIf="activeSavedFilterId">
 	      Filtre actif : <strong>{{ getSavedFilterName(activeSavedFilterId) }}</strong>
 	    </p>
@@ -613,7 +597,6 @@
 	      </li>
 	    </ul>
 	  </div>
-	</div>
 
 		<!-- ===================== LOADING SCALEWAY ===================== -->
 		<!-- Mode simple (Albert-like) par défaut -->

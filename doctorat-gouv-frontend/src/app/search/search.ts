@@ -133,6 +133,8 @@ export class Search implements OnInit, OnDestroy {
   savedFilterName = '';
   showSaveFilterPrompt = false;
   activeSavedFilterId: string | null = null;
+  isSearchSaved = false;
+  showDashboardLink = false;
   private applyingSavedFilter = false;
 
 
@@ -491,6 +493,8 @@ resetFilter(filterName: MultiFilterKey) {
   onFilterChange(): void {
     if (!this.applyingSavedFilter) {
       this.activeSavedFilterId = null;
+      this.isSearchSaved = false;
+      this.showDashboardLink = false;
     }
     // Sauvegarder les filtres
 		this.searchFiltersService.save({
@@ -1187,6 +1191,8 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.activeFilter = 'all';
     this.activeSavedFilterId = null;
+    this.isSearchSaved = false;
+    this.showDashboardLink = false;
     this.sortField = 'dateMiseEnLigne';
     this.sortDirection = 'DESC';
 
@@ -1296,14 +1302,7 @@ resetFilter(filterName: MultiFilterKey) {
   saveCurrentFilters(name?: string): SavedSearchFilter | null {
     if (!this.isCandidateConnected()) return null;
 
-    let filterName = (name ?? '').trim();
-    if (!filterName) {
-      try {
-        filterName = (window.prompt('Nom du filtre') || '').trim();
-      } catch {
-        filterName = '';
-      }
-    }
+    const filterName = (name ?? '').trim() || this.generateSearchName();
     if (!filterName) return null;
 
     const snapshot = this.buildCurrentFiltersSnapshot();
@@ -1311,6 +1310,8 @@ resetFilter(filterName: MultiFilterKey) {
     this.savedFilters = [...this.savedFilters, saved];
     this.savedFilterName = '';
     this.showSaveFilterPrompt = false;
+    this.isSearchSaved = true;
+    this.showDashboardLink = true;
 
     // Persistance en base de données pour le candidat connecté
     if (this.isCandidateConnected()) {
@@ -1381,6 +1382,8 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.applyingSavedFilter = true;
     this.activeSavedFilterId = (saved && saved.id) ? saved.id : null;
+    this.isSearchSaved = true;
+    this.showDashboardLink = false;
 
     this.query = filters.query || '';
     this.discipline = Array.isArray(filters.discipline) ? filters.discipline : [];
@@ -1481,6 +1484,28 @@ resetFilter(filterName: MultiFilterKey) {
     const saved = this.filterToDelete;
     if (!saved) return '';
     return typeof saved === 'string' ? saved : ((saved as any)?.name || '');
+  }
+
+  canSaveCurrentSearch(): boolean {
+    return this.activeFiltersCount > 0 || this.activeFilter !== 'all';
+  }
+
+  private generateSearchName(): string {
+    const q = (this.query || this.albertSearchQuery || this.scalewayQuery || '').trim();
+    if (q) return q.slice(0, 60);
+    if (this.discipline.length) return this.discipline[0];
+    if (this.localisation.length) return this.localisation[0];
+    if (this.laboratoire.length) return this.laboratoire[0];
+    if (this.ecole.length) return this.ecole[0];
+    if (this.defisSociete.length) return this.defisSociete[0];
+    if (this.annee.length) return this.formatAcademicYear(this.annee[0]);
+    if (this.activeFilter === 'thesis') return 'Thèses';
+    if (this.activeFilter === 'supervision') return 'Encadrements';
+    return 'Recherche';
+  }
+
+  goToDashboard(): void {
+    this.router.navigate(['/tableau-de-bord-candidat']);
   }
 
   getSavedFilterName(id: string | null): string {

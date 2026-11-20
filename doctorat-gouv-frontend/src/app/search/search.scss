@@ -1289,7 +1289,7 @@
 
 
 
-/* ======== Filtres enregistrés sélectionnés ======== */
+/* ======== Filtres enregistrï¿½s sï¿½lectionnï¿½s ======== */
 .saved-filter-tag {
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -1339,4 +1339,67 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+
+/* ======== Bouton Enregistrer cette recherche ======== */
+.save-search-btn--saved {
+  background-color: #18753C !important;
+  border-color: #18753C !important;
+  color: #ffffff !important;
+  cursor: default;
+  opacity: 0.95;
+}
+
+.save-search-btn:disabled:not(.save-search-btn--saved) {
+  opacity: 0.5;
+}
+
+.save-search-link {
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+
+/* ======== Style du bouton Enregistrer cette recherche ======== */
+.save-search-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #000091 !important;
+  color: #000091 !important;
+}
+
+.save-search-btn:hover {
+  background-color: #f3f3fd !important;
+  color: #000091 !important;
+}
+
+.save-search-btn:disabled {
+  opacity: 1;
+}
+
+.save-search-btn--saved {
+  background-color: #ffffff !important;
+  border-color: #18753C !important;
+  color: #18753C !important;
+}
+
+.save-search-btn--saved:hover {
+  background-color: #f8f8ff !important;
+  color: #18753C !important;
+}
+
+
+/* ======== Groupe bouton + lien (sans décalage) ======== */
+.save-search-group {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-right: 0.75rem;
+  vertical-align: middle;
+}
+
+.save-search-link {
+  font-size: 0.85rem;
+  cursor: pointer;
 }
