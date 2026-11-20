@@ -93,11 +93,9 @@ export class TableauDeBordCandidat implements OnInit {
   private loadSavedFilters(): void {
     this.candidatService.getFiltresRecherche().subscribe({
       next: (list: any[]) => {
-        console.log('savedFilters loaded', list);
         this.savedFilters = list ?? [];
       },
-      error: (err) => {
-        console.error('loadSavedFilters error', err);
+      error: () => {
         this.savedFilters = [];
       },
     });
@@ -142,8 +140,7 @@ export class TableauDeBordCandidat implements OnInit {
       next: () => {
         this.loadSavedFilters();
       },
-      error: (err) => {
-        console.error('Erreur suppression filtre en base', err);
+      error: () => {
         this.loadSavedFilters();
       },
     });

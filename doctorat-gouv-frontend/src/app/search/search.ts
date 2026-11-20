@@ -1328,7 +1328,7 @@ resetFilter(filterName: MultiFilterKey) {
             }
           });
         },
-        error: (err) => console.error('Erreur sauvegarde filtre en base', err)
+        error: () => {}
       });
     }
 
@@ -1469,7 +1469,7 @@ resetFilter(filterName: MultiFilterKey) {
             }
           });
         },
-        error: (err) => console.error('Erreur suppression filtre en base', err)
+        error: () => {}
       });
     }
 

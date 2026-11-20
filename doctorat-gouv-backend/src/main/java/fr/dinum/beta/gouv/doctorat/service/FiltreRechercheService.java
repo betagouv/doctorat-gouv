@@ -63,7 +63,6 @@ public class FiltreRechercheService {
     }
 
     public void supprimer(String userId, String id) {
-        log.info("supprimer: recherche filtre id={} pour utilisateur {}", id, userId);
         FiltreRechercheCandidat entity = repository.findByIdAndUtilisateurId(id, userId)
             .orElseThrow(() -> new IllegalArgumentException("Filtre introuvable pour id=" + id + " utilisateur=" + userId));
         repository.delete(entity);
