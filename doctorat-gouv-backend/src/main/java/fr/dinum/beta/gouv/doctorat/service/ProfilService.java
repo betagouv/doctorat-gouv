@@ -391,6 +391,7 @@ public class ProfilService {
             profil != null ? profil.getTelephone() : null
         );
         response.setPhotoUrl(urlPhoto(u));
+        response.setPendingEmail(u.getPendingEmail());
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
         // Comptage calculé à la lecture : le champ Utilisateur.nbCandidatures
         // n'était jamais incrémenté (toujours 0).

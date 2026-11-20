@@ -140,6 +140,9 @@
                   <label class="fr-label" for="view-email">E-mail <span class="required-star">*</span></label>
                   <input class="fr-input" id="view-email" type="email" [value]="profil.email" disabled />
                 </div>
+                <p class="fr-error-text fr-mb-2w" *ngIf="profil.pendingEmail">
+                  Nouvelle adresse en attente : {{ profil.pendingEmail }}.
+                </p>
 
                 <!-- Ligne 4 : Établissement (pleine largeur) -->
                 <div class="fr-input-group ed-form-grid__full">
@@ -288,6 +291,9 @@
                 <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
                   <label class="fr-label" for="edit-email">E-mail <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-email" type="email" formControlName="email" />
+                  <p class="fr-error-text" *ngIf="profil?.pendingEmail">
+                    Nouvelle adresse en attente : {{ profil?.pendingEmail }}. Un e-mail de confirmation a été envoyé.
+                  </p>
                   <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">L'e-mail est obligatoire.</p>
                 </div>
 

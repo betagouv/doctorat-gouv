@@ -13,6 +13,7 @@ public class ProfilDtResponse {
     private String nom;
     private String prenom;
     private String email;
+    private String pendingEmail;
     private String photoUrl;
     private List<String> competences;
     private String orcid;
@@ -51,6 +52,9 @@ public class ProfilDtResponse {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPendingEmail() { return pendingEmail; }
+    public void setPendingEmail(String pendingEmail) { this.pendingEmail = pendingEmail; }
 
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }

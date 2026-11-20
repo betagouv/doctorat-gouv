@@ -13,6 +13,7 @@ public class ProfilResponse {
     private String prenom;
     private String situation;
     private String email;
+    private String pendingEmail;
     private String telephone;
     private String photoUrl;
     private List<String> competences;
@@ -48,6 +49,9 @@ public class ProfilResponse {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPendingEmail() { return pendingEmail; }
+    public void setPendingEmail(String pendingEmail) { this.pendingEmail = pendingEmail; }
 
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }

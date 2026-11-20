@@ -5,6 +5,7 @@ export interface ProfilResponse {
   prenom: string;
   situation: string;
   email: string;
+  pendingEmail: string | null;
   telephone: string | null;
   photoUrl: string | null;
   competences: string[];
@@ -38,6 +39,7 @@ export interface ProfilDtResponse {
   nom: string;
   prenom: string;
   email: string;
+  pendingEmail: string | null;
   photoUrl: string | null;
   competences: string[];
   orcid: string | null;

@@ -120,6 +120,9 @@
                   <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }}</span>
                   <span class="ec-field__value">{{ profil.email }}</span>
                 </div>
+                <p class="fr-error-text fr-mb-2w" *ngIf="profil.pendingEmail">
+                  {{ 'ESPACE_CANDIDAT.EMAIL_PENDING_SHORT' | translate: { email: profil.pendingEmail } }}
+                </p>
                 <div class="ec-field">
                   <span class="ec-field__label">{{ 'ESPACE_CANDIDAT.FIELD_TELEPHONE' | translate }}</span>
                   <span class="ec-field__value">{{ profil.telephone || '—' }}</span>
@@ -174,10 +177,14 @@
                 </div>
 
                 <!-- Ligne 3 : Email / Téléphone -->
-                <div class="fr-input-group" [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
+                <div class="fr-input-group" [class.fr-input-group--info]="profil?.pendingEmail"
+                     [class.fr-input-group--error]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
                   <label class="fr-label" for="edit-email">{{ 'ESPACE_CANDIDAT.FIELD_EMAIL' | translate }} <span class="required-star">*</span></label>
                   <input class="fr-input" id="edit-email" type="email" formControlName="email"
                          [attr.aria-invalid]="profilForm.get('email')?.invalid && profilForm.get('email')?.touched ? 'true' : null" />
+                  <p class="fr-error-text" *ngIf="profil?.pendingEmail">
+                    {{ 'ESPACE_CANDIDAT.EMAIL_PENDING_HINT' | translate: { email: profil?.pendingEmail } }}
+                  </p>
                   <p class="fr-error-text" *ngIf="profilForm.get('email')?.invalid && profilForm.get('email')?.touched">
                     {{ profilForm.get('email')?.errors?.['required'] ? ('ESPACE_CANDIDAT.ERROR_EMAIL_REQUIRED' | translate) : ('ESPACE_CANDIDAT.ERROR_EMAIL_INVALID' | translate) }}
                   </p>

@@ -868,6 +868,7 @@ public class DirecteurTheseService {
             u.getEmail()
         );
         response.setPhotoUrl(ProfilService.urlPhoto(u));
+        response.setPendingEmail(u.getPendingEmail());
         response.setCompetences(u.getCompetences() != null ? new ArrayList<>(u.getCompetences()) : new ArrayList<>());
 
         // Pré-remplissage depuis les métadonnées du sujet invitant (ADUM/Amethis) : uniquement si
