@@ -373,6 +373,9 @@ export class Search implements OnInit, OnDestroy {
 	} else {
 	  this.onSearch(this.currentPage);
 	}
+	if (!this.isCandidateConnected()) {
+	  this.syncActiveSavedFilter();
+	}
 	this.isInitialLoad = false;
 
 	const titre = this.translate.currentLang === 'en'
@@ -1517,6 +1520,7 @@ resetFilter(filterName: MultiFilterKey) {
     const current = this.buildCurrentFiltersSnapshot();
     const match = this.savedFilters.find(sf => this.savedFilterEquals(sf.filters, current));
     this.activeSavedFilterId = match ? match.id : null;
+    this.isSearchSaved = !!match;
   }
 
   private savedFilterEquals(a: any, b: any): boolean {
