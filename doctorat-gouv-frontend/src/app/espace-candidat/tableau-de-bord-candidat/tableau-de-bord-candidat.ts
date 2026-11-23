@@ -95,7 +95,8 @@ export class TableauDeBordCandidat implements OnInit {
       next: (list: any[]) => {
         this.savedFilters = list ?? [];
       },
-      error: () => {
+      error: (err) => {
+        console.error('loadSavedFilters error', err);
         this.savedFilters = [];
       },
     });
@@ -145,6 +146,29 @@ export class TableauDeBordCandidat implements OnInit {
       },
     });
     this.cancelDeleteFilter();
+  }
+
+  toggleAlerteFilter(sf: any, event: Event): void {
+    event.stopPropagation();
+    const newActive = !sf.alerteActive;
+    const frequence = newActive ? (sf.frequenceAlerte || 'HEBDOMADAIRE') : null;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, newActive, frequence || undefined).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? newActive;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+      }
+    });
+  }
+
+  changeFrequenceFilter(sf: any, event: Event): void {
+    event.stopPropagation();
+    const frequence = (event.target as HTMLSelectElement).value;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, true, frequence).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? true;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+      }
+    });
   }
 
   nouvelleAlerte(): void {

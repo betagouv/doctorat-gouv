@@ -440,6 +440,24 @@
               </div>
             </fieldset>
 
+            <div class="ec-saved-filters" *ngIf="savedFilters.length">
+              <h3 class="ec-card__title">Alertes sur mes recherches enregistrées</h3>
+              <div class="ec-saved-filter" *ngFor="let sf of savedFilters">
+                <div class="ec-saved-filter__header">
+                  <span class="ec-saved-filter__name">{{ sf.nom ?? sf.name }}</span>
+                  <button type="button" class="fr-btn fr-btn--secondary fr-btn--sm" (click)="toggleAlerteFilter(sf)">
+                    {{ sf.alerteActive ? 'Désactiver' : 'Activer' }}
+                  </button>
+                </div>
+                <div class="ec-saved-filter__freq" *ngIf="sf.alerteActive">
+                  <select class="fr-select" (change)="changeFrequenceFilter(sf, $event)">
+                    <option value="JOURNALIERE" [selected]="sf.frequenceAlerte === 'JOURNALIERE'">Quotidienne</option>
+                    <option value="HEBDOMADAIRE" [selected]="sf.frequenceAlerte === 'HEBDOMADAIRE'">Hebdomadaire</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="ec-actions">
               <button type="button" class="ec-btn-primary" (click)="saveNotifications()"
                       [disabled]="isLoadingNotifications || isSavingNotifications">

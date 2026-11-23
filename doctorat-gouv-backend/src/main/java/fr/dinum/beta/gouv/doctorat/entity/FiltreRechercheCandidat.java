@@ -42,6 +42,16 @@ public class FiltreRechercheCandidat {
     @Column(name = "filtres_json", columnDefinition = "TEXT", nullable = false)
     private String filtresJson;
 
+    @Column(name = "alerte_active", nullable = false)
+    @Builder.Default
+    private boolean alerteActive = false;
+
+    @Column(name = "frequence_alerte", length = 20)
+    private String frequenceAlerte;
+
+    @Column(name = "derniere_alerte_envoyee_le")
+    private LocalDateTime derniereAlerteEnvoyeeLe;
+
     @Column(name = "date_creation", nullable = false)
     private LocalDateTime dateCreation;
 

@@ -56,6 +56,8 @@ export class EspaceCandidat implements OnInit, OnDestroy {
   frequenceNotification: FrequenceNotification = 'JOURNALIERE';
   isLoadingNotifications = false;
   isSavingNotifications = false;
+  savedFilters: any[] = [];
+  isLoadingSavedFilters = false;
   notifSuccessMessage: string | null = null;
   notifErrorMessage: string | null = null;
 
@@ -323,6 +325,7 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.notifErrorMessage = null;
     if (tab === 'notifications') {
       this.loadNotifications();
+      this.loadSavedFilters();
     }
   }
 
@@ -337,6 +340,41 @@ export class EspaceCandidat implements OnInit, OnDestroy {
       error: () => {
         this.isLoadingNotifications = false;
         this.notifErrorMessage = this.translate.instant('ESPACE_CANDIDAT.NOTIF_LOAD_ERROR');
+      }
+    });
+  }
+
+  loadSavedFilters(): void {
+    this.isLoadingSavedFilters = true;
+    this.candidatService.getFiltresRecherche().subscribe({
+      next: (list: any[]) => {
+        this.savedFilters = list ?? [];
+        this.isLoadingSavedFilters = false;
+      },
+      error: () => {
+        this.savedFilters = [];
+        this.isLoadingSavedFilters = false;
+      }
+    });
+  }
+
+  toggleAlerteFilter(sf: any): void {
+    const newActive = !sf.alerteActive;
+    const frequence = newActive ? (sf.frequenceAlerte || 'HEBDOMADAIRE') : null;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, newActive, frequence || undefined).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? newActive;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+      }
+    });
+  }
+
+  changeFrequenceFilter(sf: any, event: Event): void {
+    const frequence = (event.target as HTMLSelectElement).value;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, true, frequence).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? true;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
       }
     });
   }

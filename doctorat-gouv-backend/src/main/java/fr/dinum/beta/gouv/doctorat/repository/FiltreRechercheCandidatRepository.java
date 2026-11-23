@@ -14,4 +14,6 @@ public interface FiltreRechercheCandidatRepository extends JpaRepository<FiltreR
     List<FiltreRechercheCandidat> findByUtilisateurIdOrderByDateCreationDesc(String utilisateurId);
 
     Optional<FiltreRechercheCandidat> findByIdAndUtilisateurId(String id, String utilisateurId);
+
+    List<FiltreRechercheCandidat> findByAlerteActiveTrueAndFrequenceAlerte(String frequence);
 }

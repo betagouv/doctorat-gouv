@@ -118,6 +118,13 @@ export class CandidatService {
   deleteFiltreRecherche(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/filtres-recherche/${id}`, { responseType: 'text' });
   }
+
+  updateAlerteFiltreRecherche(id: string, active: boolean, frequence?: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/filtres-recherche/${id}/alerte`, {
+      active,
+      frequence: frequence || null,
+    });
+  }
 }
 
 export interface ChangementMotDePasseRequest {

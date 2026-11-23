@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.dinum.beta.gouv.doctorat.dto.ChangementMotDePasseRequest;
+import fr.dinum.beta.gouv.doctorat.dto.FiltreAlerteRequest;
 import fr.dinum.beta.gouv.doctorat.dto.FiltreRechercheRequest;
 import fr.dinum.beta.gouv.doctorat.dto.FiltreRechercheResponse;
 import fr.dinum.beta.gouv.doctorat.dto.NotificationPreferenceRequest;
@@ -256,6 +257,16 @@ public class CandidatController {
         String userId = getCurrentUserId();
         filtreRechercheService.supprimer(userId, id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/filtres-recherche/{id}/alerte")
+    public ResponseEntity<FiltreRechercheResponse> updateAlerteFiltreRecherche(
+            @PathVariable("id") String id,
+            @Valid @RequestBody FiltreAlerteRequest request) {
+        String userId = getCurrentUserId();
+        FiltreRechercheResponse response = filtreRechercheService.activerAlerte(
+                userId, id, request.isActive(), request.getFrequence());
+        return ResponseEntity.ok(response);
     }
 
     private String getCurrentUserId() {

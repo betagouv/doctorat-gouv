@@ -5,6 +5,8 @@ export interface SavedSearchFilter {
   name: string;
   filters: any;
   createdAt: number;
+  alerteActive?: boolean;
+  frequenceAlerte?: string;
 }
 
 @Injectable({

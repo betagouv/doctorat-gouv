@@ -407,6 +407,11 @@
           <div class="tdb-alert__header">
             <h4 class="tdb-alert__title">{{ sf.nom ?? sf.name }}</h4>
             <div class="tdb-alert__actions">
+              <button class="tdb-alert__btn" (click)="toggleAlerteFilter(sf, $event)"
+                      [attr.aria-label]="sf.alerteActive ? 'Désactiver alerte' : 'Activer alerte'"
+                      [attr.title]="sf.alerteActive ? 'Désactiver alerte' : 'Activer alerte'">
+                <span aria-hidden="true">{{ sf.alerteActive ? '🔔' : '🔕' }}</span>
+              </button>
               <button class="tdb-alert__btn" (click)="editFiltre(sf, $event)"
                       [attr.aria-label]="'TDB.EDIT_FILTER' | translate"
                       [attr.title]="'TDB.EDIT_FILTER' | translate">
@@ -426,6 +431,16 @@
               </span>
               {{ tag.value }}
             </span>
+          </div>
+          <div class="tdb-alert__alert-status" *ngIf="sf.alerteActive">
+            <span aria-hidden="true">🔔</span>
+            Alerte {{ sf.frequenceAlerte === 'JOURNALIERE' ? 'quotidienne' : 'hebdomadaire' }}
+          </div>
+          <div class="tdb-alert__freq" *ngIf="sf.alerteActive">
+            <select class="fr-select fr-select--sm" (click)="$event.stopPropagation()" (change)="changeFrequenceFilter(sf, $event)">
+              <option value="JOURNALIERE" [selected]="sf.frequenceAlerte === 'JOURNALIERE'">Quotidienne</option>
+              <option value="HEBDOMADAIRE" [selected]="sf.frequenceAlerte === 'HEBDOMADAIRE'">Hebdomadaire</option>
+            </select>
           </div>
         </div>
       </div>

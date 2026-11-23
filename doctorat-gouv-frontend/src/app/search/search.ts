@@ -135,6 +135,7 @@ export class Search implements OnInit, OnDestroy {
   activeSavedFilterId: string | null = null;
   isSearchSaved = false;
   showDashboardLink = false;
+  private pendingFiltreId: string | null = null;
   private applyingSavedFilter = false;
 
 
@@ -259,8 +260,19 @@ export class Search implements OnInit, OnDestroy {
 	          name: sf.nom ?? sf.name,
 	          filters: sf.filtres ?? sf.filters,
 	          createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
+	          alerteActive: sf.alerteActive ?? false,
+	          frequenceAlerte: sf.frequenceAlerte ?? null,
 	        })) as SavedSearchFilter[];
-	        this.syncActiveSavedFilter();
+
+	        if (this.pendingFiltreId) {
+	          const match = this.savedFilters.find(sf => sf.id === this.pendingFiltreId);
+	          if (match) {
+	            this.applySavedFilter(match);
+	          }
+	          this.pendingFiltreId = null;
+	        } else {
+	          this.syncActiveSavedFilter();
+	        }
 	      },
 	      error: () => {
 	        this.savedFilters = this.searchFiltersService.getSavedFilters();
@@ -279,6 +291,15 @@ export class Search implements OnInit, OnDestroy {
 	  let urlHasEcoleDoctorale = false;
 
 	  const urlParams = this.route.snapshot.queryParams;
+
+	  if (urlParams['filtre']) {
+	    this.pendingFiltreId = String(urlParams['filtre']);
+	  }
+
+	  if (this.pendingFiltreId && !this.isCandidateConnected()) {
+	    this.router.navigate(['/connexion'], { queryParams: { returnUrl: `/recherche?filtre=${this.pendingFiltreId}` } });
+	    return;
+	  }
 	  if (urlParams['ecoledoctorale']) {
 		  this.discipline = savedFilters?.discipline || [];
 		  this.localisation = savedFilters?.localisation || [];
@@ -1433,6 +1454,31 @@ resetFilter(filterName: MultiFilterKey) {
 
   showDeleteConfirm = false;
   filterToDelete: SavedSearchFilter | string | null = null;
+
+  toggleAlerte(sf: SavedSearchFilter, event?: Event): void {
+    if (event) event.stopPropagation();
+    const newActive = !sf.alerteActive;
+    const frequence = newActive ? (sf.frequenceAlerte || 'HEBDOMADAIRE') : null;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, newActive, frequence || undefined).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? newActive;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+        this.savedFilters = [...this.savedFilters];
+      }
+    });
+  }
+
+  changeFrequence(sf: SavedSearchFilter, event: Event): void {
+    event.stopPropagation();
+    const frequence = (event.target as HTMLSelectElement).value;
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, true, frequence).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? true;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+        this.savedFilters = [...this.savedFilters];
+      }
+    });
+  }
 
   deleteSavedFilter(saved: SavedSearchFilter | string): void {
     this.filterToDelete = saved;

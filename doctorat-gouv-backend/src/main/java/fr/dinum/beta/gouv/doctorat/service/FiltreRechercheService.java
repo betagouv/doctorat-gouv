@@ -70,6 +70,19 @@ public class FiltreRechercheService {
         log.info("Filtre de recherche supprime (id={}) pour candidat {}", id, userId);
     }
 
+    public FiltreRechercheResponse activerAlerte(String userId, String id, boolean active, String frequence) {
+        FiltreRechercheCandidat entity = repository.findByIdAndUtilisateurId(id, userId)
+            .orElseThrow(() -> new IllegalArgumentException("Filtre introuvable pour id=" + id + " utilisateur=" + userId));
+        entity.setAlerteActive(active);
+        if (active) {
+            entity.setFrequenceAlerte(frequence != null ? frequence : "HEBDOMADAIRE");
+        } else {
+            entity.setFrequenceAlerte(null);
+        }
+        FiltreRechercheCandidat saved = repository.save(entity);
+        return toResponse(saved);
+    }
+
     private Utilisateur getUtilisateur(String userId) {
         return utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
@@ -92,6 +105,9 @@ public class FiltreRechercheService {
             .id(entity.getId())
             .nom(entity.getNom())
             .filtres(filtres)
+            .alerteActive(entity.isAlerteActive())
+            .frequenceAlerte(entity.getFrequenceAlerte())
+            .derniereAlerteEnvoyeeLe(entity.getDerniereAlerteEnvoyeeLe())
             .dateCreation(entity.getDateCreation())
             .build();
     }

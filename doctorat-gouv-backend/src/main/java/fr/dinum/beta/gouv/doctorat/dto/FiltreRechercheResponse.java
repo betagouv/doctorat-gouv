@@ -18,5 +18,8 @@ public class FiltreRechercheResponse {
     private String id;
     private String nom;
     private Object filtres;
+    private boolean alerteActive;
+    private String frequenceAlerte;
+    private LocalDateTime derniereAlerteEnvoyeeLe;
     private LocalDateTime dateCreation;
 }
