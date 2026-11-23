@@ -77,23 +77,25 @@
         <p>Aucun sujet ne correspond a ce filtre.</p>
       </div>
 
-      <article class="tdb-sujet" *ngFor="let sujet of sujetsFiltres" [class.tdb-sujet--inactif]="!isActif(sujet)">
-        <div class="tdb-sujet__main">
-          <div class="tdb-sujet__badges">
-            <span class="fr-badge fr-badge--sm"
-                  [class.fr-badge--success]="isActif(sujet)"
-                  [class.fr-badge--error]="!isActif(sujet)">
-              {{ isActif(sujet) ? 'Actif' : 'Inactif' }}
-            </span>
-            <span class="fr-badge fr-badge--sm fr-badge--info" *ngIf="sujet.role === 'CODIRECTION'">
-              Codirection
-            </span>
-            <span class="fr-badge fr-badge--sm fr-badge--new" *ngIf="sujet.role === 'DIRECTION'">
-              Direction
-            </span>
+      <div class="tdb-sujets__grid" *ngIf="sujetsFiltres.length > 0">
+        <article class="tdb-sujet-card" *ngFor="let sujet of sujetsFiltres" [class.tdb-sujet-card--inactif]="!isActif(sujet)">
+          <div class="tdb-sujet-card__header">
+            <div class="tdb-sujet-card__badges">
+              <span class="fr-badge fr-badge--sm"
+                    [class.fr-badge--success]="isActif(sujet)"
+                    [class.fr-badge--error]="!isActif(sujet)">
+                {{ isActif(sujet) ? 'Actif' : 'Inactif' }}
+              </span>
+              <span class="fr-badge fr-badge--sm fr-badge--info" *ngIf="sujet.role === 'CODIRECTION'">
+                Codirection
+              </span>
+              <span class="fr-badge fr-badge--sm fr-badge--new" *ngIf="sujet.role === 'DIRECTION'">
+                Direction
+              </span>
+            </div>
           </div>
-          <h3 class="tdb-sujet__title">{{ sujet.titre || 'Titre non renseigne' }}</h3>
-          <dl class="tdb-sujet__meta">
+          <h3 class="tdb-sujet-card__title">{{ sujet.titre || 'Titre non renseigne' }}</h3>
+          <dl class="tdb-sujet-card__meta">
             <div *ngIf="sujet.etablissement">
               <dt>Etablissement</dt>
               <dd>{{ sujet.etablissement }}</dd>
@@ -111,16 +113,18 @@
               <dd>{{ sujet.matricule }}</dd>
             </div>
           </dl>
-        </div>
-        <div class="tdb-sujet__side">
-          <p class="tdb-sujet__date" *ngIf="sujet.dateMiseEnLigne">Mis en ligne le {{ sujet.dateMiseEnLigne }}</p>
-          <p class="tdb-sujet__date" *ngIf="sujet.dateLimiteCandidature">Candidatures jusqu'au {{ sujet.dateLimiteCandidature }}</p>
-          <a class="fr-link" [routerLink]="['/proposition']" [queryParams]="{id: sujet.id}">
-            Voir le sujet
-            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-          </a>
-        </div>
-      </article>
+          <div class="tdb-sujet-card__footer">
+            <div class="tdb-sujet-card__dates">
+              <p class="tdb-sujet-card__date" *ngIf="sujet.dateMiseEnLigne">Mis en ligne le {{ sujet.dateMiseEnLigne }}</p>
+              <p class="tdb-sujet-card__date" *ngIf="sujet.dateLimiteCandidature">Candidatures jusqu'au {{ sujet.dateLimiteCandidature }}</p>
+            </div>
+            <a class="fr-link tdb-sujet-card__link" [routerLink]="['/proposition']" [queryParams]="{id: sujet.id}">
+              Voir le sujet
+              <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+            </a>
+          </div>
+        </article>
+      </div>
     </section>
 
   </div>
