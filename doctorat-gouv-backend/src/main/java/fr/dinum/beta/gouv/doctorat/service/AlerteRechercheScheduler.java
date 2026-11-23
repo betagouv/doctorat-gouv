@@ -39,6 +39,12 @@ public class AlerteRechercheScheduler {
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
 
+    @Value("${app.mail.enabled:false}")
+    private boolean mailEnabled;
+
+    @Value("${app.mail.stub-mailbox:}")
+    private String stubMailbox;
+
     public AlerteRechercheScheduler(FiltreRechercheCandidatRepository filtreRepository,
                                    UtilisateurRepository utilisateurRepository,
                                    PropositionTheseService propositionTheseService,
@@ -104,13 +110,25 @@ public class AlerteRechercheScheduler {
             return;
         }
 
+        if (!mailEnabled) {
+            log.info("Mail desactive : alerte non envoyee pour le filtre {} (destinataire reel : {})",
+                    filtre.getId(), utilisateur.getEmail());
+            filtre.setDerniereAlerteEnvoyeeLe(LocalDateTime.now());
+            filtreRepository.save(filtre);
+            return;
+        }
+
+        String destinataire = (stubMailbox == null || stubMailbox.isBlank())
+                ? utilisateur.getEmail()
+                : stubMailbox.trim();
+
         String lien = frontendBaseUrl + "/recherche?filtre=" + filtre.getId();
         Map<String, Object> params = new HashMap<>();
         params.put("prenom", utilisateur.getPrenom());
         params.put("nom_recherche", filtre.getNom());
         params.put("lien_resultats", lien);
 
-        brevoEmailService.sendTemplateEmail(utilisateur.getEmail(), BREVO_TEMPLATE_ALERTE_RECHERCHE, params);
+        brevoEmailService.sendTemplateEmail(destinataire, BREVO_TEMPLATE_ALERTE_RECHERCHE, params);
 
         filtre.setDerniereAlerteEnvoyeeLe(LocalDateTime.now());
         filtreRepository.save(filtre);
