@@ -49,12 +49,12 @@ public class AlerteRechercheScheduler {
         this.brevoEmailService = brevoEmailService;
     }
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "${alerte.scheduler.cron:0 0 8 * * *}")
     public void envoyerAlertesQuotidiennes() {
         traiterFrequence("JOURNALIERE");
     }
 
-    @Scheduled(cron = "0 0 8 * * MON")
+    @Scheduled(cron = "${alerte.scheduler.hebdo.cron:0 0 8 * * MON}")
     public void envoyerAlertesHebdomadaires() {
         traiterFrequence("HEBDOMADAIRE");
     }
@@ -72,10 +72,15 @@ public class AlerteRechercheScheduler {
     }
 
     private void traiterFiltre(FiltreRechercheCandidat filtre) throws Exception {
-        Utilisateur utilisateur = filtre.getUtilisateur();
-        if (utilisateur == null) {
-            utilisateur = utilisateurRepository.findById(filtre.getUtilisateur().getId()).orElse(null);
+        String utilisateurId = null;
+        try {
+            utilisateurId = filtre.getUtilisateur() != null ? filtre.getUtilisateur().getId() : null;
+        } catch (Exception ignored) {
+            // proxy non initialisable : on ignore
         }
+        Utilisateur utilisateur = utilisateurId != null
+                ? utilisateurRepository.findById(utilisateurId).orElse(null)
+                : null;
         if (utilisateur == null) return;
 
         Map<String, Object> savedFilters = objectMapper.readValue(
