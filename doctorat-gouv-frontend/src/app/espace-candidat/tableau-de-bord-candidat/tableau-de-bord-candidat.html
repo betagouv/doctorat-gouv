@@ -434,13 +434,9 @@
           </div>
           <div class="tdb-alert__alert-status" *ngIf="sf.alerteActive">
             <span aria-hidden="true">🔔</span>
-            Alerte {{ sf.frequenceAlerte === 'JOURNALIERE' ? 'quotidienne' : 'hebdomadaire' }}
-          </div>
-          <div class="tdb-alert__freq" *ngIf="sf.alerteActive">
-            <select class="fr-select fr-select--sm" (click)="$event.stopPropagation()" (change)="changeFrequenceFilter(sf, $event)">
-              <option value="JOURNALIERE" [selected]="sf.frequenceAlerte === 'JOURNALIERE'">Quotidienne</option>
-              <option value="HEBDOMADAIRE" [selected]="sf.frequenceAlerte === 'HEBDOMADAIRE'">Hebdomadaire</option>
-            </select>
+            Alerte :
+            <button class="tdb-freq-badge" [class.tdb-freq-badge--active]="sf.frequenceAlerte === 'JOURNALIERE'" (click)="setFrequenceFilter(sf, 'JOURNALIERE', $event)">Quotidienne</button>
+            <button class="tdb-freq-badge" [class.tdb-freq-badge--active]="sf.frequenceAlerte === 'HEBDOMADAIRE'" (click)="setFrequenceFilter(sf, 'HEBDOMADAIRE', $event)">Hebdomadaire</button>
           </div>
         </div>
       </div>

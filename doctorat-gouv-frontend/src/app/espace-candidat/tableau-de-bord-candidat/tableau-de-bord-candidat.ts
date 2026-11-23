@@ -171,6 +171,16 @@ export class TableauDeBordCandidat implements OnInit {
     });
   }
 
+  setFrequenceFilter(sf: any, frequence: string, event: Event): void {
+    event.stopPropagation();
+    this.candidatService.updateAlerteFiltreRecherche(sf.id, true, frequence).subscribe({
+      next: (res: any) => {
+        sf.alerteActive = res?.alerteActive ?? true;
+        sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
+      }
+    });
+  }
+
   nouvelleAlerte(): void {
     this.router.navigate(['/search']);
   }

@@ -739,3 +739,47 @@ $font-family: 'Marianne', arial, sans-serif;
   color: #000091;
   font-weight: 600;
 }
+
+
+/* ======== Select de frequence inline ======== */
+.tdb-alert__freq-select {
+  display: inline-block;
+  width: auto;
+  min-width: 7rem;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+
+/* ======== Badges de frequence d'alerte ======== */
+.tdb-freq-badge {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  font-family: 'Marianne', arial, sans-serif;
+  font-size: 0.75rem;
+  border: 1px solid #000091;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000091;
+  cursor: pointer;
+}
+
+.tdb-freq-badge--active {
+  background: #000091;
+  color: #ffffff;
+}
+
+
+/* ======== Hover badges frequence ======== */
+.tdb-freq-badge:hover {
+  background: #e3e3fd;
+  color: #000091;
+}
+
+.tdb-freq-badge--active:hover {
+  background: #000091;
+  color: #ffffff;
+  opacity: 0.9;
+}
