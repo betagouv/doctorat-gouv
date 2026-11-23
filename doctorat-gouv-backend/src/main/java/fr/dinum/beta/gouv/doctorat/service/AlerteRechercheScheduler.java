@@ -122,7 +122,7 @@ public class AlerteRechercheScheduler {
                 ? utilisateur.getEmail()
                 : stubMailbox.trim();
 
-        String lien = frontendBaseUrl + "/recherche?filtre=" + filtre.getId();
+        String lien = frontendBaseUrl + "/search?filtre=" + filtre.getId();
         Map<String, Object> params = new HashMap<>();
         params.put("prenom", utilisateur.getPrenom());
         params.put("nom_recherche", filtre.getNom());
