@@ -31,7 +31,7 @@ public class EmbeddingScheduler {
 		try {
 			log.info("Début de l'indexation quotidienne Scaleway");
 			indexationService.indexerIncremental();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Erreur lors de l'indexation quotidienne", e);
 		} finally {
 			running.set(false);

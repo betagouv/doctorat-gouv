@@ -149,4 +149,11 @@ public interface PropositionTheseRepository extends JpaRepository<PropositionThe
     @Query("UPDATE PropositionThese p SET p.dateIndexationScaleway = NULL WHERE p.dateIndexationScaleway IS NOT NULL")
     void clearDateIndexationScaleway();
 
+
+
+    @Query("SELECT p FROM PropositionThese p WHERE p.dateIndexationScaleway IS NOT NULL AND p.active = FALSE")
+    List<PropositionThese> findIndexedInactiveInScaleway(Pageable pageable);
+
+    @Query("SELECT p FROM PropositionThese p WHERE (p.active IS NULL OR p.active = TRUE) AND (p.dateIndexationScaleway IS NULL OR (p.dateMaj IS NOT NULL AND p.dateIndexationScaleway IS NOT NULL AND p.dateMaj > p.dateIndexationScaleway))")
+    List<PropositionThese> findNeedingIndexationScalewayBatch(Pageable pageable);
 }
