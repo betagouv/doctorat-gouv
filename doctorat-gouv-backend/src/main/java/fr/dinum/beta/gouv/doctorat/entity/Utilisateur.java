@@ -134,6 +134,14 @@ public class Utilisateur {
     @Column(name = "frequence_notification", length = 20)
     private FrequenceNotification frequenceNotification = FrequenceNotification.JOURNALIERE;
 
+    // --- Alertes sur les recherches enregistrées (candidat) ---
+    @Column(name = "alertes_recherche_active")
+    private Boolean alertesRechercheActive = Boolean.FALSE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "frequence_alertes_recherche", length = 20)
+    private FrequenceNotification frequenceAlertesRecherche = FrequenceNotification.HEBDOMADAIRE;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "date_creation", nullable = false)
     private LocalDateTime dateCreation;
@@ -314,6 +322,22 @@ public class Utilisateur {
 
     public void setFrequenceNotification(FrequenceNotification frequenceNotification) {
         this.frequenceNotification = frequenceNotification;
+    }
+
+    public Boolean getAlertesRechercheActive() {
+        return alertesRechercheActive;
+    }
+
+    public void setAlertesRechercheActive(Boolean alertesRechercheActive) {
+        this.alertesRechercheActive = alertesRechercheActive;
+    }
+
+    public FrequenceNotification getFrequenceAlertesRecherche() {
+        return frequenceAlertesRecherche;
+    }
+
+    public void setFrequenceAlertesRecherche(FrequenceNotification frequenceAlertesRecherche) {
+        this.frequenceAlertesRecherche = frequenceAlertesRecherche;
     }
 
     public LocalDateTime getDateCreation() {

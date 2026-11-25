@@ -66,28 +66,33 @@ public class AlerteRechercheScheduler {
     }
 
     private void traiterFrequence(String frequence) {
-        List<FiltreRechercheCandidat> filtres =
-                filtreRepository.findByAlerteActiveTrueAndFrequenceAlerte(frequence);
-        for (FiltreRechercheCandidat filtre : filtres) {
-            try {
-                traiterFiltre(filtre);
-            } catch (Exception e) {
-                log.error("Erreur lors du traitement de l'alerte (filtre={})", filtre.getId(), e);
+        List<FiltreRechercheCandidat> all = filtreRepository.findAll();
+        Map<String, List<FiltreRechercheCandidat>> parUtilisateur = all.stream()
+                .collect(Collectors.groupingBy(f -> f.getUtilisateur() != null ? f.getUtilisateur().getId() : ""));
+
+        for (Map.Entry<String, List<FiltreRechercheCandidat>> entry : parUtilisateur.entrySet()) {
+            String utilisateurId = entry.getKey();
+            if (utilisateurId == null || utilisateurId.isBlank()) continue;
+            Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId).orElse(null);
+            if (utilisateur == null) continue;
+            if (!Boolean.TRUE.equals(utilisateur.getAlertesRechercheActive())) continue;
+
+            String freq = utilisateur.getFrequenceAlertesRecherche() != null
+                    ? utilisateur.getFrequenceAlertesRecherche().name()
+                    : "HEBDOMADAIRE";
+            if (!frequence.equalsIgnoreCase(freq)) continue;
+
+            for (FiltreRechercheCandidat filtre : entry.getValue()) {
+                try {
+                    traiterFiltre(filtre, utilisateur);
+                } catch (Exception e) {
+                    log.error("Erreur lors du traitement de l'alerte (filtre={})", filtre.getId(), e);
+                }
             }
         }
     }
 
-    private void traiterFiltre(FiltreRechercheCandidat filtre) throws Exception {
-        String utilisateurId = null;
-        try {
-            utilisateurId = filtre.getUtilisateur() != null ? filtre.getUtilisateur().getId() : null;
-        } catch (Exception ignored) {
-            // proxy non initialisable : on ignore
-        }
-        Utilisateur utilisateur = utilisateurId != null
-                ? utilisateurRepository.findById(utilisateurId).orElse(null)
-                : null;
-        if (utilisateur == null) return;
+    private void traiterFiltre(FiltreRechercheCandidat filtre, Utilisateur utilisateur) throws Exception {
 
         Map<String, Object> savedFilters = objectMapper.readValue(
                 filtre.getFiltresJson(), new TypeReference<Map<String, Object>>() {});

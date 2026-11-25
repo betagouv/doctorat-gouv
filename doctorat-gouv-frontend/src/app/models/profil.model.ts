@@ -132,6 +132,8 @@ export type FrequenceNotification = 'JOURNALIERE' | 'HEBDOMADAIRE';
 
 export interface NotificationPreference {
   frequence: FrequenceNotification;
+  alertesRechercheActive?: boolean;
+  frequenceAlertesRecherche?: FrequenceNotification;
 }
 
 /** Un axe de recherche du directeur de thèse. */

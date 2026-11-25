@@ -407,11 +407,6 @@
           <div class="tdb-alert__header">
             <h4 class="tdb-alert__title">{{ sf.nom ?? sf.name }}</h4>
             <div class="tdb-alert__actions">
-              <button class="tdb-alert__btn" (click)="toggleAlerteFilter(sf, $event)"
-                      [attr.aria-label]="sf.alerteActive ? 'Désactiver alerte' : 'Activer alerte'"
-                      [attr.title]="sf.alerteActive ? 'Désactiver alerte' : 'Activer alerte'">
-                <span aria-hidden="true">{{ sf.alerteActive ? '🔔' : '🔕' }}</span>
-              </button>
               <button class="tdb-alert__btn" (click)="editFiltre(sf, $event)"
                       [attr.aria-label]="'TDB.EDIT_FILTER' | translate"
                       [attr.title]="'TDB.EDIT_FILTER' | translate">
@@ -431,12 +426,6 @@
               </span>
               {{ tag.value }}
             </span>
-          </div>
-          <div class="tdb-alert__alert-status" *ngIf="sf.alerteActive">
-            <span aria-hidden="true">🔔</span>
-            Alerte :
-            <button class="tdb-freq-badge" [class.tdb-freq-badge--active]="sf.frequenceAlerte === 'JOURNALIERE'" (click)="setFrequenceFilter(sf, 'JOURNALIERE', $event)">Quotidienne</button>
-            <button class="tdb-freq-badge" [class.tdb-freq-badge--active]="sf.frequenceAlerte === 'HEBDOMADAIRE'" (click)="setFrequenceFilter(sf, 'HEBDOMADAIRE', $event)">Hebdomadaire</button>
           </div>
         </div>
       </div>

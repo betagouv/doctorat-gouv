@@ -54,6 +54,8 @@ export class EspaceCandidat implements OnInit, OnDestroy {
   passwordErrorMessage: string | null = null;
 
   frequenceNotification: FrequenceNotification = 'JOURNALIERE';
+  alertesRechercheActive = false;
+  frequenceAlertesRecherche: FrequenceNotification = 'HEBDOMADAIRE';
   isLoadingNotifications = false;
   isSavingNotifications = false;
   savedFilters: any[] = [];
@@ -335,6 +337,8 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.candidatService.getNotifications().subscribe({
       next: (data) => {
         this.frequenceNotification = data.frequence ?? 'JOURNALIERE';
+        this.alertesRechercheActive = data.alertesRechercheActive ?? false;
+        this.frequenceAlertesRecherche = data.frequenceAlertesRecherche ?? 'HEBDOMADAIRE';
         this.isLoadingNotifications = false;
       },
       error: () => {
@@ -383,9 +387,16 @@ export class EspaceCandidat implements OnInit, OnDestroy {
     this.isSavingNotifications = true;
     this.notifSuccessMessage = null;
     this.notifErrorMessage = null;
-    this.candidatService.updateNotifications({ frequence: this.frequenceNotification }).subscribe({
+    this.alertesRechercheActive = true;
+    this.candidatService.updateNotifications({
+      frequence: this.frequenceNotification,
+      alertesRechercheActive: this.alertesRechercheActive,
+      frequenceAlertesRecherche: this.frequenceAlertesRecherche,
+    }).subscribe({
       next: (data) => {
         this.frequenceNotification = data.frequence;
+        this.alertesRechercheActive = data.alertesRechercheActive ?? this.alertesRechercheActive;
+        this.frequenceAlertesRecherche = data.frequenceAlertesRecherche ?? this.frequenceAlertesRecherche;
         this.isSavingNotifications = false;
         this.notifSuccessMessage = this.translate.instant('ESPACE_CANDIDAT.NOTIF_SAVE_SUCCESS');
       },

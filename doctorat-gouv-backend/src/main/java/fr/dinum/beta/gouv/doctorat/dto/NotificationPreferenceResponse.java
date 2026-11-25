@@ -9,6 +9,8 @@ import fr.dinum.beta.gouv.doctorat.enums.FrequenceNotification;
 public class NotificationPreferenceResponse {
 
     private FrequenceNotification frequence;
+    private Boolean alertesRechercheActive;
+    private FrequenceNotification frequenceAlertesRecherche;
 
     public NotificationPreferenceResponse() {}
 
@@ -18,4 +20,10 @@ public class NotificationPreferenceResponse {
 
     public FrequenceNotification getFrequence() { return frequence; }
     public void setFrequence(FrequenceNotification frequence) { this.frequence = frequence; }
+
+    public Boolean getAlertesRechercheActive() { return alertesRechercheActive; }
+    public void setAlertesRechercheActive(Boolean alertesRechercheActive) { this.alertesRechercheActive = alertesRechercheActive; }
+
+    public FrequenceNotification getFrequenceAlertesRecherche() { return frequenceAlertesRecherche; }
+    public void setFrequenceAlertesRecherche(FrequenceNotification frequenceAlertesRecherche) { this.frequenceAlertesRecherche = frequenceAlertesRecherche; }
 }

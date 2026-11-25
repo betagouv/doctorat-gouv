@@ -30,20 +30,38 @@ public class NotificationPreferenceService {
     public NotificationPreferenceResponse getPreference(String userId) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
-        return new NotificationPreferenceResponse(
+        NotificationPreferenceResponse response = new NotificationPreferenceResponse(
             utilisateur.getFrequenceNotification() != null
                 ? utilisateur.getFrequenceNotification()
                 : FrequenceNotification.JOURNALIERE);
+        response.setAlertesRechercheActive(Boolean.TRUE.equals(utilisateur.getAlertesRechercheActive()));
+        response.setFrequenceAlertesRecherche(
+            utilisateur.getFrequenceAlertesRecherche() != null
+                ? utilisateur.getFrequenceAlertesRecherche()
+                : FrequenceNotification.HEBDOMADAIRE);
+        return response;
     }
 
     public NotificationPreferenceResponse updatePreference(String userId, NotificationPreferenceRequest request) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
         utilisateur.setFrequenceNotification(request.getFrequence());
+        if (request.getAlertesRechercheActive() != null) {
+            utilisateur.setAlertesRechercheActive(request.getAlertesRechercheActive());
+        }
+        if (request.getFrequenceAlertesRecherche() != null) {
+            utilisateur.setFrequenceAlertesRecherche(request.getFrequenceAlertesRecherche());
+        }
         utilisateur.setDateModification(LocalDateTime.now());
         utilisateurRepository.save(utilisateur);
         log.info("Préférence de notification {} mise à jour pour l'utilisateur {}",
             request.getFrequence(), userId);
-        return new NotificationPreferenceResponse(request.getFrequence());
+        NotificationPreferenceResponse response = new NotificationPreferenceResponse(request.getFrequence());
+        response.setAlertesRechercheActive(Boolean.TRUE.equals(utilisateur.getAlertesRechercheActive()));
+        response.setFrequenceAlertesRecherche(
+            utilisateur.getFrequenceAlertesRecherche() != null
+                ? utilisateur.getFrequenceAlertesRecherche()
+                : FrequenceNotification.HEBDOMADAIRE);
+        return response;
     }
 }
