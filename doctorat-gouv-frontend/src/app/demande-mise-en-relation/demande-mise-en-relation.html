@@ -35,7 +35,6 @@
 				<div class="existing-demande-alert__body">
 					<p class="existing-demande-alert__title">{{ libelleStatutDemande() }}</p>
 					<p class="existing-demande-alert__text">
-						Vous ne pouvez pas créer une nouvelle demande pour ce sujet.
 						<a *ngIf="demandeId" [routerLink]="['/demande-candidat']" [queryParams]="{ id: demandeId }" class="existing-demande-alert__link">
 							Consulter le détail de votre demande
 						</a>
