@@ -89,7 +89,7 @@ export class DemandeMiseEnRelation implements OnInit {
 			case 'BROUILLON':
 				return 'Une demande de mise en relation existe déjà pour ce sujet.';
 			case 'CREE':
-				return 'Une demande a déjà été envoyée pour ce sujet.';
+				return 'Une demande de mise en relation avec le directeur de thèse a déjà été envoyée pour ce sujet.';
 			case 'ACCEPTEE':
 				return 'Une mise en relation est déjà en cours pour ce sujet.';
 			case 'REFUSEE':
@@ -194,6 +194,13 @@ export class DemandeMiseEnRelation implements OnInit {
 								motivations: res.motivations,
 								rgpdConsent: res.rgpdConsent ?? false,
 							});
+						}
+						if (this.formulaireDesactive) {
+							this.demandeForm.get('motivations')?.disable();
+							this.demandeForm.get('rgpdConsent')?.disable();
+						} else {
+							this.demandeForm.get('motivations')?.enable();
+							this.demandeForm.get('rgpdConsent')?.enable();
 						}
 					}
 				},
