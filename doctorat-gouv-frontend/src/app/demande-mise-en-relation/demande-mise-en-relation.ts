@@ -87,7 +87,7 @@ export class DemandeMiseEnRelation implements OnInit {
 	libelleStatutDemande(): string {
 		switch (this.demandeExistanteStatut) {
 			case 'BROUILLON':
-				return 'Un brouillon de demande existe déjà pour ce sujet.';
+				return 'Une demande de mise en relation existe déjà pour ce sujet.';
 			case 'CREE':
 				return 'Une demande a déjà été envoyée pour ce sujet.';
 			case 'ACCEPTEE':
