@@ -9,7 +9,7 @@
 
 .container {
   width: 90%;
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0;
 }
@@ -77,7 +77,7 @@
 
 /* --- Section sujet --- */
 .sujet-section {
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem 2.5rem;
   text-align: center;
 }
 
@@ -179,6 +179,8 @@
 /* --- Champs de formulaire --- */
 .form-field {
   margin-bottom: 1.75rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .required-star {
@@ -224,6 +226,8 @@
 /* --- Textarea motivations --- */
 .textarea-motivations {
   min-height: 120px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* --- Champ RGPD --- */
@@ -320,6 +324,9 @@
 textarea.fr-input {
   background-color: #f6f6f6 !important;
   border: 1px solid #e0e0e0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .fr-input:focus,
@@ -382,8 +389,12 @@ textarea.fr-input:focus {
 .existing-demande-alert__link {
   color: #000091;
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
   margin-left: 0.25rem;
+}
+
+.existing-demande-alert__link:hover {
+  text-decoration: underline;
 }
 
 /* --- Lien brouillon désactivé --- */
@@ -422,6 +433,6 @@ textarea.fr-input:focus {
 
 @media (min-width: 1100px) {
   .container {
-    width: 55%;
+    width: 60%;
   }
 }
