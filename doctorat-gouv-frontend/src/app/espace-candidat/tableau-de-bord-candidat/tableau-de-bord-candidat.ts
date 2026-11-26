@@ -35,6 +35,7 @@ export class TableauDeBordCandidat implements OnInit {
   desarchivageEnCours = new Set<number>();
 
   savedFilters: any[] = [];
+  alertsExpanded = false;
   showDeleteConfirm = false;
   filterToDelete: any = null;
 
@@ -179,6 +180,10 @@ export class TableauDeBordCandidat implements OnInit {
         sf.frequenceAlerte = res?.frequenceAlerte ?? frequence;
       }
     });
+  }
+
+  toggleAlertsExpanded(): void {
+    this.alertsExpanded = !this.alertsExpanded;
   }
 
   nouvelleAlerte(): void {

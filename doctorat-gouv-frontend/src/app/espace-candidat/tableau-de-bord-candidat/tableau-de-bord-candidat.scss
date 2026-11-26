@@ -783,3 +783,34 @@ $font-family: 'Marianne', arial, sans-serif;
   color: #ffffff;
   opacity: 0.9;
 }
+
+
+/* ======== Bouton d'agrandissement du panneau alertes ======== */
+.tdb-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tdb-panel__expand-btn {
+  background: none;
+  border: 1px solid #DDDDDD;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000091;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.tdb-panel__expand-btn:hover {
+  background: #F3F3FD;
+}
+
+.tdb-panel--expanded {
+  grid-column: 1 / -1;
+}
