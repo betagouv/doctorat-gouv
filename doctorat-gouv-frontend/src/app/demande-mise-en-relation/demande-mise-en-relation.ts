@@ -175,6 +175,9 @@ export class DemandeMiseEnRelation implements OnInit {
 		if (!this.authService.isLoggedIn()) {
 			return;
 		}
+		if (this.idPropositionThese == null || this.idPropositionThese === 0) {
+			return;
+		}
 		this.http.get<{ success: boolean; id?: number; motivations?: string; rgpdConsent?: boolean; statut?: string }>(
 				`${this.apiUrl}/candidat/demande-mise-en-relation`, {
 					params: { propositionTheseId: String(this.idPropositionThese) }

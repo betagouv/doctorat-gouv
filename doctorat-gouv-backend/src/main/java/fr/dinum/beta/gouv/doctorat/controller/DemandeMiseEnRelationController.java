@@ -58,7 +58,7 @@ public class DemandeMiseEnRelationController {
 
     @GetMapping
     public ResponseEntity<DemandeMiseEnRelationResponse> chargerDemande(
-            @RequestParam long propositionTheseId) {
+            @RequestParam("propositionTheseId") long propositionTheseId) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
