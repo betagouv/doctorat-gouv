@@ -391,7 +391,7 @@
 		            (click)="saveCurrentFilters()">
 		      <span class="fr-icon-bookmark-line" *ngIf="!isSearchSaved" aria-hidden="true"></span>
 		      <span class="fr-icon-bookmark-fill" *ngIf="isSearchSaved" aria-hidden="true"></span>
-		      {{ isSearchSaved ? 'Recherche enregistrée' : 'Enregistrer cette recherche' }}
+		      {{ isSearchSaved ? 'Recherche enregistrée' : (editingFilterId ? 'Mettre à jour cette recherche' : 'Enregistrer cette recherche') }}
 		    </button>
 		    <a *ngIf="showDashboardLink" class="save-search-link" (click)="goToDashboard()">Voir dans mon tableau de bord</a>
 		  </div>

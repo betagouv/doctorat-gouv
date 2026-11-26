@@ -269,6 +269,15 @@ public class CandidatController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/filtres-recherche/{id}")
+    public ResponseEntity<FiltreRechercheResponse> updateFiltreRecherche(
+            @PathVariable("id") String id,
+            @Valid @RequestBody FiltreRechercheRequest request) {
+        String userId = getCurrentUserId();
+        FiltreRechercheResponse response = filtreRechercheService.mettreAJour(userId, id, request);
+        return ResponseEntity.ok(response);
+    }
+
     private String getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();

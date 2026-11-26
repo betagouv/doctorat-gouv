@@ -1,10 +1,13 @@
 package fr.dinum.beta.gouv.doctorat.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,9 +65,29 @@ public class FiltreRechercheService {
         return toResponse(saved);
     }
 
+    public FiltreRechercheResponse mettreAJour(String userId, String id, FiltreRechercheRequest request) {
+        FiltreRechercheCandidat entity = repository.findByIdAndUtilisateurId(id, userId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Filtre introuvable"));
+
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(request.getFiltres());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Filtres invalides", e);
+        }
+
+        entity.setNom(request.getNom().trim());
+        entity.setFiltresJson(json);
+        entity.setDerniereAlerteEnvoyeeLe(LocalDateTime.now());
+
+        FiltreRechercheCandidat saved = repository.save(entity);
+        log.info("Filtre de recherche mis a jour (id={}) pour candidat {}", saved.getId(), userId);
+        return toResponse(saved);
+    }
+
     public void supprimer(String userId, String id) {
         FiltreRechercheCandidat entity = repository.findByIdAndUtilisateurId(id, userId)
-            .orElseThrow(() -> new IllegalArgumentException("Filtre introuvable pour id=" + id + " utilisateur=" + userId));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Filtre introuvable"));
         repository.delete(entity);
         repository.flush();
         log.info("Filtre de recherche supprime (id={}) pour candidat {}", id, userId);

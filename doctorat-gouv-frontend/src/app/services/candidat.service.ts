@@ -119,6 +119,10 @@ export class CandidatService {
     return this.http.delete(`${this.apiUrl}/filtres-recherche/${id}`, { responseType: 'text' });
   }
 
+  updateFiltreRecherche(id: string, request: { nom: string; filtres: any }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/filtres-recherche/${id}`, request);
+  }
+
   updateAlerteFiltreRecherche(id: string, active: boolean, frequence?: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/filtres-recherche/${id}/alerte`, {
       active,

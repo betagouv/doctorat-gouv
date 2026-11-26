@@ -133,6 +133,7 @@ export class Search implements OnInit, OnDestroy {
   savedFilterName = '';
   showSaveFilterPrompt = false;
   activeSavedFilterId: string | null = null;
+  editingFilterId: string | null = null;
   isSearchSaved = false;
   showDashboardLink = false;
   private pendingFiltreId: string | null = null;
@@ -351,6 +352,10 @@ export class Search implements OnInit, OnDestroy {
 		if (savedFilters.typeProposition) {
 		  this.activeFilter = savedFilters.typeProposition;
 		}
+
+		if (savedFilters.editingFilterId) {
+		  this.editingFilterId = savedFilters.editingFilterId;
+		}
 		
 		if (savedFilters.sortField) {
 		  this.sortField = savedFilters.sortField;
@@ -562,7 +567,8 @@ resetFilter(filterName: MultiFilterKey) {
 		  scalewayVectorScores: this.scalewayVectorScores,
 		  scalewayRelevanceLevels: this.scalewayRelevanceLevels,
 		  scalewayMatchedTypes: this.scalewayMatchedTypes,
-		  page: this.currentPage
+		  page: this.currentPage,
+		  editingFilterId: this.editingFilterId
 		});
 
 	// ⚠️ Ne pas déclencher filterChanges$ pendant le chargement initial
@@ -1345,7 +1351,21 @@ resetFilter(filterName: MultiFilterKey) {
 
     const snapshot = this.buildCurrentFiltersSnapshot();
     const saved = this.searchFiltersService.saveNamedFilter(filterName, snapshot);
-    this.savedFilters = [...this.savedFilters, saved];
+
+    if (this.editingFilterId) {
+      const idx = this.savedFilters.findIndex(sf => sf.id === this.editingFilterId);
+      if (idx >= 0) {
+        this.savedFilters[idx] = { ...this.savedFilters[idx], name: filterName, filters: snapshot };
+        this.savedFilters = [...this.savedFilters];
+      } else {
+        this.savedFilters = [...this.savedFilters, saved];
+      }
+    } else {
+      this.savedFilters = [...this.savedFilters, saved];
+      this.editingFilterId = saved.id;
+      this.activeSavedFilterId = saved.id;
+    }
+
     this.savedFilterName = '';
     this.showSaveFilterPrompt = false;
     this.isSearchSaved = true;
@@ -1353,21 +1373,41 @@ resetFilter(filterName: MultiFilterKey) {
 
     // Persistance en base de données pour le candidat connecté
     if (this.isCandidateConnected()) {
-      this.candidatService.createFiltreRecherche({ nom: filterName, filtres: snapshot }).subscribe({
-        next: () => {
-          this.candidatService.getFiltresRecherche().subscribe({
-            next: (list: any[]) => {
-              this.savedFilters = (list || []).map((sf: any) => ({
-                id: sf.id,
-                name: sf.nom ?? sf.name,
-                filters: sf.filtres ?? sf.filters,
-                createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
-              })) as SavedSearchFilter[];
+      const reload = () => {
+        this.candidatService.getFiltresRecherche().subscribe({
+          next: (list: any[]) => {
+            this.savedFilters = (list || []).map((sf: any) => ({
+              id: sf.id,
+              name: sf.nom ?? sf.name,
+              filters: sf.filtres ?? sf.filters,
+              createdAt: sf.dateCreation ? new Date(sf.dateCreation).getTime() : Date.now(),
+            })) as SavedSearchFilter[];
+            if (this.editingFilterId) {
+              this.activeSavedFilterId = this.editingFilterId;
             }
-          });
-        },
-        error: () => {}
-      });
+          }
+        });
+      };
+
+      if (this.editingFilterId && !String(this.editingFilterId).startsWith('sf_')) {
+        this.candidatService.updateFiltreRecherche(this.editingFilterId, { nom: filterName, filtres: snapshot }).subscribe({
+          next: (sf: any) => {
+            this.editingFilterId = sf?.id ?? this.editingFilterId;
+            this.activeSavedFilterId = this.editingFilterId;
+            reload();
+          },
+          error: () => {}
+        });
+      } else {
+        this.candidatService.createFiltreRecherche({ nom: filterName, filtres: snapshot }).subscribe({
+          next: (sf: any) => {
+            this.editingFilterId = sf?.id ?? this.editingFilterId;
+            this.activeSavedFilterId = this.editingFilterId;
+            reload();
+          },
+          error: () => {}
+        });
+      }
     }
 
     return saved;
@@ -1420,6 +1460,7 @@ resetFilter(filterName: MultiFilterKey) {
 
     this.applyingSavedFilter = true;
     this.activeSavedFilterId = (saved && saved.id) ? saved.id : null;
+    this.editingFilterId = (saved && saved.id) ? saved.id : null;
     this.isSearchSaved = true;
     this.showDashboardLink = false;
 
