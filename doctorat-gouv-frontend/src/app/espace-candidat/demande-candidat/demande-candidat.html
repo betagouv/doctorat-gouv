@@ -148,6 +148,12 @@
               Vous serez informé dès que la direction de thèse aura donné suite à votre prise de contact.
             </p>
 
+            <div class="dc-edit-trigger" *ngIf="isHorsProd && demande.statut === 'CREE'">
+              <button type="button" class="btn-reset" (click)="repasserEnBrouillon()" [disabled]="isRepassageEnCours">
+                {{ isRepassageEnCours ? 'Repassage...' : 'Repasser en brouillon (hors prod)' }}
+              </button>
+            </div>
+
             <ng-container *ngIf="demande.statut === 'ACCEPTEE' && !demande.archivee">
               <p class="message-cta">
                 Vous êtes désormais en relation avec {{ directeurNomComplet }}.

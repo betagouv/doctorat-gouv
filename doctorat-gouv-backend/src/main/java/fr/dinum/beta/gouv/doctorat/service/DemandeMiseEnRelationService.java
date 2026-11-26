@@ -276,6 +276,27 @@ public class DemandeMiseEnRelationService {
     }
 
     /**
+     * Outil hors production : repasse une demande en attente (CREE) à l'état
+     * BROUILLON, pour permettre des tests. Refusé en production.
+     */
+    public DemandeCandidatDetailResponse repasserEnBrouillon(String userId, Long demandeId,
+            boolean estProduction) {
+        if (estProduction) {
+            throw new IllegalStateException("Repassage en brouillon interdit en production");
+        }
+        DemandeMiseEnRelation demande = demandeRepository.findByIdAndCandidatId(demandeId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Demande introuvable"));
+        if (demande.getStatut() != StatutDemandeMiseEnRelation.CREE) {
+            throw new IllegalArgumentException("Demande introuvable");
+        }
+        demande.setStatut(StatutDemandeMiseEnRelation.BROUILLON);
+        demande.setUpdatedAt(LocalDateTime.now());
+        demandeRepository.save(demande);
+        log.info("Demande {} repassée en brouillon pour le candidat {}", demandeId, userId);
+        return getDemandeDetailCandidat(userId, demandeId);
+    }
+
+    /**
      * Notification du directeur de thèse du désistement du candidat
      * (template Brevo 70 : civilité et nom du DT, nom du candidat, titre du sujet
      * et motif du désistement). Hors production, le destinataire réel est remplacé

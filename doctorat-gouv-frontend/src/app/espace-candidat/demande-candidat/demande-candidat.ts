@@ -31,6 +31,7 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
   isSendingMessage = false;
   isDesisting = false;
   messageErreur: string | null = null;
+  isRepassageEnCours = false;
   isDesarchivage = false;
 
   // --- Mode édition d'un brouillon ---
@@ -349,6 +350,31 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
       error: () => {
         this.isDesarchivage = false;
         this.messageErreur = 'Le désarchivage n\'a pas pu être effectué.';
+      },
+    });
+  }
+
+  repasserEnBrouillon(): void {
+    if (!this.demande || this.isRepassageEnCours) {
+      return;
+    }
+    if (!confirm('Repasser cette demande en brouillon (outil hors production) ?')) {
+      return;
+    }
+    this.isRepassageEnCours = true;
+    this.messageErreur = null;
+    this.candidatService.repasserEnBrouillon(this.demande.id).subscribe({
+      next: (data) => {
+        this.isRepassageEnCours = false;
+        this.demande = data;
+        this.editMode = true;
+        this.motivationEditMode = false;
+        this.saveMessage = 'Demande repassée en brouillon.';
+        setTimeout(() => (this.saveMessage = null), 3000);
+      },
+      error: () => {
+        this.isRepassageEnCours = false;
+        this.messageErreur = 'Le repassage en brouillon n\'a pas pu être effectué.';
       },
     });
   }

@@ -122,6 +122,10 @@ export class CandidatService {
     return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/annuler-desistement`, { demandeId });
   }
 
+  repasserEnBrouillon(demandeId: number): Observable<DemandeCandidat> {
+    return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/${demandeId}/repasser-brouillon`, {});
+  }
+
   /* ------------------- Filtres de recherche enregistrés ------------------- */
   getFiltresRecherche(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/filtres-recherche`);

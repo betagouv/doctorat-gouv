@@ -236,6 +236,21 @@ public class DemandeMiseEnRelationController {
         }
     }
 
+    @PostMapping("/{id}/repasser-brouillon")
+    public ResponseEntity<DemandeCandidatDetailResponse> repasserEnBrouillon(
+            @PathVariable("id") long id) {
+
+        String userId = getCurrentUserId();
+        boolean estProduction = environment.acceptsProfiles(Profiles.of("prod"));
+        try {
+            return ResponseEntity.ok(service.repasserEnBrouillon(userId, id, estProduction));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     private String getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
