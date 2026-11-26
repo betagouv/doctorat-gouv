@@ -187,6 +187,7 @@ export class TableauDeBordCandidat implements OnInit {
   }
 
   nouvelleAlerte(): void {
+    this.searchFiltersService.save({ scrollTo: 'search-filters' });
     this.router.navigate(['/search']);
   }
 
