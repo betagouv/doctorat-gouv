@@ -64,6 +64,11 @@ export class DemandeMiseEnRelation implements OnInit {
 		this.titreSujet = ctx.titre || 'Sujet non renseigné';
 		this.showFelicitations = this.contextService.consommerFelicitations();
 
+		if (!this.authService.isLoggedIn()) {
+			this.router.navigate(['/connexion'], { queryParams: { returnUrl: '/demande-mise-en-relation' } });
+			return;
+		}
+
 		this.chargerDemandeExistante();
 	}
 
@@ -167,6 +172,9 @@ export class DemandeMiseEnRelation implements OnInit {
 	}
 
 	private chargerDemandeExistante(): void {
+		if (!this.authService.isLoggedIn()) {
+			return;
+		}
 		this.http.get<{ success: boolean; id?: number; motivations?: string; rgpdConsent?: boolean; statut?: string }>(
 				`${this.apiUrl}/candidat/demande-mise-en-relation`, {
 					params: { propositionTheseId: String(this.idPropositionThese) }

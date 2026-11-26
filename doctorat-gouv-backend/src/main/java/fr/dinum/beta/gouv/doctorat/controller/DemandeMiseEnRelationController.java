@@ -60,6 +60,10 @@ public class DemandeMiseEnRelationController {
     public ResponseEntity<DemandeMiseEnRelationResponse> chargerDemande(
             @RequestParam long propositionTheseId) {
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(401).build();
+        }
         String userId = getCurrentUserId();
         log.info("Chargement demande pour candidat {} et thèse {}", userId, propositionTheseId);
 
