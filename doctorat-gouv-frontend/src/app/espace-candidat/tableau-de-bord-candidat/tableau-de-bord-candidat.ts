@@ -35,7 +35,7 @@ export class TableauDeBordCandidat implements OnInit {
   desarchivageEnCours = new Set<number>();
 
   savedFilters: any[] = [];
-  alertsExpanded = false;
+  alertsExpanded = true;
   showDeleteConfirm = false;
   filterToDelete: any = null;
 
@@ -52,6 +52,14 @@ export class TableauDeBordCandidat implements OnInit {
 
   ngOnInit(): void {
     this.titleService.setTitle('Tableau de bord — Doctorat.gouv.fr');
+    try {
+      const stored = localStorage.getItem('tdb-alerts-expanded');
+      if (stored !== null) {
+        this.alertsExpanded = stored === 'true';
+      }
+    } catch {
+      // ignore
+    }
     this.loadPrenom();
     this.loadDemandes();
     this.loadSavedFilters();
@@ -192,6 +200,11 @@ export class TableauDeBordCandidat implements OnInit {
 
   toggleAlertsExpanded(): void {
     this.alertsExpanded = !this.alertsExpanded;
+    try {
+      localStorage.setItem('tdb-alerts-expanded', String(this.alertsExpanded));
+    } catch {
+      // ignore
+    }
   }
 
   nouvelleAlerte(): void {
