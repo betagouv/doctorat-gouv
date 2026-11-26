@@ -91,7 +91,7 @@ export class DemandeMiseEnRelation implements OnInit {
 			case 'CREE':
 				return 'Une demande de mise en relation avec le directeur de thèse a déjà été envoyée pour ce sujet.';
 			case 'ACCEPTEE':
-				return 'Une mise en relation est déjà en cours pour ce sujet.';
+				return 'Une demande de mise en relation est déjà en cours pour ce sujet.';
 			case 'REFUSEE':
 				return 'Une demande a déjà été refusée pour ce sujet.';
 			default:
