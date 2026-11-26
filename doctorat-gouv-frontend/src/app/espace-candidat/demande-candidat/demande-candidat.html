@@ -129,9 +129,9 @@
                 <button type="button" class="btn-envoyer"
                         [disabled]="isSavingBrouillon || isSendingDemande || !editedMotivations.trim() || !editedRgpdConsent"
                         (click)="envoyerDemande()">
-                  {{ isSendingDemande ? 'Envoi...' : 'Envoyer la demande' }}
+                  {{ isSendingDemande ? 'Validation...' : 'Valider la demande' }}
                 </button>
-                <p class="dc-send-hint">Envoie la demande au directeur de thèse avec les motivations ci-dessus.</p>
+                <p class="dc-send-hint">Valide la demande auprès du directeur de thèse avec les motivations ci-dessus.</p>
               </div>
 
               <p class="fr-alert fr-alert--success fr-mt-2w" *ngIf="saveMessage" role="status">{{ saveMessage }}</p>
