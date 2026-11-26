@@ -346,6 +346,53 @@ textarea.fr-input:focus {
   font-size: 1.1rem;
 }
 
+/* --- Alerte demande existante --- */
+.existing-demande-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background-color: #fef3e0;
+  border: 1px solid #f5c58a;
+  border-radius: 6px;
+  color: #b35c00;
+}
+
+.existing-demande-alert .fr-icon-information-line {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.existing-demande-alert__body {
+  flex: 1;
+}
+
+.existing-demande-alert__title {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.existing-demande-alert__text {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.existing-demande-alert__link {
+  color: #000091;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-left: 0.25rem;
+}
+
+/* --- Lien brouillon désactivé --- */
+.brouillon-link.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   .container {

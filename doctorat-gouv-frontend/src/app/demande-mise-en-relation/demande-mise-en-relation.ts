@@ -29,6 +29,7 @@ export class DemandeMiseEnRelation implements OnInit {
 	brouillonSaved = false;
 	showFelicitations = false;
 	demandeEnvoyee = false;
+	demandeExistanteStatut: string | null = null;
 
 	@ViewChild('confirmationTitle') confirmationTitle?: ElementRef<HTMLElement>;
 
@@ -74,8 +75,27 @@ export class DemandeMiseEnRelation implements OnInit {
 		return this.demandeForm.get('motivations')?.value?.length || 0;
 	}
 
+	get formulaireDesactive(): boolean {
+		return this.demandeExistanteStatut != null;
+	}
+
+	libelleStatutDemande(): string {
+		switch (this.demandeExistanteStatut) {
+			case 'BROUILLON':
+				return 'Un brouillon de demande existe déjà pour ce sujet.';
+			case 'CREE':
+				return 'Une demande a déjà été envoyée pour ce sujet.';
+			case 'ACCEPTEE':
+				return 'Une mise en relation est déjà en cours pour ce sujet.';
+			case 'REFUSEE':
+				return 'Une demande a déjà été refusée pour ce sujet.';
+			default:
+				return 'Une demande existe déjà pour ce sujet.';
+		}
+	}
+
 	onSubmit(): void {
-		if (this.isSubmitting) return;
+		if (this.isSubmitting || this.formulaireDesactive) return;
 
 		this.demandeForm.markAllAsTouched();
 
@@ -117,7 +137,7 @@ export class DemandeMiseEnRelation implements OnInit {
 	}
 
 	saveBrouillon(): void {
-		if (this.isSubmitting) return;
+		if (this.isSubmitting || this.formulaireDesactive) return;
 
 		this.isSubmitting = true;
 		this.errorMessage = null;
@@ -147,21 +167,27 @@ export class DemandeMiseEnRelation implements OnInit {
 	}
 
 	private chargerDemandeExistante(): void {
-		this.http.get<{ success: boolean; motivations?: string; rgpdConsent?: boolean; statut?: string }>(
+		this.http.get<{ success: boolean; id?: number; motivations?: string; rgpdConsent?: boolean; statut?: string }>(
 				`${this.apiUrl}/candidat/demande-mise-en-relation`, {
 					params: { propositionTheseId: String(this.idPropositionThese) }
 				})
 			.subscribe({
 				next: (res) => {
-					if (res.success && res.motivations != null) {
-						this.demandeForm.patchValue({
-							motivations: res.motivations,
-							rgpdConsent: res.rgpdConsent ?? false,
-						});
+					if (res.success) {
+						if (res.id != null) {
+							this.demandeId = res.id;
+						}
+						this.demandeExistanteStatut = res.statut ?? null;
+						if (res.motivations != null) {
+							this.demandeForm.patchValue({
+								motivations: res.motivations,
+								rgpdConsent: res.rgpdConsent ?? false,
+							});
+						}
 					}
 				},
 				error: () => {
-					// pas de brouillon existant, on reste sur le formulaire vide
+					// pas de demande existante, on reste sur le formulaire vide
 				}
 			});
 	}
