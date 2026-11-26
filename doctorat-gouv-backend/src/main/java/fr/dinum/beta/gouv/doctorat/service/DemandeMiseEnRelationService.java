@@ -94,6 +94,7 @@ public class DemandeMiseEnRelationService {
         dto.setId(demande.getId());
         dto.setStatut(demande.getStatut().name());
         dto.setMotivations(demande.getMotivations());
+        dto.setRgpdConsent(demande.getRgpdConsent());
         dto.setArchivee(Boolean.TRUE.equals(demande.getArchivee()));
         dto.setDateDemande(demande.getUpdatedAt() != null
             ? demande.getUpdatedAt().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))

@@ -3,6 +3,7 @@ export interface DemandeCandidat {
   id: number;
   statut: string | null;
   motivations: string | null;
+  rgpdConsent?: boolean;
   dateDemande: string | null;
   archivee: boolean;
   dateDesistement: string | null;

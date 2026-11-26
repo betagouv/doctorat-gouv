@@ -9,6 +9,7 @@ public class DemandeCandidatDetailResponse {
     private Long id;
     private String statut;
     private String motivations;
+    private Boolean rgpdConsent;
     private String dateDemande;
     private boolean archivee;
     private String dateDesistement;
@@ -43,6 +44,9 @@ public class DemandeCandidatDetailResponse {
 
     public String getMotivations() { return motivations; }
     public void setMotivations(String motivations) { this.motivations = motivations; }
+
+    public Boolean getRgpdConsent() { return rgpdConsent; }
+    public void setRgpdConsent(Boolean rgpdConsent) { this.rgpdConsent = rgpdConsent; }
 
     public String getDateDemande() { return dateDemande; }
     public void setDateDemande(String dateDemande) { this.dateDemande = dateDemande; }

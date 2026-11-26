@@ -66,6 +66,14 @@ export class TableauDeBordCandidat implements OnInit {
     this.demandeCandidatContext.setDemandeId(id);
   }
 
+  /** Ouvre la page détail d'un brouillon en mode édition. */
+  modifierBrouillon(item: MiseEnRelationDto, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.demandeCandidatContext.setDemandeId(item.id);
+    this.router.navigate(['/demande-candidat'], { queryParams: { edit: '1' } });
+  }
+
   private loadPrenom(): void {
     this.candidatService.getProfil().subscribe({
       next: (profil) => {

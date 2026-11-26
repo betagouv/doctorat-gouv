@@ -31,6 +31,17 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
   isSendingMessage = false;
   isDesisting = false;
   messageErreur: string | null = null;
+  isDesarchivage = false;
+
+  // --- Mode édition d'un brouillon ---
+  editMode = false;
+  pendingEditMode = false;
+  motivationEditMode = false;
+  editedMotivations = '';
+  editedRgpdConsent = false;
+  isSavingBrouillon = false;
+  isSendingDemande = false;
+  saveMessage: string | null = null;
 
   motifDesistement = '';
   isSendingDesistement = false;
@@ -64,11 +75,15 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Demande introuvable.';
       return;
     }
+    this.pendingEditMode = this.route.snapshot.queryParamMap.get('edit') === '1';
     this.demandeId = id;
     this.candidatService.getDemandeDetail(id).subscribe({
       next: (data) => {
         this.demande = data;
         this.isLoading = false;
+        if (this.pendingEditMode && data.statut === 'BROUILLON' && !data.archivee) {
+          this.activerEdition();
+        }
         if (data.statut === 'ACCEPTEE' && !data.archivee) {
           this.chargerMessages(false);
         }
@@ -153,6 +168,189 @@ export class DemandeCandidatComponent implements OnInit, OnDestroy {
     }
     const formatted = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }
+
+  // --- Édition inline d'un brouillon ---
+
+  get isBrouillonEditable(): boolean {
+    return !!this.demande && this.demande.statut === 'BROUILLON' && !this.demande.archivee;
+  }
+
+  activerEdition(): void {
+    if (!this.isBrouillonEditable || !this.demande) {
+      return;
+    }
+    this.editedMotivations = this.demande.motivations || '';
+    this.editedRgpdConsent = !!this.demande.rgpdConsent;
+    this.saveMessage = null;
+    this.messageErreur = null;
+    this.editMode = true;
+    this.motivationEditMode = false;
+  }
+
+  activerEditionMotivation(): void {
+    if (!this.demande) {
+      return;
+    }
+    this.editedMotivations = this.demande.motivations || '';
+    this.editedRgpdConsent = !!this.demande.rgpdConsent;
+    this.saveMessage = null;
+    this.messageErreur = null;
+    this.motivationEditMode = true;
+  }
+
+  annulerEdition(): void {
+    this.editMode = false;
+    this.motivationEditMode = false;
+    this.saveMessage = null;
+    this.messageErreur = null;
+  }
+
+  annulerEditionMotivation(): void {
+    this.motivationEditMode = false;
+    this.saveMessage = null;
+    this.messageErreur = null;
+  }
+
+  sauvegarderBrouillon(): void {
+    if (!this.demande || this.isSavingBrouillon || this.isSendingDemande) {
+      return;
+    }
+    const motivations = this.editedMotivations.trim();
+    if (!motivations) {
+      this.messageErreur = 'Les motivations sont obligatoires.';
+      return;
+    }
+    if (motivations.length > 3500) {
+      this.messageErreur = 'Les motivations ne doivent pas dépasser 3500 caractères.';
+      return;
+    }
+    this.isSavingBrouillon = true;
+    this.messageErreur = null;
+    this.saveMessage = null;
+    this.candidatService
+      .sauvegarderBrouillonDemande(this.demande.propositionTheseId, motivations, this.editedRgpdConsent)
+      .subscribe({
+        next: () => {
+          this.isSavingBrouillon = false;
+          if (this.demande) {
+            this.demande.motivations = motivations;
+            this.demande.rgpdConsent = this.editedRgpdConsent;
+          }
+          this.motivationEditMode = false;
+          this.saveMessage = 'Brouillon enregistré.';
+          setTimeout(() => (this.saveMessage = null), 3000);
+        },
+        error: (err) => {
+          this.isSavingBrouillon = false;
+          this.messageErreur = err?.error?.message || 'Erreur lors de la sauvegarde du brouillon.';
+        },
+      });
+  }
+
+  envoyerDemande(): void {
+    if (!this.demande || this.isSavingBrouillon || this.isSendingDemande) {
+      return;
+    }
+    const motivations = this.editedMotivations.trim();
+    if (!motivations) {
+      this.messageErreur = 'Les motivations sont obligatoires.';
+      return;
+    }
+    if (motivations.length > 3500) {
+      this.messageErreur = 'Les motivations ne doivent pas dépasser 3500 caractères.';
+      return;
+    }
+    if (!this.editedRgpdConsent) {
+      this.messageErreur = 'Le consentement RGPD est obligatoire.';
+      return;
+    }
+    this.isSendingDemande = true;
+    this.messageErreur = null;
+    this.saveMessage = null;
+    this.candidatService
+      .envoyerDemandeMiseEnRelation(this.demande.propositionTheseId, motivations, this.editedRgpdConsent)
+      .subscribe({
+        next: () => {
+          this.isSendingDemande = false;
+          if (this.demande) {
+            this.demande.motivations = motivations;
+            this.demande.rgpdConsent = this.editedRgpdConsent;
+            this.demande.statut = 'CREE';
+            this.demande.dateDemande = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          }
+          this.editMode = false;
+          this.saveMessage = 'Demande envoyée. Le directeur de thèse sera notifié.';
+          setTimeout(() => (this.saveMessage = null), 4000);
+        },
+        error: (err) => {
+          this.isSendingDemande = false;
+          this.messageErreur = err?.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        },
+      });
+  }
+
+  envoyerDemandeDirecte(): void {
+    if (!this.demande || this.isSendingDemande) {
+      return;
+    }
+    const motivations = (this.demande.motivations || '').trim();
+    const consent = !!this.demande.rgpdConsent;
+    if (!motivations) {
+      this.messageErreur = 'Veuillez renseigner vos motivations avant envoi.';
+      this.activerEdition();
+      return;
+    }
+    if (!consent) {
+      this.messageErreur = 'Veuillez accepter le consentement RGPD pour envoyer.';
+      this.activerEdition();
+      return;
+    }
+    if (!confirm('Envoyer cette demande de mise en relation ? Le directeur de thèse sera notifié.')) {
+      return;
+    }
+    this.isSendingDemande = true;
+    this.messageErreur = null;
+    this.saveMessage = null;
+    this.candidatService
+      .envoyerDemandeMiseEnRelation(this.demande.propositionTheseId, motivations, consent)
+      .subscribe({
+        next: () => {
+          this.isSendingDemande = false;
+          if (this.demande) {
+            this.demande.statut = 'CREE';
+            this.demande.dateDemande = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          }
+          this.saveMessage = 'Demande envoyée. Le directeur de thèse sera notifié.';
+          setTimeout(() => (this.saveMessage = null), 4000);
+        },
+        error: (err) => {
+          this.isSendingDemande = false;
+          this.messageErreur = err?.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        },
+      });
+  }
+
+  desarchiverDemande(): void {
+    if (!this.demande || this.isDesarchivage) {
+      return;
+    }
+    this.isDesarchivage = true;
+    this.messageErreur = null;
+    this.candidatService.desarchiverDemande(this.demande.id).subscribe({
+      next: () => {
+        this.isDesarchivage = false;
+        if (this.demande) {
+          this.demande.archivee = false;
+        }
+        this.saveMessage = 'Demande désarchivée.';
+        setTimeout(() => (this.saveMessage = null), 3000);
+      },
+      error: () => {
+        this.isDesarchivage = false;
+        this.messageErreur = 'Le désarchivage n\'a pas pu être effectué.';
+      },
+    });
   }
 
   chargerMessages(silencieux: boolean): void {

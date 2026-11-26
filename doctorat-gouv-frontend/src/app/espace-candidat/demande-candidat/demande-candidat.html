@@ -61,12 +61,80 @@
                   <span class="message-box__author-role" *ngIf="demande.candidatSituation">{{ demande.candidatSituation | situationLibelle }}</span>
                 </div>
               </div>
-              <div class="message-box__content">
-                <p>« {{ demande.motivations || '—' }} »</p>
+              <ng-container *ngIf="isBrouillonEditable && editMode; else lectureMotivations">
+                <div class="message-box__content">
+                  <!-- Motivation en lecture par défaut -->
+                  <ng-container *ngIf="!motivationEditMode; else editionMotivation">
+                    <p>« {{ demande.motivations || '—' }} »</p>
+                    <button type="button" class="dc-edit-icon"
+                            (click)="activerEditionMotivation()"
+                            [attr.aria-label]="'Modifier la lettre de motivation'"
+                            title="Modifier la lettre de motivation">
+                      <span class="fr-icon-edit-line" aria-hidden="true"></span>
+                    </button>
+                  </ng-container>
+
+                  <!-- Édition de la motivation -->
+                  <ng-template #editionMotivation>
+                    <label class="dc-edit-label" for="edited-motivations">Vos motivations</label>
+                    <textarea id="edited-motivations"
+                              class="dc-edit-textarea"
+                              rows="6"
+                              maxlength="3500"
+                              [(ngModel)]="editedMotivations"></textarea>
+                    <div class="dc-edit-counter">{{ editedMotivations.length }} / 3500</div>
+
+                    <div class="dc-edit-consent">
+                      <input type="checkbox" id="edited-rgpd" [(ngModel)]="editedRgpdConsent" />
+                      <label for="edited-rgpd">
+                        Je consens au traitement de mes données personnelles dans le cadre de cette demande de mise en relation.
+                      </label>
+                    </div>
+
+                    <p class="fr-error-text" *ngIf="messageErreur" role="alert">{{ messageErreur }}</p>
+
+                    <div class="dc-edit-actions">
+                      <button type="button" class="btn-envoyer"
+                              [disabled]="isSavingBrouillon || !editedMotivations.trim()"
+                              (click)="sauvegarderBrouillon()">
+                        {{ isSavingBrouillon ? 'Enregistrement...' : 'Enregistrer le brouillon' }}
+                      </button>
+                      <button type="button" class="btn-annuler"
+                              [disabled]="isSavingBrouillon"
+                              (click)="annulerEditionMotivation()">
+                        Annuler
+                      </button>
+                    </div>
+                  </ng-template>
+                </div>
+              </ng-container>
+
+              <ng-template #lectureMotivations>
+                <div class="message-box__content">
+                  <p>« {{ demande.motivations || '—' }} »</p>
+                </div>
+                <div class="message-box__sent">
+                  Envoyé le {{ formatDateEnvoi(demande.dateDemande) }}
+                </div>
+
+                <div class="dc-edit-trigger" *ngIf="demande.statut === 'BROUILLON' && demande.archivee">
+                  <button type="button" class="btn-modifier-brouillon" (click)="desarchiverDemande()" [disabled]="isDesarchivage">
+                    <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                    {{ isDesarchivage ? 'Désarchivage...' : 'Désarchiver pour modifier' }}
+                  </button>
+                </div>
+              </ng-template>
+
+              <div class="dc-send-separate" *ngIf="isBrouillonEditable && editMode">
+                <button type="button" class="btn-envoyer"
+                        [disabled]="isSavingBrouillon || isSendingDemande || !editedMotivations.trim() || !editedRgpdConsent"
+                        (click)="envoyerDemande()">
+                  {{ isSendingDemande ? 'Envoi...' : 'Envoyer la demande' }}
+                </button>
+                <p class="dc-send-hint">Envoie la demande au directeur de thèse avec les motivations ci-dessus.</p>
               </div>
-              <div class="message-box__sent">
-                Envoyé le {{ formatDateEnvoi(demande.dateDemande) }}
-              </div>
+
+              <p class="fr-alert fr-alert--success fr-mt-2w" *ngIf="saveMessage" role="status">{{ saveMessage }}</p>
             </div>
 
             <div class="message-separator">

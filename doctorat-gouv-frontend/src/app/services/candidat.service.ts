@@ -90,6 +90,22 @@ export class CandidatService {
     return this.http.post<DemandeCandidat>(`${this.apiUrl}/demande-mise-en-relation/detail`, { demandeId });
   }
 
+  sauvegarderBrouillonDemande(propositionTheseId: number, motivations: string, rgpdConsent: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/demande-mise-en-relation/brouillon`, {
+      idPropositionThese: propositionTheseId,
+      motivations,
+      rgpdConsent,
+    });
+  }
+
+  envoyerDemandeMiseEnRelation(propositionTheseId: number, motivations: string, rgpdConsent: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/demande-mise-en-relation`, {
+      idPropositionThese: propositionTheseId,
+      motivations,
+      rgpdConsent,
+    });
+  }
+
   getMessages(demandeId: number): Observable<MessageEchange[]> {
     return this.http.post<MessageEchange[]>(`${this.apiUrl}/demande-mise-en-relation/messages`, { demandeId });
   }
