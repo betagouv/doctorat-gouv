@@ -22,6 +22,12 @@ export class Connexion implements OnInit {
   globalError: string | null = null;
   isSubmitting = false;
 
+  /** Rôle choisi sur la page de connexion (aucun par défaut : choix explicite). */
+  selectedRole: 'demandeur' | 'directeur' | null = null;
+
+  /** Affichage ancien (PRC + formulaire simultanés) pour comparaison en recette. */
+  affichageAncien = false;
+
   /**
    * URL de redirection vers le backend pour l'authentification via
    * Projets Recherche Connect (OIDC). C'est une redirection navigateur
@@ -93,6 +99,15 @@ export class Connexion implements OnInit {
         this.router.navigate(['/tableau-de-bord-candidat']);
       }
     }
+  }
+
+  toggleAffichage(): void {
+    this.affichageAncien = !this.affichageAncien;
+  }
+
+  selectRole(role: 'demandeur' | 'directeur'): void {
+    this.selectedRole = role;
+    this.globalError = null;
   }
 
   togglePassword(): void {
