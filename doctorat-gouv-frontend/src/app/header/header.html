@@ -132,19 +132,19 @@
     <div class="fr-container">
       <nav class="fr-nav" role="navigation" aria-label="Menu principal">
         <ul class="fr-nav__list">
-		  <li class="fr-nav__item">
-			   <a class="fr-nav__link" href="https://doctorat.sites.beta.gouv.fr/">{{ 'HEADER.ACCUEIL' | translate }}</a>
-		  </li>
-          <li class="fr-nav__item">
-            <a class="fr-nav__link" href="/">{{ 'HEADER.RETOUR_AUX_OFFRES' | translate }}</a>
-          </li>
-          <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
-            <a class="fr-nav__link" [routerLink]="tableauLink">{{ 'HEADER.TABLEAU_DE_BORD' | translate }}</a>
-          </li>
-          <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
-            <a class="fr-nav__link" [routerLink]="espaceLink">{{ 'HEADER.MON_PROFIL' | translate }}</a>
-          </li>
-        </ul>
+    <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
+      <a class="fr-nav__link" [routerLink]="tableauLink">{{ 'HEADER.TABLEAU_DE_BORD' | translate }}</a>
+    </li>
+    <li class="fr-nav__item" *ngIf="authService.isLoggedIn() && authService.currentUser()?.role === 'DIRECTEUR_THESE'">
+      <a class="fr-nav__link" routerLink="/mes-offres-directeur-these">{{ 'HEADER.MES_OFFRES' | translate }}</a>
+    </li>
+    <li class="fr-nav__item" *ngIf="authService.isLoggedIn()">
+      <a class="fr-nav__link" [routerLink]="espaceLink">{{ 'HEADER.MON_PROFIL' | translate }}</a>
+    </li>
+    <li class="fr-nav__item">
+      <a class="fr-nav__link" href="/">{{ 'HEADER.EXPLORER_TOUTES_LES_OFFRES' | translate }}</a>
+    </li>
+  </ul>
       </nav>
     </div>
   </div>
@@ -214,24 +214,22 @@
 
 
 
-  <nav class="mobile-nav">
-    <a href="/">
-      <span class="fr-icon-search-line" aria-hidden="true"></span>
-      {{ 'MOBILE.ALL_OFFERS' | translate }}
-    </a>
-
+    <nav class="mobile-nav">
     <a *ngIf="authService.isLoggedIn()" [routerLink]="tableauLink">
       <span class="fr-icon-dashboard-line" aria-hidden="true"></span>
       {{ 'HEADER.TABLEAU_DE_BORD' | translate }}
+    </a>
+    <a *ngIf="authService.isLoggedIn() && authService.currentUser()?.role === 'DIRECTEUR_THESE'" routerLink="/mes-offres-directeur-these">
+      <span class="fr-icon-team-line" aria-hidden="true"></span>
+      {{ 'HEADER.MES_OFFRES' | translate }}
     </a>
     <a *ngIf="authService.isLoggedIn()" [routerLink]="espaceLink">
       <span class="fr-icon-user-line" aria-hidden="true"></span>
       {{ 'HEADER.MON_PROFIL' | translate }}
     </a>
-
-    <a href="https://doctorat.sites.beta.gouv.fr/">
-      <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-      {{ 'MOBILE.BACK_TO_SITE' | translate }}
+    <a href="/">
+      <span class="fr-icon-search-line" aria-hidden="true"></span>
+      {{ 'HEADER.EXPLORER_TOUTES_LES_OFFRES' | translate }}
     </a>
   </nav>
 
