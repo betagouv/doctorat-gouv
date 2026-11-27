@@ -16,13 +16,6 @@
 
         <h2 class="fr-text--bold fr-text--lg fr-mb-2w">{{ 'CONNEXION.LOGIN_TITLE' | translate }}</h2>
 
-        <!-- Bouton discret pour comparer avec l'ancien affichage (recette) -->
-        <p class="fr-text--xs fr-mb-2w" style="text-align: right;">
-          <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm" (click)="toggleAffichage()">
-            {{ affichageAncien ? 'Nouvel affichage' : 'Ancien affichage' }}
-          </button>
-        </p>
-
         <!-- Bandeau d'erreur si le retour PRC a échoué -->
         <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="prcErreur">
           <h3 class="fr-alert__title">{{ 'CONNEXION.PRC_ERROR_TITLE' | translate }}</h3>
@@ -34,35 +27,34 @@
           <p>{{ 'CONNEXION.PRC_NON_INVITE_DETAIL' | translate }}</p>
         </div>
 
-        <!-- Qui êtes-vous ? -->
-        <fieldset class="fr-fieldset role-selection-fieldset" *ngIf="!affichageAncien">
-          <legend class="fr-label">
-            {{ 'CONNEXION.QUI_ETES_VOUS' | translate }}
-          </legend>
-          <div class="role-selection">
-            <button type="button"
-                    class="role-card"
-                    [class.role-card--active]="selectedRole === 'demandeur'"
-                    (click)="selectRole('demandeur')"
-                    [attr.aria-pressed]="selectedRole === 'demandeur'">
-              <span class="fr-icon-user-line fr-icon--lg role-card__icon" aria-hidden="true"></span>
-              <span class="role-card__label">{{ 'CONNEXION.ROLE_DEMANDEUR' | translate }}</span>
-              <span class="role-card__desc">{{ 'CONNEXION.ROLE_DEMANDEUR_DESC' | translate }}</span>
-            </button>
-            <button type="button"
-                    class="role-card"
-                    [class.role-card--active]="selectedRole === 'directeur'"
-                    (click)="selectRole('directeur')"
-                    [attr.aria-pressed]="selectedRole === 'directeur'">
-              <span class="fr-icon-team-line fr-icon--lg role-card__icon" aria-hidden="true"></span>
-              <span class="role-card__label">{{ 'CONNEXION.ROLE_DIRECTEUR' | translate }}</span>
-              <span class="role-card__desc">{{ 'CONNEXION.ROLE_DIRECTEUR_DESC' | translate }}</span>
-            </button>
-          </div>
-        </fieldset>
+        <!-- Onglets : Demandeur / Direction de thèse -->
+        <p class="fr-text--sm fr-mb-1w">{{ 'CONNEXION.QUI_ETES_VOUS' | translate }}</p>
+        <div class="connexion-tabs" role="tablist" aria-label="{{ 'CONNEXION.QUI_ETES_VOUS' | translate }}">
+          <button type="button"
+                  class="connexion-tab"
+                  [class.connexion-tab--active]="selectedRole === 'demandeur'"
+                  (click)="selectRole('demandeur')"
+                  role="tab"
+                  [attr.aria-selected]="selectedRole === 'demandeur'">
+            {{ 'CONNEXION.ROLE_DEMANDEUR' | translate }}
+          </button>
+          <button type="button"
+                  class="connexion-tab"
+                  [class.connexion-tab--active]="selectedRole === 'directeur'"
+                  (click)="selectRole('directeur')"
+                  role="tab"
+                  [attr.aria-selected]="selectedRole === 'directeur'">
+            {{ 'CONNEXION.ROLE_DIRECTEUR' | translate }}
+          </button>
+        </div>
 
-        <!-- ======== Demandeur : connexion par mail + mot de passe ======== -->
-        <ng-container *ngIf="!affichageAncien && selectedRole === 'demandeur'">
+        <!-- Description (change selon l'onglet) -->
+        <p class="fr-text--sm fr-mb-3w connexion-desc" *ngIf="selectedRole">
+          {{ selectedRole === 'demandeur' ? ('CONNEXION.ROLE_DEMANDEUR_DESC' | translate) : ('CONNEXION.ROLE_DIRECTEUR_DESC' | translate) }}
+        </p>
+
+        <!-- ======== Demandeur : connexion manuelle ======== -->
+        <ng-container *ngIf="selectedRole === 'demandeur'">
           <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'CONNEXION.MANUAL_TITLE' | translate }}</h3>
           <p class="fr-text--sm fr-mb-2w">{{ 'CONNEXION.REQUIRED_FIELDS_NOTE' | translate }}</p>
 
@@ -145,8 +137,8 @@
           </div>
         </ng-container>
 
-        <!-- ======== Directeur de thèse : connexion via PRC ======== -->
-        <ng-container *ngIf="!affichageAncien && selectedRole === 'directeur'">
+        <!-- ======== Directeur de thèse : PRC + connexion manuelle ======== -->
+        <ng-container *ngIf="selectedRole === 'directeur'">
           <!-- Bandeau d'erreur si le retour PRC a échoué -->
           <div class="fr-alert fr-alert--error fr-mb-3w" *ngIf="prcErreur">
             <h3 class="fr-alert__title">{{ 'CONNEXION.PRC_ERROR_TITLE' | translate }}</h3>
@@ -158,31 +150,7 @@
             <p>{{ 'CONNEXION.PRC_NON_INVITE_DETAIL' | translate }}</p>
           </div>
 
-          <!-- Bouton PRC : toujours visible, grisé si non prêt.
-               href retiré quand indisponible : le pointer-events CSS
-               ne bloque pas la navigation clavier (Entrée). -->
-          <a [attr.href]="prcDisponible ? prcLoginUrl : null"
-             [attr.aria-disabled]="!prcDisponible"
-             [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate"
-             [class.prc-disabled]="!prcDisponible"
-             class="login-sso-btn">
-            <span class="sso-icon fr-icon-external-link-line" aria-hidden="true"></span>
-            <span class="sso-text">
-              <span class="sso-text-line1">{{ 'CONNEXION.PRC_BUTTON_LINE1' | translate }}</span>
-              <span class="sso-text-line2">{{ 'CONNEXION.PRC_BUTTON_LINE2' | translate }}</span>
-            </span>
-          </a>
-          <p class="fr-mt-1w">
-            <a href="https://info.projetsrechercheconnect.fr/" class="fr-link fr-text--sm" target="_blank" rel="noopener">{{ 'CONNEXION.PRC_HELP' | translate }}</a>
-          </p>
-        </ng-container>
-
-        <!-- ======== Ancien affichage (PRC + formulaire simultanés) — recette ======== -->
-        <ng-container *ngIf="affichageAncien">
-          <p class="fr-text--sm fr-mb-3w">
-            {{ 'CONNEXION.PRC_DESCRIPTION' | translate }}
-          </p>
-
+          <!-- Bouton PRC -->
           <a [attr.href]="prcDisponible ? prcLoginUrl : null"
              [attr.aria-disabled]="!prcDisponible"
              [attr.aria-label]="'CONNEXION.PRC_BUTTON' | translate"
@@ -198,68 +166,84 @@
             <a href="https://info.projetsrechercheconnect.fr/" class="fr-link fr-text--sm" target="_blank" rel="noopener">{{ 'CONNEXION.PRC_HELP' | translate }}</a>
           </p>
 
+          <!-- Séparateur "OU" -->
           <div class="separator-ou fr-mt-3w fr-mb-3w">
             <hr class="fr-hr">
             <span class="fr-text--sm fr-text--italic">{{ 'CONNEXION.SEPARATOR_OU' | translate }}</span>
             <hr class="fr-hr">
           </div>
 
+          <!-- Connexion manuelle -->
           <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'CONNEXION.MANUAL_TITLE' | translate }}</h3>
           <p class="fr-text--sm fr-mb-2w">{{ 'CONNEXION.REQUIRED_FIELDS_NOTE' | translate }}</p>
 
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <!-- E-mail -->
             <div class="form-field" [class.fr-input-group--error]="email?.invalid && email?.touched">
               <label class="fr-label" for="connexion-email">
                 {{ 'CONNEXION.FIELD_EMAIL' | translate }} <span class="required-star">*</span>
               </label>
-              <input class="fr-input fr-mb-2w" [class.fr-input--error]="email?.invalid && email?.touched"
-                     id="connexion-email" type="email" [placeholder]="'CONNEXION.PLACEHOLDER_EMAIL' | translate"
-                     formControlName="email" [attr.aria-invalid]="email?.invalid && email?.touched ? 'true' : null"
-                     aria-describedby="connexion-email-error" />
+              <input
+                class="fr-input fr-mb-2w"
+                [class.fr-input--error]="email?.invalid && email?.touched"
+                id="connexion-email"
+                type="email"
+                [placeholder]="'CONNEXION.PLACEHOLDER_EMAIL' | translate"
+                formControlName="email"
+                [attr.aria-invalid]="email?.invalid && email?.touched ? 'true' : null"
+                aria-describedby="connexion-email-error" />
               <p class="fr-error-text" id="connexion-email-error" *ngIf="email?.invalid && email?.touched">
                 {{ (email?.errors?.['required'] ? 'CONNEXION.ERROR_EMAIL_REQUIRED' : 'CONNEXION.ERROR_EMAIL_INVALID') | translate }}
               </p>
             </div>
 
+            <!-- Mot de passe -->
             <div class="form-field" [class.fr-input-group--error]="password?.invalid && password?.touched">
               <label class="fr-label" for="connexion-password">
                 {{ 'CONNEXION.FIELD_PASSWORD' | translate }} <span class="required-star">*</span>
               </label>
-              <input class="fr-input fr-mb-1w" [class.fr-input--error]="password?.invalid && password?.touched"
-                     id="connexion-password" [type]="showPassword ? 'text' : 'password'"
-                     [placeholder]="'CONNEXION.PLACEHOLDER_PASSWORD' | translate" formControlName="password"
-                     [attr.aria-invalid]="password?.invalid && password?.touched ? 'true' : null"
-                     aria-describedby="connexion-password-error" />
+              <input
+                class="fr-input fr-mb-1w"
+                [class.fr-input--error]="password?.invalid && password?.touched"
+                id="connexion-password"
+                [type]="showPassword ? 'text' : 'password'"
+                [placeholder]="'CONNEXION.PLACEHOLDER_PASSWORD' | translate"
+                formControlName="password"
+                [attr.aria-invalid]="password?.invalid && password?.touched ? 'true' : null"
+                aria-describedby="connexion-password-error" />
               <p class="fr-error-text" id="connexion-password-error" *ngIf="password?.invalid && password?.touched">
                 {{ 'CONNEXION.ERROR_PASSWORD_REQUIRED' | translate }}
               </p>
             </div>
 
+            <!-- Checkbox Afficher -->
             <div class="fr-checkbox-group fr-mb-2w">
               <input type="checkbox" id="show-password" [checked]="showPassword" (change)="togglePassword()">
               <label class="fr-label" for="show-password">{{ 'CONNEXION.SHOW_PASSWORD' | translate }}</label>
             </div>
 
+            <!-- Mot de passe oublié -->
             <p class="fr-mb-3w">
               <a routerLink="/mot-de-passe-oublie" class="fr-link fr-text--sm">{{ 'CONNEXION.FORGOT_PASSWORD' | translate }}</a>
             </p>
 
-            <div class="fr-alert fr-alert--error fr-mt-2w" role="alert" *ngIf="globalError">
+            <!-- Erreur globale -->
+            <div
+              class="fr-alert fr-alert--error fr-mt-2w"
+              role="alert"
+              *ngIf="globalError">
               {{ globalError }}
             </div>
 
-            <button type="submit" class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w" [disabled]="isSubmitting">
+            <!-- Bouton Se connecter -->
+            <button
+              type="submit"
+              class="fr-btn fr-btn--primary fr-btn--icon-right fr-icon-arrow-right-line fr-mt-2w"
+              [disabled]="isSubmitting">
               {{ 'CONNEXION.SUBMIT' | translate }}
             </button>
           </form>
-
-          <div class="create-account-block fr-mt-3w">
-            <h3 class="fr-text--bold fr-text--lg fr-mb-1w">{{ 'CONNEXION.NO_ACCOUNT' | translate }}</h3>
-            <p class="fr-text--sm fr-mb-2w">{{ 'CONNEXION.CREATE_ACCOUNT_DESCRIPTION' | translate }}</p>
-            <a routerLink="/inscription" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-account-line">
-              {{ 'CONNEXION.CREATE_ACCOUNT' | translate }}
-            </a>
-          </div>
         </ng-container>
 
       </div>
