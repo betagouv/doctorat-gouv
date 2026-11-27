@@ -2,13 +2,20 @@
   display: block;
 }
 
+main.offre-page {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
 $font-family: 'Marianne', arial, sans-serif;
-$color-page-bg: #FAF6F0;
+$color-page-bg: #F9F8F6;
 $color-white: #FFFFFF;
 $color-text-primary: #161616;
 $color-text-secondary: #666666;
 $color-blue-france: #000091;
-$color-border: #E8E2D6;
+$color-border: #DDDDDD;
 $color-tag-bg: #E3E3FD;
 $color-orcid-bg: #B8FEC9;
 $color-orcid-text: #18753C;
