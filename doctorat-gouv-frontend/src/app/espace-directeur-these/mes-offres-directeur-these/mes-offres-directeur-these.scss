@@ -16,6 +16,7 @@ $color-text-primary: #161616;
 $color-text-secondary: #666666;
 $color-blue-france: #000091;
 $color-border: #DDDDDD;
+$color-border-light: #E5E5E5;
 
 /* ======== Typographie ======== */
 $font-family: 'Marianne', arial, sans-serif;
@@ -28,9 +29,9 @@ $font-family: 'Marianne', arial, sans-serif;
 }
 
 .tdb-container {
-  max-width: 1800px;
+  max-width: 90%;
   margin: 0 auto;
-  padding: 0 4rem;
+  padding: 0;
 }
 
 /* ======== En-tete ======== */
@@ -42,7 +43,6 @@ $font-family: 'Marianne', arial, sans-serif;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-left: 3rem;
 }
 
 .tdb-header__icon {
@@ -77,7 +77,7 @@ $font-family: 'Marianne', arial, sans-serif;
 .tdb-header__nav {
   display: flex;
   gap: 1rem;
-  margin: 1rem 0 0 3rem;
+  margin: 1rem 0 0 0;
 }
 
 .tdb-header__link {
@@ -94,50 +94,14 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 }
 
-/* ======== Onglets ======== */
-.tdb-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.tdb-tabs__tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: $font-family;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: $color-text-primary;
-  background: $color-white;
-  border: 1px solid $color-border;
-  border-radius: 4px;
-  padding: 0.625rem 1.25rem;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    border-color: $color-blue-france;
-    color: $color-blue-france;
-  }
-
-  &--active {
-    border-color: $color-blue-france;
-    color: $color-blue-france;
-    font-weight: 600;
-    box-shadow: inset 0 0 0 1px $color-blue-france;
-  }
-}
-
 /* ======== Section ======== */
 .tdb-section {
   background: $color-white;
   border: 1px solid $color-border;
   border-radius: 8px;
   padding: 0;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 /* ======== Etat vide ======== */
@@ -171,8 +135,7 @@ $font-family: 'Marianne', arial, sans-serif;
   font-family: $font-family;
   font-size: 0.9375rem;
   color: $color-text-secondary;
-  margin: 0 auto 1.5rem;
-  max-width: 640px;
+  margin: 0 0 1.5rem;
   line-height: 1.5;
 }
 
@@ -230,16 +193,30 @@ $font-family: 'Marianne', arial, sans-serif;
   color: $color-text-secondary;
 }
 
-/* ======== Carte offre ======== */
-.tdb-sujet {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
+/* ======== Grille de cartes sujets (3 par ligne) ======== */
+.tdb-sujets__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
   padding: 1.5rem;
-  border-bottom: 1px solid $color-border;
+}
 
-  &:last-child {
-    border-bottom: none;
+/* ======== Carte sujet ======== */
+.tdb-sujet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+
+  &:hover {
+    border-color: $color-blue-france;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
   }
 
   &--inactif {
@@ -247,29 +224,36 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 }
 
-.tdb-sujet__main {
-  flex: 1;
-  min-width: 0;
-}
-
-.tdb-sujet__badges {
+.tdb-sujet-card__header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
 }
 
-.tdb-sujet__title {
+.tdb-sujet-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tdb-sujet-card__title {
   font-family: $font-family;
   font-size: 1.0625rem;
   font-weight: 700;
   color: $color-text-primary;
-  margin: 0 0 0.75rem;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.tdb-sujet__meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.5rem 1.5rem;
+.tdb-sujet-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin: 0;
 
   div {
@@ -293,23 +277,42 @@ $font-family: 'Marianne', arial, sans-serif;
   }
 }
 
-.tdb-sujet__side {
-  flex-shrink: 0;
+.tdb-sujet-card__footer {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  text-align: right;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid $color-border-light;
 }
 
-.tdb-sujet__date {
+.tdb-sujet-card__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tdb-sujet-card__date {
   font-family: $font-family;
   font-size: 0.8125rem;
   color: $color-text-secondary;
   margin: 0;
 }
 
+.tdb-sujet-card__link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* ======== Responsive ======== */
+@media (max-width: 992px) {
+  .tdb-sujets__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .tdb-container {
     padding: 0 1rem;
@@ -319,20 +322,11 @@ $font-family: 'Marianne', arial, sans-serif;
     padding: 0;
   }
 
-  .tdb-tabs {
-    flex-wrap: wrap;
-  }
-
   .tdb-header__title {
     font-size: 1.25rem;
   }
 
-  .tdb-sujet {
-    flex-direction: column;
-  }
-
-  .tdb-sujet__side {
-    align-items: flex-start;
-    text-align: left;
+  .tdb-sujets__grid {
+    grid-template-columns: 1fr;
   }
 }

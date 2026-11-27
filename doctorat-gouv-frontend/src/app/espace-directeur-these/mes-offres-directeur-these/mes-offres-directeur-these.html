@@ -14,22 +14,6 @@
       </div>
     </header>
 
-    <!-- ======== ONGLETS ======== -->
-    <nav class="tdb-tabs" aria-label="Navigation espace directeur de these">
-      <a class="tdb-tabs__tab" routerLink="/tableau-de-bord-directeur-these">
-        <span class="fr-icon-chat-3-line" aria-hidden="true"></span>
-        Mises en relations
-      </a>
-      <a class="tdb-tabs__tab" routerLink="/mes-sujets-directeur-these">
-        <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-        Sujets de thèse
-      </a>
-      <span class="tdb-tabs__tab tdb-tabs__tab--active" aria-current="page">
-        <span class="fr-icon-team-line" aria-hidden="true"></span>
-        Offres d'encadrement
-      </span>
-    </nav>
-
     <!-- ======== CHARGEMENT ======== -->
     <section class="tdb-section" *ngIf="isLoading">
       <div class="tdb-empty">
@@ -87,20 +71,22 @@
         <p>Aucune offre ne correspond a ce filtre.</p>
       </div>
 
-      <article class="tdb-sujet" *ngFor="let offre of offresFiltrees" [class.tdb-sujet--inactif]="!isActif(offre)">
-        <div class="tdb-sujet__main">
-          <div class="tdb-sujet__badges">
-            <span class="fr-badge fr-badge--sm"
-                  [class.fr-badge--success]="isActif(offre)"
-                  [class.fr-badge--error]="!isActif(offre)">
-              {{ isActif(offre) ? 'Active' : 'Inactive' }}
-            </span>
-            <span class="fr-badge fr-badge--sm fr-badge--info">
-              Offre d'accompagnement
-            </span>
+      <div class="tdb-sujets__grid" *ngIf="offresFiltrees.length > 0">
+        <article class="tdb-sujet-card" *ngFor="let offre of offresFiltrees" [class.tdb-sujet-card--inactif]="!isActif(offre)">
+          <div class="tdb-sujet-card__header">
+            <div class="tdb-sujet-card__badges">
+              <span class="fr-badge fr-badge--sm"
+                    [class.fr-badge--success]="isActif(offre)"
+                    [class.fr-badge--error]="!isActif(offre)">
+                {{ isActif(offre) ? 'Active' : 'Inactive' }}
+              </span>
+              <span class="fr-badge fr-badge--sm fr-badge--info">
+                Offre d'accompagnement
+              </span>
+            </div>
           </div>
-          <h3 class="tdb-sujet__title">{{ offre.titre || 'Titre non renseigne' }}</h3>
-          <dl class="tdb-sujet__meta">
+          <h3 class="tdb-sujet-card__title">{{ offre.titre || 'Titre non renseigne' }}</h3>
+          <dl class="tdb-sujet-card__meta">
             <div *ngIf="offre.etablissement">
               <dt>Etablissement</dt>
               <dd>{{ offre.etablissement }}</dd>
@@ -118,16 +104,18 @@
               <dd>{{ offre.matricule }}</dd>
             </div>
           </dl>
-        </div>
-        <div class="tdb-sujet__side">
-          <p class="tdb-sujet__date" *ngIf="offre.dateMiseEnLigne">Mise en ligne le {{ offre.dateMiseEnLigne }}</p>
-          <p class="tdb-sujet__date" *ngIf="offre.dateLimiteCandidature">Candidatures jusqu'au {{ offre.dateLimiteCandidature }}</p>
-          <a class="fr-link" [routerLink]="['/offre-encadrement']" [queryParams]="{id: offre.id}">
-            Voir l'offre
-            <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
-          </a>
-        </div>
-      </article>
+          <div class="tdb-sujet-card__footer">
+            <div class="tdb-sujet-card__dates">
+              <p class="tdb-sujet-card__date" *ngIf="offre.dateMiseEnLigne">Mise en ligne le {{ offre.dateMiseEnLigne }}</p>
+              <p class="tdb-sujet-card__date" *ngIf="offre.dateLimiteCandidature">Candidatures jusqu'au {{ offre.dateLimiteCandidature }}</p>
+            </div>
+            <a class="fr-link tdb-sujet-card__link" [routerLink]="['/offre-encadrement']" [queryParams]="{id: offre.id}">
+              Voir l'offre
+              <span class="fr-icon-arrow-right-line" aria-hidden="true"></span>
+            </a>
+          </div>
+        </article>
+      </div>
     </section>
 
   </div>
